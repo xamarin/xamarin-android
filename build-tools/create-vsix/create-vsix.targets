@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\scripts\XAVersionInfo.targets" />
+  <Import Project="..\..\src\Mono.Android\Mono.Android.projitems" />
   <UsingTask AssemblyFile="..\..\bin\Build$(Configuration)\xa-prep-tasks.dll"   TaskName="Xamarin.Android.BuildTools.PrepTasks.ReplaceFileContents" />
   <PropertyGroup>
     <!-- Don't ever deploy, since that won't work on Mac -->
@@ -43,7 +44,7 @@
       <_FirstFrameworkFile  Include="OpenTK.pdb" />
       <_FirstFrameworkFile  Include="OpenTK.xml" />
     </ItemGroup>
-    <ItemGroup>
+    <ItemGroup Condition=" '$(UnstableFrameworks)' == 'False' ">
       <MSBuild Include="$(LibDir)xbuild\Novell\**\*.*" />
       <MSBuild>
         <VSIXSubPath Condition=" '%(VSIXSubPath)' == '' ">Novell/%(RecursiveDir)</VSIXSubPath>
@@ -82,13 +83,24 @@
       />
       <ReferenceAssemblies Remove="$(LibDir)xbuild-frameworks\**\*.dylib" />
       <ReferenceAssemblies Remove="$(LibDir)xbuild-frameworks\**\libZipSharp*.*" />
+      <ReferenceAssemblies
+          Condition=" '%(AndroidApiInfo.Stable)' == 'False' "
+          Remove="$(LibDir)xbuild-frameworks\MonoAndroid\%(AndroidApiInfo.Identity)\**\*.*"
+      />
     </ItemGroup>
-    <ItemGroup Condition="Exists('$(LibDir)xbuild-frameworks\MonoAndroid\$(AndroidFirstFrameworkVersion)')">
+    <ItemGroup Condition=" '$(UnstableFrameworks)' == 'False' And Exists('$(LibDir)xbuild-frameworks\MonoAndroid\$(AndroidFirstFrameworkVersion)')">
       <ReferenceAssemblies Remove="$(LibDir)xbuild-frameworks\**\%(_FirstFrameworkFile.Identity)" />
       <ReferenceAssemblies
           Condition=" Exists ('$(LibDir)xbuild-frameworks\MonoAndroid\$(AndroidFirstFrameworkVersion)\%(_FirstFrameworkFile.Identity)') "
           Include="$(LibDir)xbuild-frameworks\MonoAndroid\$(AndroidFirstFrameworkVersion)\%(_FirstFrameworkFile.Identity)">
         <VSIXSubPath>Microsoft/Framework/MonoAndroid/$(AndroidFirstFrameworkVersion)/</VSIXSubPath>
+      </ReferenceAssemblies>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(UnstableFrameworks)' == 'True' ">
+      <ReferenceAssemblies
+          Condition=" '%(AndroidApiInfo.Stable)' == 'False' "
+          Include="$(LibDir)xbuild-frameworks\MonoAndroid\%(AndroidApiInfo.Identity)\**\*.*">
+        <VSIXSubPath>Microsoft/Framework/%(AndroidApiInfo.Identity)/%(RecursiveDir)</VSIXSubPath>
       </ReferenceAssemblies>
     </ItemGroup>
     <ItemGroup>
@@ -129,6 +141,27 @@
       <VsixVersion>$(ProductVersion).$(XAVersionCommitCount)</VsixVersion>
     </PropertyGroup>
   </Target>
+  <Target Name="GetVsixId"
+      Returns="$(VsixId)">
+    <PropertyGroup>
+      <VsixId Condition=" '$(UnstableFrameworks)' == 'True' ">Xamarin.Android.Sdk-UnstableFrameworks</VsixId>
+      <VsixId Condition=" '$(VsixId)' == '' ">Xamarin.Android.Sdk</VsixId>
+    </PropertyGroup>
+  </Target>
+  <Target Name="GetVsixDescription"
+      Returns="$(VsixDescription)">
+    <PropertyGroup>
+      <VsixDescription Condition=" '$(UnstableFrameworks)' == 'True' ">Xamarin.Android.Sdk-UnstableFrameworks</VsixDescription>
+      <VsixDescription Condition=" '$(VsixDescription)' == '' ">Xamarin.Android.Sdk</VsixDescription>
+    </PropertyGroup>
+  </Target>
+  <Target Name="GetVsixDisplayName"
+      Returns="$(VsixDisplayName)">
+    <PropertyGroup>
+      <VsixDisplayName Condition=" '$(UnstableFrameworks)' == 'True' ">Xamarin.Android SDK Unstable Frameworks</VsixDisplayName>
+      <VsixDisplayName Condition=" '$(VsixDisplayName)' == '' ">Xamarin.Android SDK</VsixDisplayName>
+    </PropertyGroup>
+  </Target>
   <Target Name="FixupTargetVsixContainer"
       BeforeTargets="VSIXContainerProjectOutputGroup;CreateVsixContainer"
       DependsOnTargets="_GetVsixPath">
@@ -142,11 +175,9 @@
   </Target>
   <Target Name="_CreateDependencies"
       DependsOnTargets="ResolveReferences;GetXAVersionInfo"
-      BeforeTargets="Build"
-      Inputs="Xamarin.Android.Sdk.pkgdef.in"
-      Outputs="Xamarin.Android.Sdk.pkgdef">
+      BeforeTargets="Build">
     <ReplaceFileContents
-        SourceFile="Xamarin.Android.Sdk.pkgdef.in"
+        SourceFile="$(_PackageDefinitionTemplate)"
         DestinationFile="Xamarin.Android.Sdk.pkgdef"
         Replacements="@PACKAGE_VERSION@=$(ProductVersion);@PACKAGE_VERSION_BUILD@=$(XAVersionCommitCount);@PACKAGE_HEAD_REV@=$(XAVersionHash);@PACKAGE_HEAD_BRANCH@=$(XAVersionBranch)">
     </ReplaceFileContents>
@@ -158,21 +189,28 @@
       <_Branch>$(_Branch.Replace ('\', '-'))</_Branch>
     </PropertyGroup>
     <PropertyGroup>
+      <VsixPath Condition=" '$(UnstableFrameworks)' == 'True' And '$(UnstableVsixPath)' != '' ">$(UnstableVsixPath)</VsixPath>
+      <VsixPath Condition=" '$(UnstableFrameworks)' == 'True' And '$(UnstableVsixPath)' == '' ">..\..\bin\Build$(Configuration)\$(AssemblyName)-OSS-$(ProductVersion).$(XAVersionCommitCount)_$(_Branch)_$(XAVersionHash)-UnstableFrameworks.vsix</VsixPath>
       <VsixPath Condition=" '$(VsixPath)' == '' ">..\..\bin\Build$(Configuration)\$(AssemblyName)-OSS-$(ProductVersion).$(XAVersionCommitCount)_$(_Branch)_$(XAVersionHash).vsix</VsixPath>
       <_VsixDir>$([System.IO.Path]::GetDirectoryName ($(VsixPath)))</_VsixDir>
     </PropertyGroup>
   </Target>
   <Target Name="_CopyToBuildConfiguration"
-      DependsOnTargets="_GetVsixPath"
+      DependsOnTargets="_GetVsixPath;GetVsixId"
       Inputs="$(TargetVsixContainer)"
       Outputs="$(VsixPath)">
     <Copy
         SourceFiles="$(TargetVsixContainer)"
         DestinationFolder="$(_VsixDir)"
     />
+    <PropertyGroup>
+      <_VsixFile>$([System.IO.Path]::GetFileName ($(VsixPath)))</_VsixFile>
+      <_JsonDestFile>$([System.IO.Path]::ChangeExtension ($(_VsixFile), '.json'))</_JsonDestFile>
+      <_JsonSourceFile>$(VsixId).json</_JsonSourceFile>
+    </PropertyGroup>
     <Copy
-        SourceFiles="$(OutputPath)Xamarin.Android.Sdk.json"
-        DestinationFolder="$(_VsixDir)"
+        SourceFiles="$(OutputPath)$(_JsonSourceFile)"
+        DestinationFiles="$(_VsixDir)\$(_JsonDestFile)"
     />
   </Target>
   <!--

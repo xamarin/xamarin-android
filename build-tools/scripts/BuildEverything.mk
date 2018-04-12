@@ -145,18 +145,27 @@ _BUNDLE_ZIPS_INCLUDE  = \
 _BUNDLE_ZIPS_EXCLUDE  = \
 	$(ZIP_OUTPUT_BASENAME)/bin/*/bundle-*.zip
 
-create-vsix:
-	$(foreach conf, $(CONFIGURATIONS), \
-		MONO_IOMAP=all MONO_OPTIONS="$(MONO_OPTIONS)" msbuild $(MSBUILD_FLAGS) /p:Configuration=$(conf) /p:CreateVsixContainer=True \
+# Usage: $(call CREATE_VSIX,configuration,unstable)
+define CREATE_VSIX
+		MONO_IOMAP=all MONO_OPTIONS="$(MONO_OPTIONS)" msbuild $(MSBUILD_FLAGS) /p:Configuration=$(1) /p:CreateVsixContainer=True \
 			build-tools/create-vsix/create-vsix.csproj \
 			$(if $(VSIX),"/p:VsixPath=$(VSIX)") \
+			"/p:UnstableFrameworks=$(2)" \
+			$(if $(UNSTABLE_VSIX),"/p:UnstableVsixPath=$(UNSTABLE_VSIX)") \
 			$(if $(EXPERIMENTAL),/p:IsExperimental="$(EXPERIMENTAL)") \
 			$(if $(PRODUCT_COMPONENT),/p:IsProductComponent="$(PRODUCT_COMPONENT)") \
 			$(if $(PACKAGE_VERSION),/p:ProductVersion="$(PACKAGE_VERSION)") \
 			$(if $(REPO_NAME),/p:XARepositoryName="$(REPO_NAME)") \
 			$(if $(PACKAGE_HEAD_BRANCH),/p:XAVersionBranch="$(PACKAGE_HEAD_BRANCH)") \
 			$(if $(PACKAGE_VERSION_REV),/p:XAVersionCommitCount="$(PACKAGE_VERSION_REV)") \
-			$(if $(COMMIT),/p:XAVersionHash="$(COMMIT)") && ) \
+			$(if $(COMMIT),/p:XAVersionHash="$(COMMIT)")
+endef # CREATE_VSIX
+
+create-vsix:
+	HAVE_UNSTABLE=$(shell $(MSBUILD) $(MSBUILD_FLAGS) /p:DoNotLoadOSProperties=True /nologo /v:minimal /t:HaveUnstableFrameworks build-tools/scripts/Info.targets | tr -d '[[:space:]]') ; \
+	$(foreach conf, $(CONFIGURATIONS), \
+		$(call CREATE_VSIX,$(conf),False) && \
+		(if [ "$$HAVE_UNSTABLE" = "True" ] ; then $(call CREATE_VSIX,$(conf),True); fi;) && ) \
 	true
 
 package-oss-name:

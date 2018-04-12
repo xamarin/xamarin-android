@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Xamarin.Android.Sdk" Version="|create-vsix;GetVsixVersion|" Language="en-US" Publisher="Xamarin" />
-    <DisplayName>Xamarin.Android SDK</DisplayName>
-    <Description xml:space="preserve">Xamarin.Android SDK</Description>
+    <Identity Id="|create-vsix;GetVsixId|" Version="|create-vsix;GetVsixVersion|" Language="en-US" Publisher="Xamarin" />
+    <DisplayName>|create-vsix;GetVsixDisplayName|</DisplayName>
+    <Description xml:space="preserve">|create-vsix;GetVsixDescription|</Description>
     <Icon>Resources\AndroidSdkPackage.ico</Icon>
   </Metadata>
   <Installation AllUsers="true" Experimental="|create-vsix;GetIsExperimental|">

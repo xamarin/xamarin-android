@@ -1,0 +1,11 @@
+[$RootKey$\InstalledProducts\AndroidSdkPackage]
+@="#110"
+"Package"="{0ce7b215-7684-4884-9f5b-1cdd800a5253}"
+"PID"="@PACKAGE_VERSION@.@PACKAGE_VERSION_BUILD@ (@PACKAGE_HEAD_BRANCH@/@PACKAGE_HEAD_REV@)"
+"ProductDetails"="#112"
+"LogoID"="#400"
+[$RootKey$\Packages\{0ce7b215-7684-4884-9f5b-1cdd800a5253}]
+@="AndroidSdkPackage"
+"InprocServer32"="$WinDir$\SYSTEM32\MSCOREE.DLL"
+"Class"="Xamarin.Android.Sdk.AndroidSdkPackage"
+"CodeBase"="$PackageFolder$\Xamarin.Android.Sdk.dll"

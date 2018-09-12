@@ -438,7 +438,7 @@ create_update_dir (char *override_dir)
 
 	override_dirs [0] = override_dir;
 	create_public_directory (override_dir);
-	log_warn (LOG_DEFAULT, "Creating public update directory: `%s`", override_dir);
+	log_info (LOG_DEFAULT, "Creating public update directory: `%s`", override_dir);
 }
 
 static int
@@ -599,7 +599,7 @@ copy_monosgen_to_internal_location(char *to, char *from)
 		return;
 	}
 
-	log_warn (LOG_DEFAULT, "Copying sgen from external location %s to internal location %s", from, to);
+	log_info (LOG_DEFAULT, "Copying sgen from external location %s to internal location %s", from, to);
 
 	char *to_libmonoso = path_combine (to, "libmonosgen-2.0.so");
 	unlink (to_libmonoso);
@@ -629,7 +629,7 @@ copy_monosgen_to_internal_location(char *to, char *from)
 #define TRY_LIBMONOSGEN(dir) \
 	if (dir) { \
 		libmonoso = path_combine (dir, MONO_SGEN_SO); \
-		log_warn (LOG_DEFAULT, "Trying to load sgen from: %s", libmonoso);	\
+		log_info (LOG_DEFAULT, "Trying to load sgen from: %s", libmonoso);	\
 		if (file_exists (libmonoso)) \
 			return libmonoso; \
 		free (libmonoso); \
@@ -677,7 +677,7 @@ get_libmonosgen_path ()
 		libmonoso = link;
 	}
 
-	log_warn (LOG_DEFAULT, "Trying to load sgen from: %s", libmonoso);
+	log_info (LOG_DEFAULT, "Trying to load sgen from: %s", libmonoso);
 	if (libmonoso && file_exists (libmonoso))
 		return libmonoso;
 	free (libmonoso);
@@ -1445,7 +1445,7 @@ add_reference (JNIEnv *env, AddReferenceTarget target, AddReferenceTarget reffed
 			 *reffed_description = describe_target (reffed_target);
 
 		if (success)
-			log_warn (LOG_GC, "Added reference for %s to %s", description, reffed_description);
+			log_info (LOG_GC, "Added reference for %s to %s", description, reffed_description);
 		else
 			log_error (LOG_GC, "Missing monodroidAddReference method for %s", description);
 
@@ -2187,7 +2187,7 @@ get_max_gref_count (void)
 		if (*e) {
 			log_warn (LOG_GC, "Unsupported '%s' value '%s'.", DEBUG_MONO_MAX_GREFC, override);
 		}
-		log_warn (LOG_GC, "Overriding max JNI Global Reference count to %i", max);
+		log_info (LOG_GC, "Overriding max JNI Global Reference count to %i", max);
 		free (override);
 	}
 	return max;
@@ -2494,7 +2494,7 @@ copy_file_to_internal_location(char *to, char *from, char* file)
 		return;
 	}
 
-	log_warn (LOG_DEFAULT, "Copying file %s from external location %s to internal location %s",
+	log_info (LOG_DEFAULT, "Copying file %s from external location %s to internal location %s",
 		file, from, to);
 
 	char *to_file = path_combine (to, file);
@@ -2552,7 +2552,7 @@ mono_runtime_init (char *runtime_args)
 				options.server ? "server=y," : "");
 		debug_options[0] = debug_arg;
 
-		log_warn (LOG_DEBUGGER, "Trying to initialize the debugger with options: %s", debug_arg);
+		log_info (LOG_DEBUGGER, "Trying to initialize the debugger with options: %s", debug_arg);
 
 		if (options.out_port > 0) {
 			struct sockaddr_in addr;
@@ -2578,7 +2578,7 @@ mono_runtime_init (char *runtime_args)
 
 			if (options.server) {
 				int accepted = monodroid_debug_accept (sock, addr);
-				log_warn (LOG_DEBUGGER, "Accepted stdout connection: %d", accepted);
+				log_info (LOG_DEBUGGER, "Accepted stdout connection: %d", accepted);
 				if (accepted < 0) {
 					log_fatal (LOG_DEBUGGER, "Error accepting stdout and stderr (%s:%d): %s",
 							     options.host, options.out_port, strerror (errno));
@@ -2632,7 +2632,7 @@ mono_runtime_init (char *runtime_args)
 	parse_gdb_options ();
 
 	if (wait_for_gdb) {
-		log_warn (LOG_DEFAULT, "Waiting for gdb to attach...");
+		log_info (LOG_DEFAULT, "Waiting for gdb to attach...");
 		while (monodroid_gdb_wait) {
 			sleep (1);
 		}
@@ -2643,7 +2643,7 @@ mono_runtime_init (char *runtime_args)
 		char **args, **ptr;
 		int argc;
 
-		log_warn (LOG_DEBUGGER, "passing '%s' as extra arguments to the runtime.\n", prop_val);
+		log_info (LOG_DEBUGGER, "passing '%s' as extra arguments to the runtime.\n", prop_val);
 
 		args = monodroid_strsplit (prop_val, " ", -1);
 		argc = 0;
@@ -2934,7 +2934,7 @@ init_android_runtime (MonoDomain *domain, JNIEnv *env, jobject loader)
 	// GC threshold is 90% of the max GREF count
 	init.grefGcThreshold        = get_gref_gc_threshold ();
 
-	log_warn (LOG_GC, "GREF GC Threshold: %i", init.grefGcThreshold);
+	log_info (LOG_GC, "GREF GC Threshold: %i", init.grefGcThreshold);
 
 	jclass lrefClass = (*env)->FindClass (env, "java/lang/Class");
 	init.grefClass = (*env)->NewGlobalRef (env, lrefClass);
@@ -2991,7 +2991,7 @@ init_android_runtime (MonoDomain *domain, JNIEnv *env, jobject loader)
 
 	start_time = current_time_millis ();
 	log_info (LOG_TIMING, "Runtime.init: start native-to-managed transition time: %lli ms\n", start_time);
-	log_warn (LOG_DEFAULT, "Calling into managed runtime init");
+	log_info (LOG_DEFAULT, "Calling into managed runtime init");
 
 	monodroid_runtime_invoke (&mono, domain, method, NULL, args, NULL);
 
@@ -3262,7 +3262,7 @@ static mono_bool
 load_profiler (void *handle, const char *desc, const char *symbol)
 {
 	ProfilerInitializer func = dlsym (handle, symbol);
-	log_warn (LOG_DEFAULT, "Looking for profiler init symbol '%s'? %p", symbol, func);
+	log_info (LOG_DEFAULT, "Looking for profiler init symbol '%s'? %p", symbol, func);
 
 	if (func) {
 		func (desc);
@@ -3280,7 +3280,7 @@ load_embedded_profiler (const char *desc, const char *name)
 	void *h         = dlopen (full_name, RTLD_LAZY);
 	const char *e   = dlerror ();
 
-	log_warn (LOG_DEFAULT, "looking for embedded profiler within '%s': dlopen=%p error=%s",
+	log_info (LOG_DEFAULT, "looking for embedded profiler within '%s': dlopen=%p error=%s",
 			full_name,
 			h,
 			h != NULL ? "<none>" : e);
@@ -3307,7 +3307,7 @@ load_profiler_from_directory (const char *directory, const char *libname, const 
 	void *h         = exists ? dlopen (full_name, RTLD_LAZY) : NULL;
 	const char *e   = exists ? dlerror () : "No such file or directory";
 
-	log_warn (LOG_DEFAULT, "Trying to load profiler: %s: dlopen=%p error=%s",
+	log_info (LOG_DEFAULT, "Trying to load profiler: %s: dlopen=%p error=%s",
 			full_name,
 			h,
 			h != NULL ? "<none>" : e);
@@ -3435,7 +3435,7 @@ set_profile_options (JNIEnv *env)
 	 */
 	unlink (output);
 
-	log_warn (LOG_DEFAULT, "Initializing profiler with options: %s", value);
+	log_info (LOG_DEFAULT, "Initializing profiler with options: %s", value);
 	monodroid_profiler_load (runtime_libdir, value, output);
 
 	free (value);
@@ -3642,7 +3642,7 @@ start_debugging (void)
 	debug_arg = monodroid_strdup_printf ("--debugger-agent=transport=socket-fd,address=%d,embedding=1", sdb_fd);
 	debug_options[0] = debug_arg;
 
-	log_warn (LOG_DEBUGGER, "Trying to initialize the debugger with options: %s", debug_arg);
+	log_info (LOG_DEBUGGER, "Trying to initialize the debugger with options: %s", debug_arg);
 
 	if (enable_soft_breakpoints ()) {
 		debug_options[1] = "--soft-breakpoints";
@@ -3796,7 +3796,7 @@ Java_mono_android_Runtime_init (JNIEnv *env, jclass klass, jstring lang, jobject
 		const char *p = override_dirs [i];
 		if (!directory_exists (p))
 			continue;
-		log_warn (LOG_DEFAULT, "Using override path: %s", p);
+		log_info (LOG_DEFAULT, "Using override path: %s", p);
 	}
 #endif
 

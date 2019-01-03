@@ -61,8 +61,12 @@ The `xamarin-android` repo contains several unit tests:
 
   * NUnit-based unit tests, for stand-alone assemblies and utilities.
 
-  * `.apk`-based unit tests, which are NUnitLite-based tests that need to
-    execute on an Android device.
+  * `.apk`-based unit tests, which are NUnitLite-based tests.
+
+    Note: apk-based tests need a running Android emulator or a connected
+    Android device as an installation target. If either of them exists,
+    the test apps are automatically installed, and if there isn't any
+    available target, it will automatically create and run an emulator.
 
 All unit tests can be executed via the `make run-all-tests` target:
 

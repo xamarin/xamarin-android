@@ -61,6 +61,7 @@
       <NativeLibraryExtension>dll</NativeLibraryExtension>
       <CanStripNativeLibrary>True</CanStripNativeLibrary>
       <OutputRuntimeFilename>libmonosgen-2.0</OutputRuntimeFilename>
+      <OutputBinaryWFilename>monow.exe</OutputBinaryWFilename>
       <OutputProfilerFilename></OutputProfilerFilename>
       <OutputAotProfilerFilename></OutputAotProfilerFilename>
       <OutputMonoBtlsFilename></OutputMonoBtlsFilename>
@@ -72,6 +73,7 @@
       <NativeLibraryExtension>dll</NativeLibraryExtension>
       <CanStripNativeLibrary>$(CanStripWin32DLL)</CanStripNativeLibrary>
       <OutputRuntimeFilename>libmonosgen-2.0</OutputRuntimeFilename>
+      <OutputBinaryWFilename>monow.exe</OutputBinaryWFilename>
       <OutputProfilerFilename></OutputProfilerFilename>
       <OutputAotProfilerFilename></OutputAotProfilerFilename>
       <OutputMonoBtlsFilename></OutputMonoBtlsFilename>

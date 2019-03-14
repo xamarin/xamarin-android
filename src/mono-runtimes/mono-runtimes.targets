@@ -222,6 +222,14 @@
           Condition=" 'host-$(HostOS)' == '%(Identity)' "
           Include="@(_MonoRuntime->'$(_MSBuildDir)\$(HostOS)\mono')"
       />
+      <_RuntimeBinaryWSource
+          Condition=" '%(_MonoRuntime.OutputBinaryWFilename)' != '' "
+          Include="@(_MonoRuntime->'$(MonoSourceFullPath)\sdks\out\android-%(Identity)-$(_MonoSdksConfiguration)\bin\%(OutputBinaryWFilename)')"
+      />
+      <_InstallRuntimeBinaryWOutput
+          Condition=" '%(_MonoRuntime.OutputBinaryWFilename)' != '' "
+          Include="@(_MonoRuntime->'$(_MSBuildDir)\lib\%(Identity)\%(OutputBinaryWFilename)')"
+      />
       <_CrossRuntimeBinarySource
           Include="@(_MonoCrossRuntime->'$(MonoSourceFullPath)\sdks\out\android-%(Identity)-$(_MonoSdksConfiguration)\bin\%(ExePrefix)mono-sgen%(ExeSuffix)')"
       />
@@ -337,8 +345,8 @@
 
   <Target Name="_InstallRuntimes"
       DependsOnTargets="_GetRuntimesOutputItems"
-      Inputs="@(_RuntimeSource);@(_RuntimeBinarySource);@(_CrossRuntimeBinarySource);@(_ProfilerSource);@(_MonoPosixHelperSource);@(_RuntimeEglibHeaderSource);@(_MonoBtlsSource)"
-      Outputs="@(_InstallRuntimeOutput);@(_InstallRuntimeBinaryOutput);@(_InstallCrossRuntimeBinaryOutput);@(_InstallProfilerOutput);@(_InstallMonoPosixHelperOutput);@(_RuntimeEglibHeaderOutput)">
+      Inputs="@(_RuntimeSource);@(_RuntimeBinarySource);@(_RuntimeBinaryWSource);@(_CrossRuntimeBinarySource);@(_ProfilerSource);@(_MonoPosixHelperSource);@(_RuntimeEglibHeaderSource);@(_MonoBtlsSource)"
+      Outputs="@(_InstallRuntimeOutput);@(_InstallRuntimeBinaryOutput);@(_InstallRuntimeBinaryWOutput);@(_InstallCrossRuntimeBinaryOutput);@(_InstallProfilerOutput);@(_InstallMonoPosixHelperOutput);@(_RuntimeEglibHeaderOutput)">
     <ItemGroup>
       <_BclTestAssemblyReference Include="@(MonoTestAssembly)" Condition="'%(MonoTestAssembly.TestType)' == 'reference'" />
       <_BclTestAssembly  Include="@(MonoTestAssembly)" Condition="'%(MonoTestAssembly.TestType)' == '' Or '%(MonoTestAssembly.TestType)' == 'xunit' " />
@@ -429,6 +437,12 @@
         DestinationFiles="@(_InstallRuntimeBinaryOutput)"
     />
     <Touch Files="@(_InstallRuntimeBinaryOutput)" />
+
+    <Copy
+        SourceFiles="@(_RuntimeBinaryWSource)"
+        DestinationFiles="@(_InstallRuntimeBinaryWOutput)"
+    />
+    <Touch Files="@(_InstallRuntimeBinaryWOutput)" />
 
     <Copy
         SourceFiles="@(_CrossRuntimeBinarySource)"
@@ -596,6 +610,7 @@
       <BundleItem Include="@(_InstallRuntimeOutput)" />
       <BundleItem Include="@(_InstallUnstrippedRuntimeOutput)" />
       <BundleItem Include="@(_InstallRuntimeBinaryOutput)" />
+      <BundleItem Include="@(_InstallRuntimeBinaryWOutput)" />
       <BundleItem Include="@(_InstallCrossRuntimeBinaryOutput)" />
       <BundleItem Include="@(_InstallUnstrippedCrossRuntimeBinaryOutput)" />
       <BundleItem Include="@(_InstallProfilerOutput)" />

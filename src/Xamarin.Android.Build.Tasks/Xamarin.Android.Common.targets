@@ -76,6 +76,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <UsingTask TaskName="Xamarin.Android.Tasks.Dx" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.D8" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.R8" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.JniMarshalMethodGen" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.KeyTool" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.LinkAssemblies" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.Lint" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
@@ -2045,7 +2046,7 @@ because xbuild doesn't support framework reference assemblies.
   DependsOnTargets="_ResolveAssemblies;_CreatePackageWorkspace;_GenerateJniMarshalMethods;_LinkAssembliesNoShrink;_LinkAssembliesShrink" />
 
 <Target Name="_GenerateJniMarshalMethods"
-    Condition="'$(AndroidGenerateJniMarshalMethods)' == 'True' And '$(AndroidLinkMode)' != 'None' And '$(OS)' != 'Windows_NT'"
+    Condition="'$(AndroidGenerateJniMarshalMethods)' == 'True' And '$(AndroidLinkMode)' != 'None'"
     DependsOnTargets="_GetReferenceAssemblyPaths;_SetLatestTargetFrameworkVersion"
     Inputs="@(ResolvedUserAssemblies->'$(MonoAndroidLinkerInputDir)%(Filename)%(Extension)')"
     Outputs="$(_AndroidJniMarshalMethodsFlag)">
@@ -2059,8 +2060,13 @@ because xbuild doesn't support framework reference assemblies.
     <_AssembliesToProcess Include="@(ResolvedUserAssemblies)" />
     <_AssembliesToProcess Include="@(ResolvedAssemblies)" Condition=" '%(Filename)' != '' And '@(_JniFrameworkAssembly)' != '' " />
   </ItemGroup>
-  <Exec
-       Command="MONO_PATH=&quot;$(_XATargetFrameworkDirectories):$(MonoAndroidLinkerInputDir)&quot; &quot;$(MonoAndroidBinDirectory)\mono&quot; --debug &quot;$(MonoAndroidToolsDirectory)\jnimarshalmethod-gen.exe&quot; --jvm=&quot;$(JdkJvmPath)&quot; $(AndroidGenerateJniMarshalMethodsAdditionalArguments) @(_AssembliesToProcess->'&quot;$(MonoAndroidLinkerInputDir)%(Filename)%(Extension)&quot;', ' ')"
+  <JniMarshalMethodGen
+    EnvironmentVariables="MONO_PATH=$(_XATargetFrameworkDirectories),$(MonoAndroidLinkerInputDir)"
+    MonoAndroidBinPath="$(MonoAndroidBinDirectory)"
+    MonoAndroidToolsPath="$(MonoAndroidToolsDirectory)"
+    Assemblies="@(_AssembliesToProcess->'$(MonoAndroidLinkerInputDir)%(Filename)%(Extension)')"
+    JvmPath="$(JdkJvmPath)"
+    AdditionalArguments="$(AndroidGenerateJniMarshalMethodsAdditionalArguments)"
   />
   <Touch Files="$(_AndroidJniMarshalMethodsFlag)" AlwaysCreate="True" />
 </Target>

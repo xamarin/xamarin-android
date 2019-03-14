@@ -19,7 +19,7 @@
       <NativeLibraryExtension>dll</NativeLibraryExtension>
     </_HostRuntime>
 
-    <_HostRuntime Include="host-mxe-Win32" Condition="$(AndroidSupportedHostJitAbisForConditionalChecks.Contains (':linux-Win32:'))">
+    <_HostRuntime Include="host-mxe-Win32" Condition="$(AndroidSupportedHostJitAbisForConditionalChecks.Contains (':mxe-Win32:')) Or $(AndroidSupportedHostJitAbisForConditionalChecks.Contains (':linux-Win32:'))">
       <CmakeFlags>$(_CmakeMxeCommonFlags32)</CmakeFlags>
       <OutputDirectory>host-mxe-Win32</OutputDirectory>
       <NativeLibraryExtension>dll</NativeLibraryExtension>

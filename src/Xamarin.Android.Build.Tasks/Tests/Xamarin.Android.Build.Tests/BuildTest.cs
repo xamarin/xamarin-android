@@ -3595,6 +3595,40 @@ AAAAAAAAAAAAPQAAAE1FVEEtSU5GL01BTklGRVNULk1GUEsBAhQAFAAICAgAJZFnS7uHtAn+AQAA
 				Assert.IsFalse (StringAssertEx.ContainsText (b.LastBuildOutput, "The \"LinkAssemblies\" task failed unexpectedly"), "The LinkAssemblies MSBuild task should not run!");
 			}
 		}
+
+		[Test]
+		public void AdditionalFrameworkBuild ()
+		{
+			var proj = new XamarinAndroidApplicationProject () {
+				IsRelease = true,
+				TargetFrameworkVersion = "v9.0",
+				UseLatestPlatformSdk = false,
+			};
+			proj.MainActivity = proj.DefaultMainActivity.Replace ("int count = 1;", "public class Foo : Java.Util.Vector, Java.Util.IList { void Java.Util.IList.Sort (Java.Util.IComparator comparator) { } } \n\t\tint count = 1;");
+			proj.Packages.Add (new Package () {
+				Id = "xamarin.android.dim",
+				Version = "0.1.8",
+				TargetFramework = "MonoAndroid90",
+				References = {}
+			});
+			proj.ImportsPrepended.Add (new Import ("..\\packages\\xamarin.android.dim.0.1.8\\build\\xamarin.android.dim.props"));
+			proj.ImportsPrepended.Add (new Import ("..\\packages\\xamarin.android.csc.dim.0.1.2\\build\\xamarin.android.csc.dim.props"));
+			proj.Packages.Add (new Package () {
+				Id = "xamarin.android.csc.dim",
+				Version = "0.1.2",
+				TargetFramework = "MonoAndroid10",
+				References = {}
+			});
+			proj.SetProperty ("LangVersion", "latest");
+			using (var builder = CreateApkBuilder (Path.Combine ("temp", nameof (AdditionalFrameworkBuild)), false, false)) {
+				builder.RequiresMSBuild = true;
+				builder.Target = "Restore";
+				Assert.IsTrue (builder.Build (proj), "Restore should have succeeded.");
+				builder.Target = "Build";
+				Assert.True (builder.Build (proj), "Build should have succeeded");
+			}
+		}
+
 	}
 }
 

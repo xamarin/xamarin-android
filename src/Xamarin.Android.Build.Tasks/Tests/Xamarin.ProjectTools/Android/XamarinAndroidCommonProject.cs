@@ -75,8 +75,10 @@ namespace Xamarin.ProjectTools
 		public override ProjectRootElement Construct ()
 		{
 			var root = base.Construct ();
+			foreach (var import in ImportsPrepended)
+				root.AddImport (import.Project ());
 			root.AddImport (XamarinAndroidLanguage.NormalProjectImport);
-			foreach (var import in Imports)
+			foreach (var import in ImportsAppended)
 				root.AddImport (import.Project ());
 			return root;
 		}

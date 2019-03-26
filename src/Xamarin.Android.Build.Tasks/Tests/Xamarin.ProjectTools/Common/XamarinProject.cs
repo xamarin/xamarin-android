@@ -31,7 +31,10 @@ namespace Xamarin.ProjectTools
 		public IList<Package> Packages { get; private set; }
 		public IList<BuildItem> References { get; private set; }
 		public IList<Package> PackageReferences { get; private set; }
-		public IList<Import> Imports { get; private set; }
+		public IList<Import> ImportsPrepended { get; private set; }
+		public IList<Import> ImportsAppended { get; private set; }
+		[Obsolete ("Use ImportsAppended")]
+		public IList<Import> Imports => ImportsAppended;
 		PropertyGroup common, debug, release;
 
 		public bool IsRelease {
@@ -60,7 +63,8 @@ namespace Xamarin.ProjectTools
 			PropertyGroups.Add (release);
 
 			Packages = new List<Package> ();
-			Imports = new List<Import> ();
+			ImportsPrepended = new List<Import> ();
+			ImportsAppended = new List<Import> ();
 
 		}
 
@@ -157,6 +161,15 @@ namespace Xamarin.ProjectTools
 				});
 			}
 
+			Func<Import,ProjectResource> create_import_reference = import => new ProjectResource () {
+					Path = import.Project (),
+					Content = import.TextContent == null ? null : import.TextContent (),
+					Encoding = System.Text.Encoding.UTF8,
+			};
+
+			foreach (var import in ImportsPrepended)
+				list.Add (create_import_reference (import));
+
 			if (Packages.Any ()) {
 				var contents = "<packages>\n" + string.Concat (Packages.Select (p => string.Format ("  <package id='{0}' version='{1}' targetFramework='{2}' />\n",
 					p.Id, p.Version, p.TargetFramework))) + "</packages>";
@@ -181,12 +194,8 @@ namespace Xamarin.ProjectTools
 					Attributes = s.Attributes,
 				}));
 
-			foreach (var import in Imports)
-				list.Add (new ProjectResource () {
-					Path = import.Project (),
-					Content = import.TextContent == null ? null : import.TextContent (),
-					Encoding = System.Text.Encoding.UTF8,
-				});
+			foreach (var import in ImportsAppended)
+				list.Add (create_import_reference (import));
 
 			return list;
 		}

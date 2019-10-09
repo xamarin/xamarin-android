@@ -283,37 +283,54 @@ namespace Android.Runtime {
 		}
 
 		class MagicRegistrationMap {
-			static Dictionary<string, int> typesMap;
+			// should stay in sync with MonoDroidMarkStep.GetStringHashCode
+			static int GetStringHashCode (string str)
+	                {
+	                        int hash1 = 5381;
+	                        int hash2 = hash1;
 
-			static void Prefill ()
-			{
-				// fill code added by the linker
-			}
+	                        unsafe {
+	                                fixed (char *src = str) {
+	                                        int c;
+	                                        char *s = src;
+	                                        while ((c = s[0]) != 0) {
+	                                                hash1 = ((hash1 << 5) + hash1) ^ c;
+	                                                c = s [1];
+	                                                if (c == 0)
+	                                                        break;
+	                                                hash2 = ((hash2 << 5) + hash2) ^ c;
+	                                                s += 2;
+	                                        }
+	                                }
+	                        }
+
+	                        return hash1 + (hash2 * 1566083941);
+	                }
 
 			static MagicRegistrationMap ()
 			{
-				Prefill ();
 			}
 
 			static public bool Filled {
 				get {
-					return typesMap != null && typesMap.Count > 0;
+					return false;
 				}
 			}
 
 			internal static bool CallRegisterMethod (JniNativeMethodRegistrationArguments arguments, string typeName)
 			{
-				int idx;
-
-				if (typeName == null || !typesMap.TryGetValue (typeName, out idx)) 
+				if (typeName == null)
 					return false;
 
-				return CallRegisterMethodByIndex (arguments, idx);
+				return CallRegisterMethodByTypeName (arguments, typeName);
 			}
 
-			static bool CallRegisterMethodByIndex (JniNativeMethodRegistrationArguments arguments, int typeIdx)
+			static bool CallRegisterMethodByTypeName (JniNativeMethodRegistrationArguments arguments, string name)
 			{
+				int hashCode;
+
 				// updated by the linker to register known types
+
 				return false;
 			}
 		}

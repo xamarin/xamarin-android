@@ -113,6 +113,21 @@ namespace MonoDroid.Tuner
 			return method;
 		}
 
+		bool UpdateFilled (TypeDefinition magicType)
+		{
+			var method = GetMethod (magicType, "get_Filled");
+			if (method == null)
+				return false;
+
+			var instructions = method.Body.Instructions;
+			instructions.Clear ();
+
+			instructions.Add (Instruction.Create (OpCodes.Ldc_I4_1));
+			instructions.Add (Instruction.Create (OpCodes.Ret));
+
+			return true;
+		}
+
 		MethodReference CreateGenericMethodReference (MethodReference method, GenericInstanceType type)
 		{
 			var genericMethod = new MethodReference (method.Name, method.ReturnType) {
@@ -128,31 +143,112 @@ namespace MonoDroid.Tuner
 			return genericMethod;
 		}
 
-		void UpdateRegistrationSwitch (MethodDefinition method, MethodReference[] switchMethods)
-		{
-			var instructions = method.Body.Instructions;
-			var module = method.DeclaringType.Module;
-			var switchInstructions = new Instruction [switchMethods.Length];
+		// should stay in sync with AndroidRuntime.AndroidTypeManager.MagicRegistrationMap.GetStringHashCode
+		static int GetStringHashCode (string str)
+                {
+                        int hash1 = 5381;
+                        int hash2 = hash1;
 
+                        unsafe {
+                                fixed (char *src = str) {
+                                        int c;
+                                        char *s = src;
+                                        while ((c = s[0]) != 0) {
+                                                hash1 = ((hash1 << 5) + hash1) ^ c;
+                                                c = s [1];
+                                                if (c == 0)
+                                                        break;
+                                                hash2 = ((hash2 << 5) + hash2) ^ c;
+                                                s += 2;
+                                        }
+                                }
+                        }
+
+			return hash1 + (hash2 * 1566083941);
+                }
+
+		void UpdateCallRegisterMethodByTypeName (TypeDefinition magicType, MethodReference[] switchMethods)
+		{
+			var method = GetMethod (magicType, "CallRegisterMethodByTypeName");
+			if (method == null)
+				return;
+
+			var methodGetStringHashCode = GetMethod (magicType, "GetStringHashCode", new string[] { "System.String" });
+			if (methodGetStringHashCode == null)
+				return;
+
+			var module = magicType.Module;
+			var methodStrEq = module.ImportReference (GetMethod ("mscorlib", "System.String", "op_Equality", new string[] { "System.String", "System.String" }));
+			var methodGetTypeFromHandle = GetMethod ("mscorlib", "System.Type", "GetTypeFromHandle", new string[] { "System.RuntimeTypeHandle" });
+
+
+			var instructions = method.Body.Instructions;
 			instructions.Clear ();
 
-			for (var i = 0; i < switchMethods.Length; i++)
-				switchInstructions [i] = Instruction.Create (OpCodes.Ldtoken, switchMethods [i].DeclaringType);
-
-			var typeType = GetType ("mscorlib", "System.Type");
-			var methodGetTypeFromHandle = GetMethod ("mscorlib", "System.Type", "GetTypeFromHandle", new string[] { "System.RuntimeTypeHandle" });
-			var callDelegateStart = Instruction.Create (OpCodes.Call, module.ImportReference (methodGetTypeFromHandle));
-
 			instructions.Add (Instruction.Create (OpCodes.Ldarg_1));
-			instructions.Add (Instruction.Create (OpCodes.Switch, switchInstructions));
+			instructions.Add (Instruction.Create (OpCodes.Call, methodGetStringHashCode));
 
-			for (var i = 0; i < switchMethods.Length; i++) {
-				instructions.Add (switchInstructions [i]);
-				instructions.Add (Instruction.Create (OpCodes.Br, callDelegateStart));
+			instructions.Add (Instruction.Create (OpCodes.Stloc_0));
+
+			var callInstructions = new Instruction [switchMethods.Length];
+			var returnFail = Instruction.Create (OpCodes.Ldc_I4_0);
+			var callDelegate = Instruction.Create (OpCodes.Call, module.ImportReference (methodGetTypeFromHandle));
+
+			var dictionary = new Dictionary<int, object> ();
+			var hashCodes = new List<int> ();
+			int i;
+
+			for (i = 0; i < switchMethods.Length; i++) {
+				var switchTypeName = switchMethods [i].DeclaringType.FullName.Replace ("/__<$>_jni_marshal_methods", "").Replace ("/", "+");
+				var hashCode = GetStringHashCode (switchTypeName);
+				callInstructions [i] = Instruction.Create (OpCodes.Ldtoken, switchMethods [i].DeclaringType);
+
+				if (dictionary.TryGetValue (hashCode, out var v)) {
+					if (v is List<int> l) {
+						l.Add (i);
+					} else {
+						l = new List<int> ((int)v) { i };
+						dictionary [hashCode] = l;
+					}
+				} else {
+					dictionary [hashCode] = i;
+					hashCodes.Add (hashCode);
+				}
 			}
 
-			instructions.Add (Instruction.Create (OpCodes.Ldc_I4_0));
-			instructions.Add (Instruction.Create (OpCodes.Ret));
+			// TODO: speedup by binary search or modulo/switch
+			var targetInstructions = new Instruction [hashCodes.Count];
+			var checkInstructions = new Instruction [switchMethods.Length];
+			for (i = 0; i < hashCodes.Count; i++) {
+				checkInstructions [i] = Instruction.Create (OpCodes.Ldarg_1);
+
+				instructions.Add (Instruction.Create (OpCodes.Ldc_I4, hashCodes [i]));
+				instructions.Add (Instruction.Create (OpCodes.Ldloc_0));
+				instructions.Add (Instruction.Create (OpCodes.Beq, checkInstructions [i]));
+			}
+
+			instructions.Add (Instruction.Create (OpCodes.Br, returnFail));
+
+			for (i = 0; i < hashCodes.Count; i++) {
+
+				object o = dictionary [hashCodes [i]];
+				if (o is int singleIdx) {
+					AddCheckStringValue (instructions, methodStrEq, checkInstructions [i], callInstructions [singleIdx], switchMethods [singleIdx]);
+				} else {
+					var first = true;
+					foreach (var idx in o as List<int>) {
+						AddCheckStringValue (instructions, methodStrEq, first ? checkInstructions [i] : Instruction.Create (OpCodes.Ldarg_1), callInstructions [idx], switchMethods [idx]);
+						first = false;
+					}
+				}
+
+				instructions.Add (Instruction.Create (OpCodes.Br, returnFail));
+			}
+
+			for (i = 0; i < switchMethods.Length; i++) {
+				instructions.Add (callInstructions [i]);
+				instructions.Add (Instruction.Create (OpCodes.Br, callDelegate));
+			}
 
 			var actionType = GetType ("mscorlib", "System.Action`1");
 
@@ -168,7 +264,7 @@ namespace MonoDroid.Tuner
 			var typeMethodInfo = GetType ("mscorlib", "System.Reflection.MethodInfo");
 			var methodCreateDelegate = GetMethod ("mscorlib", "System.Reflection.MethodInfo", "CreateDelegate", new string[] { "System.Type" });
 
-			instructions.Add (callDelegateStart);
+			instructions.Add (callDelegate);
 
 			instructions.Add (Instruction.Create (OpCodes.Ldstr, "__RegisterNativeMembers"));
 			instructions.Add (Instruction.Create (OpCodes.Call, module.ImportReference (methodGetMethod)));
@@ -187,56 +283,27 @@ namespace MonoDroid.Tuner
 
 			instructions.Add (Instruction.Create (OpCodes.Ldc_I4_1));
 			instructions.Add (Instruction.Create (OpCodes.Ret));
+
+			instructions.Add (returnFail);
+			instructions.Add (Instruction.Create (OpCodes.Ret));
+
+			MarkMethod (methodGetStringHashCode);
 		}
 
-		void UpdateMagicPrefill (TypeDefinition magicType)
+		static void AddCheckStringValue (Mono.Collections.Generic.Collection<Instruction> instructions, MethodReference methodStrEq, Instruction checkInstruction, Instruction callInstruction, MethodReference mr)
 		{
-			var fieldTypesMap = magicType.Fields.FirstOrDefault (f => f.Name == "typesMap");
-			if (fieldTypesMap == null)
-				return;
+			var switchTypeName = mr.DeclaringType.FullName.Replace ("/__<$>_jni_marshal_methods", "").Replace ("/", "+");
 
-			var methodPrefill = GetMethod (magicType, "Prefill");
-			if (methodPrefill == null)
-				return;
-
-			var typeDictionary = GetType ("mscorlib", "System.Collections.Generic.Dictionary`2");
-			var ctorDictionary = GetMethod (typeDictionary, ".ctor", new string[] { "System.Int32" });
-			var methodSetItem = GetMethod (typeDictionary, "set_Item", new string[] { "TKey", "TValue" });
-			var genericTypeDictionary = new GenericInstanceType (typeDictionary);
-			genericTypeDictionary.GenericArguments.Add (GetType ("mscorlib", "System.String"));
-			genericTypeDictionary.GenericArguments.Add (GetType ("mscorlib", "System.Int32"));
-
-			var genericMethodDictionaryCtor = CreateGenericMethodReference (ctorDictionary, genericTypeDictionary);
-			var genericMethodDictionarySetItem = CreateGenericMethodReference (methodSetItem, genericTypeDictionary);
-			var importedMethodSetItem = magicType.Module.ImportReference (genericMethodDictionarySetItem);
-
-			var instructions = methodPrefill.Body.Instructions;
-			instructions.Clear ();
-
-			instructions.Add (CreateLoadArraySizeOrOffsetInstruction (marshalTypes.Count));
-			instructions.Add (Instruction.Create (OpCodes.Newobj, magicType.Module.ImportReference (genericMethodDictionaryCtor)));
-			instructions.Add (Instruction.Create (OpCodes.Stsfld, fieldTypesMap));
-
-			int idx = 0;
-
-			foreach (var type in marshalTypes) {
-				instructions.Add (Instruction.Create (OpCodes.Ldsfld, fieldTypesMap));
-				instructions.Add (Instruction.Create (OpCodes.Ldstr, type.FullName.Replace ("/__<$>_jni_marshal_methods", "").Replace ("/","+")));
-				instructions.Add (CreateLoadArraySizeOrOffsetInstruction (idx++));
-				instructions.Add (Instruction.Create (OpCodes.Callvirt, importedMethodSetItem));
-			}
-
-			instructions.Add (Instruction.Create (OpCodes.Ret));
+			instructions.Add (checkInstruction);
+			instructions.Add (Instruction.Create (OpCodes.Ldstr, switchTypeName));
+			instructions.Add (Instruction.Create (OpCodes.Call, methodStrEq));
+			instructions.Add (Instruction.Create (OpCodes.Brtrue, callInstruction));
 		}
 
 		void UpdateMagicRegistration ()
 		{
 			TypeDefinition magicType = GetType ("Mono.Android", "Android.Runtime.AndroidTypeManager/MagicRegistrationMap");
 			if (magicType == null)
-				return;
-
-			MethodDefinition magicCall = GetMethod (magicType, "CallRegisterMethodByIndex");
-			if (magicCall == null)
 				return;
 
 			var switchMethods = new MethodReference [marshalTypes.Count];
@@ -254,8 +321,10 @@ namespace MonoDroid.Tuner
 				switchMethods [idx++] = module.ImportReference (resolved);
 			}
 
-			UpdateMagicPrefill (magicType);
-			UpdateRegistrationSwitch (magicCall, switchMethods);
+			if (!UpdateFilled (magicType))
+				return;
+
+			UpdateCallRegisterMethodByTypeName (magicType, switchMethods); 
 		}
 
 		static bool IsLdcI4 (Instruction instruction, out int intValue)

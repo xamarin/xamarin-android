@@ -24,6 +24,7 @@
     <DefineConstants Condition="'$(MonoDroidTiming)' == ''">TRACE;DEBUG;HAVE_CECIL;MSBUILD;ANDROID_24</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE;HAVE_CECIL;MSBUILD;ANDROID_24</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition="'$(__XA_NO_PREVIEW_L_SUPPORT__)' != ''">$(DefineConstants);XA_NO_PREVIEW_L_SUPPORT</DefineConstants>

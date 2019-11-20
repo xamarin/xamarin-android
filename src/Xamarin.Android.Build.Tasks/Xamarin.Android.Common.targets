@@ -526,8 +526,8 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 
 <Target Name="_CheckNonIdealConfigurations">
   <Warning Code="XA0119"
-      Text="Using Fast Deployment and AOT at the same time is not recommended. Use Fast Deployment for Debug configurations and AOT for Release configurations."
-      Condition=" '$(AndroidUseSharedRuntime)' == 'True' And '$(AotAssemblies)' == 'True' "
+      Text="Using Fast Deployment and Full AOT at the same time is not recommended. Use Profiled AOT for Debug configurations and Full AOT for Release configurations."
+      Condition=" '$(AndroidUseSharedRuntime)' == 'True' And '$(AotAssemblies)' == 'True' And '$(AndroidEnableProfiledAot)' != 'True' "
   />
   <Warning Code="XA0119"
       Text="Using Fast Deployment and the Linker at the same time is not recommended. Use Fast Deployment for Debug configurations and the Linker for Release configurations."
@@ -1697,7 +1697,9 @@ because xbuild doesn't support framework reference assemblies.
 	<!--- Remove the ImplicitlyExpandDesignTimeFacades assemblies. We have already build the app there are not required for packaging  -->
 	<ItemGroup>
 		<FilteredAssemblies Include="$(OutDir)$(TargetFileName)"
-				Condition="Exists ('$(OutDir)$(TargetFileName)')" />
+				Condition="Exists ('$(OutDir)$(TargetFileName)')">
+			<ReferenceSourceTarget>TargetPath</ReferenceSourceTarget>
+		</FilteredAssemblies>
 		<FilteredAssemblies Include="@(ReferenceCopyLocalPaths)"
 				Condition="'%(ReferenceCopyLocalPaths.ResolvedFrom)' != 'ImplicitlyExpandDesignTimeFacades' And '%(ReferenceCopyLocalPaths.Extension)' == '.dll' And '%(ReferenceCopyLocalPaths.RelativeDir)' == '' And Exists('%(ReferenceCopyLocalPaths.Identity)') "/>
 		<FilteredAssemblies Include="@(_ReferencePath)"
@@ -2670,6 +2672,55 @@ because xbuild doesn't support framework reference assemblies.
   </PropertyGroup>
 </Target>
 
+<Target Name="_AotAssembliesInputs">
+  <PropertyGroup>
+    <_StartupAotProfile Condition="'%(ResolvedAssemblies.Filename)' == 'Xamarin.Forms.Platform.Android'">startup-xf.aotprofile</_StartupAotProfile>
+    <_StartupAotProfile Condition="'$(_StartupAotProfile)' == ''">startup.aotprofile</_StartupAotProfile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(AndroidUseDefaultAotProfile)' != 'False'">
+    <AndroidAotProfile Include="$(MSBuildThisFileDirectory)$(_StartupAotProfile)" />
+  </ItemGroup>
+  <SplitProperty Value="$(AndroidAotProfiles)" Condition="'$(AndroidAotProfiles)' != ''">
+    <Output TaskParameter="Output" ItemName="_AotProfiles" />
+  </SplitProperty>
+  <ItemGroup>
+    <_AotProfiles Condition=" '$(AndroidEnableProfiledAot)' == 'True' " Include="@(AndroidAotProfile)" />
+    <_AssembliesToAot Condition=" '$(AndroidUseDebugRuntime)' != 'True' " Include="@(_ResolvedUserAssemblies);@(_ShrunkFrameworkAssemblies)" />
+    <_AssembliesToAot Condition=" '$(AndroidUseDebugRuntime)' == 'True' " Include="@(_ShrunkFrameworkAssemblies)" />
+    <_AssembliesToAot Condition=" '$(AndroidUseDebugRuntime)' == 'True' And '%(_ResolvedUserAssemblies.ReferenceSourceTarget)' != 'ProjectReference' And '%(_ResolvedUserAssemblies.ReferenceSourceTarget)' != 'TargetPath' " Include="@(_ResolvedUserAssemblies)" />
+  </ItemGroup>
+</Target>
+
+<Target Name="_AotAssemblies"
+    Condition="'$(AotAssemblies)' == 'True'"
+    DependsOnTargets="_AotAssembliesInputs"
+    Inputs="$(MSBuildAllProjects);$(_AndroidBuildPropertiesCache);@(_AssembliesToAot)"
+    Outputs="$(_AndroidStampDirectory)_AotAssemblies.stamp">
+  <RemoveDirFixed Directories="$(_AndroidAotBinDirectory)" />
+  <Aot
+      AndroidAotMode="$(AndroidAotMode)"
+      AndroidNdkDirectory="$(_AndroidNdkDirectory)"
+      AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
+      AndroidApiLevel="$(_AndroidApiLevel)"
+      ManifestFile="$(IntermediateOutputPath)android\AndroidManifest.xml"
+      SupportedAbis="@(_BuildTargetAbis)"
+      AndroidSequencePointsMode="$(_SequencePointsMode)"
+      AotAdditionalArguments="$(AndroidAotAdditionalArguments)"
+      ResolvedAssemblies="@(_AssembliesToAot)"
+      AotOutputDirectory="$(_AndroidAotBinDirectory)"
+      IntermediateAssemblyDir="$(MonoAndroidIntermediateAssemblyDir)"
+      LinkMode="$(AndroidLinkMode)"
+      AdditionalNativeLibraryReferences="@(_AdditionalNativeLibraryReferences)"
+      YieldDuringToolExecution="$(YieldDuringToolExecution)"
+      EnableLLVM="$(EnableLLVM)"
+      Profiles="@(_AotProfiles)">
+  </Aot>
+  <ItemGroup>
+    <_AdditionalNativeLibraryReferences Include="$(_AndroidAotBinDirectory)\*\*.so" />
+  </ItemGroup>
+  <Touch Files="$(_AndroidStampDirectory)_AotAssemblies.stamp" AlwaysCreate="True" />
+</Target>
+
 <PropertyGroup>
 	<_BuildApkEmbedInputs>
 		$(MSBuildAllProjects)
@@ -2684,44 +2735,10 @@ because xbuild doesn't support framework reference assemblies.
 </PropertyGroup>
 
 <Target Name="_BuildApkEmbed"
-  DependsOnTargets="_PrepareBuildApk"
+  DependsOnTargets="_PrepareBuildApk;_AotAssemblies"
   Inputs="$(_BuildApkEmbedInputs)"
   Outputs="$(_BuildApkEmbedOutputs)"
   Condition="'$(EmbedAssembliesIntoApk)' == 'True'">
-
-  <PropertyGroup>
-    <_StartupAotProfile Condition="'%(ResolvedAssemblies.Filename)' == 'Xamarin.Forms.Platform.Android'">startup-xf.aotprofile</_StartupAotProfile>
-    <_StartupAotProfile Condition="'$(_StartupAotProfile)' == ''">startup.aotprofile</_StartupAotProfile>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(AndroidUseDefaultAotProfile)' != 'False'">
-    <AndroidAotProfile Include="$(MSBuildThisFileDirectory)$(_StartupAotProfile)" />
-  </ItemGroup>
-  <SplitProperty Value="$(AndroidAotProfiles)" Condition="'$(AndroidAotProfiles)' != ''">
-    <Output TaskParameter="Output" ItemName="_AotProfiles" />
-  </SplitProperty>
-  <ItemGroup Condition="'$(AndroidEnableProfiledAot)' == 'True'">
-    <_AotProfiles Include="@(AndroidAotProfile)" />
-  </ItemGroup>
-  <Aot
-	Condition="'$(AotAssemblies)' == 'True'"
-	AndroidAotMode="$(AndroidAotMode)"
-	AndroidNdkDirectory="$(_AndroidNdkDirectory)"
-	AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
-	AndroidApiLevel="$(_AndroidApiLevel)"
-	ManifestFile="$(IntermediateOutputPath)android\AndroidManifest.xml"
-	SupportedAbis="@(_BuildTargetAbis)"
-	AndroidSequencePointsMode="$(_SequencePointsMode)"
-	AotAdditionalArguments="$(AndroidAotAdditionalArguments)"
-	ResolvedAssemblies="@(_ResolvedUserAssemblies);@(_ShrunkFrameworkAssemblies)"
-	AotOutputDirectory="$(_AndroidAotBinDirectory)"
-	IntermediateAssemblyDir="$(MonoAndroidIntermediateAssemblyDir)"
-	LinkMode="$(AndroidLinkMode)"
-	AdditionalNativeLibraryReferences="@(_AdditionalNativeLibraryReferences)"
-	YieldDuringToolExecution="$(YieldDuringToolExecution)"
-	EnableLLVM="$(EnableLLVM)"
-	Profiles="@(_AotProfiles)">
-	   <Output TaskParameter="NativeLibrariesReferences" ItemName="_AdditionalNativeLibraryReferences" />
-  </Aot>
 
   <!-- Strip the IL code of the resolved managed assemblies -->
    <CilStrip

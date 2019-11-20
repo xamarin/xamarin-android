@@ -50,7 +50,7 @@ namespace Xamarin.Android.Build.Tests
 		}
 
 		[Test]
-		public void InstallAndUnInstall ([Values (false, true)] bool isRelease)
+		public void InstallAndUnInstall ([Values (false, true)] bool isRelease, [Values(false, true)] bool profiledAot)
 		{
 			if (!CommercialBuildAvailable)
 				Assert.Ignore ("Not required on Open Source Builds");
@@ -61,6 +61,7 @@ namespace Xamarin.Android.Build.Tests
 			
 			var proj = new XamarinAndroidApplicationProject () {
 				IsRelease = isRelease,
+				AndroidEnableProfiledAot = profiledAot,
 			};
 			if (isRelease) {
 				var abis = new string [] { "armeabi-v7a", "x86" };

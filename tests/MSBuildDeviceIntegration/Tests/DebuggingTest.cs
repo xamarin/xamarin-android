@@ -66,36 +66,56 @@ namespace Xamarin.Android.Build.Tests
 				/* useSharedRuntime */   false,
 				/* embedAssemblies */    true,
 				/* fastDevType */        "Assemblies",
+				/* profiledAot */        false,
 				/* activityStarts */     true,
 			},
 			new object[] {
 				/* useSharedRuntime */   false,
 				/* embedAssemblies */    false,
 				/* fastDevType */        "Assemblies",
+				/* profiledAot */        false,
 				/* activityStarts */     true,
 			},
 			new object[] {
 				/* useSharedRuntime */   true,
 				/* embedAssemblies */    true,
 				/* fastDevType */        "Assemblies",
+				/* profiledAot */        false,
+				/* activityStarts */     true,
+			},
+			new object[] {
+				/* useSharedRuntime */   false,
+				/* embedAssemblies */    false,
+				/* fastDevType */        "Assemblies",
+				/* profiledAot */        true,
 				/* activityStarts */     true,
 			},
 			new object[] {
 				/* useSharedRuntime */   true,
 				/* embedAssemblies */    false,
 				/* fastDevType */        "Assemblies",
+				/* profiledAot */        true,
+				/* activityStarts */     true,
+			},
+			new object[] {
+				/* useSharedRuntime */   true,
+				/* embedAssemblies */    false,
+				/* fastDevType */        "Assemblies",
+				/* profiledAot */        false,
 				/* activityStarts */     true,
 			},
 			new object[] {
 				/* useSharedRuntime */   true,
 				/* embedAssemblies */    true,
 				/* fastDevType */        "Assemblies:Dexes",
+				/* profiledAot */        false,
 				/* activityStarts */     true,
 			},
 			new object[] {
 				/* useSharedRuntime */   true,
 				/* embedAssemblies */    false,
 				/* fastDevType */        "Assemblies:Dexes",
+				/* profiledAot */        false,
 				/* activityStarts */     false,
 			},
 		};
@@ -104,7 +124,7 @@ namespace Xamarin.Android.Build.Tests
 		[Test]
 		[TestCaseSource (nameof (DebuggerCustomAppTestCases))]
 		[Retry (1)]
-		public void CustomApplicationRunsWithDebuggerAndBreaks (bool useSharedRuntime, bool embedAssemblies, string fastDevType, bool activityStarts)
+		public void CustomApplicationRunsWithDebuggerAndBreaks (bool useSharedRuntime, bool embedAssemblies, string fastDevType, bool profiledAot, bool activityStarts)
 		{
 			if (!CommercialBuildAvailable) {
 				Assert.Ignore ("Test does not run on the Open Source Builds.");
@@ -117,6 +137,7 @@ namespace Xamarin.Android.Build.Tests
 			var proj = new XamarinAndroidApplicationProject () {
 				IsRelease = false,
 				AndroidFastDeploymentType = fastDevType,
+				AndroidEnableProfiledAot = profiledAot,
 			};
 			var abis = new string [] { "armeabi-v7a", "x86" };
 			proj.SetProperty (KnownProperties.AndroidSupportedAbis, string.Join (";", abis));

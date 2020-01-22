@@ -28,6 +28,8 @@ namespace Xamarin.Android.Tasks
 
 		public override string DefaultErrorCode => "JAVAC0000";
 
+		protected override string MainClass => throw new NotSupportedException ("javac does not support daemon mode!");
+
 		public override bool RunTask ()
 		{
 			if (!Directory.Exists (ClassesOutputDirectory))

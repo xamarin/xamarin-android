@@ -163,6 +163,7 @@
     <Compile Include="Tasks\WriteLockFile.cs" />
     <Compile Include="Utilities\DummyCustomAttributeProvider.cs" />
     <Compile Include="Utilities\InvalidActivityNameException.cs" />
+    <Compile Include="Utilities\JavaDaemonClient.cs" />
     <Compile Include="Utilities\JavaResourceParser.cs" />
     <Compile Include="Utilities\MetadataResolver.cs" />
     <Compile Include="Utilities\MetadataExtensions.cs" />

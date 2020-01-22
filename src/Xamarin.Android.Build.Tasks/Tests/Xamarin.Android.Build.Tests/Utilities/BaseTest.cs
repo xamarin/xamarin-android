@@ -132,17 +132,11 @@ namespace Xamarin.Android.Build.Tests
 			}
 		}
 
-		public static string AndroidSdkPath {
-			get {
-				return AndroidSdkResolver.GetAndroidSdkPath ();
-			}
-		}
+		public static string JavaSdkPath => AndroidSdkResolver.GetJavaSdkPath ();
 
-		public static string AndroidNdkPath {
-			get {
-				return AndroidSdkResolver.GetAndroidNdkPath ();
-			}
-		}
+		public static string AndroidSdkPath => AndroidSdkResolver.GetAndroidSdkPath ();
+
+		public static string AndroidNdkPath => AndroidSdkResolver.GetAndroidNdkPath();
 
 		/// <summary>
 		/// Windows can only create a file of 255 characters: This type of path is composed of components separated by backslashes, each up to the value returned in the lpMaximumComponentLength parameter of the GetVolumeInformation function (this value is commonly 255 characters).

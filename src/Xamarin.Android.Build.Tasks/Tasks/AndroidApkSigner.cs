@@ -11,9 +11,6 @@ namespace Xamarin.Android.Tasks
 		public override string TaskPrefix => "AAS";
 
 		[Required]
-		public string ApkSignerJar { get; set; }
-
-		[Required]
 		public string ApkToSign { get; set; }
 
 		[Required]
@@ -51,6 +48,8 @@ namespace Xamarin.Android.Tasks
 
 		public string AdditionalArguments { get; set; }
 
+		protected override string MainClass => "com.android.apksigner.ApkSignerTool";
+
 		public override bool RunTask ()
 		{
 			if (!File.Exists (GenerateFullPathToTool ())) {
@@ -73,9 +72,9 @@ namespace Xamarin.Android.Tasks
 			}
 		}
 
-		protected override string GenerateCommandLineCommands ()
+		protected override CommandLineBuilder GetCommandLineBuilder ()
 		{
-			var cmd = new CommandLineBuilder ();
+			var cmd = base.GetCommandLineBuilder ();
 
 			var manifest = AndroidAppManifest.Load (ManifestFile.ItemSpec, MonoAndroidHelper.SupportedVersions);
 			int minSdk = MonoAndroidHelper.SupportedVersions.MinStableVersion.ApiLevel;
@@ -88,7 +87,6 @@ namespace Xamarin.Android.Tasks
 
 			minSdk = Math.Min (minSdk, maxSdk);
 
-			cmd.AppendSwitchIfNotNull ("-jar ", ApkSignerJar);
 			cmd.AppendSwitch ("sign");
 			cmd.AppendSwitchIfNotNull ("--ks ", KeyStore);
 			AddStorePass (cmd, "--ks-pass", StorePass);
@@ -102,7 +100,7 @@ namespace Xamarin.Android.Tasks
 
 			cmd.AppendSwitchIfNotNull (" ", Path.GetFullPath (ApkToSign));
 
-			return cmd.ToString ();
+			return cmd;
 		}
 
 		protected override void LogEventsFromTextOutput (string singleLine, MessageImportance importance)
@@ -112,7 +110,7 @@ namespace Xamarin.Android.Tasks
 				return;
 
 			if (singleLine.StartsWith ("Warning:", StringComparison.OrdinalIgnoreCase)) {
-				Log.LogCodedWarning ("ANDAS0000", ApkSignerJar, 0, singleLine);
+				Log.LogCodedWarning ("ANDAS0000", JarPath, 0, singleLine);
 				return;
 			}
 

@@ -990,17 +990,18 @@ because xbuild doesn't support framework reference assemblies.
 		/>
 	</CreateProperty>
 
+	<CreateProperty Value="$(MonoAndroidToolsDirectory)\java-daemon.jar">
+		<Output TaskParameter="Value" PropertyName="AndroidJavaDaemonJarPath"
+				Condition="'$(AndroidJavaDaemonJarPath)' == ''"
+		/>
+	</CreateProperty>
+
 	<CreateProperty Value="--dex --no-strict">
 		<Output TaskParameter="Value" PropertyName="DxExtraArguments"
 			Condition="'$(DxExtraArguments)' == ''"
 		/>
 	</CreateProperty>
 
-	<CreateProperty Value="$(AndroidSdkBuildToolsPath)\">
-		<Output TaskParameter="Value" PropertyName="DxToolPath"
-				Condition="'$(UseDx)' == 'True' And '$(DxToolPath)' == ''"
-		/>
-	</CreateProperty>
 	<CreateProperty Value="$(AndroidSdkBuildToolsPath)\">
 		<Output TaskParameter="Value" PropertyName="MainDexClassesToolPath"
 				Condition="'$(MainDexClassesToolPath)' == ''"
@@ -1052,6 +1053,16 @@ because xbuild doesn't support framework reference assemblies.
 		<AndroidApplicationJavaClass Condition="'$(AndroidApplicationJavaClass)' == ''">android.app.Application</AndroidApplicationJavaClass>
 	</PropertyGroup>
 	<Message Text="Application Java class: $(AndroidApplicationJavaClass)" />
+
+	<ItemGroup>
+		<_JavaDaemonClassPath Include="$(AndroidJavaDaemonJarPath)" />
+		<_JavaDaemonClassPath Include="$(DxJarPath)" />
+		<_JavaDaemonClassPath Include="$(AndroidR8JarPath)" />
+		<_JavaDaemonClassPath Include="$(DesugarJarPath)" />
+		<_JavaDaemonClassPath Include="$(AndroidBundleToolJarPath)" />
+		<_JavaDaemonClassPath Include="$(ProguardJarPath)" />
+		<_JavaDaemonClassPath Include="$(AndroidManifestMergerJarPath)" />
+	</ItemGroup>
 </Target>
 
 <Target Name="AndroidPrepareForBuild" DependsOnTargets="$(_OnResolveMonoAndroidSdks)" />
@@ -2110,12 +2121,15 @@ because xbuild doesn't support framework reference assemblies.
   >
   <ManifestMerger
       ToolPath="$(JavaToolPath)"
+      ToolExe="$(JavaToolExe)"
       JavaOptions="$(JavaOptions)"
-      ManifestMergerJarPath="$(AndroidManifestMergerJarPath)"
+      JarPath="$(AndroidManifestMergerJarPath)"
       AndroidManifest="$(IntermediateOutputPath)AndroidManifest.xml"
       OutputManifestFile="$(IntermediateOutputPath)android\AndroidManifest.xml"
       LibraryManifestFiles="@(ExtractedManifestDocuments)"
       ManifestPlaceholders="$(AndroidManifestPlaceholders)"
+      UseDaemon="$(AndroidUseJavaDaemon)"
+      DaemonClassPath="@(_JavaDaemonClassPath)"
   />
   <ItemGroup>
     <FileWrites Include="$(IntermediateOutputPath)android\AndroidManifest.xml" />
@@ -2430,6 +2444,7 @@ because xbuild doesn't support framework reference assemblies.
     JavaToolPath="$(JavaToolPath)"
     ProguardToolPath="$(ProguardToolPath)"
     ToolExe="$(ProguardToolExe)"
+    JavaOptions="$(JavaOptions)"
     UseProguard="$(UseProguard)"
     JavaPlatformJarPath="$(JavaPlatformJarPath)"
     ClassesOutputDirectory="$(_AndroidIntermediateJavaClassDirectory)"
@@ -2457,7 +2472,9 @@ because xbuild doesn't support framework reference assemblies.
     Condition="'$(AndroidEnableMultiDex)' == 'True' And '$(AndroidCustomMainDexListFile)' == ''"
     ToolPath="$(JavaToolPath)"
     ToolExe="$(JavaToolExe)"
+    JavaOptions="$(JavaOptions)"
     ProguardJarPath="$(ProguardJarPath)"
+    DxJarPath="$(DxJarPath)"
     AndroidSdkBuildToolsPath="$(AndroidSdkBuildToolsPath)"
     ClassesOutputDirectory="$(_AndroidIntermediateJavaClassDirectory)"
     JavaLibraries="@(_JarsToProguard)"
@@ -2465,6 +2482,8 @@ because xbuild doesn't support framework reference assemblies.
     CustomMainDexListFiles="@(MultiDexMainDexList)"
     ProguardInputJarFilter="$(_AndroidProguardInputJarFilter)"
     ExtraArgs="$(AndroidMultiDexClassListExtraArgs)"
+    UseDaemon="$(AndroidUseJavaDaemon)"
+    DaemonClassPath="@(_JavaDaemonClassPath)"
     >
   </CreateMultiDexMainDexClassList>
 
@@ -2476,20 +2495,20 @@ because xbuild doesn't support framework reference assemblies.
 
   <!-- Compile java code to dalvik -->
   <CompileToDalvik 
-    DxJarPath="$(DxJarPath)"
+    JarPath="$(DxJarPath)"
     DxExtraArguments="$(DxExtraArguments)"
-    JavaToolPath="$(JavaToolPath)"
+    ToolPath="$(JavaToolPath)"
+    ToolExe="$(JavaToolExe)"
     JavaMaximumHeapSize="$(JavaMaximumHeapSize)"
     JavaOptions="$(JavaOptions)"
     ClassesOutputDirectory="$(_AndroidIntermediateJavaClassDirectory.TrimEnd('\'))"
     ClassesZip="$(_AndroidIntermediateClassesZip)"
-    ToolPath="$(DxToolPath)"
-    ToolExe="$(DxToolExe)"
-    UseDx="$(UseDx)"
     MultiDexEnabled="$(AndroidEnableMultiDex)"
     MultiDexMainDexListFile="$(_AndroidMainDexListFile)"
     JavaLibrariesToCompile="@(_JavaLibrariesToCompileForApp)"
     AlternativeJarFiles="@(_AlternativeJarForAppDx)"
+    UseDaemon="$(AndroidUseJavaDaemon)"
+    DaemonClassPath="@(_JavaDaemonClassPath)"
   />
   <Touch Files="$(_AndroidStampDirectory)_CompileToDalvik.stamp" AlwaysCreate="true" />
   <ItemGroup>
@@ -2819,6 +2838,8 @@ because xbuild doesn't support framework reference assemblies.
       Output="$(_AppBundleIntermediate)"
       UncompressedFileExtensions="$(AndroidStoreUncompressedFileExtensions)"
       CustomBuildConfigFile="$(AndroidBundleConfigurationFile)"
+      UseDaemon="$(AndroidUseJavaDaemon)"
+      DaemonClassPath="@(_JavaDaemonClassPath)"
   />
 </Target>
 
@@ -3041,7 +3062,7 @@ because xbuild doesn't support framework reference assemblies.
 		<ApkAbiFilesAligned Condition="'$(AndroidCreatePackagePerAbi)' == 'true' And '$(AndroidUseApkSigner)' == 'true' " Include="$(OutDir)$(_AndroidPackage)*-Signed.apk" />
 	</ItemGroup>
 	<AndroidApkSigner Condition=" '$(AndroidUseApkSigner)' == 'true' "
-		ApkSignerJar="$(ApkSignerJar)"
+		JarPath="$(ApkSignerJar)"
 		ApkToSign="%(ApkAbiFilesAligned.FullPath)"
 		KeyStore="$(_ApkKeyStore)"
 		KeyAlias="$(_ApkKeyAlias)"
@@ -3051,6 +3072,8 @@ because xbuild doesn't support framework reference assemblies.
 		ToolExe="$(JavaToolExe)"
 		ManifestFile="$(IntermediateOutputPath)android\AndroidManifest.xml"
 		AdditionalArguments="$(AndroidApkSignerAdditionalArguments)"
+		UseDaemon="$(AndroidUseJavaDaemon)"
+		DaemonClassPath="@(_JavaDaemonClassPath)"
 	/>
 	<Message Text="Signed android package '%(ApkAbiFilesAligned.Identity)'" />
 	<ItemGroup>
@@ -3271,6 +3294,8 @@ because xbuild doesn't support framework reference assemblies.
       KeyAlias="$(_ApkKeyAlias)"
       KeyPass="$(_ApkKeyPass)"
       StorePass="$(_ApkStorePass)"
+      UseDaemon="$(AndroidUseJavaDaemon)"
+      DaemonClassPath="@(_JavaDaemonClassPath)"
   />
   <InstallApkSet
       ToolPath="$(JavaToolPath)"
@@ -3279,6 +3304,8 @@ because xbuild doesn't support framework reference assemblies.
       JarPath="$(AndroidBundleToolJarPath)"
       AdbToolPath="$(AdbToolPath)"
       ApkSet="$(_ApkSetIntermediate)"
+      UseDaemon="$(AndroidUseJavaDaemon)"
+      DaemonClassPath="@(_JavaDaemonClassPath)"
   />
 </Target>
 

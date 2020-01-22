@@ -14,9 +14,6 @@ namespace Xamarin.Android.Tasks
 	{
 		public override string TaskPrefix => "DX8";
 
-		[Required]
-		public string JarPath { get; set; }
-
 		/// <summary>
 		/// Output for *.dex files. R8 can be invoked for just --main-dex-list-output, so this is not [Required]
 		/// </summary>
@@ -46,20 +43,13 @@ namespace Xamarin.Android.Tasks
 			return GetCommandLineBuilder ().ToString ();
 		}
 
-		protected virtual string MainClass => "com.android.tools.r8.D8";
+		protected override string MainClass => "com.android.tools.r8.D8";
 
 		protected int MinSdkVersion { get; set; }
 
-		protected virtual CommandLineBuilder GetCommandLineBuilder ()
+		protected override CommandLineBuilder GetCommandLineBuilder ()
 		{
-			var cmd = new CommandLineBuilder ();
-
-			if (!string.IsNullOrEmpty (JavaOptions)) {
-				cmd.AppendSwitch (JavaOptions);
-			}
-			cmd.AppendSwitchIfNotNull ("-Xmx", JavaMaximumHeapSize);
-			cmd.AppendSwitchIfNotNull ("-classpath ", JarPath);
-			cmd.AppendSwitch (MainClass);
+			var cmd = base.GetCommandLineBuilder ();
 
 			if (!string.IsNullOrEmpty (ExtraArguments))
 				cmd.AppendSwitch (ExtraArguments); // it should contain "--dex".

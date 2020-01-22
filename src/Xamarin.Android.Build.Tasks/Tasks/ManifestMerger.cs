@@ -15,8 +15,7 @@ namespace Xamarin.Android.Tasks
 
 		public override string DefaultErrorCode => $"{TaskPrefix}0000";
 
-		[Required]
-		public string ManifestMergerJarPath { get; set; }
+		protected override string MainClass => "com.xamarin.manifestmerger.Main";
 
 		[Required]
 		public string AndroidManifest { get; set; }
@@ -60,16 +59,9 @@ namespace Xamarin.Android.Tasks
 			return cmd;
 		}
 
-		protected virtual CommandLineBuilder GetCommandLineBuilder ()
+		protected override CommandLineBuilder GetCommandLineBuilder ()
 		{
-			var cmd = new CommandLineBuilder ();
-
-			if (!string.IsNullOrEmpty (JavaOptions)) {
-				cmd.AppendSwitch (JavaOptions);
-			}
-			cmd.AppendSwitchIfNotNull ("-Xmx", JavaMaximumHeapSize);
-			cmd.AppendSwitchIfNotNull ("-cp ", $"{ManifestMergerJarPath}");
-			cmd.AppendSwitch ("com.xamarin.manifestmerger.Main");
+			var cmd = base.GetCommandLineBuilder ();
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ("--main");
 			sb.AppendLine (AndroidManifest);

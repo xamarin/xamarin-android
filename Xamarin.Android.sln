@@ -127,6 +127,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Soft", "exte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jnienv-gen", "external\Java.Interop\build-tools\jnienv-gen\jnienv-gen.csproj", "{6410DA0F-5E14-4FC0-9AEE-F4C542C96C7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "java-daemon", "src\java-daemon\java-daemon.csproj", "{E1A3D0CE-D5E0-426D-BC5E-9EB60F91E136}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Xamarin.Android.NamingCustomAttributes\Xamarin.Android.NamingCustomAttributes.projitems*{3f1f2f50-af1a-4a5a-bedb-193372f068d7}*SharedItemsImports = 4
@@ -362,6 +364,10 @@ Global
 		{6410DA0F-5E14-4FC0-9AEE-F4C542C96C7A}.Debug|AnyCPU.Build.0 = Debug|Any CPU
 		{6410DA0F-5E14-4FC0-9AEE-F4C542C96C7A}.Release|AnyCPU.ActiveCfg = Release|Any CPU
 		{6410DA0F-5E14-4FC0-9AEE-F4C542C96C7A}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{E1A3D0CE-D5E0-426D-BC5E-9EB60F91E136}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{E1A3D0CE-D5E0-426D-BC5E-9EB60F91E136}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{E1A3D0CE-D5E0-426D-BC5E-9EB60F91E136}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{E1A3D0CE-D5E0-426D-BC5E-9EB60F91E136}.Release|AnyCPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -424,6 +430,7 @@ Global
 		{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2} = {05C3B1D6-A4CE-4534-A9E4-E9117591ADF7}
 		{DE40756E-57F6-4AF2-B155-55E3A88CCED8} = {05C3B1D6-A4CE-4534-A9E4-E9117591ADF7}
 		{6410DA0F-5E14-4FC0-9AEE-F4C542C96C7A} = {05C3B1D6-A4CE-4534-A9E4-E9117591ADF7}
+		{E1A3D0CE-D5E0-426D-BC5E-9EB60F91E136} = {04E3E11E-B47D-4599-8AFC-50515A95E715}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {53A1F287-EFB2-4D97-A4BB-4A5E145613F6}

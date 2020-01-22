@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using Xamarin.Android.Tools;
 
 namespace Xamarin.ProjectTools
 {
@@ -41,5 +43,16 @@ namespace Xamarin.ProjectTools
 			return ndkPath;
 		}
 
+		public static string GetJavaSdkPath ()
+		{
+			var androidSdk = new AndroidSdkInfo ((l, m) => {
+				Console.WriteLine ($"{l}: {m}");
+				if (l == TraceLevel.Error) {
+					throw new Exception (m);
+				}
+			}, GetAndroidSdkPath ());
+
+			return androidSdk.JavaSdkPath;
+		}
 	}
 }

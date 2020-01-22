@@ -16,6 +16,7 @@ namespace Xamarin.ProjectTools
 		public const string AndroidSupportedAbis = "AndroidSupportedAbis";
 
 		public const string Deterministic = "Deterministic";
+		public const string AndroidUseJavaDaemon = "AndroidUseJavaDaemon";
 		public const string BundleAssemblies = "BundleAssemblies";
 		public const string EnableProguard = "EnableProguard";
 		public const string AndroidEnableDesugar = "AndroidEnableDesugar";

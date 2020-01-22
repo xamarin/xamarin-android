@@ -1,0 +1,13 @@
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+    <ProjectGuid>e1a3d0ce-d5e0-426d-bc5e-9eb60f91e136</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <OutputPath Condition="'$(OutputPath)'==''">bin\$(Configuration)</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" />
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" />
+  <Import Project="..\..\Configuration.props" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
+  <Import Project="java-daemon.targets" />
+</Project>

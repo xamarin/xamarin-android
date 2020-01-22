@@ -1,0 +1,41 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <BuildDependsOn>
+      ResolveReferences;
+      _BuildGradle;
+    </BuildDependsOn>
+    <CleanDependsOn>
+      _CleanGradle;
+    </CleanDependsOn>
+    <_Destination>$(XAInstallPrefix)xbuild\Xamarin\Android\java-daemon.jar</_Destination>
+  </PropertyGroup>
+
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+  <Target Name="Clean" DependsOnTargets="$(CleanDependsOn)" />
+
+  <Target Name="_BuildGradle"
+      Inputs="$(MSBuildThisFile);build.gradle;src\java-daemon\src\main\java\xamarin\android\JavaDaemon.java"
+      Outputs="$(_Destination)">
+    <Exec
+        Command="&quot;$(GradleWPath)&quot; jar $(GradleArgs)"
+        EnvironmentVariables="JAVA_HOME=$(JavaSdkDirectory);APP_HOME=$(GradleHome)"
+        WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+    <Copy
+        SourceFiles="build\libs\java-daemon.jar"
+        DestinationFiles="$(_Destination)"
+    />
+    <Touch Files="$(_Destination)" />
+  </Target>
+
+  <Target Name="_CleanGradle">
+    <Delete Files="$(_Destination)" />
+    <Exec
+        Command="&quot;$(GradleWPath)&quot; clean $(GradleArgs)"
+        EnvironmentVariables="JAVA_HOME=$(JavaSdkDirectory);APP_HOME=$(GradleHome)"
+        WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+  </Target>
+
+</Project>

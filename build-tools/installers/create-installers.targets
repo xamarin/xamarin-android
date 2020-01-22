@@ -119,6 +119,7 @@
     <_MSBuildFiles Include="$(MSBuildSrcDir)\illinkanalyzer.exe" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\illinkanalyzer.pdb" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Irony.dll" />
+    <_MSBuildFiles Include="$(MSBuildSrcDir)\java-daemon.jar" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\java-interop.jar" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\javadoc-to-mdoc.exe" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\javadoc-to-mdoc.pdb" />

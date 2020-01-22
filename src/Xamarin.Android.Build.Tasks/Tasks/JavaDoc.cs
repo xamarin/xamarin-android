@@ -15,6 +15,8 @@ namespace Xamarin.Android.Tasks
 	{
 		public override string TaskPrefix => "JDC";
 
+		protected override string MainClass => throw new NotSupportedException ("javadoc does not support daemon mode!");
+
 		public string [] SourceDirectories { get; set; }
 
 		public string [] DestinationDirectories { get; set; }

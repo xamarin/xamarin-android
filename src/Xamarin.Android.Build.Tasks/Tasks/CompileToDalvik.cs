@@ -8,13 +8,14 @@ using System.Text;
 
 using Microsoft.Build.Utilities;
 using Microsoft.Build.Framework;
-using Xamarin.Android.Tools;
 
 namespace Xamarin.Android.Tasks
 {
 	public class CompileToDalvik : JavaToolTask
 	{
 		public override string TaskPrefix => "CTX";
+
+		protected override string MainClass => "com.android.dx.command.Main";
 
 		public ITaskItem [] AdditionalJavaLibraryReferences { get; set; }
 
@@ -23,32 +24,18 @@ namespace Xamarin.Android.Tasks
 
 		public string ClassesZip { get; set; }
 
-		public string DxJarPath { get; set; }
-
 		public string DxExtraArguments { get; set; }
-
-		public string JavaToolPath { get; set; }
 
 		[Required]
 		public ITaskItem[] JavaLibrariesToCompile { get; set; }
 
 		public ITaskItem [] AlternativeJarFiles { get; set; }
 
-		public bool UseDx { get; set; }
-
 		public bool MultiDexEnabled { get; set; }
 		
 		public string MultiDexMainDexListFile { get; set; }
 
 		string inputListFile;
-
-		protected override string ToolName {
-			get {
-				if (UseDx)
-					return OS.IsWindows ? "dx.bat" : "dx";
-				return OS.IsWindows ? "java.exe" : "java";
-			}
-		}
 
 		public override bool RunTask ()
 		{
@@ -69,7 +56,7 @@ namespace Xamarin.Android.Tasks
 			return ret && !Log.HasLoggedErrors;
 		}
 
-		protected override string GenerateCommandLineCommands ()
+		protected override CommandLineBuilder GetCommandLineBuilder ()
 		{
 			//   Running command: C:\Program Files\Java\jdk1.6.0_25\bin\java.exe -jar
 			//     C:\Program Files (x86)\Android\android-sdk\platform-tools\lib\dx.jar --dex
@@ -77,31 +64,8 @@ namespace Xamarin.Android.Tasks
 			//     C:\Users\jeff\Documents\Visual Studio 2010\Projects\<project>\...\android\bin\classes
 			//     C:\Users\jeff\Documents\Visual Studio 2010\Projects\<project>\...\android\bin\mono.android.jar
 
-			var cmd = new CommandLineBuilder ();
-
-			if (!UseDx) {
-				// Add the JavaOptions if they are not null
-				// These could be any of the additional options
-				if (!string.IsNullOrEmpty (JavaOptions)) {
-					cmd.AppendSwitch (JavaOptions);		
-				}
-
-				cmd.AppendSwitchIfNotNull ("-Dfile.encoding=", "UTF8");
-				// Add the specific -XmxN to override the default heap size for the JVM
-				// N can be in the form of Nm or NGB (e.g 100m or 1GB ) 
-				cmd.AppendSwitchIfNotNull("-Xmx", JavaMaximumHeapSize);
-
-				cmd.AppendSwitchIfNotNull ("-jar ", Path.Combine (DxJarPath));
-			} else {
-				// To pass additional java parameters to `dx` you must 
-				// provide the parameter without the leading `-` 
-				// the dx tool will add that in after stripping off
-				// the `-J`
-				cmd.AppendSwitchIfNotNull ("-JDfile.encoding=", "UTF8");
-			}
-
+			var cmd = base.GetCommandLineBuilder ();
 			cmd.AppendSwitch (DxExtraArguments);
-
 			cmd.AppendSwitchIfNotNull ("--input-list=", inputListFile);
 
 			if (MultiDexEnabled) {
@@ -140,14 +104,7 @@ namespace Xamarin.Android.Tasks
 				}
 			}
 
-			return cmd.ToString ();
-		}
-
-		protected override string GenerateFullPathToTool ()
-		{
-			if (UseDx)
-				return Path.Combine (ToolPath, ToolExe);
-			return Path.Combine (JavaToolPath, ToolName);
+			return cmd;
 		}
 	}
 }

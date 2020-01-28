@@ -90,9 +90,27 @@ namespace Android.Runtime
 			return res;
 		}
 
+		// somewhat aggressive implementation
 		public override long Seek (long offset, SeekOrigin origin)
 		{
-			throw new NotSupportedException ();
+			long currentAvailable;
+			switch (origin) {
+			case SeekOrigin.Begin:
+				BaseInputStream.Reset ();
+				BaseInputStream.Skip (offset);
+				return offset;
+			case SeekOrigin.Current:
+				long currentPosition = Position;
+				BaseInputStream.Reset ();
+				BaseInputStream.Skip (currentPosition + offset);
+				return currentPosition + offset;
+			case SeekOrigin.End:
+				BaseInputStream.Reset ();
+				long ret = BaseInputStream.Available () + offset;
+				BaseInputStream.Skip (ret);
+				return ret;
+			}
+			throw new NotSupportedException ($"Unexpected SeekOrigin: {(int) origin}");
 		}
 
 		public override void SetLength (long value)
@@ -106,14 +124,48 @@ namespace Android.Runtime
 		}
 
 		public override bool CanRead { get { return true; } }
-		public override bool CanSeek { get { return false; } }
+
+		// somewhat aggressive implementation
+		public override bool CanSeek {
+			get {
+				try {
+					BaseInputStream.Skip (0);
+					return true;
+				} catch {
+					return false;
+				}
+			}
+		}
+		
 		public override bool CanWrite { get { return false; } }
 
-		public override long Length { get { throw new NotSupportedException (); } }
+		// somewhat aggressive implementation
+		public override long Length {
+			get {
+				long currentAvailable = BaseInputStream.Available ();
+				BaseInputStream.Reset ();
+				long length = BaseInputStream.Available ();
+				long currentPosition = length - currentAvailable;
+				BaseInputStream.Skip (currentPosition);
+				return length;
+			}
+		}
 
+		// somewhat aggressive implementation
 		public override long Position {
-			get { throw new NotSupportedException (); }
-			set { throw new NotSupportedException (); }
+			get {
+				long currentAvailable = BaseInputStream.Available ();
+				BaseInputStream.Reset ();
+				long length = BaseInputStream.Available ();
+				long currentPosition = length - currentAvailable;
+				BaseInputStream.Skip (currentPosition);
+				return currentPosition;
+			}
+			set {
+				int currentAvailable = BaseInputStream.Available ();
+				BaseInputStream.Reset ();
+				BaseInputStream.Skip (value);
+			}
 		}
 		
 		[Preserve (Conditional=true)]

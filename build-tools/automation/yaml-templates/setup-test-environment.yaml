@@ -22,12 +22,14 @@ steps:
     mono build-tools/xaprepare/xaprepare/bin/${{ parameters.configuration }}/xaprepare.exe --s=UpdateMono --auto-provision=yes --auto-provision-uses-sudo=yes --no-emoji --run-mode=CI
     mono build-tools/xaprepare/xaprepare/bin/${{ parameters.configuration }}/xaprepare.exe --s=Required --auto-provision=yes --auto-provision-uses-sudo=yes --no-emoji --run-mode=CI
     mono build-tools/xaprepare/xaprepare/bin/${{ parameters.configuration }}/xaprepare.exe --s=AndroidToolchain --no-emoji --run-mode=CI
+    mono build-tools/xaprepare/xaprepare/bin/${{ parameters.configuration }}/xaprepare.exe --s=ProvisionMSOpenJDK --no-emoji --run-mode=CI
   displayName: install test dependencies
   condition: and(succeeded(), eq(variables['agent.os'], 'Darwin'))
 
 - script: |
     $(System.DefaultWorkingDirectory)\build-tools\xaprepare\xaprepare\bin\${{ parameters.configuration }}\xaprepare.exe --s=Required --auto-provision=yes --no-emoji --run-mode=CI
     $(System.DefaultWorkingDirectory)\build-tools\xaprepare\xaprepare\bin\${{ parameters.configuration }}\xaprepare.exe --s=AndroidToolchain --no-emoji --run-mode=CI
+    $(System.DefaultWorkingDirectory)\build-tools\xaprepare\xaprepare\bin\${{ parameters.configuration }}\xaprepare.exe --s=ProvisionMSOpenJDK --no-emoji --run-mode=CI
   displayName: install test dependencies
   condition: and(succeeded(), eq(variables['agent.os'], 'Windows_NT'))
 

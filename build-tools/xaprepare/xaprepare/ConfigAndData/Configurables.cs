@@ -17,6 +17,7 @@ namespace Xamarin.Android.Prepare
 	{
 		const string CorrettoDistVersion = "8.242.08.1";
 		const string CorrettoUrlPathVersion = CorrettoDistVersion;
+		const string MSOpenJDKVersion = "1.8.0.40";
 
 		static Context ctx => Context.Instance;
 
@@ -38,6 +39,8 @@ namespace Xamarin.Android.Prepare
 		public static partial class Defaults
 		{
 			public static readonly char[] PropertyListSeparator            = new [] { ':' };
+
+			public const string MSOpenJDKVersion                           = Configurables.MSOpenJDKVersion;
 
 			// Mono runtimes
 			public const string DebugFileExtension                         = ".pdb";
@@ -318,6 +321,9 @@ namespace Xamarin.Android.Prepare
 			public static string CorrettoCacheDir                    => GetCachedPath (ref correttoCacheDir, ()                    => ctx.Properties.GetRequiredValue (KnownProperties.AndroidToolchainCacheDirectory));
 			public static string CorrettoInstallDir                  => GetCachedPath (ref correttoInstallDir, ()                  => Path.Combine (ctx.Properties.GetRequiredValue (KnownProperties.AndroidToolchainDirectory), "jdk"));
 
+			// MS OpenJDK
+			public static string MSOpenJDKCacheDir                   => GetCachedPath (ref msOpenJDKCacheDir, ()                   => ctx.Properties.GetRequiredValue (KnownProperties.AndroidToolchainCacheDirectory));
+
 			// bundle
 			public static string BCLTestsArchiveName                 = "bcl-tests.zip";
 
@@ -389,6 +395,7 @@ namespace Xamarin.Android.Prepare
 			static string monoRuntimesEnabledAbisCachePath;
 			static string frameworkListInstallPath;
 			static string correttoCacheDir;
+			static string msOpenJDKCacheDir;
 			static string correttoInstallDir;
 			static string profileAssembliesProjitemsPath;
 			static string bclTestsSourceDir;

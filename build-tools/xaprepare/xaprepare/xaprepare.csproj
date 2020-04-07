@@ -128,6 +128,7 @@
     <Compile Include="Scenarios\Scenario_PrepareExternal.cs" />
     <Compile Include="Scenarios\Scenario_PrepareExternalGitDependencies.cs" />
     <Compile Include="Scenarios\Scenario_PrepareImageDependencies.cs" />
+	<Compile Include="Scenarios\Scenario_ProvisionMSOpenJDK.cs" />
     <Compile Include="Scenarios\Scenario_Required.cs" />
     <Compile Include="Scenarios\Scenario_Standard.cs" />
     <Compile Include="Scenarios\Scenario_ThirdPartyNotices.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Steps\Step_PrepareLocal.cs" />
     <Compile Include="Steps\Step_PrepareMSBuild.cs" />
     <Compile Include="Steps\Step_PrepareProps.cs" />
+	<Compile Include="Steps\Step_ProvisionMSOpenJDK.cs" />
     <Compile Include="Steps\Step_ShowEnabledRuntimes.cs" />
     <Compile Include="Steps\Step_ThirdPartyNotices.cs" />
     <Compile Include="ThirdPartyNotices\aapt2.cs" />
@@ -220,6 +222,7 @@
     <Compile Include="OperatingSystems\Linux.cs" />
     <Compile Include="OperatingSystems\Linux.UbuntuCommon.cs" />
     <Compile Include="Steps\Step_InstallCorrettoOpenJDK.Linux.cs" />
+	<Compile Include="Steps\Step_ProvisionMSOpenJDK.Linux.cs" />
     <Compile Include="ToolRunners\MakeRunner.Linux.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(HostOS)' == 'Darwin' ">
@@ -238,6 +241,7 @@
     <Compile Include="Steps\Step_ChangeLibMonoSgenDylibID.MacOS.cs" />
     <Compile Include="Steps\Step_InstallCorrettoOpenJDK.MacOS.cs" />
     <Compile Include="Steps\Step_PrepareImageDependencies.MacOS.cs" />
+	<Compile Include="Steps\Step_ProvisionMSOpenJDK.MacOS.cs" />
     <Compile Include="ToolRunners\BrewRunner.MacOS.cs" />
     <Compile Include="ToolRunners\MakeRunner.MacOS.cs" />
     <Compile Include="ToolRunners\PkgutilRunner.MacOS.cs" />
@@ -261,6 +265,7 @@
     <Compile Include="Steps\Step_InstallCorrettoOpenJDK.Windows.cs" />
     <Compile Include="Steps\Step_PrepareExternal.Windows.cs" />
     <Compile Include="Steps\Step_PrepareExternalJavaInterop.Windows.cs" />
+	<Compile Include="Steps\Step_ProvisionMSOpenJDK.Windows.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

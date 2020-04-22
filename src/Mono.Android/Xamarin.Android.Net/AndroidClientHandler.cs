@@ -423,7 +423,18 @@ namespace Xamarin.Android.Net
 				if (httpConnection.DoOutput)
 					await WriteRequestContentToOutput (request, httpConnection, cancellationToken);
 
-				statusCode = await Task.Run (() => (HttpStatusCode)httpConnection.ResponseCode).ConfigureAwait (false);
+				statusCode = await Task.Run(() => {
+					try {
+						return (HttpStatusCode)httpConnection.ResponseCode;
+					}
+					// Accessing the ResponseCode will throw an IOException if the code is 401
+					// and the server has not returned a WWW-Authenticate header on < API 19
+					catch (Java.IO.IOException ex) when (ex.Message?.Contains("authentication challenges") ?? false) {
+						// Will return 401 as the connection's internal state is now correct
+						return (HttpStatusCode)httpConnection.ResponseCode;
+					}
+				}).ConfigureAwait(false);
+
 				connectionUri = new Uri (httpConnection.URL.ToString ());
 			} finally {
 				cancelRegistration.Dispose ();

@@ -1017,6 +1017,24 @@ namespace Xamarin.Android.NetTests {
 			}
 		}
 #endif
+		// Verifies the handler always returns a response on 401, regardless of the
+		// presence of a WWW-Authenticate header in the HTTP response. (Pre API 19,
+		// HttpURLConnectionImpl would throw an Java.IO.IOException in this scenario).
+		[Test]
+		public void ShouldHandle401WithoutWWWAuthenticateHeader() 
+		{
+			var listener = CreateListener(l => {
+				var response = l.Response;
+				response.StatusCode = 401;
+			});
+
+			using (listener)
+			using (var httpClient = new HttpClient(CreateHandler(), true)) {
+				var response = httpClient.GetAsync(LocalServer).Result;
+
+				Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
+			}
+		}
 
 		HttpListener CreateListener (Action<HttpListenerContext> contextAssert)
 		{

@@ -87,6 +87,10 @@ ifeq ($(XA_FORCE_COMPONENT_REFRESH),true)
 _PREPARE_ARGS += -refresh
 endif
 
+ifneq ($(PREPARE_IGNORE_MONO_VERSION),0)
+_PREPARE_ARGS += --ignore-mono-version
+endif
+
 _PREPARE_ARGS += $(PREPARE_ARGS)
 
 include build-tools/scripts/msbuild.mk

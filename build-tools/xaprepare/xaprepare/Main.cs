@@ -103,8 +103,14 @@ namespace Xamarin.Android.Prepare
 				"",
 				{"auto-provision=", $"Automatically install software required by Xamarin.Android", v => parsedOptions.AutoProvision = ParseBoolean (v)},
 				{"auto-provision-uses-sudo=", $"Allow use of sudo(1) when provisioning", v => parsedOptions.AutoProvisionUsesSudo = ParseBoolean (v)},
-				{"ignore-max-mono-version=", $"Ignore the maximum supported Mono version restriction", v => parsedOptions.IgnoreMaxMonoVersion = ParseBoolean (v)},
-				{"ignore-min-mono-version=", $"Ignore the minimum supported Mono version restriction", v => parsedOptions.IgnoreMinMonoVersion = ParseBoolean (v)},
+				{"ignore-max-mono-version:", $"Ignore the maximum supported Mono version restriction", v => parsedOptions.IgnoreMaxMonoVersion = ParseBoolean (v)},
+				{"ignore-min-mono-version:", $"Ignore the minimum supported Mono version restriction", v => parsedOptions.IgnoreMinMonoVersion = ParseBoolean (v)},
+				{"ignore-mono-version:", $"Ignore the both the minimum and the maximum supported Mono version restrictions", v => {
+						bool yesno = ParseBoolean (v);
+						parsedOptions.IgnoreMinMonoVersion = yesno;
+						parsedOptions.IgnoreMaxMonoVersion = yesno;
+					}
+				},
 				{"mono-archive-url=", "Use a specific URL for the mono archive.", v => parsedOptions.MonoArchiveCustomUrl = v?.Trim () },
 				"",
 				{"h|help", "Show this help message", v => parsedOptions.ShowHelp = true },
@@ -288,11 +294,11 @@ namespace Xamarin.Android.Prepare
 			}
 		}
 
-		static bool ParseBoolean (string value)
+		static bool ParseBoolean (string value, bool defaultValue = true)
 		{
 			string v = value?.Trim ();
 			if (String.IsNullOrEmpty (v))
-				throw new ArgumentException ("must not be null or empty", nameof (v));
+				return defaultValue;
 
 			if (String.Compare ("yes", v, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare ("true", v, StringComparison.OrdinalIgnoreCase) == 0)
 				return true;

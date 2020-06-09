@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xamarin.Tools.Zip;
@@ -113,10 +114,25 @@ namespace Xamarin.Android.Tasks
 		/// <summary>
 		/// HACK: aapt2 is creating zip entries on Windows such as `assets\subfolder/asset2.txt`
 		/// </summary>
-		public void FixupWindowsPathSeparators (Action<string, string> onRename)
+		public void FixupWindowsPathSeparators (HashSet<ulong> deletedEntries, Action<string, string> onRename)
 		{
 			bool modified = false;
-			foreach (var entry in zip) {
+
+			long entryCount = zip.EntryCount;
+			if (entryCount < 0)
+				return;
+
+			for (ulong i = 0; i < (ulong) entryCount; ++i) {
+				// If an entry index has been deleted then ReadEntry will throw a "Entry has been deleted" ZipException.
+				// So we skip deleted entries instead. Later, when we move to a newer LibZipSharp (>= 1.0.13) with this fix
+				// https://github.com/xamarin/LibZipSharp/pull/53 we can remove this workaround and go back to using
+				// a foreach enumerator to enumerate the contents of the zip. With the fix, deleted entries are
+				// skipped on the LibZipSharp side when enumerating. But we want to keep the LibZipSharp bump as
+				// a separate change, with the other changes that come with it, and not depenend on that here.
+				if (deletedEntries.Contains (i))
+					continue;
+
+				var entry = zip.ReadEntry (i);
 				if (entry.FullName.Contains ('\\')) {
 					var name = entry.FullName.Replace ('\\', '/');
 					onRename?.Invoke (entry.FullName, name);

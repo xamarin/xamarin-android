@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using Xamarin.Android.Tasks;
 using Xamarin.ProjectTools;
+using Xamarin.Tools.Zip;
 
 namespace Xamarin.Android.Build.Tests
 {
@@ -1102,21 +1103,117 @@ namespace Lib2
 			using (var builder = CreateApkBuilder ()) {
 				Assert.IsTrue (builder.Build (proj), "first build should succeed");
 
-				// AndroidResource change
-				proj.LayoutMain += $"{Environment.NewLine}<!--comment-->";
+				// Change the AndroidResource body; just adding a comment isn't enough to trigger an APK update
+				string orientationTag = "android:orientation=\"vertical\"";
+				proj.LayoutMain = proj.LayoutMain.Replace (orientationTag, $"{orientationTag}  android:paddingLeft=\"16dp\"");
 				proj.Touch ("Resources\\layout\\Main.axml");
 				Assert.IsTrue (builder.Build (proj), "second build should succeed");
 
-				var targets = new [] {
+				AssertNonResourceTargetsSkipped (builder);
+			}
+		}
+
+		void AssertNonResourceTargetsSkipped(ProjectBuilder builder)
+		{
+			var targets = new [] {
 					"_ResolveLibraryProjectImports",
 					"_GenerateJavaStubs",
 					"_CompileJava",
 					"_CompileToDalvik",
 				};
-				foreach (var target in targets) {
-					Assert.IsTrue (builder.Output.IsTargetSkipped (target), $"`{target}` should be skipped!");
+			foreach (var target in targets) {
+				Assert.IsTrue (builder.Output.IsTargetSkipped (target), $"`{target}` should be skipped!");
+			}
+		}
+
+		[Test]
+		public void AndroidChangedResourcesAtEnd ()
+		{
+			var path = Path.Combine (Root, "temp", TestName);
+
+			var proj = new XamarinAndroidApplicationProject ();
+			using (var builder = CreateApkBuilder ()) {
+				Assert.IsTrue (builder.Build (proj), "first build should succeed");
+
+				string signedApkPath = Path.Combine (path, proj.OutputPath, "UnnamedProject.UnnamedProject-Signed.apk");
+
+				// Initial resources should at the end of the zip
+				using (var zip = ZipArchive.Open (signedApkPath, FileMode.Open)) {
+					Assert.AreEqual (37, zip.EntryCount, "Zip entry count");
+					AssertZipEntryHasPosition (zip, "res/layout/main.xml", 32);
+					AssertZipEntryHasPosition (zip, "resources.arsc", 33);
+				}
+
+				AndroidItem.AndroidResource layout2Resource = AddLayout2 (proj);
+				Assert.IsTrue (builder.Build (proj), "second build should succeed");
+
+				// Added resources should go at the end of the zip
+				using (var zip = ZipArchive.Open (signedApkPath, FileMode.Open)) {
+					Assert.AreEqual (38, zip.EntryCount, "Zip entry count");
+					AssertZipEntryHasPosition (zip, "res/layout/main.xml", 32);
+					AssertZipEntryHasPosition (zip, "res/layout/layout2.xml", 33);
+					AssertZipEntryHasPosition (zip, "resources.arsc", 34);
+				}
+
+				string orientationTag = "android:orientation=\"vertical\"";
+				proj.LayoutMain = proj.LayoutMain.Replace (orientationTag, $"{orientationTag}  android:paddingLeft=\"16dp\"");
+				proj.Touch ("Resources\\layout\\Main.axml");
+				Assert.IsTrue (builder.Build (proj), "third build should succeed");
+				AssertNonResourceTargetsSkipped (builder);
+
+				// Updated resources should go at the end of the zip
+				using (var zip = ZipArchive.Open (signedApkPath, FileMode.Open)) {
+
+					Assert.AreEqual (38, zip.EntryCount, "Zip entry count");
+					AssertZipEntryHasPosition (zip, "res/layout/layout2.xml", 32);
+					AssertZipEntryHasPosition (zip, "resources.arsc", 33);
+					AssertZipEntryHasPosition (zip, "res/layout/main.xml", 34);
+				}
+
+				proj.AndroidResources.Remove (layout2Resource);
+				Assert.IsTrue (builder.Build (proj), "fourth build should succeed");
+
+				// Removed resources should go away
+				using (var zip = ZipArchive.Open (signedApkPath, FileMode.Open)) {
+					Assert.AreEqual (37, zip.EntryCount, "Zip entry count");
+					AssertZipEntryHasPosition (zip, "res/layout/main.xml", 32);
+					AssertZipEntryHasPosition (zip, "resources.arsc", 33);
 				}
 			}
+		}
+
+		AndroidItem.AndroidResource AddLayout2 (XamarinAndroidApplicationProject proj)
+		{
+			const string layout2 = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<LinearLayout xmlns:android=""http://schemas.android.com/apk/res/android""
+	android:orientation=""vertical""
+	android:layout_width=""fill_parent""
+	android:layout_height=""fill_parent""
+	>
+<Button
+	android:id=""@+id/myButton2""
+	android:layout_width=""fill_parent"" 
+	android:layout_height=""wrap_content"" 
+	android:text=""@string/hello""
+	/>
+</LinearLayout>
+";
+
+			var androidResource = new AndroidItem.AndroidResource ("Resources\\layout\\Layout2.axml") { TextContent = () => layout2 };
+			proj.AndroidResources.Add (androidResource);
+
+			return androidResource;
+		}
+
+		void AssertZipEntryHasPosition (ZipArchive zipArchive, string name, int expectedPosition) {
+			foreach (ZipEntry entry in zipArchive) {
+				if (entry.FullName.Equals (name, StringComparison.Ordinal)) {
+					Assert.AreEqual (expectedPosition, entry.Index, $"Zip entry {name} should be at expected position");
+					return;
+				}
+			}
+
+			Assert.Fail ($"Zip entry ${name} not found");
 		}
 
 		[Test]

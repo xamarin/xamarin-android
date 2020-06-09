@@ -126,46 +126,23 @@ namespace Xamarin.Android.Tasks
 			}
 
 			ArchiveFileList files = new ArchiveFileList ();
-			bool refresh = true;
-			if (apkInputPath != null && File.Exists (apkInputPath) && !File.Exists (apkOutputPath)) {
-				Log.LogDebugMessage ($"Copying {apkInputPath} to {apkInputPath}");
-				File.Copy (apkInputPath, apkOutputPath, overwrite: true);
-				refresh = false;
-			}
+
 			using (var notice = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("NOTICE.txt"))
 			using (var apk = new ZipArchiveEx (apkOutputPath, File.Exists (apkOutputPath) ? FileMode.Open : FileMode.Create )) {
-				if (refresh) {
-					for (long i = 0; i < apk.Archive.EntryCount; i++) {
-						ZipEntry e = apk.Archive.ReadEntry ((ulong) i);
-						Log.LogDebugMessage ($"Registering item {e.FullName}");
-						existingEntries.Add (e.FullName);
-					}
+				bool apkInputPathExists = apkInputPath != null && File.Exists (apkInputPath);
+
+				DateTime lastWriteOutput = DateTime.MinValue;
+				DateTime lastWriteInput = DateTime.MinValue;
+				if (apkInputPathExists) {
+					lastWriteOutput = File.Exists (apkOutputPath) ? File.GetLastWriteTimeUtc (apkOutputPath) : DateTime.MinValue;
+					lastWriteInput = File.GetLastWriteTimeUtc (apkInputPath);
 				}
-				if (apkInputPath != null && File.Exists (apkInputPath) && refresh) {
-					var lastWriteOutput = File.Exists (apkOutputPath) ? File.GetLastWriteTimeUtc (apkOutputPath) : DateTime.MinValue;
-					var lastWriteInput = File.GetLastWriteTimeUtc (apkInputPath);
-					using (var packaged = new ZipArchiveEx (apkInputPath, FileMode.Open)) {
-						foreach (var entry in packaged.Archive) {
-							Log.LogDebugMessage ($"Deregistering item {entry.FullName}");
-							existingEntries.Remove (entry.FullName);
-							if (lastWriteInput <= lastWriteOutput)
-								continue;
-							if (apk.Archive.ContainsEntry (entry.FullName)) {
-								ZipEntry e = apk.Archive.ReadEntry (entry.FullName);
-								// check the CRC values as the ModifiedDate is always 01/01/1980 in the aapt generated file.
-								if (entry.CRC == e.CRC) {
-									Log.LogDebugMessage ($"Skipping {entry.FullName} from {apkInputPath} as its up to date.");
-									continue;
-								}
-							}
-							var ms = new MemoryStream ();
-							entry.Extract (ms);
-							Log.LogDebugMessage ($"Refreshing {entry.FullName} from {apkInputPath}");
-							apk.Archive.AddStream (ms, entry.FullName, compressionMethod: entry.CompressionMethod);
-						}
-					}
+
+				for (long i = 0; i < apk.Archive.EntryCount; i++) {
+					ZipEntry e = apk.Archive.ReadEntry ((ulong) i);
+					Log.LogDebugMessage ($"Registering item {e.FullName}");
+					existingEntries.Add (e.FullName);
 				}
-				apk.FixupWindowsPathSeparators ((a, b) => Log.LogDebugMessage ($"Fixing up malformed entry `{a}` -> `{b}`"));
 				string noticeName = RootPath + "NOTICE";
 				existingEntries.Remove (noticeName);
 				if (!apk.Archive.ContainsEntry (noticeName))
@@ -252,6 +229,16 @@ namespace Xamarin.Android.Tasks
 						count = 0;
 					}
 				}
+
+				// For now, we keep track of deleted entry indices & skip them ourselves when iterating zip contents in FixupWindowsPathSeparators.
+				// For this to work, no one shoud call Flush on the zip before calling FixupWindowsPathSeparators, since Flush changes all the indices
+				// (and gets rid of the deleted stuff). Later when we move to a newer LibZipSharp, with the fix to skip deleted entries itself,
+				// we can remove this workaround. See FixupWindowsPathSeparators for more info.
+				HashSet<ulong> deletedEntries = new HashSet<ulong> ();
+				if (apkInputPathExists)
+					UpdateEntriesFromInputApk (apkInputPath, apk, lastWriteOutput, lastWriteInput, deletedEntries);
+				apk.FixupWindowsPathSeparators (deletedEntries, (a, b) => Log.LogDebugMessage ($"Fixing up malformed entry `{a}` -> `{b}`"));
+
 				// Clean up Removed files. 
 				foreach (var entry in existingEntries) {
 					Log.LogDebugMessage ($"Removing {entry} as it is not longer required.");
@@ -259,6 +246,49 @@ namespace Xamarin.Android.Tasks
 				}
 				apk.Flush ();
 				FixupArchive (apk);
+			}
+		}
+
+		private void UpdateEntriesFromInputApk (string apkInputPath, ZipArchiveEx apk, DateTime lastWriteOutput, DateTime lastWriteInput, HashSet<ulong> deletedEntries)
+		{
+			using (var packaged = new ZipArchiveEx (apkInputPath, FileMode.Open)) {
+				foreach (var entry in packaged.Archive) {
+					Log.LogDebugMessage ($"Deregistering item {entry.FullName}");
+					existingEntries.Remove (entry.FullName);
+					if (lastWriteInput <= lastWriteOutput)
+						continue;
+
+					long entryIndexInOutput;
+					if (apk.Archive.ContainsEntry (entry.FullName, out entryIndexInOutput)) {
+						ZipEntry e = apk.Archive.ReadEntry (entry.FullName);
+						// check the CRC values as the ModifiedDate is always 01/01/1980 in the aapt generated file.
+						if (entry.CRC == e.CRC) {
+							Log.LogDebugMessage ($"Skipping {entry.FullName} from {apkInputPath} as its up to date.");
+							continue;
+						}
+					} else {
+						entryIndexInOutput = -1;
+					}
+
+					var ms = new MemoryStream ();
+					entry.Extract (ms);
+
+					if (entryIndexInOutput != -1) {
+						Log.LogDebugMessage ($"Refreshing {entry.FullName} from {apkInputPath}");
+
+						// Force the modified resource to move to the end of the file, by deleting it first so that AddStream adds it
+						// back with a new index. Keeping modified resources toward the end optimizes the delta install for the typical
+						// dev scenario where the user is editing a few resources but most of the APK contents (e.g. the native libs)
+						// don't change and we want to keep their byte offset in the APK fixed. Delta install need not update APK
+						// contents that don't change and don't move.
+						apk.Archive.DeleteEntry ((ulong) entryIndexInOutput);
+						deletedEntries.Add ((ulong) entryIndexInOutput);
+					} else {
+						Log.LogDebugMessage ($"Adding {entry.FullName} from {apkInputPath}");
+					}
+
+					apk.Archive.AddStream (ms, entry.FullName, compressionMethod: entry.CompressionMethod);
+				}
 			}
 		}
 

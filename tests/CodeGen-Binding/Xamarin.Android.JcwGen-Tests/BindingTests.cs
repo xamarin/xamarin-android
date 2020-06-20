@@ -378,5 +378,12 @@ namespace Xamarin.Android.JcwGenTests {
 			}
 		}
 	}
+
+	public class JI590 : Java.Lang.Object, IInvokeMyRunnable {
+		public void Invoke (global::Java.Lang.Object p0)
+		{
+			p0.JavaCast<Java.Lang.IRunnable> ().Run ();
+		}
+	}
 }
 

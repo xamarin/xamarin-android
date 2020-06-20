@@ -100,6 +100,12 @@
     <TestJarEntry Include="java\com\xamarin\android\Gxa4098.java">
       <OutputFile>Jars/xamarin-test.jar</OutputFile>
     </TestJarEntry>
+    <TestJarEntry Include="java\com\xamarin\android\InvokeRunnable.java">
+      <OutputFile>Jars/xamarin-test.jar</OutputFile>
+    </TestJarEntry>
+    <TestJarEntry Include="java\com\xamarin\android\InvokeMyRunnable.java">
+      <OutputFile>Jars/xamarin-test.jar</OutputFile>
+    </TestJarEntry>
     <TestJarEntry Include="java\com\xamarin\android\Logger.java">
       <OutputFile>Jars/xamarin-test.jar</OutputFile>
     </TestJarEntry>
@@ -107,6 +113,9 @@
       <OutputFile>Jars/xamarin-test.jar</OutputFile>
     </TestJarEntry>
     <TestJarEntry Include="java\com\xamarin\android\MyCanvas.java">
+      <OutputFile>Jars/xamarin-test.jar</OutputFile>
+    </TestJarEntry>
+    <TestJarEntry Include="java\com\xamarin\android\MyRunnable.java">
       <OutputFile>Jars/xamarin-test.jar</OutputFile>
     </TestJarEntry>
     <TestJarEntry Include="java\com\xamarin\android\Timing.java">

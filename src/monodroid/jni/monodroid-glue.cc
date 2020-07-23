@@ -834,13 +834,17 @@ MonodroidRuntime::create_domain (JNIEnv *env, jstring_array_wrapper &runtimeApks
 inline int
 MonodroidRuntime::LocalRefsAreIndirect (JNIEnv *env, jclass runtimeClass, int version)
 {
+	log_warn (LOG_DEFAULT, "[1] %s", __PRETTY_FUNCTION__);
+
 	if (version < 14) {
+		log_warn (LOG_DEFAULT, "[1] running on API < 14, java_System will be null");
 		java_System = nullptr;
 		java_System_identityHashCode = 0;
 		return 0;
 	}
 
 	java_System = utils.get_class_from_runtime_field(env, runtimeClass, "java_lang_System", true);
+	log_warn (LOG_DEFAULT, "[1] java_System == %p", java_System);
 	java_System_identityHashCode = env->GetStaticMethodID (java_System, "identityHashCode", "(Ljava/lang/Object;)I");
 
 	return 1;

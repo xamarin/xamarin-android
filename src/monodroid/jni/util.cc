@@ -301,13 +301,19 @@ Util::get_class_from_runtime_field (JNIEnv *env, jclass runtime, const char *nam
 {
 	static constexpr char java_lang_class_sig[] = "Ljava/lang/Class;";
 
+	log_warn (LOG_DEFAULT, "[2] %s", __PRETTY_FUNCTION__);
+	log_warn (LOG_DEFAULT, "[2] env == %p; runtime == %p; name == '%s'; make_gref == %s", env, runtime, name, make_gref ? "true" : "false");
 	jfieldID fieldID = env->GetStaticFieldID (runtime, name, java_lang_class_sig);
+	log_warn (LOG_DEFAULT, "[2] fieldID == %p", fieldID);
 	if (fieldID == nullptr)
 		return nullptr;
 
 	jobject field = env->GetStaticObjectField (runtime, fieldID);
+	log_warn (LOG_DEFAULT, "[2] field == %p", field);
 	if (field == nullptr)
 		return nullptr;
 
-	return reinterpret_cast<jclass> (make_gref ? osBridge.lref_to_gref (env, field) : field);
+	jclass ret = reinterpret_cast<jclass> (make_gref ? osBridge.lref_to_gref (env, field) : field);
+	log_warn (LOG_DEFAULT, "[2] ret == %p", ret);
+	return ret;
 }

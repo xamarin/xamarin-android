@@ -120,6 +120,8 @@ monodroid_clear_gdb_wait (void)
 MONO_API void*
 _monodroid_get_identity_hash_code (JNIEnv *env, void *v)
 {
+	log_warn (LOG_DEFAULT, "[3] %s", __PRETTY_FUNCTION__);
+	log_warn (LOG_DEFAULT, "[3] env == %p; v == %p", env, v);
 	intptr_t rv = env->CallStaticIntMethod (monodroidRuntime.get_java_class_System (), monodroidRuntime.get_java_class_method_System_identityHashCode (), v);
 	return (void*) rv;
 }

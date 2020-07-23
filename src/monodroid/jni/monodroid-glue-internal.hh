@@ -84,6 +84,8 @@ namespace xamarin::android::internal
 
 		jclass get_java_class_System () const
 		{
+			log_warn (LOG_DEFAULT, "[4] %s", __PRETTY_FUNCTION__);
+			log_warn (LOG_DEFAULT, "[4] java_System == %p", java_System);
 			return java_System;
 		}
 

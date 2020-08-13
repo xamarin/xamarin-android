@@ -25,6 +25,22 @@ namespace Xamarin.Android.Build.Tests
 		}
 
 		[Test]
+		public void ListAndMap ()
+		{
+			string aidl = @"
+import android.os;
+import android.view;
+import android.animation;
+
+interface Test {
+	void arrayList(inout List list);
+	void map(inout Map m);
+}
+";
+			TestAidl ($"temp/AidlTest.{nameof (ListAndMap)}", aidl);
+		}
+
+		[Test]
 		public void NamespaceResolution ()
 		{
 			string aidl = @"

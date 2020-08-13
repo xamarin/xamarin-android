@@ -48,7 +48,7 @@
       </NUnitTarget>
     </ItemGroup>
     <Exec
-        Command="$(_NUnit) $(NUNIT_EXTRA) %(NUnitTarget.Identity) $(_Test) --labels=all --result=&quot;TestResult-%(NUnitTarget.TestFilename).xml;format=nunit2&quot; %(NUnitTarget.NUnitOutput)"
+        Command="$(_NUnit) $(NUNIT_EXTRA) %(NUnitTarget.Identity) $(_Test) --labels=all --result=&quot;TestResult-%(NUnitTarget.TestFilename).xml&quot; %(NUnitTarget.NUnitOutput)"
         WorkingDirectory="$(_TopDir)"
         IgnoreStandardErrorWarningFormat="true"
         ContinueOnError="ErrorAndContinue"

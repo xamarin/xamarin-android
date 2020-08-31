@@ -43,6 +43,7 @@
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <AndroidLinkTool Condition=" '$(AndroidLinkTool)' == '' ">r8</AndroidLinkTool>
+    <AndroidGenerateJniMarshalMethods Condition=" '$(HostOS)' == 'Darwin' ">True</AndroidGenerateJniMarshalMethods>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

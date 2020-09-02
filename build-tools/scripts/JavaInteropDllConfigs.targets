@@ -13,8 +13,12 @@
         Lines="&lt;configuration&gt;;@(_JavaInteropDllMapContent);&lt;/configuration&gt;"
         Overwrite="True"
     />
+    <ReadLinesFromFile
+        File="$(MSBuildThisFileDirectory)java-interop.JavaRuntimeEnvironment.dllmap">
+      <Output TaskParameter="Lines" ItemName="_JavaRuntimeEnvironmentDllMapContent" />
+    </ReadLinesFromFile>
     <PropertyGroup>
-      <_DllMaps>@(_JavaInteropDllMapContent->'%(Identity)', '%0a  ')</_DllMaps>
+      <_DllMaps>@(_JavaRuntimeEnvironmentDllMapContent->'%(Identity)', '%0a  ')</_DllMaps>
     </PropertyGroup>
     <ReplaceFileContents
         Condition="Exists('$(JavaInteropSourceDirectory)\src\Java.Runtime.Environment\Java.Runtime.Environment.dll.config')"

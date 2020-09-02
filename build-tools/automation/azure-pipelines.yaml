@@ -186,6 +186,11 @@ stages:
         artifactName: $(TestAssembliesArtifactName)
         targetPath: xamarin-android/bin/Test$(XA.Build.Configuration)
 
+    # Build XF test with jnimarshalmethod-gen and target framework v10.0
+    - script: msbuild /restore /p:AndroidGenerateJniMarshalMethods=true /p:AndroidFrameworkVersion=v10.0 tests/Xamarin.Forms-Performance-Integration/Droid/Xamarin.Forms.Performance.Integration.Droid.csproj
+      workingDirectory: $(System.DefaultWorkingDirectory)/xamarin-android
+      displayName: build XF/v10.0 test with jnimarshalmethod-gen
+
     # Create installers
     - template: install-certificates.yml@yaml
       parameters:

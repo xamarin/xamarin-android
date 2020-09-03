@@ -1,4 +1,4 @@
-  <dllmap dll="java-interop" os="osx" target="lib/host-Darwin/libmono-android.debug.dylib" />
-  <dllmap dll="java-interop" os="linux" target="lib/host-Linux/libmono-android.debug.so" />
-  <dllmap dll="java-interop" os="windows" wordsize="64" target="lib/host-mxe-Win64/libmono-android.debug.dll" />
-  <dllmap dll="java-interop" os="windows" wordsize="32" target="lib/host-mxe-Win32/libmono-android.debug.dll" />
+  <dllmap dll="java-interop" os="osx" target="lib/host-Darwin/libxa-internal-api.dylib" />
+  <dllmap dll="java-interop" os="linux" target="lib/host-Linux/libxa-internal-api.so" />
+  <dllmap dll="java-interop" os="windows" wordsize="64" target="lib/host-mxe-Win64/libxa-internal-api.dll" />
+  <dllmap dll="java-interop" os="windows" wordsize="32" target="lib/host-mxe-Win32/libxa-internal-api.dll" />

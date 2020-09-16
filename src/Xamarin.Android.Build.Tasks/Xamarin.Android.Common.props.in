@@ -27,7 +27,7 @@
 		<ResolveAssemblyConflicts>true</ResolveAssemblyConflicts>
 	</PropertyGroup>
 	<ItemDefinitionGroup>
-		<AndroidResource>
+		<AndroidResource Condition=" '$(OS)' != 'Windows_NT' ">
 			<SubType>Designer</SubType>
 			<Generator>MSBuild:UpdateGeneratedFiles</Generator>
 		</AndroidResource>

@@ -6,7 +6,7 @@
     <AndroidNativeLibrary Include="libs\x86\libreuse-threads.so" />
     <AndroidNativeLibrary Include="libs\x86_64\libreuse-threads.so" />
   </ItemGroup>
-  <Import Project="Mono.Android-Tests.projitems" />
+  <Import Project="..\..\..\bin\Test$(Configuration)\Mono.Android-Tests.projitems" />
   <Import Project="..\..\..\build-tools\scripts\TestApks.targets" />
   <Import Project="..\..\..\build-tools\scripts\JavaInteropDllConfigs.targets" />
   <Target Name="BuildNativeLibs"

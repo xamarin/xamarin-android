@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="RunAllTests" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project InitialTargets="_WarnAboutMissingProjitems" DefaultTargets="RunAllTests" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props'))" />
   <PropertyGroup>
     <_TopDir>$(MSBuildThisFileDirectory)..\..</_TopDir>
@@ -14,23 +14,24 @@
     <_XABuildDiag Condition=" '$(USE_MSBUILD)' == '0' And '$(V)' != '' ">/v:diag </_XABuildDiag>
     <_XABuildProperties>$(_XABuildDiag)/p:Configuration=$(Configuration)</_XABuildProperties>
   </PropertyGroup>
-  <ItemGroup>
-    <_TestAssembly Include="$(_TopDir)\bin\Test$(Configuration)\net472\Xamarin.Android.Build.Tests.dll" />
-    <_ApkTestProject Include="$(_TopDir)\src\Mono.Android\Test\Mono.Android-Tests.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\CodeGen-Binding\Xamarin.Android.JcwGen-Tests\Xamarin.Android.JcwGen-Tests.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\CodeGen-MkBundle\Xamarin.Android.MakeBundle-Tests\Xamarin.Android.MakeBundle-Tests.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\locales\Xamarin.Android.Locale-Tests\Xamarin.Android.Locale-Tests.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\BCL-Tests\Xamarin.Android.Bcl-Tests\Xamarin.Android.Bcl-Tests.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\Xamarin.Forms-Performance-Integration\Droid\Xamarin.Forms.Performance.Integration.Droid.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\EmbeddedDSOs\EmbeddedDSO\EmbeddedDSO.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\Runtime-AppBundle\Mono.Android-TestsAppBundle.csproj" />
-    <_ApkTestProject Include="$(_TopDir)\tests\Runtime-MultiDex\Mono.Android-TestsMultiDex.csproj" />
-    <_ApkTestProjectAot Include="$(_TopDir)\src\Mono.Android\Test\Mono.Android-Tests.csproj" />
-    <_ApkTestProjectAot Include="$(_TopDir)\tests\locales\Xamarin.Android.Locale-Tests\Xamarin.Android.Locale-Tests.csproj" />
-    <_ApkTestProjectAot Include="$(_TopDir)\tests\Xamarin.Forms-Performance-Integration\Droid\Xamarin.Forms.Performance.Integration.Droid.csproj" />
-    <_ApkTestProjectBundle Include="$(_TopDir)\src\Mono.Android\Test\Mono.Android-Tests.csproj" />
-    <_ApkTestProjectBundle Include="$(_TopDir)\tests\Xamarin.Forms-Performance-Integration\Droid\Xamarin.Forms.Performance.Integration.Droid.csproj" />
-  </ItemGroup>
+
+  <Import
+    Project="$(_TopDir)\bin\Test$(Configuration)\RunTests.HostUnit.projitems"
+    Condition="Exists('$(_TopDir)\bin\Test$(Configuration)\RunTests.HostUnit.projitems')" />
+  <Import
+    Project="$(_TopDir)\bin\Test$(Configuration)\RunTests.APK.projitems"
+    Condition="Exists('$(_TopDir)\bin\Test$(Configuration)\RunTests.APK.projitems')" />
+
+  <Target Name="_WarnAboutMissingProjitems">
+    <Message
+      Text="$(_TopDir)\bin\Test$(Configuration)\RunTests.HostUnit.projitems does not exist"
+      Condition="!Exists('$(_TopDir)\bin\Test$(Configuration)\RunTests.HostUnit.projitems')" />
+
+    <Message
+      Text="$(_TopDir)\bin\Test$(Configuration)\RunTests.APK.projitems does not exist"
+      Condition="!Exists('$(_TopDir)\bin\Test$(Configuration)\RunTests.APK.projitems')" />
+  </Target>
+
   <Target Name="ListNUnitTests">
     <Exec
         Command="$(_NUnit) $(NUNIT_EXTRA) --explore %(_TestAssembly.Identity)"
@@ -106,75 +107,10 @@
     <Copy SourceFiles="@(_JavaInteropTestResults)" DestinationFolder="$(_TopDir)" />
     <Delete Files="@(_JavaInteropTestResults)" />
   </Target>
-  <Target Name="RunApkTests">
-    <ItemGroup Condition=" '$(USE_MSBUILD)' == '1' ">
-      <_ApkTestProject>
-        <_BinLog>$(_XABinLogPrefix)-$([System.DateTime]::Now.ToString ("yyyyMMddTHHmmss"))-%(Filename).binlog"</_BinLog>
-      </_ApkTestProject>
-    </ItemGroup>
-    <Exec Command="$(_XABuild) %(_ApkTestProject.Identity) %(_ApkTestProject._BinLog) /t:SignAndroidPackage $(_XABuildProperties)" />
-    <MSBuild
-        ContinueOnError="ErrorAndContinue"
-        Projects="$(_TopDir)\tests\RunApkTests.targets"
-        Targets="$(RunApkTestsTarget)"
-    />
-    <PropertyGroup>
-      <_HostOS>$(HostOS)</_HostOS>
-      <_ExeExtension></_ExeExtension>
-      <_HostOS Condition=" '$(_HostOS)' == 'Windows' "></_HostOS>
-      <_ExeExtension Condition=" '$(_HostOS)' == 'Windows' ">.exe</_ExeExtension>
-      <_CrossCompilerAvailable Condition="Exists('$(_TopDir)\bin\$(Configuration)\lib\xamarin.android\xbuild\Xamarin\Android\$(_HostOS)\cross-arm$(_ExeExtension)')">True</_CrossCompilerAvailable>
-      <_CrossCompilerAvailable Condition=" '$(_CrossCompilerAvailable)' == '' ">False</_CrossCompilerAvailable>
-    </PropertyGroup>
-    <ItemGroup Condition=" '$(USE_MSBUILD)' == '1' ">
-      <_ApkTestProjectAot>
-        <_BinLog>$(_XABinLogPrefix)-$([System.DateTime]::Now.ToString ("yyyyMMddTHHmmss"))-%(Filename)-AOT.binlog"</_BinLog>
-      </_ApkTestProjectAot>
-    </ItemGroup>
-    <Exec 
-        Command="$(_XABuild) %(_ApkTestProjectAot.Identity) %(_ApkTestProjectAot._BinLog) /t:SignAndroidPackage $(_XABuildProperties) /p:AotAssemblies=True"
-        Condition=" '$(_CrossCompilerAvailable)' == 'True' "
-    />
-    <MSBuild 
-        ContinueOnError="ErrorAndContinue"
-        Projects="$(_TopDir)\tests\RunApkTests.targets"
-        Targets="$(RunApkTestsTarget)"
-        Condition=" '$(_CrossCompilerAvailable)' == 'True' "
-        Properties="AotAssemblies=True"
-    />
-    <ItemGroup Condition=" '$(USE_MSBUILD)' == '1' ">
-      <_ApkTestProjectProfiledAot>
-        <_BinLog>$(_XABinLogPrefix)-$([System.DateTime]::Now.ToString ("yyyyMMddTHHmmss"))-%(Filename)-profiled-AOT.binlog"</_BinLog>
-      </_ApkTestProjectProfiledAot>
-    </ItemGroup>
-    <Exec
-        Command="$(_XABuild) %(_ApkTestProjectAot.Identity) %(_ApkTestProjectAot._BinLog) /t:SignAndroidPackage $(_XABuildProperties) /p:AndroidEnableProfiledAot=True"
-        Condition=" '$(_CrossCompilerAvailable)' == 'True' "
-    />
-    <MSBuild
-        ContinueOnError="ErrorAndContinue"
-        Projects="$(_TopDir)\tests\RunApkTests.targets"
-        Targets="$(RunApkTestsTarget)"
-        Condition=" '$(_CrossCompilerAvailable)' == 'True' "
-        Properties="AndroidEnableProfiledAot=True;AotAssemblies=True"
-    />
-    <ItemGroup Condition=" '$(USE_MSBUILD)' == '1' ">
-      <_ApkTestProjectBundle>
-        <_BinLog>$(_XABinLogPrefix)-$([System.DateTime]::Now.ToString ("yyyyMMddTHHmmss"))-%(Filename)-Bundle.binlog"</_BinLog>
-      </_ApkTestProjectBundle>
-    </ItemGroup>
-    <Exec
-        Command="$(_XABuild) %(_ApkTestProjectBundle.Identity) %(_ApkTestProjectBundle._BinLog) /t:SignAndroidPackage $(_XABuildProperties) /p:BundleAssemblies=True /p:EmbedAssembliesIntoApk=True"
-        Condition=" '$(_CrossCompilerAvailable)' == 'True' "
-    />
-    <MSBuild
-        ContinueOnError="ErrorAndContinue"
-        Projects="$(_TopDir)\tests\RunApkTests.targets"
-        Targets="$(RunApkTestsTarget)"
-        Condition=" '$(_CrossCompilerAvailable)' == 'True' "
-        Properties="BundleAssemblies=True"
-    />
-  </Target>
+
+  <!-- Include the xaprepare-generated RunApkTests target -->
+  <Import Project="$(_TopDir)\bin\Test$(Configuration)\RunTests.RunApkTests.proj" />
+
   <Target Name="RunPerformanceTests">
     <MSBuild Projects="$(MSBuildThisFileDirectory)..\timing\timing.csproj" Targets="MSBuildTiming" />
   </Target>

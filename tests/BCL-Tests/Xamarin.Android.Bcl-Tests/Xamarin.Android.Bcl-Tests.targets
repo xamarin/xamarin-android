@@ -4,7 +4,7 @@
     <_ProfAssemProjItemsPath>..\..\..\bin\Build$(Configuration)\ProfileAssemblies.projitems</_ProfAssemProjItemsPath>
     <_ProfAssemProjItemsPath Condition="!Exists('$(_ProfAssemProjItemsPath)')">..\..\..\bin\$(Configuration)\bcl-tests\ProfileAssemblies.projitems</_ProfAssemProjItemsPath>
   </PropertyGroup>
-  <Import Project="Xamarin.Android.Bcl-Tests.projitems" />
+  <Import Project="..\..\..\bin\Test$(Configuration)\Xamarin.Android.Bcl-Tests.projitems" />
   <Import Project="..\..\..\build-tools\scripts\TestApks.targets" />
   <Import Project="$(_ProfAssemProjItemsPath)" Condition="Exists('$(_ProfAssemProjItemsPath)')" />
   <Target Name="_AddTestAssemblies"

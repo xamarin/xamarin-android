@@ -17,14 +17,10 @@
     built in Release configuration, *also* update
     `$(TEST_APK_PROJECTS_RELEASE)` within the toplevel `Makefile`.
     -->
-  <Import Project="..\src\Mono.Android\Test\Mono.Android-Tests.projitems" />
-  <Import Project="..\tests\BCL-Tests\Xamarin.Android.Bcl-Tests\Xamarin.Android.Bcl-Tests.projitems" Condition=" '$(AotAssemblies)' != 'True' " />
-  <Import Project="..\tests\CodeGen-Binding\Xamarin.Android.JcwGen-Tests\Xamarin.Android.JcwGen-Tests.projitems" Condition=" '$(AotAssemblies)' != 'True' " />
-  <Import Project="..\tests\EmbeddedDSOs\EmbeddedDSO\EmbeddedDSO.projitems" />
-  <Import Project="..\tests\locales\Xamarin.Android.Locale-Tests\Xamarin.Android.Locale-Tests.projitems" />
-  <Import Project="..\tests\Xamarin.Forms-Performance-Integration\Droid\Xamarin.Forms.Performance.Integration.Droid.projitems" />
-  <Import Project="..\tests\Runtime-AppBundle\Mono.Android-TestsAppBundle.projitems" />
-  <Import Project="..\tests\Runtime-MultiDex\Mono.Android-TestsMultiDex.projitems" />
+  <Import
+    Project="..\bin\Test$(Configuration)\RunApkTests.APK.projitems"
+    Condition="Exists('..\bin\Test$(Configuration)\RunApkTests.APK.projitems')" />
+
   <Import Project="..\build-tools\scripts\TestApks.targets" />
 
   <ItemGroup Condition=" '$(ApkTests)' != '' ">
@@ -44,6 +40,12 @@
       ReleaseAndroidTarget;
     </RunNUnitDeviceTestsDependsOn>
   </PropertyGroup>
+
+  <Target Name="_WarnAboutMissingProjitems">
+    <Message
+      Text="..\bin\Test$(Configuration)\RunApkTests.APK.projitems does not exist"
+      Condition="!Exists('..\bin\Test$(Configuration)\RunApkTests.APK.projitems')" />
+  </Target>
 
   <Target Name="RunNUnitDeviceTests" DependsOnTargets="$(RunNUnitDeviceTestsDependsOn)"/>
 

@@ -66,7 +66,7 @@
     <AndroidResource Include="Resources\drawable\Icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <Import Project="Xamarin.Android.Locale-Tests.projitems" />
+  <Import Project="..\..\..\bin\Test$(Configuration)\Xamarin.Android.Locale-Tests.projitems" />
   <Import Project="..\..\..\build-tools\scripts\TestApks.targets" />
   <ItemGroup>
     <EmbeddedResource Include="strings.de-DE.resx" />

@@ -18,6 +18,7 @@ namespace Xamarin.Android.Prepare
 			if (context == null)
 				throw new ArgumentNullException (nameof (context));
 
+			Steps.Add (new Step_PrepareTests ());
 			Steps.Add (new Step_ShowEnabledRuntimes ());
 			Steps.Add (new Step_InstallJetBrainsOpenJDK8 ());
 			Steps.Add (new Step_InstallJetBrainsOpenJDK11 ());
@@ -32,6 +33,7 @@ namespace Xamarin.Android.Prepare
 			Steps.Add (new Step_InstallMonoRuntimes ());
 			Steps.Add (new Step_Get_Windows_Binutils ());
 			Steps.Add (new Step_GenerateCGManifest ());
+//			Steps.Add (new Step_PrepareTests ());
 
 			AddRequiredOSSpecificSteps (false);
 		}

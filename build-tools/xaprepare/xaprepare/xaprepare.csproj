@@ -111,8 +111,11 @@
     <Compile Include="Application\SizeFormatter.cs" />
     <Compile Include="Application\Step.cs" />
     <Compile Include="Application\StepWithDownloadProgress.cs" />
+    <Compile Include="Application\TestAPK.cs" />
+    <Compile Include="Application\TestAndroidInstrumentation.cs" />
     <Compile Include="Application\TestAssembly.cs" />
     <Compile Include="Application\TestAssemblyType.cs" />
+    <Compile Include="Application\TestHostUnit.cs" />
     <Compile Include="Application\ThirdPartyLicenseType.cs" />
     <Compile Include="Application\ThirdPartyNotice.cs" />
     <Compile Include="Application\ThirdPartyNoticeGroup.cs" />
@@ -120,6 +123,7 @@
     <Compile Include="Application\TPNAttribute.cs" />
     <Compile Include="Application\Utilities.cs" />
     <Compile Include="Application\VersionFetchers.cs" />
+    <Compile Include="Application\XATest.cs" />
     <Compile Include="ConfigAndData\AbiNames.cs" />
     <Compile Include="ConfigAndData\BuildAndroidPlatforms.cs" />
     <Compile Include="ConfigAndData\CommonLicenses.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="ConfigAndData\Dependencies\AndroidToolchain.cs" />
     <Compile Include="ConfigAndData\Runtimes.cs" />
     <Compile Include="ConfigAndData\Runtimes.Code.cs" />
+    <Compile Include="ConfigAndData\Tests.cs" />
     <Compile Include="OperatingSystems\NoOS.cs" />
     <Compile Include="OperatingSystems\OS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -155,6 +160,7 @@
     <Compile Include="Steps\Step_PrepareLocal.cs" />
     <Compile Include="Steps\Step_PrepareMSBuild.cs" />
     <Compile Include="Steps\Step_PrepareProps.cs" />
+    <Compile Include="Steps\Step_PrepareTests.cs" />
     <Compile Include="Steps\Step_ShowEnabledRuntimes.cs" />
     <Compile Include="Steps\Step_ThirdPartyNotices.cs" />
     <Compile Include="ThirdPartyNotices\aapt2.cs" />

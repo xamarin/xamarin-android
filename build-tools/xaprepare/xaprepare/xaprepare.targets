@@ -82,6 +82,7 @@
       <Replacement Include="@XAInstallPrefix@=$(XAInstallPrefix)" />
       <Replacement Include="@XABinRelativeInstallPrefix@=$(_XABinRelativeInstallPrefix)" />
       <Replacement Include="@XAPlatformToolsPackagePrefix@=$(XAPlatformToolsPackagePrefix)" />
+      <Replacement Include="@TestsFlavor@=$(TestsFlavor)" />
     </ItemGroup>
 
     <ReplaceFileContents

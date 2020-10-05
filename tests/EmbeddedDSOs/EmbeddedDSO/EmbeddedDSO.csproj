@@ -103,7 +103,7 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <Import Project="EmbeddedDSO.projitems" />
+  <Import Project="$(RelativeRootPath)\bin\Test$(Configuration)\EmbeddedDSO.projitems" />
   <Import Project="$(RelativeRootPath)\build-tools\scripts\TestApks.targets" />
 
   <Target Name="_GrantPermissions">

@@ -46,5 +46,6 @@ namespace Xamarin.Android.Prepare
 		public const string XAPackagesDir                       = "XAPackagesDir";
 		public const string XAPlatformToolsVersion              = "XAPlatformToolsVersion";
 		public const string XAPlatformToolsPackagePrefix        = "XAPlatformToolsPackagePrefix";
+		public const string TestsFlavor                         = "TestsFlavor";
 	}
 }

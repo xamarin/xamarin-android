@@ -96,6 +96,11 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="Mono.Android-TestsMultiDex.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Mono.Android\Test\Mono.Android-Tests.csproj">
+      <Project>{40EAD437-216B-4DF4-8258-3F47E1672C3A}</Project>
+      <Name>Mono.Android-Tests</Name>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\TestRunner.Core\TestRunner.Core.csproj">
       <Project>{3cc4e384-4985-4d93-a34c-73f69a379fa7}</Project>
       <Name>TestRunner.Core</Name>

@@ -3,6 +3,6 @@
 	<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="22" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<application android:label="Xamarin.Android.Locale-Tests">
+	<application android:debuggable="true" android:label="Xamarin.Android.Locale-Tests">
 	</application>
 </manifest>

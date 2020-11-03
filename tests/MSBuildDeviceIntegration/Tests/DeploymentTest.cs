@@ -67,6 +67,7 @@ namespace Xamarin.Android.Build.Tests
 	</application >
 </manifest> ";
 			Assert.IsTrue (builder.Build (proj), "Build should have succeeded.");
+			builder.BuildLogFile = "install.log";
 			Assert.IsTrue (builder.Install (proj), "Install should have succeeded.");
 		}
 
@@ -76,8 +77,18 @@ namespace Xamarin.Android.Build.Tests
 			if (HasDevices && proj != null)
 				RunAdbCommand ($"uninstall {proj.PackageName}");
 
-			if (TestContext.CurrentContext.Result.FailCount == 0 && builder != null && Directory.Exists (Path.Combine (Root, builder.ProjectDirectory)))
-				Directory.Delete (Path.Combine (Root, builder.ProjectDirectory), recursive: true);
+			if (builder != null)
+				return;
+
+			string output = Path.Combine (Root, builder.ProjectDirectory);
+			if (TestContext.CurrentContext.Result.FailCount == 0 && Directory.Exists (output)) {
+				Directory.Delete (output, recursive: true);
+				return;
+			}
+
+			foreach (var file in Directory.GetFiles (output, "*.log", SearchOption.AllDirectories)) {
+				TestContext.AddTestAttachment (file, Path.GetFileName (output));
+			}
 		}
 
 		[Test]
@@ -148,8 +159,10 @@ namespace Xamarin.Android.Build.Tests
 				WaitForPermissionActivity (Path.Combine (Root, builder.ProjectDirectory, "permission-logcat.log"));
 				WaitForActivityToStart (app.PackageName, "MainActivity",
 					Path.Combine (Root, builder.ProjectDirectory, "startup-logcat.log"), 15);
+				ClearBlockingDialogs ();
 				XDocument ui = GetUI ();
 				XElement node = ui.XPathSelectElement ($"//node[contains(@resource-id,'myButton')]");
+				Assert.IsNotNull (node , "Could not find `my-Button` in the user interface. Check the screenshot of the test failure.");
 				StringAssert.AreEqualIgnoringCase ("Click Me! One", node.Attribute ("text").Value, "Text of Button myButton should have been \"Click Me! One\"");
 				b.BuildLogFile = "clean.log";
 				Assert.IsTrue (b.Clean (app, doNotCleanupOnUpdate: true), "Clean should have suceeded.");
@@ -204,6 +217,7 @@ namespace Xamarin.Android.Build.Tests
 			WaitForActivityToStart (proj.PackageName, "MainActivity",
 				Path.Combine (Root, builder.ProjectDirectory, "startup-logcat.log"), 15);
 			ClearAdbLogcat ();
+			ClearBlockingDialogs ();
 			ClickButton (proj.PackageName, "myXFButton", "CLICK ME");
 			Assert.IsTrue (MonitorAdbLogcat ((line) => {
 				return line.Contains ("Button was Clicked!");

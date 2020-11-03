@@ -1035,9 +1035,17 @@ stages:
   # Check - "Xamarin.Android (MSBuild Emulator Tests macOS - Legacy)"
   - template: yaml-templates/run-msbuild-device-tests.yaml
     parameters:
-      job_name: mac_msbuilddevice_tests
+      job_name: mac_msbuilddevice_tests_no_debugger
       job_suffix: Legacy
       jdkTestFolder: $(XA.Jdk8.Folder)
+      nunit_categories: '&& cat != Debugger'
+
+  - template: yaml-templates/run-msbuild-device-tests.yaml
+    parameters:
+      job_name: mac_msbuilddevice_tests_with_debugger
+      job_suffix: Legacy
+      jdkTestFolder: $(XA.Jdk8.Folder)
+      nunit_categories: '&& cat == Debugger'
 
   # Check - "Xamarin.Android (MSBuild Emulator Tests macOS - One .NET)"
   - template: yaml-templates/run-msbuild-device-tests.yaml

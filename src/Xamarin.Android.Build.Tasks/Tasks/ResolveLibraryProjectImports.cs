@@ -46,7 +46,7 @@ namespace Xamarin.Android.Tasks
 
 		[Output]
 		public ITaskItem [] Jars { get; set; }
-		
+
 		[Output]
 		public ITaskItem [] ResolvedAssetDirectories { get; set; }
 
@@ -58,6 +58,9 @@ namespace Xamarin.Android.Tasks
 
 		[Output]
 		public ITaskItem [] ResolvedResourceDirectoryStamps { get; set; }
+
+		[Output]
+		public ITaskItem [] ProguardConfigFiles { get; set; }
 
 		internal const string OriginalFile = "OriginalFile";
 		internal const string AndroidSkipResourceProcessing = "AndroidSkipResourceProcessing";
@@ -80,10 +83,11 @@ namespace Xamarin.Android.Tasks
 			var resolvedResourceDirectories   = new List<ITaskItem> ();
 			var resolvedAssetDirectories      = new List<ITaskItem> ();
 			var resolvedEnvironmentFiles      = new List<ITaskItem> ();
+			var proguardConfigFiles           = new List<ITaskItem> ();
 
 			assemblyMap.Load (AssemblyIdentityMapFile);
 			try {
-				Extract (jars, resolvedResourceDirectories, resolvedAssetDirectories, resolvedEnvironmentFiles);
+				Extract (jars, resolvedResourceDirectories, resolvedAssetDirectories, resolvedEnvironmentFiles, proguardConfigFiles);
 			} catch (ZipIOException ex) {
 				Log.LogCodedError ("XA1004", ex.Message);
 				Log.LogDebugMessage (ex.ToString ());
@@ -93,6 +97,7 @@ namespace Xamarin.Android.Tasks
 			ResolvedResourceDirectories = resolvedResourceDirectories.ToArray ();
 			ResolvedAssetDirectories    = resolvedAssetDirectories.ToArray ();
 			ResolvedEnvironmentFiles    = resolvedEnvironmentFiles.ToArray ();
+			ProguardConfigFiles         = proguardConfigFiles.ToArray ();
 
 			ResolvedResourceDirectoryStamps = ResolvedResourceDirectories
 				.Select (s => new TaskItem (Path.GetFullPath (Path.Combine (s.ItemSpec, "../..")) + ".stamp"))
@@ -113,14 +118,15 @@ namespace Xamarin.Android.Tasks
 						new XElement ("Jars",
 							Jars.Select(e => new XElement ("Jar", e))),
 						new XElement ("ResolvedResourceDirectories",
-							ResolvedResourceDirectories.ToXElements ("ResolvedResourceDirectory", knownMetadata)
-							),
-						new XElement ("ResolvedAssetDirectories", 
+							ResolvedResourceDirectories.ToXElements ("ResolvedResourceDirectory", knownMetadata)),
+						new XElement ("ResolvedAssetDirectories",
 							ResolvedAssetDirectories.ToXElements ("ResolvedAssetDirectory", knownMetadata)),
 						new XElement ("ResolvedEnvironmentFiles",
 							ResolvedEnvironmentFiles.ToXElements ("ResolvedEnvironmentFile", knownMetadata)),
 						new XElement ("ResolvedResourceDirectoryStamps",
-							ResolvedResourceDirectoryStamps.ToXElements ("ResolvedResourceDirectoryStamp", knownMetadata))
+							ResolvedResourceDirectoryStamps.ToXElements ("ResolvedResourceDirectoryStamp", knownMetadata)),
+						new XElement ("ProguardConfigFiles",
+							ProguardConfigFiles.ToXElements ("ProguardConfigFile", knownMetadata))
 					));
 				document.SaveIfChanged (CacheFile);
 			}
@@ -132,6 +138,7 @@ namespace Xamarin.Android.Tasks
 			Log.LogDebugTaskItems ("  ResolvedAssetDirectories: ", ResolvedAssetDirectories);
 			Log.LogDebugTaskItems ("  ResolvedEnvironmentFiles: ", ResolvedEnvironmentFiles);
 			Log.LogDebugTaskItems ("  ResolvedResourceDirectoryStamps: ", ResolvedResourceDirectoryStamps);
+			Log.LogDebugTaskItems ("  ProguardConfigFiles:", ProguardConfigFiles);
 
 			return !Log.HasLoggedErrors;
 		}
@@ -142,7 +149,8 @@ namespace Xamarin.Android.Tasks
 				IDictionary<string, ITaskItem> jars,
 				ICollection<ITaskItem> resolvedResourceDirectories,
 				ICollection<ITaskItem> resolvedAssetDirectories,
-				ICollection<ITaskItem> resolvedEnvironments)
+				ICollection<ITaskItem> resolvedEnvironments,
+				ICollection<ITaskItem> proguardConfigFiles)
 		{
 			// lets "upgrade" the old directory.
 			string oldPath = Path.GetFullPath (Path.Combine (OutputImportDirectory, "..", "__library_projects__"));
@@ -336,6 +344,7 @@ namespace Xamarin.Android.Tasks
 				string importsDir = Path.Combine (outDirForDll, ImportsDirectory);
 				string resDir = Path.Combine (importsDir, "res");
 				string assetsDir = Path.Combine (importsDir, "assets");
+				string proguardFile = Path.Combine (importsDir, "proguard.txt");
 
 				bool updated = false;
 				string aarHash = Files.HashFile (aarFile.ItemSpec);
@@ -370,7 +379,7 @@ namespace Xamarin.Android.Tasks
 
 				// temporarily extracted directory will look like:
 				// _lp_/[aarFile]
-				
+
 				using (var zip = MonoAndroidHelper.ReadZipFile (aarFile.ItemSpec)) {
 					try {
 						updated |= Files.ExtractAll (zip, importsDir, modifyCallback: (entryFullName) => {
@@ -419,6 +428,11 @@ namespace Xamarin.Android.Tasks
 					resolvedAssetDirectories.Add (new TaskItem (Path.GetFullPath (assetsDir), new Dictionary<string, string> {
 						{ OriginalFile, aarFullPath },
 					}));
+				if (File.Exists (proguardFile)) {
+					proguardConfigFiles.Add (new TaskItem (Path.GetFullPath (proguardFile), new Dictionary<string, string> {
+						{ OriginalFile, aarFullPath },
+					}));
+				}
 			}
 		}
 

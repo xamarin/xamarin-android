@@ -45,6 +45,7 @@ projects.
       <_CreateAarInputs Include="@(AndroidJavaLibrary)" />
       <_CreateAarInputs Include="@(EmbeddedJar)" />
       <_CreateAarInputs Include="@(EmbeddedNativeLibrary)" />
+      <_CreateAarInputs Include="@(ProguardConfiguration)" />
     </ItemGroup>
     <Hash
         ItemsToHash="@(_CreateAarInputs)"
@@ -76,6 +77,7 @@ projects.
         AndroidEnvironment="@(AndroidEnvironment)"
         JarFiles="@(AndroidJavaLibrary);@(EmbeddedJar)"
         NativeLibraries="@(EmbeddedNativeLibrary)"
+        ProguardConfigurationFiles="@(ProguardConfiguration)"
         OutputFile="$(_AarOutputPath)"
     />
     <ItemGroup>

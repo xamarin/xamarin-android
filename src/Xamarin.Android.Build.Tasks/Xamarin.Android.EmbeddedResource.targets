@@ -55,6 +55,7 @@ This file is used by all project types, including binding projects.
       <Output TaskParameter="ResolvedAssetDirectories" ItemName="LibraryAssetDirectories" />
       <Output TaskParameter="ResolvedEnvironmentFiles" ItemName="LibraryEnvironments" />
       <Output TaskParameter="ResolvedResourceDirectoryStamps" ItemName="_LibraryResourceDirectoryStamps" />
+      <Output TaskParameter="ProguardConfigFiles" ItemName="ProguardConfiguration" />
     </ReadLibraryProjectImportsCache>
   </Target>
 

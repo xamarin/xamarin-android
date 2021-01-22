@@ -1,0 +1,72 @@
+<!--
+***********************************************************************************************
+Microsoft.Android.Sdk.Aot.targets
+
+.NET 6 AOT support. You can find "legacy" Xamarin.Android AOT support
+in Xamarin.Android.Legacy.targets.
+
+For <MonoAOTCompiler/> usage, see:
+* https://github.com/dotnet/runtime/blob/15dec9a2aa5a4236d6ba70de2e9c146867b9d2e0/src/tasks/AotCompilerTask/MonoAOTCompiler.cs
+* https://github.com/dotnet/runtime/blob/15dec9a2aa5a4236d6ba70de2e9c146867b9d2e0/src/mono/netcore/nuget/Microsoft.NET.Runtime.MonoAOTCompiler.Task/README.md
+
+These targets are running within the _ComputeFilesToPublishForRuntimeIdentifiers target.
+They run in a context of an inner build with a single $(RuntimeIdentifier).
+
+***********************************************************************************************
+-->
+<Project>
+
+  <UsingTask TaskName="Xamarin.Android.Tasks.GetAotArguments" AssemblyFile="$(_XamarinAndroidBuildTasksAssembly)" />
+
+  <Target Name="_AndroidAotInputs">
+    <ItemGroup>
+      <_AndroidAotInputs Include="@(ResolvedFileToPublish)" Condition=" '%(Extension)' == '.dll' " />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_AndroidAot"
+      Condition=" '$(AotAssemblies)' == 'true' and '$(RuntimeIdentifier)' != '' "
+      DependsOnTargets="_AndroidAotInputs"
+      Inputs="@(_AndroidAotInputs)"
+      Outputs="$(_AndroidStampDirectory)_AndroidAot.stamp">
+    <GetAotArguments
+        AndroidAotMode="$(AndroidAotMode)"
+        AndroidNdkDirectory="$(_AndroidNdkDirectory)"
+        AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
+        AndroidApiLevel="$(_AndroidApiLevel)"
+        ManifestFile="$(_OuterIntermediateOutputPath)android\AndroidManifest.xml"
+        AndroidSequencePointsMode="$(_SequencePointsMode)"
+        AotAdditionalArguments="$(AndroidAotAdditionalArguments)"
+        AotOutputDirectory="$(_AndroidAotBinDirectory)"
+        RuntimeIdentifier="$(RuntimeIdentifier)"
+        EnableLLVM="$(EnableLLVM)"
+        Profiles="@(_AotProfiles)">
+      <Output PropertyName="_AotArguments" TaskParameter="Arguments" />
+    </GetAotArguments>
+    <ItemGroup>
+      <_MonoAOTAssemblies Include="@(_AndroidAotInputs->'%(FullPath)')" AotArguments="$(_AotArguments)" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)aot\" />
+    <MonoAOTCompiler
+        Assemblies="@(_MonoAOTAssemblies)"
+        CompilerBinaryPath="@(MonoAotCrossCompiler->WithMetadataValue('RuntimeIdentifier', '$(RuntimeIdentifier)'))"
+        DisableParallelAot="$(_DisableParallelAot)"
+        LibraryFormat="So"
+        LLVMPath="$(_LLVMPath)"
+        Mode="$(AndroidAotMode)"
+        OutputDir="$(IntermediateOutputPath)aot\"
+        OutputType="Library"
+        UseAotDataFile="false"
+        UseLLVM="$(EnableLLVM)">
+      <Output TaskParameter="CompiledAssemblies" ItemName="_AotCompiledAssemblies" />
+      <Output TaskParameter="FileWrites"         ItemName="FileWrites" />
+    </MonoAOTCompiler>
+    <Touch Files="$(_AndroidStampDirectory)_AndroidAot.stamp" AlwaysCreate="true" />
+    <ItemGroup>
+      <ResolvedFileToPublish
+          Include="@(_AotCompiledAssemblies->'%(LibraryFile)')"
+          ArchiveFileName="libaot-$([System.IO.Path]::GetFileNameWithoutExtension('%(_AotCompiledAssemblies.LibraryFile)')).so"
+      />
+    </ItemGroup>
+  </Target>
+</Project>

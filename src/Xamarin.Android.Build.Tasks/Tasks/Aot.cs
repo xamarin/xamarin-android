@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using Microsoft.Build.Framework;
@@ -33,20 +31,9 @@ namespace Xamarin.Android.Tasks
 	}
 
 	// can't be a single ToolTask, because it has to run mkbundle many times for each arch.
-	public class Aot : AndroidAsyncTask
+	public class Aot : GetAotArguments
 	{
 		public override string TaskPrefix => "AOT";
-
-		[Required]
-		public string AndroidAotMode { get; set; }
-
-		public string AndroidNdkDirectory { get; set; }
-
-		[Required]
-		public string AndroidApiLevel { get; set; }
-
-		[Required]
-		public ITaskItem ManifestFile { get; set; }
 
 		[Required]
 		public ITaskItem[] ResolvedAssemblies { get; set; }
@@ -56,78 +43,16 @@ namespace Xamarin.Android.Tasks
 		public string [] SupportedAbis { get; set; }
 
 		[Required]
-		public string AotOutputDirectory { get; set; }
-
-		[Required]
 		public string IntermediateAssemblyDir { get; set; }
 
 		public string LinkMode { get; set; }
-
-		public bool EnableLLVM { get; set; }
-
-		public string AndroidSequencePointsMode { get; set; }
-
-		public string AotAdditionalArguments { get; set; }
 
 		public ITaskItem[] AdditionalNativeLibraryReferences { get; set; }
 
 		public string ExtraAotOptions { get; set; }
 
-		public ITaskItem [] Profiles { get; set; }
-
-		[Required]
-		public string AndroidBinUtilsDirectory { get; set; }
-
 		[Output]
 		public string[] NativeLibrariesReferences { get; set; }
-
-		AotMode AotMode;
-		SequencePointsMode sequencePointsMode;
-
-		public static bool GetAndroidAotMode(string androidAotMode, out AotMode aotMode)
-		{
-			aotMode = AotMode.Normal;
-
-			switch ((androidAotMode ?? string.Empty).ToLowerInvariant().Trim())
-			{
-			case "":
-			case "none":
-				aotMode = AotMode.None;
-				return true;
-			case "normal":
-				aotMode = AotMode.Normal;
-				return true;
-			case "hybrid":
-				aotMode = AotMode.Hybrid;
-				return true;
-			case "full":
-				aotMode = AotMode.Full;
-				return true;
-			case "interpreter":
-				aotMode = AotMode.Interp;
-				return true; // We don't do anything here for this mode, this is just to set the flag for the XA
-							  // runtime to initialize Mono in the inrepreter "AOT" mode.
-			}
-
-			return false;
-		}
-
-		public static bool TryGetSequencePointsMode (string value, out SequencePointsMode mode)
-		{
-			mode = SequencePointsMode.None;
-			switch ((value ?? string.Empty).ToLowerInvariant().Trim ()) {
-			case "none":
-				mode = SequencePointsMode.None;
-				return true;
-			case "normal":
-				mode = SequencePointsMode.Normal;
-				return true;
-			case "offline":
-				mode = SequencePointsMode.Offline;
-				return true;
-			}
-			return false;
-		}
 
 		static string GetNdkToolchainLibraryDir (NdkTools ndk, string binDir, string archDir = null)
 		{
@@ -174,70 +99,12 @@ namespace Xamarin.Android.Tasks
 			return builder.ToString();
 		}
 
-		int GetNdkApiLevel (NdkTools ndk, string androidApiLevel, AndroidTargetArch arch)
-		{
-			var manifest    = AndroidAppManifest.Load (ManifestFile.ItemSpec, MonoAndroidHelper.SupportedVersions);
-
-			int level;
-			if (manifest.MinSdkVersion.HasValue) {
-				level       = manifest.MinSdkVersion.Value;
-			}
-			else if (int.TryParse (androidApiLevel, out level)) {
-				// level already set
-			}
-			else {
-				// Probably not ideal!
-				level       = MonoAndroidHelper.SupportedVersions.MaxStableVersion.ApiLevel;
-			}
-
-			// Some Android API levels do not exist on the NDK level. Workaround this my mapping them to the
-			// most appropriate API level that does exist.
-			if (level == 6 || level == 7) level = 5;
-			else if (level == 10) level = 9;
-			else if (level == 11) level = 12;
-			else if (level == 20) level = 19;
-			else if (level == 22) level = 21;
-			else if (level == 23) level = 21;
-
-			// API levels below level 21 do not provide support for 64-bit architectures.
-			if (ndk.IsNdk64BitArch (arch) && level < 21) {
-				level = 21;
-			}
-
-			// We perform a downwards API level lookup search since we might not have hardcoded the correct API
-			// mapping above and we do not want to crash needlessly.
-			for (; level >= 5; level--) {
-				try {
-					ndk.GetDirectoryPath (NdkToolchainDir.PlatformLib, arch, level);
-					break;
-				} catch (InvalidOperationException ex) {
-					// Path not found, continue searching...
-					continue;
-				}
-			}
-
-			return level;
-		}
-
 		public async override System.Threading.Tasks.Task RunTaskAsync ()
 		{
 			NdkTools? ndk = NdkTools.Create (AndroidNdkDirectory, Log);
 			if (ndk == null) {
 				return; // NdkTools.Create will log appropriate error
 			}
-
-			bool hasValidAotMode = GetAndroidAotMode (AndroidAotMode, out AotMode);
-			if (!hasValidAotMode) {
-				LogCodedError ("XA3002", Properties.Resources.XA3002, AndroidAotMode);
-				return;
-			}
-
-			if (AotMode == AotMode.Interp) {
-				LogDebugMessage ("Interpreter AOT mode enabled");
-				return;
-			}
-
-			TryGetSequencePointsMode (AndroidSequencePointsMode, out sequencePointsMode);
 
 			var nativeLibs = new List<string> ();
 
@@ -272,48 +139,8 @@ namespace Xamarin.Android.Tasks
 			if (!Directory.Exists (AotOutputDirectory))
 				Directory.CreateDirectory (AotOutputDirectory);
 
-			var sdkBinDirectory = MonoAndroidHelper.GetOSBinPath ();
 			foreach (var abi in SupportedAbis) {
-				string aotCompiler = "";
-				string outdir = "";
-				string mtriple = "";
-				AndroidTargetArch arch;
-
-				switch (abi) {
-				case "armeabi-v7a":
-					aotCompiler = Path.Combine (sdkBinDirectory, "cross-arm");
-					outdir = Path.Combine (AotOutputDirectory, "armeabi-v7a");
-					mtriple = "armv7-linux-gnueabi";
-					arch = AndroidTargetArch.Arm;
-					break;
-
-				case "arm64":
-				case "arm64-v8a":
-				case "aarch64":
-					aotCompiler = Path.Combine (sdkBinDirectory, "cross-arm64");
-					outdir = Path.Combine (AotOutputDirectory, "arm64-v8a");
-					mtriple = "aarch64-linux-android";
-					arch = AndroidTargetArch.Arm64;
-					break;
-
-				case "x86":
-					aotCompiler = Path.Combine (sdkBinDirectory, "cross-x86");
-					outdir = Path.Combine (AotOutputDirectory, "x86");
-					mtriple = "i686-linux-android";
-					arch = AndroidTargetArch.X86;
-					break;
-
-				case "x86_64":
-					aotCompiler = Path.Combine (sdkBinDirectory, "cross-x86_64");
-					outdir = Path.Combine (AotOutputDirectory, "x86_64");
-					mtriple = "x86_64-linux-android";
-					arch = AndroidTargetArch.X86_64;
-					break;
-
-				// case "mips":
-				default:
-					throw new Exception ("Unsupported Android target architecture ABI: " + abi);
-				}
+				(string aotCompiler, string outdir, string mtriple, AndroidTargetArch arch) = GetAbiSettings (abi);
 
 				if (EnableLLVM && !ndk.ValidateNdkPlatform (LogMessage, LogCodedError, arch, enableLLVM:EnableLLVM)) {
 					yield return Config.Invalid;
@@ -329,10 +156,7 @@ namespace Xamarin.Android.Tasks
 					outdir = outdir.Replace (WorkingDirectory + Path.DirectorySeparatorChar, string.Empty);
 				}
 
-				int level = 0;
-				string toolPrefix = EnableLLVM
-					? ndk.GetNdkToolPrefixForAOT (arch, level = GetNdkApiLevel (ndk, AndroidApiLevel, arch))
-					: Path.Combine (AndroidBinUtilsDirectory, $"{ndk.GetArchDirName (arch)}-");
+				string toolPrefix = GetToolPrefix (ndk, arch, out int level);
 				var toolchainPath = toolPrefix.Substring(0, toolPrefix.LastIndexOf(Path.DirectorySeparatorChar));
 				var ldFlags = string.Empty;
 				if (EnableLLVM) {
@@ -397,27 +221,8 @@ namespace Xamarin.Android.Tasks
 					if (!Directory.Exists (tempDir))
 						Directory.CreateDirectory (tempDir);
 
-					List<string> aotOptions = new List<string> ();
-
-					if (Profiles != null && Profiles.Length > 0) {
-						aotOptions.Add ("profile-only");
-						foreach (var p in Profiles) {
-							var fp = Path.GetFullPath (p.ItemSpec);
-							aotOptions.Add ($"profile={fp}");
-						}
-					}
-					if (!string.IsNullOrEmpty (AotAdditionalArguments))
-						aotOptions.Add (AotAdditionalArguments);
-					if (sequencePointsMode == SequencePointsMode.Offline)
-						aotOptions.Add ($"msym-dir={outdir}");
-					if (AotMode != AotMode.Normal)
-						aotOptions.Add (AotMode.ToString ().ToLowerInvariant ());
-
+					var aotOptions = GetAotOptions (outdir, mtriple, toolPrefix);
 					aotOptions.Add ($"outfile={outputFile}");
-					aotOptions.Add ("asmwriter");
-					aotOptions.Add ($"mtriple={mtriple}");
-					aotOptions.Add ($"tool-prefix={toolPrefix}");
-					aotOptions.Add ($"llvm-path={sdkBinDirectory}");
 					aotOptions.Add ($"temp-path={tempDir}");
 
 					if (!String.IsNullOrEmpty (ldName)) {

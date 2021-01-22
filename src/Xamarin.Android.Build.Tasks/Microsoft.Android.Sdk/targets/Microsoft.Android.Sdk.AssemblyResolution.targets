@@ -31,7 +31,7 @@ _ResolveAssemblies MSBuild target.
   </PropertyGroup>
 
   <Target Name="_ComputeFilesToPublishForRuntimeIdentifiers"
-      DependsOnTargets="_FixupIntermediateAssembly;ResolveReferences;ComputeFilesToPublish"
+      DependsOnTargets="_FixupIntermediateAssembly;ResolveReferences;ComputeFilesToPublish;_AndroidAot"
       Returns="@(ResolvedFileToPublish)">
       <ItemGroup>
         <ResolvedFileToPublish

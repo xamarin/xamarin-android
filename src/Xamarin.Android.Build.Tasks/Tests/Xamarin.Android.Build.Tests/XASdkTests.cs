@@ -325,41 +325,64 @@ namespace Xamarin.Android.Build.Tests
 			new object [] {
 				/* runtimeIdentifiers */ "android-arm",
 				/* isRelease */          false,
+				/* aot */                false,
 			},
 			new object [] {
 				/* runtimeIdentifiers */ "android-arm64",
 				/* isRelease */          false,
+				/* aot */                false,
 			},
 			new object [] {
 				/* runtimeIdentifiers */ "android-x86",
 				/* isRelease */          false,
+				/* aot */                false,
 			},
 			new object [] {
 				/* runtimeIdentifiers */ "android-x64",
 				/* isRelease */          false,
+				/* aot */                false,
 			},
 			new object [] {
 				/* runtimeIdentifiers */ "android-arm",
 				/* isRelease */          true,
+				/* aot */                false,
+			},
+			new object [] {
+				/* runtimeIdentifiers */ "android-arm",
+				/* isRelease */          true,
+				/* aot */                true,
+			},
+			new object [] {
+				/* runtimeIdentifiers */ "android-arm64",
+				/* isRelease */          true,
+				/* aot */                false,
 			},
 			new object [] {
 				/* runtimeIdentifiers */ "android-arm;android-arm64;android-x86;android-x64",
 				/* isRelease */          false,
+				/* aot */                false,
 			},
 			new object [] {
 				/* runtimeIdentifiers */ "android-arm;android-arm64;android-x86",
 				/* isRelease */          true,
+				/* aot */                false,
 			},
 			new object [] {
 				/* runtimeIdentifiers */ "android-arm;android-arm64;android-x86;android-x64",
 				/* isRelease */          true,
+				/* aot */                false,
+			},
+			new object [] {
+				/* runtimeIdentifiers */ "android-arm;android-arm64;android-x86;android-x64",
+				/* isRelease */          true,
+				/* aot */                true,
 			},
 		};
 
 		[Test]
 		[Category ("SmokeTests")]
 		[TestCaseSource (nameof (DotNetBuildSource))]
-		public void DotNetBuild (string runtimeIdentifiers, bool isRelease)
+		public void DotNetBuild (string runtimeIdentifiers, bool isRelease, bool aot)
 		{
 			var proj = new XASdkProject {
 				IsRelease = isRelease,
@@ -392,6 +415,9 @@ namespace Xamarin.Android.Build.Tests
 				}
 			};
 			proj.MainActivity = proj.DefaultMainActivity.Replace (": Activity", ": AndroidX.AppCompat.App.AppCompatActivity");
+			if (aot) {
+				proj.SetProperty ("RunAOTCompilation", "true");
+			}
 			proj.OtherBuildItems.Add (new AndroidItem.InputJar ("javaclasses.jar") {
 				BinaryContent = () => ResourceData.JavaSourceJarTestJar,
 			});

@@ -164,6 +164,18 @@ It is recommended to migrate to the new linker settings, as
 [linker]: https://docs.microsoft.com/dotnet/core/deploying/trimming-options
 [linker-full]: https://docs.microsoft.com/dotnet/core/deploying/trimming-options#trimmed-assemblies
 
+## AOT
+
+`$(RunAOTCompilation)` will be the new MSBuild property for enabling
+AOT. This is the same property used for [Blazor WASM][blazor].
+`$(AotAssemblies)` will also enable AOT, in order to help with
+migration from "legacy" Xamarin.Android to .NET 6.
+
+It is recommended to migrate to the new `$(RunAOTCompilation)`
+property, as `$(AotAssemblies)` will eventually be deprecated.
+
+[blazor]: https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/#blazor-webassembly-ahead-of-time-aot-compilation
+
 ## dotnet cli
 
 There are currently a few "verbs" we are aiming to get working in

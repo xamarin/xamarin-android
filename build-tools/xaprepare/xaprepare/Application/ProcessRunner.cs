@@ -42,6 +42,7 @@ namespace Xamarin.Android.Prepare
 		Dictionary<TextWriter, WriterGuard>? guardCache;
 		bool defaultStdoutEchoWrapperAdded;
 		ProcessStandardStreamWrapper? defaultStderrEchoWrapper;
+		Process? process;
 
 		public string Command => command;
 
@@ -77,8 +78,69 @@ namespace Xamarin.Android.Prepare
 		public TimeSpan StandardOutputTimeout                                { get; set; } = DefaultOutputTimeout;
 		public TimeSpan StandardErrorTimeout                                 { get; set; } = DefaultOutputTimeout;
 		public TimeSpan ProcessTimeout                                       { get; set; } = DefaultProcessTimeout;
+		public bool TimedOut                                                 { get; private set; }
 		public string? WorkingDirectory                                      { get; set; }
 		public Action<ProcessStartInfo>? StartInfoCallback                   { get; set; }
+
+		/// <summary>
+		///   Return a process ID. A value is assigned to this property only after <see name="Run"/> was called and
+		///   remains the same even after process exits.  Therefore, it is possible that the returned ID will no longer
+		///   refer to a valid process or that it will refer to a different process.
+		/// </summary>
+		public int ProcessId                                                 { get; private set; } = -1;
+		public Process? Process                                              => process;
+
+		/// <summary>
+		///   <para>
+		///   This property exists to work around an issue in the Mono runtime that can cause the entire main process to
+		///   hang if we reach a timeout of the process we launched but the child process hasn't exited yet.  In this
+		///   case we call process.Kill() which delivers (on Unix) either the <c>SIGTERM</c> or <c>SIGKILL</c> to the
+		///   child process and then returns back to the caller.  As per <c>System.Diagnostic.Process</c> documentation,
+		///   we then wait for the process to exit AGAIN with infinite wait call to `WaitForExit`.  However, in
+		///   some instances this wait will indeed be infinite.
+		///   </para>
+		///
+		///   <para>
+		///   The problem was observed when running the <c>NUnit</c> console runner from XAT.  <c>NUnit</c> is launched
+		///   by us and it launches its own sub-process, <c>nunit-agent.exe</c>.  We know the PID only of the process we
+		///   started, but the agent sub-process is part of the same process group.  Once the timeout is reached, we
+		///   kill the main <c>NUnit</c> process and then proceed to waiting for its exit, as described above.  However,
+		///   it turns out that the child process of the main <c>NUnit</c> process is <b>not</b> killed.  This is
+		///   because of the fact that Mono kills the main process with the code below:
+		///   </para>
+		///
+		///      <code>kill (pid, exitcode == -1 ? SIGKILL : SIGTERM);</code>
+		///
+		///   <para>
+		///   This delivers the signal ONLY to the main process, but NOT to the child processes.  In order to deliver
+		///   the signal to the entire process group, the call should negate the PID value.  However, here we encounter
+		///   another problem.  The parent process of the <c>NUnit</c> runner, ourselves, is ALSO part of the same
+		///   process group.  So attempting to send the signal to the process group will kill us as well, which is not
+		///   what we want, obviously.
+		///   </para>
+		///
+		///   <para>
+		///   The real fix for this issue is to change Mono runtime to create a separate process group for the processes
+		///   it launches, so that it can send the kill signal to that process group without affecting the parent
+		///   process.  However, until such time that it is fixed upstream, we need to work around the issue. Note: both
+		///   Mono and .NETCore are affected (tested dotnet till v5)
+		///   </para>
+		///
+		///   <para>
+		///   Another, theoretical, way to fix this would be to walk the process tree downwards starting from the child
+		///   process.  However, this is an inherently non-portable area and it would require implementations specific
+		///   to various operating systems (at least Linux, BSD* and macOS) and even then it would require gross hacks.
+		///   </para>
+		///
+		///   <para>
+		///   This property allows the caller to implement a specific workaround. It will cause
+		///   <c>ProcessRunner</c> to effectively abandon the process that "timed out" and let the caller handle the
+		///   situation. This is less than ideal, but there's no way for <c>ProcessRunner</c> to know the structure of
+		///   the timed out process and its process group, while the caller should be aware of what's going on and be
+		///   able to deal with the situation as it arises.
+		///   </para>
+		/// </summary>
+		public bool DoNotKillOnTimeout                                       { get; set; }
 
 		public ProcessRunner (string command, params string?[] arguments)
 			: this (command, false, arguments)
@@ -136,6 +198,28 @@ namespace Xamarin.Android.Prepare
 				throw new ArgumentException ("must not be null or empty", nameof (argument));
 
 			return AddArgument (QuoteArgument (argument));
+		}
+
+		/// <summary>
+		///   <paramref name="argument"/> must be formatted exactly as expected by the process.
+		///   Value passed in <paramref name="value"/> will be quoted and appended to <paramref name="argument"/>.
+		///   Value must not be an empty string.
+		/// </summary>
+		///
+		/// <example>
+		///   runner.AddArgumentWithQuotedValue ("--files=", "test1,test2");
+		/// </example>
+		public ProcessRunner AddArgumentWithQuotedValue (string argument, string value)
+		{
+			if (String.IsNullOrEmpty (argument)) {
+				throw new ArgumentException ("must not be null or empty", nameof (argument));
+			}
+
+			if (String.IsNullOrEmpty (value)) {
+				throw new ArgumentException ("must not be null or empty", nameof (value));
+			}
+
+			return AddArgument ($"{argument}{QuoteArgument (value)}");
 		}
 
 		public static string QuoteArgument (string argument)
@@ -196,8 +280,9 @@ namespace Xamarin.Android.Prepare
 			return ret;
 		}
 
-		public bool Run ()
+		public bool Run (bool fireAndForget = false)
 		{
+			TimedOut = false;
 			if (EchoStandardOutput) {
 				if (StandardOutputEchoWrapper != null) {
 					AddStandardOutputSink (StandardOutputEchoWrapper);
@@ -233,6 +318,13 @@ namespace Xamarin.Android.Prepare
 				RedirectStandardOutput = stdout_done != null,
 			};
 
+			if (Environment.Count > 0) {
+				Log.DebugLine ($"Setting up environment for {Command}:");
+				foreach (var kvp in Environment) {
+					Log.DebugLine ($"  {kvp.Key} = {kvp.Value}");
+				}
+			}
+
 			if (arguments != null)
 				psi.Arguments = String.Join (" ", arguments);
 
@@ -248,7 +340,7 @@ namespace Xamarin.Android.Prepare
 			if (StartInfoCallback != null)
 				StartInfoCallback (psi);
 
-			var process = new Process {
+			process = new Process {
 				StartInfo = psi
 			};
 
@@ -257,6 +349,7 @@ namespace Xamarin.Android.Prepare
 
 			try {
 				process.Start ();
+				ProcessId = process.Id;
 			} catch (System.ComponentModel.Win32Exception ex) {
 				Log.ErrorLine ($"Process failed to start: {ex.Message}");
 				Log.DebugLine (ex.ToString ());
@@ -266,53 +359,96 @@ namespace Xamarin.Android.Prepare
 				return false;
 			}
 
+			DataReceivedEventHandler? errorHandler = null;
 			if (psi.RedirectStandardError) {
-				process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => {
+				errorHandler = (object sender, DataReceivedEventArgs e) => {
 					if (e.Data != null)
 						WriteOutput (e.Data, stderrSinks!);
 					else
 						stderr_done!.Set ();
 				};
+				process.ErrorDataReceived += errorHandler;
 				process.BeginErrorReadLine ();
 			}
 
+			DataReceivedEventHandler? outputHandler = null;
 			if (psi.RedirectStandardOutput) {
-				process.OutputDataReceived += (object sender, DataReceivedEventArgs e) => {
+				outputHandler = (object sender, DataReceivedEventArgs e) => {
 					if (e.Data != null)
 						WriteOutput (e.Data, stdoutSinks!);
 					else
 						stdout_done!.Set ();
 				};
+				process.OutputDataReceived += outputHandler;
 				process.BeginOutputReadLine ();
 			}
 
 			bool exited = process.WaitForExit ((int)ProcessTimeout.TotalMilliseconds);
-			if (!exited) {
+			if (!exited && !fireAndForget) {
 				Log.ErrorLine ($"Process '{FullCommandLine}' timed out after {ProcessTimeout}");
 				ErrorReason = ErrorReasonCode.ExecutionTimedOut;
 				process.Kill ();
+				TimedOut = true;
 			}
 
-			// See: https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netframework-4.7.2#System_Diagnostics_Process_WaitForExit)
-			if (psi.RedirectStandardError || psi.RedirectStandardOutput)
-				process.WaitForExit ();
+			if (!fireAndForget) {
+				// See: https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netframework-4.7.2#System_Diagnostics_Process_WaitForExit)
+				if (psi.RedirectStandardError || psi.RedirectStandardOutput) {
+					if (!TimedOut || (TimedOut && !DoNotKillOnTimeout)) {
+						Log.DebugLine ("Waiting for the process to exit");
+						process.WaitForExit ();
+					} else if (TimedOut) {
+						Log.WarningLine ($"Process '{FullCommandLine}' timed out but we are not to wait for it to exit. CALLER MUST HANDLE THE SITUATION!");
+					}
+				}
 
-			if (stderr_done != null)
-				stderr_done.Wait (StandardErrorTimeout);
+				if (stderr_done != null) {
+					stderr_done.Wait (StandardErrorTimeout);
+				}
 
-			if (stdout_done != null)
-				stdout_done.Wait (StandardOutputTimeout);
+				if (stdout_done != null) {
+					stdout_done.Wait (StandardOutputTimeout);
+				}
+			} else {
+				if (psi.RedirectStandardError) {
+					process.CancelErrorRead ();
+					if (errorHandler != null) {
+						process.ErrorDataReceived -= errorHandler;
+					}
+					process.BeginErrorReadLine ();
+				}
 
-			ExitCode = process.ExitCode;
-			if (ExitCode != 0 && ErrorReason == ErrorReasonCode.NotExecutedYet) {
-				ErrorReason = ErrorReasonCode.ExitCodeNotZero;
-				return false;
+				if (psi.RedirectStandardOutput) {
+					process.CancelOutputRead ();
+					if (outputHandler != null) {
+						process.OutputDataReceived -= outputHandler;
+					}
+					process.BeginOutputReadLine ();
+				}
 			}
 
-			if (exited)
-				ErrorReason = ErrorReasonCode.NoError;
+			try {
+				if (process.HasExited) { // Should be safe to use this property here
+					ExitCode = process.ExitCode;
+					if (ExitCode != 0 && ErrorReason == ErrorReasonCode.NotExecutedYet) {
+						ErrorReason = ErrorReasonCode.ExitCodeNotZero;
+						return false;
+					}
+				}
 
-			return exited;
+				if (exited || fireAndForget)
+					ErrorReason = ErrorReasonCode.NoError;
+
+				if (fireAndForget) {
+					return !exited;
+				}
+
+				return exited;
+			} finally {
+				if (!fireAndForget) {
+					process = null;
+				}
+			}
 		}
 
 		void WriteOutput (string data, List<WriterGuard> sinks)

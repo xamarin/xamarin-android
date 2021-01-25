@@ -41,6 +41,39 @@ namespace Xamarin.Android.Prepare
 			ProcessTimeout = TimeSpan.FromMinutes (30);
 		}
 
+		/// <summary>
+		///   Perform the clean operation in the current directory or, if <paramref name="path"/> is given, in the
+		///   specified directory.
+		/// </summary>
+		///
+		/// <param name="path">path to perform the clean operation in. May contain space-separated list of paths</param>
+		/// <param name="force">add the <c>--force</c> argument, if <c>true</c></param>
+		/// <param name="recurse">add the <c>-d</c> argument, to recurse into untracked directories when cleaning, if <c>true</c></param>
+		/// <param name="noStandardIgnoreRules">Add the <c>-x</c> argument, to clean all untracked files, if <c>true</c></param>
+		/// <param name="workingDirectory">set the working directory, if not <c>null</c> or empty</param>
+		public async Task<bool> Clean (string? path = null, bool force = false, bool recurse = false, bool noStandardIgnoreRules = false, string? workingDirectory = null)
+		{
+			var runner = CreateGitRunner (workingDirectory);
+			runner.AddArgument ("clean");
+			if (force) {
+				runner.AddArgument ("--force");
+			}
+
+			if (recurse) {
+				runner.AddArgument ("-d");
+			}
+
+			if (noStandardIgnoreRules) {
+				runner.AddArgument ("-x");
+			}
+
+			if (!String.IsNullOrEmpty (path)) {
+				runner.AddQuotedArgument (path!);
+			}
+
+			return await RunGit (runner);
+		}
+
 		public async Task<bool> CheckoutCommit (string repositoryPath, string commitRef, bool force = true)
 		{
 			if (String.IsNullOrEmpty (repositoryPath))
@@ -279,8 +312,9 @@ namespace Xamarin.Android.Prepare
 				}
 			);
 
-			if (!success)
-				return null;
+			if (!success) {
+				return new List<string>();
+			}
 
 			return lines;
 		}
@@ -301,7 +335,7 @@ namespace Xamarin.Android.Prepare
 			return runner;
 		}
 
-		async Task<bool> RunGit (ProcessRunner runner, string logTag)
+		async Task<bool> RunGit (ProcessRunner runner, string? logTag = null)
 		{
 			try {
 				return await RunTool (

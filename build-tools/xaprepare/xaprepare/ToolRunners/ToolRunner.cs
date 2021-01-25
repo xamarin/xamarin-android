@@ -17,7 +17,9 @@ namespace Xamarin.Android.Prepare
 		protected abstract string DefaultToolExecutableName { get; }
 		protected abstract string ToolName                  { get; }
 
+#if !XAT
 		protected Context Context              { get; }
+#endif
 		public string FullToolPath             { get; }
 		protected string VersionString         => GetVersion ();
 
@@ -26,17 +28,19 @@ namespace Xamarin.Android.Prepare
 		public bool EchoStandardOutput         { get; set; }
 		public string LogMessageIndent         { get; set; } = String.Empty;
 		public virtual TimeSpan ProcessTimeout { get; set; } = DefaultProcessTimeout;
+		public Dictionary<string, string> EnvironmentVariables { get; } = new Dictionary<string, string> (StringComparer.Ordinal);
 
 		protected ToolRunner (Context context, Log? log = null, string? toolPath = null)
 			: base (log)
 		{
+#if !XAT
 			Context = context ?? throw new ArgumentNullException (nameof (context));
-
+#endif
 			if (String.IsNullOrEmpty (toolPath)) {
 				Log.DebugLine ($"Locating {ToolName} executable '{DefaultToolExecutableName}'");
 				FullToolPath = context.OS.Which (DefaultToolExecutableName);
 			} else {
-				Log.DebugLine ($"Custom NuGet path: {toolPath}");
+				Log.DebugLine ($"Custom tool path: {toolPath}");
 				if (toolPath!.IndexOf (Path.DirectorySeparatorChar) < 0) {
 					Log.DebugLine ($"Locating custom {ToolName} executable '{toolPath}'");
 					FullToolPath = context.OS.Which (toolPath);
@@ -100,17 +104,25 @@ namespace Xamarin.Android.Prepare
 				EchoStandardOutput = EchoStandardOutput,
 			};
 
-			if (Context.Instance.OS.EnvironmentVariables != null) {
-				foreach (var kvp in Context.Instance.OS.EnvironmentVariables) {
-					runner.Environment [kvp.Key] = kvp.Value;
-				}
-			}
+			CopyDictionary (Context.Instance.OS.EnvironmentVariables, runner.Environment);
+			CopyDictionary (EnvironmentVariables, runner.Environment);
 
 			if (usingManagedRunner)
 				runner.AddQuotedArgument (FullToolPath);
 
 			runner.AddArguments (initialParams);
 			return runner;
+
+			void CopyDictionary (Dictionary<string, string>? src, Dictionary<string, string> dst)
+			{
+				if (src == null || src.Count == 0) {
+					return;
+				}
+
+				foreach (var kvp in src) {
+					dst [kvp.Key] = kvp.Value;
+				}
+			}
 		}
 
 		protected virtual async Task<bool> RunTool (Func<bool> runner)
@@ -127,7 +139,9 @@ namespace Xamarin.Android.Prepare
 				if (String.IsNullOrEmpty (messagePrefix))
 					messagePrefix = "running";
 				Log.StatusLine ($"{LogMessageIndent}[{ToolName}] {messagePrefix}");
-				Log.StatusLine ($"[{ToolName}] log file: ", $"{Utilities.GetRelativePath (BuildPaths.XamarinAndroidSourceRoot, logFilePath)}", tailColor: Log.DestinationColor);
+				if (!String.IsNullOrEmpty (logFilePath)) {
+					Log.StatusLine ($"[{ToolName}] log file: ", $"{Utilities.GetPathRelativeToCWD (logFilePath)}", tailColor: Log.DestinationColor);
+				}
 			}
 
 			TextWriter ret = CreateLogSink (logFilePath);

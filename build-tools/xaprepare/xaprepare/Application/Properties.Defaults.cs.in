@@ -42,6 +42,7 @@ namespace Xamarin.Android.Prepare
 			properties.Add (KnownProperties.MonoRequiredMinimumVersion,          StripQuotes ("@MonoRequiredMinimumVersion@"));
 			properties.Add (KnownProperties.MonoRequiredMaximumVersion,          StripQuotes ("@MonoRequiredMaximumVersion@"));
 			properties.Add (KnownProperties.MonoSourceFullPath,                  StripQuotes (@"@MonoSourceFullPath@"));
+			properties.Add (KnownProperties.MSBuildRuntimeType,                  StripQuotes (@"@MSBuildRuntimeType@"));
 			properties.Add (KnownProperties.ProductVersion,                      StripQuotes ("@ProductVersion@"));
 			properties.Add (KnownProperties.RemapAssemblyRefToolExecutable,      StripQuotes (@"@RemapAssemblyRefToolExecutable@"));
 			properties.Add (KnownProperties.XABuildToolsFolder,                  StripQuotes (@"@XABuildToolsFolder@"));
@@ -52,6 +53,7 @@ namespace Xamarin.Android.Prepare
 			properties.Add (KnownProperties.XAPackagesDir,                       StripQuotes (@"@XAPackagesDir@"));
 			properties.Add (KnownProperties.XAPlatformToolsVersion,              StripQuotes ("@XAPlatformToolsVersion@"));
 			properties.Add (KnownProperties.XAPlatformToolsPackagePrefix,        StripQuotes ("@XAPlatformToolsPackagePrefix@"));
+			properties.Add (KnownProperties.TestsFlavor,                         StripQuotes ("@TestsFlavor@"));
 		}
 
 		string StripQuotes (string input)

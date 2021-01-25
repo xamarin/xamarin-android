@@ -1,0 +1,104 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../Configuration.props" />
+
+  <PropertyGroup>
+    <!-- netcoreapp3.1 doesn't work as of now - it is unable to find Mono.Posix -->
+    <!--    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks> -->
+    <TargetFrameworks>net472</TargetFrameworks>
+    <Company>Microsoft Corporation</Company>
+    <Copyright>2020 Microsoft Corporation</Copyright>
+    <Version>0.0.1</Version>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>../../bin/$(Configuration)/bin</OutputPath>
+    <OutputType>Exe</OutputType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>$(LangVersion)</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>$(DefineConstants);XAT</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup  Condition=" '$(TargetFramework)' == 'net472' ">
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <Import Project="xat.targets" Condition=" $(MSBuildToolsPath.IndexOf('omnisharp')) &lt; 0 " />
+
+  <ItemGroup>
+    <Reference Condition=" '$(OS)' != 'Windows_NT' And '$(MSBuildRuntimeType)' != 'Core' " Include="Mono.Posix" />
+    <PackageReference Condition=" '$(OS)' != 'Windows_NT' And '$(MSBuildRuntimeType)' == 'Core' " Include="Mono.Posix.NETStandard" Version="5.20.1-preview" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(HostOS)' == 'Linux' ">
+    <DefineConstants>$(DefineConstants);UNIX;LINUX</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(HostOS)' == 'Darwin' ">
+    <DefineConstants>$(DefineConstants);UNIX;MACOS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(HostOS)' == 'Windows' ">
+    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(HostOS)' == 'Windows' ">
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Log.Windows.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Utilities.Windows.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(HostOS)' != 'Windows' ">
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/EssentialTools.Unix.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Log.Unix.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Utilities.Unix.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(HostOS)' == 'Linux' ">
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/EssentialTools.Linux.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(HostOS)' == 'Darwin' ">
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/EssentialTools.MacOS.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Characters.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/EssentialTools.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/EssentialTools.Git.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Extensions.DictionaryOfProgramVersionParser.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/KnownProperties.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Log.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/LoggingVerbosity.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/ProcessRunner.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/ProcessStandardStreamWrapper.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Properties.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/PropertiesChangedEventArgs.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/ProgramVersionParser.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/RegexProgramVersionParser.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/Utilities.Shared.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/CMakeRunner.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/CMakeRunner.OutputSink.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/GitRunner.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/GitRunner.BlamePorcelainEntry.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/GitRunner.OutputSink.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/MSBuildRunner.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/MSBuildRunner.OutputSink.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/NinjaRunner.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/NinjaRunner.OutputSink.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/NuGetRunner.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/NuGetRunner.OutputSink.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/ToolRunner.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/ToolRunners/ToolRunner.OutputSink.cs" />
+    <Compile Include="../../build-tools/xaprepare/xaprepare/Application/VersionFetchers.cs" />
+    <Compile Include="../../build-tools/xa-prep-tasks/Xamarin.Android.BuildTools.PrepTasks/ErrorResultsHelper.cs" />
+    <Compile Include="../../build-tools/xa-prep-tasks/Xamarin.Android.BuildTools.PrepTasks/ProcessLogcatTiming.Shared.cs" />
+    <Compile Include="../../build-tools/xa-prep-tasks/Xamarin.Android.BuildTools.PrepTasks/ProcessPlotInput.Shared.cs" />
+
+    <Compile Include="$(IntermediateOutputPath)/BuildInfo.Generated.cs" />
+    <Compile Include="$(IntermediateOutputPath)/Properties.Generated.cs" />
+    <Compile Include="$(IntermediateOutputPath)/Context.Properties.Generated.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mono.Options" Version="6.6.0.161" />
+  </ItemGroup>
+</Project>

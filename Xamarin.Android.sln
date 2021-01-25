@@ -144,6 +144,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "apksigner", "src\apksigner\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "java-source-utils", "external\Java.Interop\tools\java-source-utils\java-source-utils.csproj", "{37FCD325-1077-4603-98E7-4509CAD648D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xat", "tools\xat\xat.csproj", "{F21B1586-4D52-44CB-8477-7E9A1E4E824F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Xamarin.Android.NamingCustomAttributes\Xamarin.Android.NamingCustomAttributes.projitems*{3f1f2f50-af1a-4a5a-bedb-193372f068d7}*SharedItemsImports = 4
@@ -395,6 +397,10 @@ Global
 		{37FCD325-1077-4603-98E7-4509CAD648D6}.Debug|AnyCPU.Build.0 = Debug|Any CPU
 		{37FCD325-1077-4603-98E7-4509CAD648D6}.Release|AnyCPU.ActiveCfg = Release|Any CPU
 		{37FCD325-1077-4603-98E7-4509CAD648D6}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{F21B1586-4D52-44CB-8477-7E9A1E4E824F}.Debug|AnyCPU.ActiveCfg = Debug|anycpu
+		{F21B1586-4D52-44CB-8477-7E9A1E4E824F}.Debug|AnyCPU.Build.0 = Debug|anycpu
+		{F21B1586-4D52-44CB-8477-7E9A1E4E824F}.Release|AnyCPU.ActiveCfg = Release|anycpu
+		{F21B1586-4D52-44CB-8477-7E9A1E4E824F}.Release|AnyCPU.Build.0 = Release|anycpu
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -461,6 +467,7 @@ Global
 		{86A8DEFE-7ABB-4097-9389-C249581E243D} = {04E3E11E-B47D-4599-8AFC-50515A95E715}
 		{9A9EF774-6EA6-414F-9D2F-DCD66C56B92A} = {04E3E11E-B47D-4599-8AFC-50515A95E715}
 		{37FCD325-1077-4603-98E7-4509CAD648D6} = {864062D3-A415-4A6F-9324-5820237BA058}
+		{F21B1586-4D52-44CB-8477-7E9A1E4E824F} = {864062D3-A415-4A6F-9324-5820237BA058}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {53A1F287-EFB2-4D97-A4BB-4A5E145613F6}

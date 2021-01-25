@@ -9,6 +9,8 @@ namespace Xamarin.Android.Prepare
 		public abstract string   Package { get; }
 		public abstract string   LeftArrow { get; }
 		public abstract string   RightArrow { get; }
+		public abstract string   Success { get; }
+		public abstract string   Failure { get; }
 		public abstract string[] Twiddler { get; }
 
 		protected Characters ()
@@ -35,6 +37,8 @@ namespace Xamarin.Android.Prepare
 		public override string   Package => "#";
 		public override string   LeftArrow => "<-";
 		public override string   RightArrow => "->";
+		public override string   Success => "+";
+		public override string   Failure => "-";
 		public override string[] Twiddler => twiddler;
 	}
 
@@ -47,6 +51,8 @@ namespace Xamarin.Android.Prepare
 		public override string   Package => Char.ConvertFromUtf32 (0x1f4e6); // 📦
 		public override string   LeftArrow => "←";
 		public override string   RightArrow => "→";
+		public override string   Success => "✔";
+		public override string   Failure => "✘";
 		public override string[] Twiddler => twiddler;
 
 		public UnicodeChars ()

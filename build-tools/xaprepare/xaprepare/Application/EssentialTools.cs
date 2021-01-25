@@ -4,46 +4,40 @@ namespace Xamarin.Android.Prepare
 {
 	partial class EssentialTools : AppObject
 	{
-		string gitPath = String.Empty;
-		string sevenZipPath = String.Empty;
 		bool initialized;
-
-		public string GitPath {
-			get => GetRequiredValue (gitPath, "git");
-			set => gitPath = value;
-		}
-
-		public string SevenZipPath {
-			get => GetRequiredValue (sevenZipPath, "7zip");
-			set => sevenZipPath = value;
-		}
+		bool quiet;
 
 		public bool IsInitialized => initialized;
 
-		public EssentialTools ()
-		{}
+		public EssentialTools (bool quiet = false)
+		{
+			this.quiet = quiet;
+		}
+
+		partial void InitGit (Context context, bool require);
+		partial void InitSevenZip (Context context, bool require);
 
 		public void Init (Context context)
 		{
-			bool require = !context.CheckCondition (KnownConditions.EnsureEssential) && context.CheckCondition (KnownConditions.AllowProgramInstallation);
+			bool require = AreToolsRequired (context);
 
-			Log.StatusLine ();
-			Log.StatusLine ("Locating essential tool binaries", ConsoleColor.DarkGreen);
+			if (!quiet) {
+				Log.StatusLine ();
+				Log.StatusLine ("Locating essential tool binaries", ConsoleColor.DarkGreen);
+			}
 
-			Log.StatusLine ($"  {context.Characters.Bullet} git", ConsoleColor.White);
-			GitPath = context.OS.Which ("git", required: require);
-			ReportToolPath (gitPath);
-
-			Log.StatusLine ($"  {context.Characters.Bullet} 7za", ConsoleColor.White);
-			SevenZipPath = context.OS.Which ("7za", required: require);
-			ReportToolPath (sevenZipPath);
-
+			InitGit (context, require);
+			InitSevenZip (context, require);
 			InitOS (context);
 			initialized = true;
 		}
 
 		void ReportToolPath (string path)
 		{
+			if (quiet) {
+				return;
+			}
+
 			if (!String.IsNullOrEmpty (path))
 				Log.StatusLine ("     Found: ", path, tailColor: Log.DestinationColor);
 			else

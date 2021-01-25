@@ -1,0 +1,16 @@
+using System.IO;
+
+namespace Xamarin.Android.Prepare
+{
+	static class BuildPaths
+	{
+		public const string XamarinAndroidSourceRoot = @"@XA_SOURCE_ROOT@";
+		public const string XATSourceDir = @"@XAT_SOURCE@";
+		public static readonly string XATInstallPath = Path.Combine (@"@XA_INSTALL_PREFIX@", "xbuild", "Xamarin", "Android", "xat");
+	}
+
+	partial class BuildInfo
+	{
+		public const string XAVersion = "@XA_PRODUCT_VERSION@";
+	}
+}

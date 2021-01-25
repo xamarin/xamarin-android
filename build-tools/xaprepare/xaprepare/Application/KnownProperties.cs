@@ -1,6 +1,6 @@
 namespace Xamarin.Android.Prepare
 {
-	static class KnownProperties
+	static partial class KnownProperties
 	{
 		public const string AndroidCmakeVersion                 = "AndroidCmakeVersion";
 		public const string AndroidCmakeVersionPath             = "AndroidCmakeVersionPath";
@@ -38,6 +38,7 @@ namespace Xamarin.Android.Prepare
 		public const string MonoRequiredMinimumVersion          = "MonoRequiredMinimumVersion";
 		public const string MonoRequiredMaximumVersion          = "MonoRequiredMaximumVersion";
 		public const string MonoSourceFullPath                  = "MonoSourceFullPath";
+		public const string MSBuildRuntimeType                  = "MSBuildRuntimeType";
 		public const string ProductVersion                      = "ProductVersion";
 		public const string RemapAssemblyRefToolExecutable      = "RemapAssemblyRefToolExecutable";
 		public const string XABuildToolsFolder                  = "XABuildToolsFolder";
@@ -48,5 +49,6 @@ namespace Xamarin.Android.Prepare
 		public const string XAPackagesDir                       = "XAPackagesDir";
 		public const string XAPlatformToolsVersion              = "XAPlatformToolsVersion";
 		public const string XAPlatformToolsPackagePrefix        = "XAPlatformToolsPackagePrefix";
+		public const string TestsFlavor                         = "TestsFlavor";
 	}
 }

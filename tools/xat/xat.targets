@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ReplaceFileContentSource>../../build-tools/xa-prep-tasks/Xamarin.Android.BuildTools.PrepTasks/ReplaceFileContents.cs</ReplaceFileContentSource>
+  </PropertyGroup>
+  <UsingTask TaskName="ReplaceFileContents" Condition=" '$(OS)' == 'Windows_NT' Or '$(MSBuildRuntimeType)' == 'Core' " TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <SourceFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+      <DestinationFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+      <Replacements ParameterType="System.String[]" />
+      <ReplacementFilePath ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Class" Language="cs" Source="$(ReplaceFileContentSource)"/>
+    </Task>
+  </UsingTask>
+  <UsingTask TaskName="ReplaceFileContents" Condition=" '$(OS)' != 'Windows_NT' And '$(MSBuildRuntimeType)' != 'Core' " TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <SourceFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+      <DestinationFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+      <Replacements ParameterType="System.String[]" />
+      <ReplacementFilePath ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Class" Language="cs" Source="$(ReplaceFileContentSource)"/>
+    </Task>
+  </UsingTask>
+
+  <Import Project="../../build-tools/scripts/XAVersionInfo.targets" />
+  <Import Project="../../build-tools/xaprepare/xaprepare/xaprepare.properties.projitems" />
+
+  <Target Name="GenerateSourceFiles"
+          DependsOnTargets="GetXAVersionInfo"
+          BeforeTargets="BeforeCompile">
+    <PropertyGroup>
+      <BuildInfoInFile>BuildInfo.cs.in</BuildInfoInFile>
+      <BuildInfoOutFile>$(IntermediateOutputPath)/BuildInfo.Generated.cs</BuildInfoOutFile>
+      <PropertiesInFile>../../build-tools/xaprepare/xaprepare/Application/Properties.Defaults.cs.in</PropertiesInFile>
+      <PropertiesOutFile>$(IntermediateOutputPath)/Properties.Generated.cs</PropertiesOutFile>
+      <LocalPropertiesInFile>Application/Context.Properties.cs.in</LocalPropertiesInFile>
+      <LocalPropertiesOutFile>$(IntermediateOutputPath)/Context.Properties.Generated.cs</LocalPropertiesOutFile>
+    </PropertyGroup>
+
+    <ReplaceFileContents
+        SourceFile="$(BuildInfoInFile)"
+        DestinationFile="$(BuildInfoOutFile)"
+        Replacements="@XA_SOURCE_ROOT@=$([System.IO.Path]::GetFullPath ('$(MSBuildThisFileDirectory)../..'));@XAT_SOURCE@=$([System.IO.Path]::GetFullPath ('$(MSBuildThisFileDirectory)/.'));@XA_PRODUCT_VERSION@=$(ProductVersion);@XA_INSTALL_PREFIX@=$(XAInstallPrefix)" />
+    <ItemGroup>
+      <Replacement Include="@AdbToolPath@=$(AdbToolPath)" />
+      <Replacement Include="@AdbToolExe@=$(AdbToolExe)" />
+      <Replacement Include="@AndroidBundleToolJarPath@=$(AndroidBundleToolJarPath)" />
+      <Replacement Include="@AvdManagerToolExe@=$(AvdManagerToolExe)" />
+      <Replacement Include="@BootstrapTasksAssembly@=$(BootstrapTasksAssembly)" />
+      <Replacement Include="@BundleToolJarPath@=$(BundleToolJarPath)" />
+      <Replacement Include="@CommandLineToolsBinPath@=$(CommandLineToolsBinPath)" />
+      <Replacement Include="@DeleteTestCaseSourceFiles@=$(DeleteTestCaseSourceFiles)" />
+      <Replacement Include="@EmulatorToolPath@=$(EmulatorToolPath)" />
+      <Replacement Include="@EmulatorToolExe@=$(EmulatorToolExe)" />
+      <Replacement Include="@JavaPath@=$(JavaPath)" />
+      <Replacement Include="@_NUnit@=$(_NUnit)" />
+      <Replacement Include="@USE_MSBUILD@=$(USE_MSBUILD)" />
+      <Replacement Include="@XAVersionHash@=$(XAVersionHash)" />
+    </ItemGroup>
+
+    <ReplaceFileContents
+        SourceFile="$(PropertiesInFile)"
+        DestinationFile="$(PropertiesOutFile)"
+        Replacements="@(Replacement)" />
+
+    <ReplaceFileContents
+        SourceFile="$(LocalPropertiesInFile)"
+        DestinationFile="$(LocalPropertiesOutFile)"
+        Replacements="@(Replacement)" />
+  </Target>
+</Project>

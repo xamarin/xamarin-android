@@ -1,0 +1,35 @@
+using System;
+
+namespace Xamarin.Android.Prepare
+{
+	partial class Context
+	{
+		partial void AddExtraProperties ()
+		{
+			Properties properties = Context.Instance.Properties;
+
+			properties.Set (KnownProperties.AdbToolExe, StripQuotes ("@AdbToolExe@"));
+			properties.Set (KnownProperties.AdbToolPath, StripQuotes ("@AdbToolPath@"));
+			properties.Set (KnownProperties.AndroidBundleToolJarPath, StripQuotes ("@AndroidBundleToolJarPath@"));
+			properties.Set (KnownProperties.AvdManagerToolExe, StripQuotes ("@AvdManagerToolExe@"));
+			properties.Set (KnownProperties.BootstrapTasksAssembly, StripQuotes ("@BootstrapTasksAssembly@"));
+			properties.Set (KnownProperties.BundleToolJarPath, StripQuotes ("@BundleToolJarPath@"));
+			properties.Set (KnownProperties.CommandLineToolsBinPath, StripQuotes ("@CommandLineToolsBinPath@"));
+			properties.Set (KnownProperties.DeleteTestCaseSourceFiles, StripQuotes ("@DeleteTestCaseSourceFiles@"));
+			properties.Set (KnownProperties.EmulatorToolExe, StripQuotes ("@EmulatorToolExe@"));
+			properties.Set (KnownProperties.EmulatorToolPath, StripQuotes ("@EmulatorToolPath@"));
+			properties.Set (KnownProperties.JavaPath, StripQuotes ("@JavaPath@"));
+			properties.Set (KnownProperties.NUnit, StripQuotes ("@_NUnit@"));
+			properties.Set (KnownProperties.USE_MSBUILD, StripQuotes ("@USE_MSBUILD@"));
+			properties.Set (KnownProperties.XAVersionHash, StripQuotes ("@XAVersionHash@"));
+		}
+
+		static string StripQuotes (string input)
+		{
+			if (String.IsNullOrEmpty (input))
+				return String.Empty;
+
+			return input.Trim ('"');
+		}
+	}
+}

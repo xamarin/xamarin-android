@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+      <Replacement Include="@AndroidLatestStableFrameworkVersion@=$(AndroidLatestStableFrameworkVersion)" />
+      <Replacement Include="@AndroidCmakeVersion@=$(AndroidCmakeVersion)" />
+      <Replacement Include="@AndroidCmakeVersionPath@=$(AndroidCmakeVersionPath)" />
+      <Replacement Include="@AndroidMxeFullPath@=$(AndroidMxeFullPath)" />
+      <Replacement Include="@AndroidNdkDirectory@=$(AndroidNdkDirectory)" />
+      <Replacement Include="@AndroidNdkVersion@=$(AndroidNdkVersion)" />
+      <Replacement Include="@AndroidSdkDirectory@=$(AndroidSdkDirectory)" />
+      <Replacement Include="@AndroidSupportedHostJitAbis@=$(AndroidSupportedHostJitAbis)" />
+      <Replacement Include="@AndroidSupportedTargetAotAbis@=$(AndroidSupportedTargetAotAbis)" />
+      <Replacement Include="@AndroidSupportedTargetJitAbis@=$(AndroidSupportedTargetJitAbis)" />
+      <Replacement Include="@AndroidToolchainCacheDirectory@=$(AndroidToolchainCacheDirectory)" />
+      <Replacement Include="@AndroidToolchainDirectory@=$(AndroidToolchainDirectory)" />
+      <Replacement Include="@AutoProvision@=$(AutoProvision)" />
+      <Replacement Include="@AutoProvisionUsesSudo@=$(AutoProvisionUsesSudo)" />
+      <Replacement Include="@Configuration@=$(Configuration)" />
+      <Replacement Include="@CommandLineToolsFolder@=$(CommandLineToolsFolder)" />
+      <Replacement Include="@CommandLineToolsVersion@=$(CommandLineToolsVersion)" />
+      <Replacement Include="@DotNetPreviewPath@=$(DotNetPreviewPath)" />
+      <Replacement Include="@DotNetPreviewVersionFull@=$(DotNetPreviewVersionFull)" />
+      <Replacement Include="@EmulatorVersion@=$(EmulatorVersion)" />
+      <Replacement Include="@EmulatorPkgRevision@=$(EmulatorPkgRevision)" />
+      <Replacement Include="@IgnoreMaxMonoVersion@=$(IgnoreMaxMonoVersion)" />
+      <Replacement Include="@JavaInteropFullPath@=$(JavaInteropFullPath)" />
+      <Replacement Include="@JavaSdkDirectory@=$(JavaSdkDirectory)" />
+      <Replacement Include="@LibZipSourceFullPath@=$(LibZipSourceFullPath)" />
+      <Replacement Include="@ManagedRuntime@=$(ManagedRuntime)" />
+      <Replacement Include="@MingwCommandPrefix32@=$(MingwCommandPrefix32)" />
+      <Replacement Include="@MingwCommandPrefix64@=$(MingwCommandPrefix64)" />
+      <Replacement Include="@MingwDependenciesRootDirectory@=$(MingwDependenciesRootDirectory)" />
+      <Replacement Include="@MingwZlibLibraryName@=$(MingwZlibLibraryName)" />
+      <Replacement Include="@MingwZlibRootDirectory32@=$(MingwZlibRootDirectory32)" />
+      <Replacement Include="@MingwZlibRootDirectory64@=$(MingwZlibRootDirectory64)" />
+      <Replacement Include="@MonoDarwinPackageUrl@=$(MonoDarwinPackageUrl)" />
+      <Replacement Include="@MonoRequiredMinimumVersion@=$(MonoRequiredMinimumVersion)" />
+      <Replacement Include="@MonoRequiredMaximumVersion@=$(MonoRequiredMaximumVersion)" />
+      <Replacement Include="@MonoSourceFullPath@=$(MonoSourceFullPath)" />
+      <Replacement Include="@MSBuildRuntimeType@=$(MSBuildRuntimeType)" />
+      <Replacement Include="@ProductVersion@=$(ProductVersion)" />
+      <Replacement Include="@RemapAssemblyRefToolExecutable@=$(RemapAssemblyRefToolExecutable)" />
+      <Replacement Include="@XABuildToolsFolder@=$(XABuildToolsFolder)" />
+      <Replacement Include="@XABuildToolsVersion@=$(XABuildToolsVersion)" />
+      <Replacement Include="@XABuildToolsPackagePrefix@=$(XABuildToolsPackagePrefix)" />
+      <Replacement Include="@XAPackagesDir@=$(XAPackagesDir)" />
+      <Replacement Include="@XAPlatformToolsVersion@=$(XAPlatformToolsVersion)" />
+      <Replacement Include="@XAInstallPrefix@=$(XAInstallPrefix)" />
+      <Replacement Include="@XABinRelativeInstallPrefix@=$(_XABinRelativeInstallPrefix)" />
+      <Replacement Include="@XAPlatformToolsPackagePrefix@=$(XAPlatformToolsPackagePrefix)" />
+      <Replacement Include="@TestsFlavor@=$(TestsFlavor)" />
+    </ItemGroup>
+</Project>

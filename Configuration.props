@@ -211,8 +211,7 @@
   <!-- Unit Test Properties -->
   <PropertyGroup>
     <NUnitConsoleVersion Condition=" '$(NUnitConsoleVersion)' == '' ">3.11.1</NUnitConsoleVersion>
-    <_Runtime Condition=" '$(HostOS)' != 'Windows' ">$(ManagedRuntime) $(ManagedRuntimeArgs)</_Runtime>
-    <_NUnit>$(_Runtime) $(XAPackagesDir)\nunit.consolerunner\$(NUnitConsoleVersion)\tools\nunit3-console.exe</_NUnit>
+    <_NUnit>$(XAPackagesDir)\nunit.consolerunner\$(NUnitConsoleVersion)\tools\nunit3-console.exe</_NUnit>
   </PropertyGroup>
 
   <!-- Fix for IDEs -->

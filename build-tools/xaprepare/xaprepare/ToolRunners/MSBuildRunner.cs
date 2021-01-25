@@ -39,7 +39,12 @@ namespace Xamarin.Android.Prepare
 				runner.AddQuotedArgument ($"/bl:{logPath}");
 			}
 			AddArguments (runner, arguments);
-			runner.AddQuotedArgument (Utilities.GetRelativePath (workingDirectory!, projectPath));
+
+			string relativeProjectPath = Utilities.GetRelativePath (workingDirectory!, projectPath);
+			Log.DebugLine ($"MSBuildRunner.Run:: project path: {projectPath}");
+			Log.DebugLine ($"MSBuildRunner.Run:: working directory: {workingDirectory!}");
+			Log.DebugLine ($"MSBuildRunner.Run:: using project path relative to working directory: {relativeProjectPath}");
+			runner.AddQuotedArgument (relativeProjectPath);
 
 			string message = GetLogMessage (runner);
 			Log.Info (message, CommandMessageColor);

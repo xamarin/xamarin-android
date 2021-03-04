@@ -305,7 +305,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 			<AndroidIncludeDebugSymbols>True</AndroidIncludeDebugSymbols>
 		</PropertyGroup>
 	</When>
-	<When Condition=" '$(DebugSymbols)' != '' And $(DebugSymbols) And '$(DebugType)' == '' ">
+	<When Condition=" '$(DebugSymbols)' != '' And $(DebugSymbols) And ('$(DebugType)' == '' Or '$(DebugType)' == 'portable') ">
 		<PropertyGroup>
 			<AndroidIncludeDebugSymbols>True</AndroidIncludeDebugSymbols>
 		</PropertyGroup>

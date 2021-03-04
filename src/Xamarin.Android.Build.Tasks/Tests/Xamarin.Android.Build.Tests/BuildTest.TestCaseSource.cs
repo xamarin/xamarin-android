@@ -103,7 +103,7 @@ namespace Xamarin.Android.Build.Tests
 				/* aotAssemblies */      false,
 				/* debugSymbols */       true,
 				/* debugType */          "Full",
-				/* embedMdb */           false,
+				/* embedMdb */           true,
 				/* expectedRuntime */    "release",
 			},
 			new object[] {
@@ -112,7 +112,7 @@ namespace Xamarin.Android.Build.Tests
 				/* aotAssemblies */      false,
 				/* debugSymbols */       true,
 				/* debugType */          "Full",
-				/* embedMdb */           false,
+				/* embedMdb */           true,
 				/* expectedRuntime */    "release",
 			},
 			new object[] {
@@ -121,7 +121,7 @@ namespace Xamarin.Android.Build.Tests
 				/* aotAssemblies */      false,
 				/* debugSymbols */       true,
 				/* debugType */          "Portable",
-				/* embedMdb */           false,
+				/* embedMdb */           true,
 				/* expectedRuntime */    "release",
 			},
 			new object[] {
@@ -130,7 +130,7 @@ namespace Xamarin.Android.Build.Tests
 				/* aotAssemblies */      true,
 				/* debugSymbols */       true,
 				/* debugType */          "Portable",
-				/* embedMdb */           false,
+				/* embedMdb */           true,
 				/* expectedRuntime */    "release",
 			},
 			new object[] {
@@ -139,7 +139,7 @@ namespace Xamarin.Android.Build.Tests
 				/* aotAssemblies */      false,
 				/* debugSymbols */       true,
 				/* debugType */          "Portable",
-				/* embedMdb */           false,
+				/* embedMdb */           true,
 				/* expectedRuntime */    "release",
 			},
 			new object[] {

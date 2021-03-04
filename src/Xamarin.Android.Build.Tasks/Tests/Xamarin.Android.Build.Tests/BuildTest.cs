@@ -1030,7 +1030,7 @@ namespace UnamedProject
 					using (var zipFile = ZipHelper.OpenZip (apk)) {
 						Assert.IsNotNull (ZipHelper.ReadFileFromZip (zipFile,
 							"lib/" + abi + "/libmonodroid_bundle_app.so"),
-							$"lib/{0}/libmonodroid_bundle_app.so should be in the {proj.PackageName}.apk", abi);
+							$"lib/{abi}/libmonodroid_bundle_app.so should be in the {proj.PackageName}.apk");
 						Assert.IsNull (ZipHelper.ReadFileFromZip (zipFile,
 							Path.Combine ("assemblies", "UnnamedProject.dll")),
 							$"UnnamedProject.dll should not be in the {proj.PackageName}.apk");
@@ -1951,7 +1951,7 @@ namespace App1
 					var mdbExits = ZipHelper.ReadFileFromZip (zipFile, "assemblies/UnnamedProject.dll.mdb") != null ||
 						ZipHelper.ReadFileFromZip (zipFile, "assemblies/UnnamedProject.pdb") != null;
 					Assert.AreEqual (embedMdb, mdbExits,
-						$"assemblies/UnnamedProject.dll.mdb or assemblies/UnnamedProject.pdb should{0}be in the {proj.PackageName}.apk", embedMdb ? " " : " not ");
+						$"assemblies/UnnamedProject.dll.mdb or assemblies/UnnamedProject.pdb should{(embedMdb ? " " : " not ")}be in the {proj.PackageName}.apk");
 					if (aotAssemblies) {
 						foreach (var abi in abis) {
 							var assemblies = Path.Combine (Root, b.ProjectDirectory, proj.IntermediateOutputPath,
@@ -1970,7 +1970,7 @@ namespace App1
 							Assert.IsTrue (File.Exists (assemblies), "{0} libaot-UnnamedProject.dll.so does not exist", abi);
 							Assert.IsNotNull (ZipHelper.ReadFileFromZip (zipFile,
 								string.Format ("lib/{0}/libaot-UnnamedProject.dll.so", abi)),
-								$"lib/{0}/libaot-UnnamedProject.dll.so should be in the {proj.PackageName}.apk", abi);
+								$"lib/{abi}/libaot-UnnamedProject.dll.so should be in the {proj.PackageName}.apk");
 							Assert.IsNotNull (ZipHelper.ReadFileFromZip (zipFile,
 								"assemblies/UnnamedProject.dll"),
 								$"UnnamedProject.dll should be in the {proj.PackageName}.apk");

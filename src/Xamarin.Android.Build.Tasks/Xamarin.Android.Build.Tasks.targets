@@ -135,6 +135,10 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="MSBuild\Xamarin\Android\Xamarin.Android.DynamicFeature.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Xamarin.Android.DynamicFeature.targets</Link>
+    </None>
     <None Include="Xamarin.Android.BuildInfo.txt">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

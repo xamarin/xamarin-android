@@ -27,6 +27,8 @@ namespace Xamarin.Android.Tasks {
 		[Required]
 		public string JavaPlatformJarPath { get; set; }
 
+		public ITaskItem [] AdditionalApksToLink { get; set; }
+
 		public string PackageName { get; set; }
 
 		public ITaskItem [] AdditionalResourceArchives { get; set; }
@@ -74,6 +76,8 @@ namespace Xamarin.Android.Tasks {
 		public bool NonConstantId { get; set; }
 
 		public bool ProtobufFormat { get; set; }
+
+		public bool StaticLibrary { get; set; } = false;
 
 		public string ProguardRuleOutput { get; set; }
 
@@ -241,6 +245,15 @@ namespace Xamarin.Android.Tasks {
 			cmd.Add ("-I");
 			cmd.Add (GetFullPath (JavaPlatformJarPath));
 
+			if (AdditionalApksToLink != null) {
+				foreach (ITaskItem link in AdditionalApksToLink) {
+					if (!File.Exists (link.ItemSpec))
+						continue;
+					cmd.Add ("-I");
+					cmd.Add (link.ItemSpec);
+				}
+			}
+
 			if (!string.IsNullOrEmpty (ResourceSymbolsTextFile)) {
 				cmd.Add ("--output-text-symbols");
 				cmd.Add (GetFullPath (ResourceSymbolsTextFile));
@@ -248,6 +261,9 @@ namespace Xamarin.Android.Tasks {
 
 			if (ProtobufFormat)
 				cmd.Add ("--proto-format");
+
+			if (StaticLibrary)
+				cmd.Add ("--static-lib");
 
 			if (!string.IsNullOrWhiteSpace (ExtraArgs)) {
 				foreach (Match match in exraArgSplitRegEx.Matches (ExtraArgs)) {

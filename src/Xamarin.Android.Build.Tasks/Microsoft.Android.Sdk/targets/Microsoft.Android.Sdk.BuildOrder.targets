@@ -68,6 +68,7 @@ projects, these properties are set in Xamarin.Android.Legacy.targets.
       _CompileDex;
       $(_AfterCompileDex);
       _CreateBaseApk;
+      _BuildDynamicFeatures;
       _PrepareAssemblies;
       _ResolveSatellitePaths;
       _CheckApkPerAbiFlag;

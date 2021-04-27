@@ -1,0 +1,38 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+<!-- Andorid Feature Build System-->
+<Target Name="_GetDynamicFeatureOutputs">
+    <ItemGroup>
+        <_AndroidDynamicFeature Include="%(ProjectReference.Identity)" Condition=" '%(ProjectReference.AndroidDynamicFeature)' == 'True' " />
+    </ItemGroup>
+    <MSBuild Projects="@(_AndroidDynamicFeature)" Targets="GetDynamicFeatureOutputs" RebaseOutputs="true" Properties="Configuration=$(Configuration)">
+        <Output TaskParameter="TargetOutputs" ItemName="_DynamicFeatureOutputs" />
+    </MSBuild>
+</Target>
+<Target Name="_BuildDynamicFeatures"
+      AfterTargets="_CreateBaseApk"
+      DependsOnTargets="_GetDynamicFeatureOutputs"
+      Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidApplication)' == 'true' "
+      Inputs="@(_AndroidDynamicFeature)"
+      Outputs="@(_DynamicFeatureOutputs)">
+    <MSBuild Projects="@(_AndroidDynamicFeature)" BuildInParallel="True" Targets="BuildDynamicFeature" RebaseOutputs="true"
+      Properties="Configuration=$(Configuration);PackageName=$(_AndroidPackage);_TargetSdkVersion=$(_TargetSdkVersion);_MinSdkVersion=$(_MinSdkVersion);JavaPlatformJarPath=$(JavaPlatformJarPath);_PackagedResources=$(MSBuildProjectDirectory)\$(_PackagedResources);Aapt2ToolPath=$(Aapt2ToolPath);Aapt2ToolExe=$(Aapt2ToolExe)" />
+    <ItemGroup>
+        <AndroidAppBundleModules Include="@(_DynamicFeatureOutputs)" />
+    </ItemGroup>
+</Target>
+<!-- Feature Specific Targets. -->
+
+<PropertyGroup>
+    <_FeaturePackage>$(OutputPath)$(MSBuildProjectName).zip</_FeaturePackage>
+    <_FeaturePackageTemp>$(IntermediateOutputPath)$(MSBuildProjectName).zip</_FeaturePackageTemp>
+    <_FeaturePackageProtoTemp>$(IntermediateOutputPath)$(MSBuildProjectName).proto.zip</_FeaturePackageProtoTemp>
+</PropertyGroup>
+<Target Name="GetDynamicFeatureOutputs" Outputs="$(_FeaturePackage)">
+</Target>
+<Target Name="BuildDynamicFeature"
+        DependsOnTargets="Build;_CreateFeaturePackageWithAapt2"
+        Inputs="$(_AndroidManifestAbs);@(AndroidAsset);$(_PackagedResources)"
+        Outputs="$(_FeaturePackage)">
+</Target>
+</Project>

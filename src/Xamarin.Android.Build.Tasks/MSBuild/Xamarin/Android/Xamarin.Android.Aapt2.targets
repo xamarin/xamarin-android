@@ -19,6 +19,8 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 
 <UsingTask TaskName="Xamarin.Android.Tasks.Aapt2Compile" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.Aapt2Link" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.Aapt2Convert" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.CreateDynamicFeatureManifest" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 
 <PropertyGroup>
   <Aapt2DaemonMaxInstanceCount Condition=" '$(Aapt2DaemonMaxInstanceCount)' == '' " >0</Aapt2DaemonMaxInstanceCount>
@@ -243,5 +245,76 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       ToolExe="$(Aapt2ToolExe)"
       UncompressedFileExtensions="$(AndroidStoreUncompressedFileExtensions)"
   />
+</Target>
+
+<Target Name="_GenerateDynamicFeatureManifest"
+    Inputs="$(MSBuildProjectFile)"
+    Outputs="$(IntermediateOutputPath)AndroidManifest.xml">
+  <PropertyGroup>
+    <AndroidManifest Condition=" '$(AndroidManifest)' == '' ">$(IntermediateOutputPath)AndroidManifest.xml</AndroidManifest>
+    <FeatureSplitName Condition=" '$(FeatureSplitName)' == '' " >$(ProjectName)</FeatureSplitName>
+    <FeatureDeliveryType Condition=" '$(FeatureDeliveryType)' == '' " >InstallTime</FeatureDeliveryType>
+    <IsFeatureSplit Condition=" '$(IsFeatureSplit)' == '' " >True</IsFeatureSplit>
+  </PropertyGroup>
+  <CreateDynamicFeatureManifest
+    FeatureSplitName="$(FeatureSplitName)"
+    FeatureDeliveryType="$(FeatureDeliveryType)"
+    IsFeatureSplit="$(IsFeatureSplit)"
+    FeatureTitleResource="$(FeatureTitleResource)"
+    PackageName="$(PackageName)"
+    OutputFile="$(AndroidManifest)"
+    MinSdkVersion="$(_MinSdkVersion)"
+    TargetSdkVersion="$(_TargetSdkVersion)"
+  />
+  <ItemGroup>
+    <FileWrites Include="$(AndroidManifest)" />
+  </ItemGroup>
+</Target>
+
+<Target Name="_CreateFeaturePackageWithAapt2"
+    DependsOnTargets="UpdateAndroidAssets;_GenerateDynamicFeatureManifest"
+    Inputs="$(AndroidManifest);@(AndroidAsset);$(_PackagedResources)"
+    Outputs="$(_FeaturePackage)"
+  >
+  <Aapt2Link
+      AndroidManifestFile="$(AndroidManifest)"
+      CompiledResourceFlatFiles="@(_CompiledFlatFiles)"
+      DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
+      DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
+      ResourceDirectories="$(MonoAndroidResDirIntermediate)"
+      AssemblyIdentityMapFile="$(_AndroidLibrayProjectAssemblyMapFile)"
+      ImportsDirectory="$(_LibraryProjectImportsDirectoryName)"
+      OutputImportDirectory="$(_AndroidLibrayProjectIntermediatePath)"
+      OutputFile="$(_FeaturePackageTemp)"
+      AdditionalAndroidResourcePaths="@(_LibraryResourceDirectories)"
+      YieldDuringToolExecution="$(YieldDuringToolExecution)"
+      PackageName="$(_AndroidPackage)"
+      JavaPlatformJarPath="$(JavaPlatformJarPath)"
+      AdditionalApksToLink="$(_PackagedResources)"
+      VersionCodePattern="$(AndroidVersionCodePattern)"
+      VersionCodeProperties="$(AndroidVersionCodeProperties)"
+      SupportedAbis="@(_BuildTargetAbis)"
+      CreatePackagePerAbi="$(AndroidCreatePackagePerAbi)"
+      AssetsDirectory="$(MonoAndroidAssetsDirIntermediate)"
+      AdditionalAndroidAssetPaths="@(LibraryAssetDirectories)"
+      AndroidSdkPlatform="$(_AndroidApiLevel)"
+      JavaDesignerOutputDirectory="$(AaptTemporaryDirectory)"
+      ManifestFiles="$(AndroidManifest)"
+      ProtobufFormat="False"
+      StaticLibrary="True"
+      ExtraArgs="$(AndroidAapt2LinkExtraArgs)"
+      ToolPath="$(Aapt2ToolPath)"
+      ToolExe="$(Aapt2ToolExe)"
+      UncompressedFileExtensions="$(AndroidStoreUncompressedFileExtensions)"
+    />
+    <Aapt2Convert
+      DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
+      DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
+      OutputArchive="$(_FeaturePackage)"
+      Files="$(_FeaturePackageTemp)"
+      OutputFormat="proto"
+      ToolPath="$(Aapt2ToolPath)"
+      ToolExe="$(Aapt2ToolExe)"
+    />
 </Target>
 </Project>

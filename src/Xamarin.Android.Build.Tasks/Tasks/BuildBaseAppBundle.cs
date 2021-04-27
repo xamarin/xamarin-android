@@ -33,19 +33,11 @@ namespace Xamarin.Android.Tasks
 		/// </summary>
 		protected override void FixupArchive (ZipArchiveEx zip)
 		{
-			if (!zip.Archive.ContainsEntry ("AndroidManifest.xml")) {
+			if (!zip.MoveEntry ("AndroidManifest.xml", "manifest/AndroidManifest.xml")) {
 				Log.LogDebugMessage ($"No AndroidManifest.xml. Skipping Fixup");
 				return;
 			}
-			var entry = zip.Archive.ReadEntry ("AndroidManifest.xml");
-			Log.LogDebugMessage ($"Fixing up AndroidManifest.xml to be manifest/AndroidManifest.xml.");
-			using (var stream = new MemoryStream ()) {
-				entry.Extract (stream);
-				stream.Position = 0;
-				zip.Archive.AddEntry ("manifest/AndroidManifest.xml", stream);
-				zip.Archive.DeleteEntry (entry);
-				zip.Flush ();
-			}
+			Log.LogDebugMessage ($"Fixed up AndroidManifest.xml to be manifest/AndroidManifest.xml.");
 		}
 	}
 }

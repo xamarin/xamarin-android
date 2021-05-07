@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="Mono.Android_Tests">
-	<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="28" />
+	<uses-sdk android:minSdkVersion="16" />
 	<application android:debuggable="true" android:label="Xamarin.Android.RuntimeTests" android:name="android.apptests.App" android:usesCleartextTraffic="true">
 		<activity android:name="android.apptests.RenamedActivity" android:configChanges="keyboardHidden" />
 	</application>

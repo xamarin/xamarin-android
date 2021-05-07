@@ -62,7 +62,7 @@ namespace Xamarin.Android.UnitTests
 
 			if (aname == null)
 				return null;
-			
+
 			foreach (string dir in TestAssemblyDirectories) {
 				if (String.IsNullOrEmpty (dir))
 					continue;
@@ -244,7 +244,7 @@ namespace Xamarin.Android.UnitTests
 			LogPaddedInfo ("VERSION.Release", Build.VERSION.Release, alignColumn);
 			LogPaddedInfo ("VERSION.Sdk", Build.VERSION.Sdk, alignColumn);
 			LogPaddedInfo ("VERSION.SdkInt", Build.VERSION.SdkInt.ToString (), alignColumn);
-			LogPaddedInfo ("Device Date/Time", DateTime.UtcNow.ToString (), alignColumn); 
+			LogPaddedInfo ("Device Date/Time", DateTime.UtcNow.ToString (), alignColumn);
 
 			// FIXME: add data about how the app was compiled (e.g. ARMvX, LLVM, Linker options)
 		}
@@ -285,7 +285,7 @@ namespace Xamarin.Android.UnitTests
 			results.PutLong (ResultInconclusiveTests, runner.InconclusiveTests);
 			results.PutLong (ResultTotalTests, runner.TotalTests);
 			results.PutLong (ResultFilteredTests, runner.FilteredTests);
-			results.PutString (ResultResultsFilePath, ToAdbPath (resultsFilePath));
+			results.PutString (ResultResultsFilePath, resultsFilePath);
 
 			Log.Info (LogTag, $"Passed: {runner.PassedTests}, Failed: {runner.FailedTests}, Skipped: {runner.SkippedTests}, Inconclusive: {runner.InconclusiveTests}, Total: {runner.TotalTests}, Filtered: {runner.FilteredTests}");
 
@@ -380,7 +380,7 @@ namespace Xamarin.Android.UnitTests
 				string line = reader.ReadLine ()?.Trim ();
 				if (line == null)
 					return excludedTestNames;
-				
+
 				if (line.Length == 0 || line.StartsWith ("#", StringComparison.Ordinal))
 					continue;
 
@@ -391,27 +391,6 @@ namespace Xamarin.Android.UnitTests
 
 				excludedTestNames.Add (line);
 			} while (true);
-		}
-
-		// On some Android targets, the external storage directory is "emulated",
-		// in which case the paths used on-device by the application are *not*
-		// paths that can be used off-device with `adb pull`.
-		// For example, `Contxt.GetExternalFilesDir()` may return `/storage/emulated/foo`,
-		// but `adb pull /storage/emulated/foo` will *fail*; instead, we may need
-		// `adb pull /mnt/shell/emulated/foo`.
-		// The `$EMULATED_STORAGE_SOURCE` and `$EMULATED_STORAGE_TARGET` environment
-		// variables control the "on-device" (`$EMULATED_STORAGE_TARGET`) and
-		// "off-device" (`$EMULATED_STORAGE_SOURCE`) directory prefixes
-		string ToAdbPath (string path)
-		{
-			string source = global::System.Environment.GetEnvironmentVariable ("EMULATED_STORAGE_SOURCE")?.Trim ();
-			string target = global::System.Environment.GetEnvironmentVariable ("EMULATED_STORAGE_TARGET")?.Trim ();
-
-			if (!String.IsNullOrEmpty (source) && !String.IsNullOrEmpty (target) && path.StartsWith (target, StringComparison.Ordinal)) {
-				return path.Replace (target, source);
-			}
-
-			return path;
 		}
 	}
 }

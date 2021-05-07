@@ -213,7 +213,7 @@ namespace ${ROOT_NAMESPACE} {
 				int port = rnd.Next (10000, 20000);
 				TestContext.Out.WriteLine ($"{port}");
 				var args = new SoftDebuggerConnectArgs ("", IPAddress.Loopback, port) {
-					MaxConnectionAttempts = 10,
+					MaxConnectionAttempts = 2000, // we need a long delay here to get a reliable connection
 				};
 				var startInfo = new SoftDebuggerStartInfo (args) {
 					WorkingDirectory = Path.Combine (b.ProjectDirectory, proj.IntermediateOutputPath, "android", "assets"),
@@ -230,16 +230,14 @@ namespace ${ROOT_NAMESPACE} {
 					"AndroidAttachDebugger=True",
 				}), "Project should have run.");
 
-				// do we expect the app to start?
-				Assert.AreEqual (activityStarts, WaitForDebuggerToStart (Path.Combine (Root, b.ProjectDirectory, "logcat.log")), "Activity should have started");
-				if (!activityStarts)
-					return;
-				// we need to give a bit of time for the debug server to start up.
-				WaitFor (2000);
 				session.LogWriter += (isStderr, text) => { Console.WriteLine (text); };
 				session.OutputWriter += (isStderr, text) => { Console.WriteLine (text); };
 				session.DebugWriter += (level, category, message) => { Console.WriteLine (message); };
 				session.Run (startInfo, options);
+				// do we expect the app to start?
+				Assert.AreEqual (activityStarts, WaitForDebuggerToStart (Path.Combine (Root, b.ProjectDirectory, "logcat.log")), "Debugger should have started");
+				if (!activityStarts)
+					return;
 				var expectedTime = TimeSpan.FromSeconds (1);
 				var actualTime = ProfileFor (() => session.IsConnected);
 				TestContext.Out.WriteLine ($"Debugger connected in {actualTime}");
@@ -321,6 +319,7 @@ namespace ${ROOT_NAMESPACE} {
 				parameters.Add ($"AndroidDeviceUserId={userId}");
 			if (SwitchUser (username)) {
 				WaitFor (5);
+				ClearBlockingDialogs ();
 				ClickButton ("", "android:id/button1", "Yes continue");
 			}
 
@@ -386,7 +385,7 @@ namespace ${ROOT_NAMESPACE} {
 				int port = rnd.Next (10000, 20000);
 				TestContext.Out.WriteLine ($"{port}");
 				var args = new SoftDebuggerConnectArgs ("", IPAddress.Loopback, port) {
-					MaxConnectionAttempts = 10,
+					MaxConnectionAttempts = 2000,
 				};
 				var startInfo = new SoftDebuggerStartInfo (args) {
 					WorkingDirectory = Path.Combine (appBuilder.ProjectDirectory, app.IntermediateOutputPath, "android", "assets"),
@@ -405,13 +404,11 @@ namespace ${ROOT_NAMESPACE} {
 				Assert.True (appBuilder.RunTarget (app, "_Run", doNotCleanupOnUpdate: true,
 					parameters: parameters.ToArray ()), "Project should have run.");
 
-				Assert.IsTrue (WaitForDebuggerToStart (Path.Combine (Root, appBuilder.ProjectDirectory, "logcat.log")), "Activity should have started");
-				// we need to give a bit of time for the debug server to start up.
-				WaitFor (2000);
 				session.LogWriter += (isStderr, text) => { Console.WriteLine (text); };
 				session.OutputWriter += (isStderr, text) => { Console.WriteLine (text); };
 				session.DebugWriter += (level, category, message) => { Console.WriteLine (message); };
 				session.Run (startInfo, options);
+				Assert.IsTrue (WaitForDebuggerToStart (Path.Combine (Root, b.ProjectDirectory, "logcat.log")), "Debugger should have started");
 				WaitFor (TimeSpan.FromSeconds (30), () => session.IsConnected);
 				Assert.True (session.IsConnected, "Debugger should have connected but it did not.");
 				// we need to wait here for a while to allow the breakpoints to hit
@@ -426,7 +423,12 @@ namespace ${ROOT_NAMESPACE} {
 				Assert.AreEqual (expected, breakcountHitCount, $"Should have hit {expected} breakpoints. Only hit {breakcountHitCount}");
 				breakcountHitCount = 0;
 				ClearAdbLogcat ();
+<<<<<<< HEAD
 				ClickButton (app.PackageName, "myXFButton", "CLICK ME");
+=======
+				ClearBlockingDialogs ();
+				ClickButton (proj.PackageName, "myXFButton", "CLICK ME");
+>>>>>>> [build-tools] Bump Test emulator to use API 30
 				while (session.IsConnected && breakcountHitCount < 1 && timeout >= TimeSpan.Zero) {
 					Thread.Sleep (10);
 					timeout = timeout.Subtract (TimeSpan.FromMilliseconds (10));

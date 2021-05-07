@@ -24,6 +24,7 @@ namespace Xamarin.Android.Tools.BootstrapTasks
 		public                  string          TargetId        {get; set;}
 
 		public                  string          ImageName           {get; set;} = "XamarinAndroidTestRunner64";
+		public			string		ImageType	    {get; set;} = "default";
 
 		public                  string          DataPartitionSizeMB {get; set;} = "2048";
 		public                  string          RamSizeMB           {get; set;} = "2048";
@@ -32,7 +33,7 @@ namespace Xamarin.Android.Tools.BootstrapTasks
 		public override bool Execute ()
 		{
 			if (string.IsNullOrEmpty (TargetId) && !string.IsNullOrEmpty (SdkVersion)) {
-				TargetId    = "system-images;android-" + SdkVersion + ";default;" + AndroidAbi;
+				TargetId    = $"system-images;android-{SdkVersion};{ImageType};{AndroidAbi}";
 			}
 			Log.LogMessage (MessageImportance.Low, $"Task {nameof (CreateAndroidEmulator)}");
 			Log.LogMessage (MessageImportance.Low, $"  {nameof (AndroidAbi)}: {AndroidAbi}");

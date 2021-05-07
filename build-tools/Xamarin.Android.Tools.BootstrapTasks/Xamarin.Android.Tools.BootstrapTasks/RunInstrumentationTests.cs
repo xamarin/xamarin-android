@@ -100,8 +100,10 @@ namespace Xamarin.Android.Tools.BootstrapTasks
 				},
 
 				new CommandInfo {
-					ArgumentsGenerator = () => $"{AdbTarget} {AdbOptions} pull \"{targetTestResultsPath}\" \"{NUnit2TestResultsFile}\"",
-					ShouldRun = () => !String.IsNullOrEmpty (targetTestResultsPath)
+					ArgumentsGenerator = () => $"{AdbTarget} {AdbOptions} shell run-as {PackageName} cat \"{targetTestResultsPath}\"",
+					ShouldRun = () => !String.IsNullOrEmpty (targetTestResultsPath),
+					StdoutFilePath = NUnit2TestResultsFile,
+					StdoutAppend = false,
 				},
 			};
 		}

@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="Xamarin.Android.EmbeddedDSO_Test">
-    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="28" />
+    <uses-sdk android:minSdkVersion="23" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <application android:allowBackup="true" android:icon="@mipmap/icon" android:label="@string/app_name" android:theme="@android:style/Theme.Material" android:extractNativeLibs="false" android:directBootAware="true">
+    <application android:debuggable="true" android:allowBackup="true" android:icon="@mipmap/icon" android:label="@string/app_name" android:theme="@android:style/Theme.Material" android:extractNativeLibs="false" android:directBootAware="true">
     </application>
 </manifest>

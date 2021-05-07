@@ -19,11 +19,14 @@
   <PropertyGroup>
     <TestAvdApiLevel Condition=" '$(TestAvdApiLevel)' == '' ">29</TestAvdApiLevel>
     <TestAvdAbi Condition=" '$(TestAvdAbi)' == '' ">x86_64</TestAvdAbi>
-    <SdkManagerImageName Condition=" '$(SdkManagerImageName)' == '' ">system-images;android-$(TestAvdApiLevel);default;$(TestAvdAbi)</SdkManagerImageName>
+    <TestAvdType Condition=" '$(TestAvdType)' == '' ">default</TestAvdType>
+    <SdkManagerImageName Condition=" '$(SdkManagerImageName)' == '' ">system-images;android-$(TestAvdApiLevel);$(TestAvdType);$(TestAvdAbi)</SdkManagerImageName>
     <TestAvdName>XamarinAndroidTestRunner$(TestAvdApiLevel)-$(TestAvdAbi)</TestAvdName>
     <_AdbEmulatorPort>5570</_AdbEmulatorPort>
+    <_AdbEmulatorShowWindow Condition=" '$(RunningOnCI)' == 'True' And '$(_AdbEmulatorShowWindow)' == '' ">False</_AdbEmulatorShowWindow>
+    <_AdbEmulatorShowWindow Condition=" '$(_AdbEmulatorShowWindow)' == '' ">True</_AdbEmulatorShowWindow>
     <_ApkSizesReferenceDirectory>$(MSBuildThisFileDirectory)..\..\tests\apk-sizes-reference</_ApkSizesReferenceDirectory>
-    <AvdLaunchTimeoutMinutes Condition=" '$(AvdLaunchTimeoutMinutes)' == '' ">5</AvdLaunchTimeoutMinutes>
+    <AvdLaunchTimeoutMinutes Condition=" '$(AvdLaunchTimeoutMinutes)' == '' ">10</AvdLaunchTimeoutMinutes>
     <AvdLaunchTimeoutSeconds>$([MSBuild]::Multiply($(AvdLaunchTimeoutMinutes), 60))</AvdLaunchTimeoutSeconds>
     <AvdLaunchTimeoutMS>$([MSBuild]::Multiply($(AvdLaunchTimeoutSeconds), 1000))</AvdLaunchTimeoutMS>
   </PropertyGroup>
@@ -57,6 +60,7 @@
         SdkVersion="$(TestAvdApiLevel)"
         TargetId="$(SdkManagerImageName)"
         ImageName="$(TestAvdName)"
+        ImageType="$(TestAvdType)"
         ToolExe="$(AvdManagerToolExe)"
         ToolPath="$(CommandLineToolsBinPath)"
         RamSizeMB="3072"
@@ -68,6 +72,7 @@
         Arguments="$(TestEmulatorArguments)"
         ImageName="$(TestAvdName)"
         Port="$(_AdbEmulatorPort)"
+        ShowWindow="$(_AdbEmulatorShowWindow)"
         ToolExe="$(EmulatorToolExe)"
         ToolPath="$(EmulatorToolPath)">
       <Output TaskParameter="AdbTarget" PropertyName="_AdbTarget" />
@@ -80,7 +85,7 @@
         Arguments="$(_AdbTarget) wait-for-device"
         ToolExe="$(AdbToolExe)"
         ToolPath="$(AdbToolPath)"
-        Timeout="120000"
+        Timeout="$(AvdLaunchTimeoutMS)"
         WriteOutputAsMessage="True"
     />
     <WaitForAndroidEmulator

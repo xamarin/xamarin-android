@@ -33,6 +33,7 @@ namespace Xamarin.Android.Build.Tests
 				string local = Path.Combine (outputDir, "screenshot.png");
 				string deviceLog = Path.Combine (outputDir, "logcat-failed.log");
 				string remote = "/data/local/tmp/screenshot.png";
+				string localUi = Path.Combine (outputDir, "ui.xml");
 				RunAdbCommand ($"shell screencap {remote}");
 				var output = RunAdbCommand ($"logcat -d");
 				File.WriteAllText (deviceLog, output);
@@ -42,6 +43,13 @@ namespace Xamarin.Android.Build.Tests
 					TestContext.AddTestAttachment (local);
 				} else {
 					TestContext.WriteLine ($"{local} did not exist!");
+				}
+				var ui = GetUI ();
+				ui.Save (localUi);
+				if (File.Exists (localUi)) {
+					TestContext.AddTestAttachment (localUi);
+				} else {
+					TestContext.WriteLine ($"{localUi} did not exist!");
 				}
 			}
 
@@ -149,7 +157,7 @@ namespace Xamarin.Android.Build.Tests
 			}
 		}
 
-		protected static bool WaitForDebuggerToStart (string logcatFilePath, int timeout = 60)
+		protected static bool WaitForDebuggerToStart (string logcatFilePath, int timeout = 120)
 		{
 			bool result = MonitorAdbLogcat ((line) => {
 				return line.IndexOf ("Trying to initialize the debugger with options:", StringComparison.OrdinalIgnoreCase) > 0;
@@ -157,7 +165,7 @@ namespace Xamarin.Android.Build.Tests
 			return result;
 		}
 
-		static Regex regex = new Regex (@"\s*(\++)(?<seconds>\d)s(?<milliseconds>\d+)ms", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		static Regex regex = new Regex (@"\s*(\++)(?<seconds>\d+)s(?<milliseconds>\d+)ms", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
 		protected static bool WaitForPermissionActivity (string logcatFilePath, int timeout = 5)
 		{
@@ -167,6 +175,12 @@ namespace Xamarin.Android.Build.Tests
 			if (result)
 				ClickButton ("", "com.android.permissioncontroller:id/continue_button", "CONTINUE");
 			return result;
+		}
+
+		protected static void ClearBlockingDialogs ()
+		{
+			ClickButton ("", "android:id/aerr_wait", "Wait");
+			WaitFor ((int)TimeSpan.FromSeconds (2).TotalMilliseconds);
 		}
 
 		protected static bool WaitForAppBuiltForOlderAndroidWarning (string packageName, string logcatFilePath, int timeout = 5)
@@ -179,12 +193,12 @@ namespace Xamarin.Android.Build.Tests
 			return result;
 		}
 
-		protected static bool WaitForActivityToStart (string activityNamespace, string activityName, string logcatFilePath, int timeout = 60)
+		protected static bool WaitForActivityToStart (string activityNamespace, string activityName, string logcatFilePath, int timeout = 120)
 		{
 			return WaitForActivityToStart (activityNamespace, activityName, logcatFilePath, out TimeSpan time, timeout);
 		}
 
-		protected static bool WaitForActivityToStart (string activityNamespace, string activityName, string logcatFilePath, out TimeSpan startupTime, int timeout = 60)
+		protected static bool WaitForActivityToStart (string activityNamespace, string activityName, string logcatFilePath, out TimeSpan startupTime, int timeout = 120)
 		{
 			startupTime = TimeSpan.Zero;
 			string capturedLine = string.Empty;
@@ -216,8 +230,9 @@ namespace Xamarin.Android.Build.Tests
 			}
 		}
 
-		protected static (int x, int y, int w, int h) GetControlBounds (string packageName, string uiElement, string text)
+		protected static (int x, int y, int w, int h) GetControlBounds (string packageName, string uiElement, string text, out bool found)
 		{
+			found = false;
 			var regex = new Regex (@"[(0-9)]\d*", RegexOptions.Compiled);
 			var result = (x: 0, y: 0, w: 0, h: 0);
 			var uiDoc = GetUI ();
@@ -234,12 +249,15 @@ namespace Xamarin.Android.Build.Tests
 			int.TryParse (matches [1].Value, out int y);
 			int.TryParse (matches [2].Value, out int w);
 			int.TryParse (matches [3].Value, out int h);
+			found = true;
 			return (x: x, y: y, w: w, h: h);
 		}
 
 		protected static void ClickButton (string packageName, string buttonName, string buttonText)
 		{
-			var bounds = GetControlBounds (packageName, buttonName, buttonText);
+			var bounds = GetControlBounds (packageName, buttonName, buttonText, out bool found);
+			if (!found)
+				return;
 			RunAdbInput ("input tap", bounds.x + ((bounds.w - bounds.x) / 2), bounds.y + ((bounds.h - bounds.y) / 2));
 		}
 

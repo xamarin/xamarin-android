@@ -270,6 +270,7 @@
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Xamarin.Android.DX.targets"     ExcludeFromAndroidNETSdk="true" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Xamarin.Android.EmbeddedResource.targets" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Xamarin.Android.FSharp.targets" ExcludeFromAndroidNETSdk="true" />
+    <_MSBuildFiles Include="$(MSBuildSrcDir)\Xamarin.Android.Javac.targets" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Xamarin.Android.Legacy.targets" ExcludeFromAndroidNETSdk="true" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Xamarin.Android.PCLSupport.props"                                    ExcludeFromAndroidNETSdk="true" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Xamarin.Android.PCLSupport.targets"                                  ExcludeFromAndroidNETSdk="true" />

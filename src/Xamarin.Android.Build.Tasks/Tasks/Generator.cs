@@ -195,7 +195,7 @@ namespace Xamarin.Android.Tasks
 			}
 
 			cmd.AppendSwitch (ApiXmlInput);
-			cmd.AppendSwitch ($"@{responseFile}");
+			cmd.AppendSwitch ($"\"@{responseFile}\"");
 			return cmd.ToString ();
 		}
 

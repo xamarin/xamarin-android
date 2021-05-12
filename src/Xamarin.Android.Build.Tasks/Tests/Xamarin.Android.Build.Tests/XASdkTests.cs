@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Mono.Cecil;
 using NUnit.Framework;
 using Xamarin.Android.Tasks;
@@ -115,6 +116,11 @@ namespace Xamarin.Android.Build.Tests
 				MetadataValues = "Link=x86\\libfoo.so",
 				BinaryContent = () => Array.Empty<byte> (),
 			});
+			libB.OtherBuildItems.Add (new AndroidItem.AndroidJavaSource ("JavaSourceTestExtension.java") {
+				Encoding = Encoding.ASCII,
+				TextContent = () => ResourceData.JavaSourceTestExtension,
+				Metadata = { { "Bind", "True"} },
+			});
 			libB.AddReference (libC);
 
 			activity = libB.Sources.FirstOrDefault (s => s.Include () == "MainActivity.cs");
@@ -122,6 +128,9 @@ namespace Xamarin.Android.Build.Tests
 				libB.Sources.Remove (activity);
 			var libBBuilder = CreateDotNetBuilder (libB, Path.Combine (path, libB.ProjectName));
 			Assert.IsTrue (libBBuilder.Build (), $"{libB.ProjectName} should succeed");
+
+			var projectJarHash = Files.HashString (Path.Combine (libB.IntermediateOutputPath,
+					"binding", "bin", $"{libB.ProjectName}.jar").Replace ("\\", "/"));
 
 			// Check .aar file for class library
 			var aarPath = Path.Combine (FullProjectDirectory, libB.OutputPath, $"{libB.ProjectName}.aar");
@@ -134,6 +143,7 @@ namespace Xamarin.Android.Build.Tests
 				aar.AssertContainsEntry (aarPath, ".net/env/190E30B3D205731E.env");
 				aar.AssertContainsEntry (aarPath, ".net/env/2CBDAB7FEEA94B19.env");
 				aar.AssertContainsEntry (aarPath, "libs/A1AFA985571E728E.jar");
+				aar.AssertContainsEntry (aarPath, $"libs/{projectJarHash}.jar");
 				aar.AssertContainsEntry (aarPath, "jni/arm64-v8a/libfoo.so");
 				aar.AssertContainsEntry (aarPath, "jni/x86/libfoo.so");
 			}
@@ -179,6 +189,8 @@ namespace Xamarin.Android.Build.Tests
 			var dexFile = Path.Combine (intermediate, "android", "bin", "classes.dex");
 			FileAssert.Exists (dexFile);
 			string className = "Lcom/xamarin/android/test/msbuildtest/JavaSourceJarTest;";
+			Assert.IsTrue (DexUtils.ContainsClass (className, dexFile, AndroidSdkPath), $"`{dexFile}` should include `{className}`!");
+			className = "Lcom/xamarin/android/test/msbuildtest/JavaSourceTestExtension;";
 			Assert.IsTrue (DexUtils.ContainsClass (className, dexFile, AndroidSdkPath), $"`{dexFile}` should include `{className}`!");
 
 			// Check environment variable
@@ -232,6 +244,18 @@ namespace Xamarin.Android.Build.Tests
 				MetadataValues = "Link=x86\\libfoo.so",
 				BinaryContent = () => Array.Empty<byte> (),
 			});
+			proj.OtherBuildItems.Add (new AndroidItem.AndroidJavaSource ("JavaSourceTest.java") {
+						Encoding = Encoding.ASCII,
+						TextContent = () => @"package com.xamarin.android.test.msbuildtest;
+public class JavaSourceTest {
+	public String Say (String quote) {
+		return quote;
+	}
+}
+",
+						Metadata = { { "Bind", "True"} },
+					}
+			);
 
 			var dotnet = CreateDotNetBuilder (proj);
 			Assert.IsTrue (dotnet.Pack (), "`dotnet pack` should succeed");
@@ -309,6 +333,11 @@ namespace Xamarin.Android.Build.Tests
 			proj.OtherBuildItems.Add (new BuildItem ("JavaSourceJar", "javaclasses-sources.jar") {
 				BinaryContent = () => ResourceData.JavaSourceJarTestSourcesJar,
 			});
+			proj.OtherBuildItems.Add (new AndroidItem.AndroidJavaSource ("JavaSourceTestExtension.java") {
+				Encoding = Encoding.ASCII,
+				TextContent = () => ResourceData.JavaSourceTestExtension,
+				Metadata = { { "Bind", "True"} },
+			});
 			var dotnet = CreateDotNetBuilder (proj);
 			Assert.IsTrue (dotnet.Build (), "`dotnet build` should succeed");
 
@@ -317,6 +346,9 @@ namespace Xamarin.Android.Build.Tests
 			using (var assembly = AssemblyDefinition.ReadAssembly (assemblyPath)) {
 				var typeName = "MSBuildTest.JavaSourceJarTest";
 				var type = assembly.MainModule.GetType (typeName);
+				Assert.IsNotNull (type, $"{assemblyPath} should contain {typeName}");
+				typeName = "MSBuildTest.JavaSourceTestExtension";
+				type = assembly.MainModule.GetType (typeName);
 				Assert.IsNotNull (type, $"{assemblyPath} should contain {typeName}");
 			}
 		}
@@ -398,6 +430,11 @@ namespace Xamarin.Android.Build.Tests
 			proj.OtherBuildItems.Add (new BuildItem ("JavaSourceJar", "javaclasses-sources.jar") {
 				BinaryContent = () => ResourceData.JavaSourceJarTestSourcesJar,
 			});
+			proj.OtherBuildItems.Add (new AndroidItem.AndroidJavaSource ("JavaSourceTestExtension.java") {
+				Encoding = Encoding.ASCII,
+				TextContent = () => ResourceData.JavaSourceTestExtension,
+				Metadata = { { "Bind", "True"} },
+			});
 			if (!runtimeIdentifiers.Contains (";")) {
 				proj.SetProperty (KnownProperties.RuntimeIdentifier, runtimeIdentifiers);
 			} else {
@@ -436,6 +473,8 @@ namespace Xamarin.Android.Build.Tests
 				var typeName = "Com.Xamarin.Android.Test.Msbuildtest.JavaSourceJarTest";
 				Assert.IsNotNull (assembly.MainModule.GetType (typeName), $"{assemblyPath} should contain {typeName}");
 				typeName = "Com.Balysv.Material.Drawable.Menu.MaterialMenuView";
+				Assert.IsNotNull (assembly.MainModule.GetType (typeName), $"{assemblyPath} should contain {typeName}");
+				typeName = "Com.Xamarin.Android.Test.Msbuildtest.JavaSourceTestExtension";
 				Assert.IsNotNull (assembly.MainModule.GetType (typeName), $"{assemblyPath} should contain {typeName}");
 			}
 

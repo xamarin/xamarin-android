@@ -15,7 +15,6 @@ namespace Xamarin.Android.Tasks
 
 	public abstract class JavaCompileToolTask : JavaToolTask
 	{
-		[Required]
 		public string StubSourceDirectory { get; set; }
 
 		public ITaskItem[] JavaSourceFiles { get; set; }
@@ -27,9 +26,9 @@ namespace Xamarin.Android.Tasks
 		}
 
 		private bool IsRunningInsideVS {
-			get { 
+			get {
 				var vside = false;
-				return bool.TryParse(Environment.GetEnvironmentVariable("VSIDE"), out vside) && vside; 
+				return bool.TryParse(Environment.GetEnvironmentVariable("VSIDE"), out vside) && vside;
 			}
 		}
 
@@ -65,7 +64,13 @@ namespace Xamarin.Android.Tasks
 				// Include any user .java files
 				if (JavaSourceFiles != null)
 					foreach (var file in JavaSourceFiles.Where (p => Path.GetExtension (p.ItemSpec) == ".java"))
-						sw.WriteLine (string.Format ("\"{0}\"", file.ItemSpec.Replace (@"\", @"\\")));					
+						sw.WriteLine (string.Format ("\"{0}\"", file.ItemSpec.Replace (@"\", @"\\")));
+
+				if (string.IsNullOrEmpty (StubSourceDirectory))
+					return;
+
+				if (!Directory.Exists (StubSourceDirectory))
+					return;
 
 				foreach (var file in Directory.GetFiles (StubSourceDirectory, "*.java", SearchOption.AllDirectories)) {
 					// This makes sense.  BAD sense.  but sense.

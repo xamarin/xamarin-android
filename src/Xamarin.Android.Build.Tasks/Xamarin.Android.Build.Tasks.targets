@@ -122,6 +122,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>Xamarin.Android.Aapt2.targets</Link>
     </None>
+    <None Include="MSBuild\Xamarin\Android\Xamarin.Android.Javac.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Xamarin.Android.Javac.targets</Link>
+    </None>
     <None Include="Xamarin.Android.Analysis.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -128,7 +128,7 @@ namespace Xamarin.Android.Tasks
 				);
 				return targetFrameworkVersion;
 			}
-			return targetSdkVersion;
+			return targetSdkVersion ?? targetFrameworkVersion;
 		}
 	}
 }

@@ -25,6 +25,8 @@ projects, these properties are set in Xamarin.Android.Legacy.targets.
       _CheckForObsoleteFrameworkAssemblies;
       _ValidateAndroidPackageProperties;
       AddLibraryJarsToBind;
+      _CollectJavaSourceForBinding;
+      _CompileBindingJava;
       $(BuildDependsOn);
       _CompileDex;
       $(_AfterCompileDex);
@@ -92,7 +94,10 @@ projects, these properties are set in Xamarin.Android.Legacy.targets.
       _RemoveLegacyDesigner;
       _ValidateAndroidPackageProperties;
       AddLibraryJarsToBind;
+      _CollectJavaSourceForBinding;
+      _CompileBindingJava;
       $(BuildDependsOn);
+      _CreateAar;
     </BuildDependsOn>
     <IncrementalCleanDependsOn>
       _AddFilesToFileWrites;
@@ -119,7 +124,6 @@ projects, these properties are set in Xamarin.Android.Legacy.targets.
       _CheckForDeletedResourceFile;
       _ComputeAndroidResourcePaths;
       _UpdateAndroidResgen;
-      _CreateAar;
     </_UpdateAndroidResourcesDependsOn>
     <CompileDependsOn>
       _SetupMSBuildAllProjects;
@@ -166,6 +170,11 @@ projects, these properties are set in Xamarin.Android.Legacy.targets.
     <_ResolveLibraryProjectsDependsOn>
       _ExtractAar;
     </_ResolveLibraryProjectsDependsOn>
+    <_CompileBindingJavaDependsOnTargets>
+      _AdjustJavacVersionArguments;
+      _DetermineBindingJavaLibrariesToCompile;
+      _GetJavaPlatformJar;
+    </_CompileBindingJavaDependsOnTargets>
   </PropertyGroup>
 
 </Project>

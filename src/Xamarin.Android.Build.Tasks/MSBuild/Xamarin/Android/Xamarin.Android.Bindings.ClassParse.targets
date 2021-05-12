@@ -15,7 +15,7 @@ This file is only used by binding projects.
 
   <Target Name="_ExportJarToXml"
       DependsOnTargets="_ExtractJavadocsFromJavaSourceJars"
-      Inputs="@(EmbeddedJar);@(EmbeddedReferenceJar);@(InputJar);@(ReferenceJar);@(_AndroidMSBuildAllProjects)"
+      Inputs="@(EmbeddedJar);@(EmbeddedReferenceJar);@(InputJar);@(ReferenceJar);@(_AndroidMSBuildAllProjects);@(_JavaBindingSource)"
       Outputs="$(ApiOutputFile)">
 
     <ItemGroup>

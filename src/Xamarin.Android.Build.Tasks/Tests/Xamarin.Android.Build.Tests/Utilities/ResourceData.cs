@@ -15,12 +15,15 @@ namespace Xamarin.Android.Build.Tests
 		static Lazy<byte[]> javaSourceJarTestJavadocJar = new Lazy<byte[]>(() => GetResourceData ("javasourcejartest-javadoc.jar"));
 		static Lazy<byte []> library1Aar = new Lazy<byte []> (() => GetResourceData ("library1.aar"));
 		static Lazy<byte []> library2Aar = new Lazy<byte []> (() => GetResourceData ("library2.aar"));
+		static Lazy<byte []> javaSourceTestExtension = new Lazy<byte []> (() => GetResourceData ("JavaSourceTestExtension.java"));
 
 		public  static  byte[]  JavaSourceJarTestJar            => javaSourceJarTestJar.Value;
 		public  static  byte[]  JavaSourceJarTestSourcesJar     => javaSourceJarTestSourcesJar.Value;
 		public  static  byte[]  JavaSourceJarTestJavadocJar     => javaSourceJarTestJavadocJar.Value;
 		public  static  byte [] Library1Aar => library1Aar.Value;
 		public  static  byte [] Library2Aar => library2Aar.Value;
+
+		public  static  string JavaSourceTestExtension => Encoding.ASCII.GetString (javaSourceTestExtension.Value);
 
 		static byte[] GetResourceData (string name)
 		{

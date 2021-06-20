@@ -7,6 +7,14 @@
   <ItemGroup>
     <Compile Include="$(IntermediateOutputPath)AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="mdoc"
+        PackageVersion="5.8.0"
+        GeneratePathProperty="True"
+        ReferenceOutputAssembly="False"
+        SkipGetTargetFrameworkProperties="True"
+    />
+  </ItemGroup>
   <Target Name="_BuildJavaInterop"
       BeforeTargets="BeforeResolveReferences"
       Condition=" '$(TargetFramework)' == 'monoandroid10' "
@@ -157,7 +165,7 @@
       <_TypeMap>--type-map-report=$(IntermediateOutputPath)mcw\type-mapping.txt</_TypeMap>
       <_Api>$(IntermediateOutputPath)mcw\api.xml</_Api>
       <_Dirs>--enumdir=$(IntermediateOutputPath)mcw</_Dirs>
-      <_WithJavadocXml Condition=" '$(IncludeAndroidJavadoc)' == 'True' ">--doc-comment-verbosity=$(AndroidJavadocVerbosity) "--with-javadoc-xml=$(_AndroidJavadocXml)"</_WithJavadocXml>
+      <_WithJavadocXml Condition=" '$(IncludeAndroidJavadoc)' == 'True' ">"--doc-comment-verbosity=$(AndroidJavadocVerbosity)" "--with-javadoc-xml=$(_AndroidJavadocXml)"</_WithJavadocXml>
       <_FullIntermediateOutputPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)'))</_FullIntermediateOutputPath>
       <_LangFeatures>--lang-features=nullable-reference-types</_LangFeatures>
       <_LangFeatures Condition="$(AndroidApiLevel) &gt;= 30">$(_LangFeatures),default-interface-methods,nested-interface-types,interface-constants</_LangFeatures>
@@ -260,4 +268,52 @@
       <FileWrites Include="$(IntermediateOutputPath)CheckApiCompatibility.stamp" />
     </ItemGroup>
   </Target>
+
+  <Target Name="UpdateExternalDocumentation">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)Mono.Android.csproj"
+        Properties="TargetFramework=monoandroid10"
+        Targets="_UpdateExternalDocumentation;_RunMdoc"
+    />
+  </Target>
+  <Target Name="_UpdateExternalDocumentation">
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+    <PropertyGroup>
+      <_Binlog>UpdateExternalDocumentation-$([System.DateTime]::Now.ToString ("yyyyMMddTHHmmss")).binlog</_Binlog>
+    </PropertyGroup>
+    <Exec
+        Condition=" '$(HostOS)' != 'Windows' "
+        Command="msbuild /restore /p:Configuration=$(Configuration) /p:IncludeAndroidJavadoc=True /bl:$(_Binlog)"
+        IgnoreStandardErrorWarningFormat="True"
+        WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+    <MSBuild
+        Condition=" '$(HostOS)' == 'Windows' "
+        Projects="$(MSBuildThisFileDirectory)Mono.Android.csproj"
+        Properties="IncludeAndroidJavadoc=True"
+        Targets="Restore;Build"
+    />
+  </Target>
+
+  <Target Name="RunMdoc">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)Mono.Android.csproj"
+        Properties="TargetFramework=monoandroid10"
+        Targets="_RunMdoc"
+    />
+  </Target>
+  <Target Name="_RunMdoc">
+    <PropertyGroup>
+      <_Mdoc Condition=" '$(Pkgmdoc)' != '' ">"$(Pkgmdoc)/tools/mdoc.exe"</_Mdoc>
+      <_Libdir>-L "$(OutputPath)../v1.0"</_Libdir>
+      <_AssemblyBasename>$(OutputPath)Mono.Android</_AssemblyBasename>
+      <_ImportXml>-i "$(_AssemblyBasename).xml"</_ImportXml>
+      <_Assembly>"$(_AssemblyBasename).dll"</_Assembly>
+      <_Output>-o "$(MSBuildThisFileDirectory)../../external/android-api-docs/docs/Mono.Android/en"</_Output>
+      <_DocTypeArgs Condition=" '$(DocTypeName)' != '' ">--type=$(DocTypeName)</_DocTypeArgs>
+    </PropertyGroup>
+    <Exec
+        Command="$(ManagedRuntime) $(ManagedRuntimeArgs) $(_Mdoc) --debug update --use-docid --delete $(_Libdir) $(_ImportXml) $(_Output) $(_DocTypeArgs) $(_Assembly) "
+        WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+  </Target>
+
 </Project>

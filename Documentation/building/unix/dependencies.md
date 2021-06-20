@@ -142,10 +142,27 @@ of a program within `$PATH` during the build. If a required program doesn't
 exist, then the build will fail and a suggested `brew install` command line
 will be provided to install the missing commands.
 
+
+Add `brew` tap for crossbuilding windows binaroes on MacOSX:
+
+```
+brew tap xamarin/xamarin-android-windeps
+```
+
+Details can be found: https://github.com/xamarin/homebrew-xamarin-android-windeps
+
+Otherwise, if building `xamarin-android` for the first time users might experience following error:
+
+```
+Checking xamarin/xamarin-android-windeps/mingw-zlib Error: No available formula with the name "xamarin/xamarin-android-windeps/mingw-zlib" 
+Please tap it and then try again: brew tap xamarin/xamarin-android-windeps
+```
+
 ### Brew Programs
 
 Suggested `brew install` commands:
 
+    brew install git
     brew install cmake
     brew install libtool
     brew install p7zip
@@ -168,3 +185,79 @@ Suggested `brew install` commands:
 If any program is still not found, try to ensure it's linked via:
 
     brew link <package name>
+
+
+Note: Apple provided `git` seems to be old and user might experience problems during tool detection reporting
+that `git` is missing:
+
+```
+Checking autoconf                                    [FOUND 2.69]
+Checking automake                                    [FOUND 1.15]
+Checking cmake                                       [FOUND 3.10.2]
+Checking git                                         [MISSING]
+Checking make                                        [FOUND 3.81]
+Checking mingw-w64                                   [MISSING]
+Checking ninja                                       [FOUND 1.10.0]
+Checking p7zip                                       [FOUND 16.02]
+```
+
+and that could lead to further errors like:
+
+```
+Updating external repositories
+  • monodroid
+    🔗 cloning from xamarin/monodroid
+stderr | Cloning into 'monodroid'...
+stderr | remote: Enumerating objects: 58, done.        
+stderr | remote: Counting objects:   1% (1/58)        
+stderr | remote: Counting objects:   3% (2/58)        
+```
+
+```
+stderr | remote: Compressing objects:   2% (1/45)        
+stderr | remote: Compressing objects:   4% (2/45)        
+```
+
+```
+stderr | Receiving objects:   0% (1/79000)
+stderr | Receiving objects:   1% (790/79000)
+stderr | Receiving objects:   2% (1580/79000), 596.00 KiB | 1.15 MiB/s
+stderr | Receiving objects:   3% (2370/79000), 596.00 KiB | 1.15 MiB/s
+stderr | Receiving objects:   4% (3160/79000), 596.00 KiB | 1.15 MiB/s
+```
+
+```
+stderr | remote: Total 79000 (delta 26), reused 31 (delta 13), pack-reused 78942        
+stderr | Receiving objects: 100% (79000/79000), 81.78 MiB | 3.58 MiB/s
+stderr | Receiving objects: 100% (79000/79000), 82.14 MiB | 2.53 MiB/s, done.
+stderr | Resolving deltas:   0% (0/57659)
+stderr | Resolving deltas:   1% (693/57659)
+```
+
+```
+stderr | Submodule 'external/Java.Interop' (https://github.com/xamarin/java.interop.git) registered for path 'external/Java.Interop'
+stderr | Submodule 'external/android-api-docs' (https://github.com/xamarin/android-api-docs) registered for path 'external/android-api-docs'
+stderr | Submodule 'external/debugger-libs' (https://github.com/mono/debugger-libs) registered for path 'external/debugger-libs'
+stderr | Submodule 'external/dlfcn-win32' (https://github.com/dlfcn-win32/dlfcn-win32.git) registered for path 'external/dlfcn-win32'
+stderr | Submodule 'external/lz4' (https://github.com/lz4/lz4.git) registered for path 'external/lz4'
+stderr | Submodule 'external/mman-win32' (https://github.com/witwall/mman-win32.git) registered for path 'external/mman-win32'
+stderr | Submodule 'external/nrefactory' (https://github.com/icsharpcode/NRefactory.git) registered for path 'external/nrefactory'
+stderr | Submodule 'external/opentk' (https://github.com/mono/opentk.git) registered for path 'external/opentk'
+stderr | Submodule 'external/proguard' (https://github.com/Guardsquare/proguard.git) registered for path 'external/proguard'
+stderr | Submodule 'external/sqlite' (https://github.com/xamarin/sqlite.git) registered for path 'external/sqlite'
+stderr | Submodule 'external/xamarin-android-tools' (https://github.com/xamarin/xamarin-android-tools) registered for path 'external/xamarin-android-tools'
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/Java.Interop'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/android-api-docs'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/debugger-libs'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/dlfcn-win32'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/lz4'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/mman-win32'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/nrefactory'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/opentk'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/proguard'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/sqlite'...
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/xamarin-android-tools'...
+stderr | Submodule 'external/xamarin-android-tools' (https://github.com/xamarin/xamarin-android-tools.git) registered for path 'external/Java.Interop/external/xamarin-android-tools'
+stderr | Cloning into '/Users/Shared/Projects/d/X.tmp/xamarin-android/external/Java.Interop/external/xamarin-android-tools'...
+```
+

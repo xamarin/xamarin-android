@@ -25,6 +25,14 @@ namespace xamarin::android
 	class BasicUtilities
 	{
 	public:
+		static constexpr bool is_running_on_desktop =
+#if ANDROID
+		false;
+#else
+		true;
+#endif
+
+	public:
 		FILE            *monodroid_fopen (const char* filename, const char* mode);
 		int              monodroid_stat (const char *path, monodroid_stat_t *s);
 		monodroid_dir_t *monodroid_opendir (const char *filename);

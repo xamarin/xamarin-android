@@ -231,8 +231,8 @@ Util::monodroid_property_set (MonoDomain *domain, MonoProperty *property, void *
 MonoDomain*
 Util::monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendly_name, int shadow_copy, const char *shadow_directories)
 {
-	MonoClass *appdomain_setup_klass = monodroid_get_class_from_name (parent_domain, "mscorlib", "System", "AppDomainSetup");
-	MonoClass *appdomain_klass = monodroid_get_class_from_name (parent_domain, "mscorlib", "System", "AppDomain");
+	MonoClass *appdomain_setup_klass = monodroid_get_class (parent_domain, "mscorlib", "System", "AppDomainSetup");
+	MonoClass *appdomain_klass = monodroid_get_class (parent_domain, "mscorlib", "System", "AppDomain");
 	MonoMethod *create_domain = mono_class_get_method_from_name (appdomain_klass, "CreateDomain", 3);
 	MonoProperty *shadow_copy_prop = mono_class_get_property_from_name (appdomain_setup_klass, "ShadowCopyFiles");
 	MonoProperty *shadow_copy_dirs_prop = mono_class_get_property_from_name (appdomain_setup_klass, "ShadowCopyDirectories");
@@ -255,12 +255,14 @@ Util::monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendl
 }
 
 MonoClass*
-Util::monodroid_get_class_from_name (MonoDomain *domain, const char* assembly, const char *_namespace, const char *type)
+Util::monodroid_get_class ([[maybe_unused]] MonoDomain *domain, const char* assembly, const char *_namespace, const char *type)
 {
+#if !defined (NET6)
 	MonoDomain *current = mono_domain_get ();
 
 	if (domain != current)
 		mono_domain_set (domain, FALSE);
+#endif // ndef NET6
 
 	MonoClass *result;
 	MonoAssemblyName *aname = mono_assembly_name_new (assembly);
@@ -271,8 +273,10 @@ Util::monodroid_get_class_from_name (MonoDomain *domain, const char* assembly, c
 	} else
 		result = nullptr;
 
+#if !defined (NET6)
 	if (domain != current)
 		mono_domain_set (current, FALSE);
+#endif // ndef NET6
 
 	mono_assembly_name_free (aname);
 
@@ -280,17 +284,51 @@ Util::monodroid_get_class_from_name (MonoDomain *domain, const char* assembly, c
 }
 
 MonoClass*
-Util::monodroid_get_class_from_image (MonoDomain *domain, MonoImage *image, const char *_namespace, const char *type)
+Util::monodroid_get_class ([[maybe_unused]] MonoDomain *domain, MonoImage *image, const char *_namespace, const char *type, bool required)
 {
+#if !defined (NET6)
 	MonoDomain *current = mono_domain_get ();
 
 	if (domain != current)
 		mono_domain_set (domain, FALSE);
+#endif // ndef NET6
 
 	MonoClass *result = mono_class_from_name (image, _namespace, type);
 
+#if !defined (NET6)
 	if (domain != current)
 		mono_domain_set (current, FALSE);
+#endif // ndef NET6
+
+	abort_unless (!required || result != nullptr, "INTERNAL ERROR: Unable to find type `%s.%s, %s`", _namespace, type, mono_image_get_name (image));
+
+	return result;
+}
+
+MonoClass*
+Util::monodroid_get_class ([[maybe_unused]] MonoDomain *domain, MonoImage* image, uint32_t token_id, const char *_namespace, const char *type, bool required)
+{
+	if constexpr (is_running_on_desktop) {
+		return monodroid_get_class (domain, image, _namespace, type, required);
+	}
+
+	log_debug (LOG_ASSEMBLY, "Getting class '%s.%s' from assembly '%s' with token id: %u", _namespace, type, mono_image_get_name (image), token_id);
+#if !defined (NET6)
+	MonoDomain *current = mono_domain_get ();
+
+	if (domain != current)
+		mono_domain_set (domain, FALSE);
+#endif // ndef NET6
+
+	MonoClass *result = mono_class_get (image, token_id);
+
+#if !defined (NET6)
+	if (domain != current)
+		mono_domain_set (current, FALSE);
+#endif // ndef NET6
+
+	abort_unless (!required || result != nullptr, "INTERNAL ERROR: Unable to find type `%s.%s, %s`", _namespace, type, mono_image_get_name (image));
+	log_debug (LOG_ASSEMBLY, "Class found: %s.%s", mono_class_get_namespace (result), mono_class_get_name (result));
 
 	return result;
 }

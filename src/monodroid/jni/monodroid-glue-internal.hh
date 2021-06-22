@@ -108,12 +108,6 @@ namespace xamarin::android::internal
 
 	private:
 		static constexpr size_t SMALL_STRING_PARSE_BUFFER_LEN = 50;
-		static constexpr bool is_running_on_desktop =
-#if ANDROID
-		false;
-#else
-		true;
-#endif
 
 #define MAKE_API_DSO_NAME(_ext_) "libxa-internal-api." # _ext_
 #if defined (WINDOWS)
@@ -155,8 +149,12 @@ namespace xamarin::android::internal
 			return java_System_identityHashCode;
 		}
 
-		jclass get_java_class_TimeZone () const
+		jclass get_java_class_TimeZone ()
 		{
+			if (XA_UNLIKELY (java_TimeZone == nullptr)) {
+				lookup_java_timezone ();
+			}
+
 			return java_TimeZone;
 		}
 
@@ -192,6 +190,9 @@ namespace xamarin::android::internal
 		char*	get_java_class_name_for_TypeManager (jclass klass);
 
 	private:
+		void lookup_java_timezone ();
+		static MonoMethod* monodroid_get_required_method (MonoImage *image, MonoClass *klass, uint32_t tokenID, int param_count, char const *type_name, char const *method_name);
+
 #if defined (ANDROID)
 		static void mono_log_handler (const char *log_domain, const char *log_level, const char *message, mono_bool fatal, void *user_data);
 		static void mono_log_standard_streams_handler (const char *str, mono_bool is_stdout);
@@ -229,7 +230,7 @@ namespace xamarin::android::internal
 #if !defined (NET6)
 		void setup_bundled_app (const char *dso_name);
 #endif // ndef NET6
-		void init_android_runtime (MonoDomain *domain, JNIEnv *env, jclass runtimeClass, jobject loader);
+		void init_android_runtime (MonoDomain *domain, JNIEnv *env, jclass runtimeClass, jobject loader, MonoClass*& jnienv, MonoClassField*& jnienv_bridge_processing_field);
 		void set_environment_variable_for_directory (const char *name, jstring_wrapper &value, bool createDirectory, mode_t mode);
 
 		void set_environment_variable_for_directory (const char *name, jstring_wrapper &value)
@@ -283,7 +284,8 @@ namespace xamarin::android::internal
 		jclass              java_System;
 		jmethodID           java_System_identityHashCode;
 		jmethodID           Class_getName;
-		jclass              java_TimeZone;
+		jclass              java_TimeZone = nullptr;
+		jclass              java_mono_Runtime = nullptr;
 		timing_period       jit_time;
 		FILE               *jit_log;
 		MonoProfilerHandle  profiler_handle;
@@ -311,6 +313,7 @@ namespace xamarin::android::internal
 		static std::mutex   api_init_lock;
 		static void        *api_dso_handle;
 #endif // !def NET6
+		static std::mutex   jni_lookup_lock;
 	};
 }
 #endif

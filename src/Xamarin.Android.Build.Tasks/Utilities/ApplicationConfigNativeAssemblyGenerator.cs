@@ -23,6 +23,7 @@ namespace Xamarin.Android.Tasks
 		public bool InstantRunEnabled { get; set; }
 		public bool JniAddNativeMethodRegistrationAttributePresent { get; set; }
 		public bool HaveRuntimeConfigBlob { get; set; }
+		public NativeRuntimeTokenIdCollection TokenIdCollection { get; set; }
 
 		public PackageNamingPolicy PackageNamingPolicy { get; set; }
 
@@ -88,6 +89,86 @@ namespace Xamarin.Android.Tasks
 
 				WriteCommentLine (output, "android_package_name");
 				size += WritePointer (output, MakeLocalLabel (stringLabel));
+
+				return size;
+			});
+
+			WriteDataSection (output, "managed_token_ids");
+			WriteSymbol (output, "managed_token_ids", TargetProvider.GetStructureAlignment (true), packed: false, isGlobal: true, alwaysWriteSize: true, structureWriter: () => {
+				// Order of fields and their types must correspond *exactly* to that in
+				// src/monodroid/jni/xamarin-app.h ManagedTokenIds structure
+
+				WriteCommentLine (output, "android_runtime_jnienv");
+				uint size = WriteData (output, TokenIdCollection.AndroidRuntimeJnienv);
+
+				WriteCommentLine (output, "android_runtime_jnienv_initialize");
+				size += WriteData (output, TokenIdCollection.AndroidRuntimeJnienvInitialize);
+
+				WriteCommentLine (output, "android_runtime_jnienv_registerjninatives");
+				size += WriteData (output, TokenIdCollection.AndroidRuntimeJnienvRegisterJniNatives);
+
+				WriteCommentLine (output, "android_runtime_jnienv_bridgeprocessing");
+				size += WriteData (output, TokenIdCollection.AndroidRuntimeJnienvBridgeProcessing);
+
+				WriteCommentLine (output, "java_lang_object");
+				size += WriteData (output, TokenIdCollection.JavaLangObject);
+
+				WriteCommentLine (output, "java_lang_object_handle");
+				size += WriteData (output, TokenIdCollection.JavaLangObjectHandle);
+
+				WriteCommentLine (output, "java_lang_object_handle_type");
+				size += WriteData (output, TokenIdCollection.JavaLangObjectHandleType);
+
+				WriteCommentLine (output, "java_lang_object_refs_added");
+				size += WriteData (output, TokenIdCollection.JavaLangObjectRefsAdded);
+
+				WriteCommentLine (output, "java_lang_object_weak_handle");
+				size += WriteData (output, TokenIdCollection.JavaLangObjectWeakHandle);
+
+				WriteCommentLine (output, "java_lang_throwable");
+				size += WriteData (output, TokenIdCollection.JavaLangThrowable);
+
+				WriteCommentLine (output, "java_lang_throwable_handle");
+				size += WriteData (output, TokenIdCollection.JavaLangThrowableHandle);
+
+				WriteCommentLine (output, "java_lang_throwable_handle_type");
+				size += WriteData (output, TokenIdCollection.JavaLangThrowableHandleType);
+
+				WriteCommentLine (output, "java_lang_throwable_refs_added");
+				size += WriteData (output, TokenIdCollection.JavaLangThrowableRefsAdded);
+
+				WriteCommentLine (output, "java_lang_throwable_weak_handle");
+				size += WriteData (output, TokenIdCollection.JavaLangThrowableWeakHandle);
+
+				WriteCommentLine (output, "java_interop_javaobject");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaObject);
+
+				WriteCommentLine (output, "java_interop_javaobject_handle");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaObjectHandle);
+
+				WriteCommentLine (output, "java_interop_javaobject_handle_type");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaObjectHandleType);
+
+				WriteCommentLine (output, "java_interop_javaobject_refs_added");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaObjectRefsAdded);
+
+				WriteCommentLine (output, "java_interop_javaobject_weak_handle");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaObjectWeakHandle);
+
+				WriteCommentLine (output, "java_interop_javaexception");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaException);
+
+				WriteCommentLine (output, "java_interop_javaexception_handle");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaExceptionHandle);
+
+				WriteCommentLine (output, "java_interop_javaexception_handle_type");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaExceptionHandleType);
+
+				WriteCommentLine (output, "java_interop_javaexception_refs_added");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaExceptionRefsAdded);
+
+				WriteCommentLine (output, "java_interop_javaexception_weak_handle");
+				size += WriteData (output, TokenIdCollection.JavaInteropJavaExceptionWeakHandle);
 
 				return size;
 			});

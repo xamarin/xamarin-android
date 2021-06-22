@@ -21,8 +21,13 @@ namespace xamarin::android::internal
 	public:
 		struct MonoJavaGCBridgeType
 		{
-			const char *_namespace;
-			const char *_typename;
+			const char       *_namespace;
+			const char       *_typename;
+			const uint32_t    class_token_id;
+			const uint32_t    handle_token_id;
+			const uint32_t    handle_type_token_id;
+			const uint32_t    refs_added_token_id;
+			const uint32_t    weak_handle_token_id;
 		};
 
 		/* `mono_java_gc_bridge_info` stores shared global data about the last Monodroid assembly loaded.
@@ -116,7 +121,7 @@ namespace xamarin::android::internal
 		JNIEnv* ensure_jnienv ();
 		void initialize_on_onload (JavaVM *vm, JNIEnv *env);
 		void initialize_on_runtime_init (JNIEnv *env, jclass runtimeClass);
-		void add_monodroid_domain (MonoDomain *domain);
+		void add_monodroid_domain (MonoDomain *domain, MonoClass* jnienv, MonoClassField* jnienv_bridge_processing_field);
 		void remove_monodroid_domain (MonoDomain *domain);
 		void on_destroy_contexts ();
 

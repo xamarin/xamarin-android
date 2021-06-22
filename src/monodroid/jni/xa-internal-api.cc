@@ -208,6 +208,8 @@ MonoAndroidInternalCalls_Impl::monodroid_get_identity_hash_code (JNIEnv *env, vo
 void*
 MonoAndroidInternalCalls_Impl::monodroid_timezone_get_default_id ()
 {
+	log_warn (LOG_ASSEMBLY, "%s", __PRETTY_FUNCTION__);
+
 	JNIEnv *env          = osBridge.ensure_jnienv ();
 	jmethodID getDefault = env->GetStaticMethodID (monodroidRuntime.get_java_class_TimeZone (), "getDefault", "()Ljava/util/TimeZone;");
 	jmethodID getID      = env->GetMethodID (monodroidRuntime.get_java_class_TimeZone (), "getID",      "()Ljava/lang/String;");

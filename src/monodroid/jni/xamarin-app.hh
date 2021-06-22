@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <mono/metadata/image.h>
+#include <mono/metadata/assembly.h>
 
 #include "monodroid.h"
 
@@ -113,6 +114,38 @@ struct ApplicationConfig
 	const char *android_package_name;
 };
 
+struct ManagedTokenIds
+{
+	const uint32_t android_runtime_jnienv;
+	const uint32_t android_runtime_jnienv_initialize;
+	const uint32_t android_runtime_jnienv_registerjninatives;
+	const uint32_t android_runtime_jnienv_bridgeprocessing;
+
+	const uint32_t java_lang_object;
+	const uint32_t java_lang_object_handle;
+	const uint32_t java_lang_object_handle_type;
+	const uint32_t java_lang_object_refs_added;
+	const uint32_t java_lang_object_weak_handle;
+
+	const uint32_t java_lang_throwable;
+	const uint32_t java_lang_throwable_handle;
+	const uint32_t java_lang_throwable_handle_type;
+	const uint32_t java_lang_throwable_refs_added;
+	const uint32_t java_lang_throwable_weak_handle;
+
+	const uint32_t java_interop_javaobject;
+	const uint32_t java_interop_javaobject_handle;
+	const uint32_t java_interop_javaobject_handle_type;
+	const uint32_t java_interop_javaobject_refs_added;
+	const uint32_t java_interop_javaobject_weak_handle;
+
+	const uint32_t java_interop_javaexception;
+	const uint32_t java_interop_javaexception_handle;
+	const uint32_t java_interop_javaexception_handle_type;
+	const uint32_t java_interop_javaexception_refs_added;
+	const uint32_t java_interop_javaexception_weak_handle;
+};
+
 MONO_API uint64_t format_tag;
 
 #if defined (DEBUG) || !defined (ANDROID)
@@ -127,8 +160,10 @@ MONO_API const TypeMapJava map_java[];
 
 MONO_API CompressedAssemblies compressed_assemblies;
 MONO_API ApplicationConfig application_config;
+MONO_API ManagedTokenIds managed_token_ids;
 MONO_API const char* app_environment_variables[];
 MONO_API const char* app_system_properties[];
 
 MONO_API const char* mono_aot_mode_name;
+
 #endif // __XAMARIN_ANDROID_TYPEMAP_H

@@ -126,21 +126,28 @@ namespace Xamarin.Android.Tasks
 			bool haveMonoAndroid = false;
 			var allTypemapAssemblies = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 			var userAssemblies = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
+			var tokenIdCollection = new NativeRuntimeTokenIdCollection (Log);
 			foreach (var assembly in ResolvedAssemblies) {
 				bool value;
+				string fileName = Path.GetFileName (assembly.ItemSpec);
+
+				if (String.Compare ("Java.Interop.dll", fileName, StringComparison.CurrentCultureIgnoreCase) == 0) {
+				    tokenIdCollection.ProcessJavaInterop (assembly.ItemSpec);
+				}
+
 				if (bool.TryParse (assembly.GetMetadata (AndroidSkipJavaStubGeneration), out value) && value) {
 					Log.LogDebugMessage ($"Skipping Java Stub Generation for {assembly.ItemSpec}");
 					continue;
 				}
 
 				bool addAssembly = false;
-				string fileName = Path.GetFileName (assembly.ItemSpec);
 				if (!hasExportReference && String.Compare ("Mono.Android.Export.dll", fileName, StringComparison.OrdinalIgnoreCase) == 0) {
 					hasExportReference = true;
 					addAssembly = true;
 				} else if (!haveMonoAndroid && String.Compare ("Mono.Android.dll", fileName, StringComparison.OrdinalIgnoreCase) == 0) {
 					haveMonoAndroid = true;
 					addAssembly = true;
+					tokenIdCollection.ProcessMonoAndroid (assembly.ItemSpec);
 				} else if (MonoAndroidHelper.FrameworkAssembliesToTreatAsUserAssemblies.Contains (fileName)) {
 					if (!bool.TryParse (assembly.GetMetadata (AndroidSkipJavaStubGeneration), out value) || !value) {
 						string name = Path.GetFileNameWithoutExtension (fileName);
@@ -180,7 +187,7 @@ namespace Xamarin.Android.Tasks
 
 			// Step 2 - Generate type maps
 			//   Type mappings need to use all the assemblies, always.
-			WriteTypeMappings (allJavaTypes, cache);
+			WriteTypeMappings (allJavaTypes, tokenIdCollection, cache);
 
 			var javaTypes = new List<TypeDefinition> ();
 			foreach (TypeDefinition td in allJavaTypes) {
@@ -423,11 +430,12 @@ namespace Xamarin.Android.Tasks
 			Files.CopyIfStringChanged (template, Path.Combine (destDir, filename));
 		}
 
-		void WriteTypeMappings (List<TypeDefinition> types, TypeDefinitionCache cache)
+		void WriteTypeMappings (List<TypeDefinition> types, NativeRuntimeTokenIdCollection tokenIdCollection, TypeDefinitionCache cache)
 		{
 			var tmg = new TypeMapGenerator ((string message) => Log.LogDebugMessage (message), SupportedAbis);
 			if (!tmg.Generate (Debug, SkipJniAddNativeMethodRegistrationAttributeScan, types, cache, TypemapOutputDirectory, GenerateNativeAssembly, out ApplicationConfigTaskState appConfState))
 				throw new XamarinAndroidException (4308, Properties.Resources.XA4308);
+			appConfState.TokenIdCollection = tokenIdCollection;
 			GeneratedBinaryTypeMaps = tmg.GeneratedBinaryTypeMaps.ToArray ();
 			BuildEngine4.RegisterTaskObjectAssemblyLocal (ApplicationConfigTaskState.RegisterTaskObjectKey, appConfState, RegisteredTaskObjectLifetime.Build);
 		}

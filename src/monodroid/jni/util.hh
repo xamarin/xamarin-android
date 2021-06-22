@@ -82,9 +82,29 @@ namespace xamarin::android
 		void             monodroid_store_package_name (const char *name);
 		MonoAssembly    *monodroid_load_assembly (MonoDomain *domain, const char *basename);
 		MonoObject      *monodroid_runtime_invoke (MonoDomain *domain, MonoMethod *method, void *obj, void **params, MonoObject **exc);
-		MonoClass       *monodroid_get_class_from_name (MonoDomain *domain, const char* assembly, const char *_namespace, const char *type);
+		MonoClass       *monodroid_get_class (MonoDomain *domain, const char* assembly, const char *_namespace, const char *type);
+		MonoClass       *monodroid_get_class (MonoDomain *domain, MonoImage* image, const char *_namespace, const char *type, bool required);
+		MonoClass       *monodroid_get_required_class (MonoDomain *domain, MonoImage* image, const char *_namespace, const char *type)
+		{
+			return monodroid_get_class (domain, image, _namespace, type, true);
+		}
+
+		MonoClass       *monodroid_get_class (MonoDomain *domain, MonoImage* image, uint32_t token_id, const char *_namespace, const char *type, bool required);
+		MonoClass       *monodroid_get_required_class (MonoDomain *domain, MonoImage* image, uint32_t token_id, const char *_namespace, const char *type)
+		{
+			return monodroid_get_class (domain, image, token_id, _namespace, type, true);
+		}
+
+		MonoClassField  *monodroid_get_class_field (MonoClass *klass, uint32_t token_id, const char *name)
+		{
+			if constexpr (is_running_on_desktop) {
+				return mono_class_get_field_from_name (klass, const_cast<char*> (name));
+			} else {
+				return mono_class_get_field (klass, token_id);
+			}
+		}
+
 		MonoDomain      *monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendly_name, int shadow_copy, const char *shadow_directories);
-		MonoClass       *monodroid_get_class_from_image (MonoDomain *domain, MonoImage* image, const char *_namespace, const char *type);
 		int              send_uninterrupted (int fd, void *buf, size_t len);
 		ssize_t          recv_uninterrupted (int fd, void *buf, size_t len);
 		jclass           get_class_from_runtime_field (JNIEnv *env, jclass runtime, const char *name, bool make_gref = false);

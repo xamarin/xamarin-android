@@ -43,7 +43,7 @@ DesignerAssemblies::try_load_assembly (MonoDomain *domain, MonoAssemblyName *nam
 		 * to select the loading context to use (it would require access to the MonoAssemblyLoadRequest API)
 		 * which mean we can't properly do either loading from memory or call LoadFrom
 		 */
-		MonoClass *assembly_klass = utils.monodroid_get_class_from_name (domain, "mscorlib", "System.Reflection", "Assembly");
+		MonoClass *assembly_klass = utils.monodroid_get_class (domain, "mscorlib", "System.Reflection", "Assembly");
 
 		if (entry_bytes_len > 0) {
 			MonoClass *byte_klass = mono_get_byte_class ();

@@ -28,6 +28,7 @@
 
 #include "globals.hh"
 #include "osbridge.hh"
+#include "xamarin-app.hh"
 
 // These two must stay here until JavaInterop is converted to C++
 FILE  *gref_log;
@@ -37,18 +38,57 @@ using namespace xamarin::android;
 using namespace xamarin::android::internal;
 
 const OSBridge::MonoJavaGCBridgeType OSBridge::mono_xa_gc_bridge_types[] = {
-	{ "Java.Lang",  "Object" },
-	{ "Java.Lang",  "Throwable" },
+	{
+		._namespace = "Java.Lang",
+		._typename = "Object",
+		.class_token_id = managed_token_ids.java_lang_object,
+		.handle_token_id = managed_token_ids.java_lang_object_handle,
+		.handle_type_token_id = managed_token_ids.java_lang_object_handle_type,
+		.refs_added_token_id = managed_token_ids.java_lang_object_refs_added,
+		.weak_handle_token_id = managed_token_ids.java_lang_object_weak_handle,
+	},
+
+	{
+		._namespace = "Java.Lang",
+		._typename = "Throwable",
+		.class_token_id = managed_token_ids.java_lang_throwable,
+		.handle_token_id = managed_token_ids.java_lang_throwable_handle,
+		.handle_type_token_id = managed_token_ids.java_lang_throwable_handle_type,
+		.refs_added_token_id = managed_token_ids.java_lang_throwable_refs_added,
+		.weak_handle_token_id = managed_token_ids.java_lang_throwable_weak_handle,
+	},
 };
 
 const OSBridge::MonoJavaGCBridgeType OSBridge::mono_ji_gc_bridge_types[] = {
-	{ "Java.Interop",       "JavaObject" },
-	{ "Java.Interop",       "JavaException" },
+	{
+		._namespace = "Java.Interop",
+		._typename = "JavaObject",
+		.class_token_id = managed_token_ids.java_interop_javaobject,
+		.handle_token_id = managed_token_ids.java_interop_javaobject_handle,
+		.handle_type_token_id = managed_token_ids.java_interop_javaobject_handle_type,
+		.refs_added_token_id = managed_token_ids.java_interop_javaobject_refs_added,
+		.weak_handle_token_id = managed_token_ids.java_interop_javaobject_weak_handle,
+	},
+
+	{
+		._namespace = "Java.Interop",
+		._typename = "JavaException",
+		.class_token_id = managed_token_ids.java_interop_javaexception,
+		.handle_token_id = managed_token_ids.java_interop_javaexception_handle,
+		.handle_type_token_id = managed_token_ids.java_interop_javaexception_handle_type,
+		.refs_added_token_id = managed_token_ids.java_interop_javaexception_refs_added,
+		.weak_handle_token_id = managed_token_ids.java_interop_javaexception_weak_handle,
+	},
 };
 
 const OSBridge::MonoJavaGCBridgeType OSBridge::empty_bridge_type = {
-	"",
-	""
+	._namespace = "",
+	._typename = "",
+	.class_token_id = 0,
+	.handle_token_id = 0,
+	.handle_type_token_id = 0,
+	.refs_added_token_id = 0,
+	.weak_handle_token_id = 0,
 };
 
 const uint32_t OSBridge::NUM_XA_GC_BRIDGE_TYPES = (sizeof (mono_xa_gc_bridge_types)/sizeof (mono_xa_gc_bridge_types [0]));
@@ -1108,7 +1148,7 @@ OSBridge::initialize_on_runtime_init (JNIEnv *env, jclass runtimeClass)
 }
 
 void
-OSBridge::add_monodroid_domain (MonoDomain *domain)
+OSBridge::add_monodroid_domain (MonoDomain *domain, MonoClass* jnienv, MonoClassField* jnienv_bridge_processing_field)
 {
 	MonodroidBridgeProcessingInfo *node = new MonodroidBridgeProcessingInfo (); //calloc (1, sizeof (MonodroidBridgeProcessingInfo));
 
@@ -1116,9 +1156,8 @@ OSBridge::add_monodroid_domain (MonoDomain *domain)
 	 * use GC API to allocate memory and thus can't be called from within the GC callback as it causes a deadlock
 	 * (the routine allocating the memory waits for the GC round to complete first)
 	 */
-	MonoClass *jnienv = utils.monodroid_get_class_from_name (domain, "Mono.Android", "Android.Runtime", "JNIEnv");;
 	node->domain = domain;
-	node->bridge_processing_field = mono_class_get_field_from_name (jnienv, const_cast<char*> ("BridgeProcessing"));
+	node->bridge_processing_field = jnienv_bridge_processing_field;
 	node->jnienv_vtable = mono_class_vtable (domain, jnienv);
 	node->next = domains_list;
 

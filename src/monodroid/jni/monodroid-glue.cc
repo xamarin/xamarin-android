@@ -25,6 +25,7 @@
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/loader.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/mono-debug.h>
 #include <mono/utils/mono-dl-fallback.h>
@@ -98,6 +99,7 @@ using namespace xamarin::android::internal;
 // implementation details as it would prevent mkbundle from working
 #include "mkbundle-api.h"
 
+std::mutex MonodroidRuntime::jni_lookup_lock;
 #if !defined (NET6)
 #include "config.include"
 #include "machine.config.include"
@@ -886,7 +888,7 @@ MonodroidRuntime::create_domain (JNIEnv *env, jstring_array_wrapper &runtimeApks
 	}
 #endif // def NET6
 
-	if (!have_mono_mkbundle_init && user_assemblies_count == 0 && androidSystem.count_override_assemblies () == 0 && !is_running_on_desktop) {
+	if (!have_mono_mkbundle_init && user_assemblies_count == 0 && androidSystem.count_override_assemblies () == 0 && !Util::is_running_on_desktop) {
 		log_fatal (LOG_DEFAULT, "No assemblies found in '%s' or '%s'. Assuming this is part of Fast Deployment. Exiting...",
 		           androidSystem.get_override_dir (0),
 		           (AndroidSystem::MAX_OVERRIDES > 1 && androidSystem.get_override_dir (1) != nullptr) ? androidSystem.get_override_dir (1) : "<unavailable>");
@@ -910,7 +912,7 @@ MonodroidRuntime::create_domain (JNIEnv *env, jstring_array_wrapper &runtimeApks
 		domain = utils.monodroid_create_appdomain (root_domain, domain_name.get (), /*shadow_copy:*/ 1, /*shadow_directory:*/ androidSystem.get_override_dir (0));
 	}
 
-	if constexpr (is_running_on_desktop) {
+	if constexpr (Util::is_running_on_desktop) {
 		if (is_root_domain) {
 			// Check that our corlib is coherent with the version of Mono we loaded otherwise
 			// tell the IDE that the project likely need to be recompiled.
@@ -957,25 +959,39 @@ MonodroidRuntime::LocalRefsAreIndirect (JNIEnv *env, jclass runtimeClass, int ve
 inline void
 MonodroidRuntime::lookup_bridge_info (MonoDomain *domain, MonoImage *image, const OSBridge::MonoJavaGCBridgeType *type, OSBridge::MonoJavaGCBridgeInfo *info)
 {
-	info->klass             = utils.monodroid_get_class_from_image (domain, image, type->_namespace, type->_typename);
-	info->handle            = mono_class_get_field_from_name (info->klass, const_cast<char*> ("handle"));
-	info->handle_type       = mono_class_get_field_from_name (info->klass, const_cast<char*> ("handle_type"));
-	info->refs_added        = mono_class_get_field_from_name (info->klass, const_cast<char*> ("refs_added"));
-	info->weak_handle       = mono_class_get_field_from_name (info->klass, const_cast<char*> ("weak_handle"));
-	if (info->klass == nullptr || info->handle == nullptr || info->handle_type == nullptr ||
-			info->refs_added == nullptr || info->weak_handle == nullptr) {
+	info->klass             = utils.monodroid_get_required_class (domain, image, type->class_token_id, type->_namespace, type->_typename);
+	info->handle            = utils.monodroid_get_class_field (info->klass, type->handle_token_id, "handle");
+	info->handle_type       = utils.monodroid_get_class_field (info->klass, type->handle_type_token_id, "handle_type");
+	info->refs_added        = utils.monodroid_get_class_field (info->klass, type->refs_added_token_id, "refs_added");
+	info->weak_handle       = utils.monodroid_get_class_field (info->klass, type->weak_handle_token_id, "weak_handle");
+	if (XA_UNLIKELY (info->klass == nullptr || info->handle == nullptr || info->handle_type == nullptr || info->refs_added == nullptr || info->weak_handle == nullptr)) {
 		log_fatal (LOG_DEFAULT, "The type `%s.%s` is missing required instance fields! handle=%p handle_type=%p refs_added=%p weak_handle=%p",
 				type->_namespace, type->_typename,
 				info->handle,
 				info->handle_type,
 				info->refs_added,
 				info->weak_handle);
-		exit (FATAL_EXIT_MONO_MISSING_SYMBOLS);
+		abort ();
 	}
 }
 
+force_inline MonoMethod*
+MonodroidRuntime::monodroid_get_required_method (MonoImage *image, MonoClass *klass, uint32_t tokenID, int param_count, char const *type_name, char const *method_name)
+{
+	MonoMethod *method;
+
+	if constexpr (Util::is_running_on_desktop) {
+		method = mono_class_get_method_from_name (klass, method_name, param_count);
+	} else {
+		method = mono_get_method (image, tokenID, klass);
+	}
+	abort_unless (method != nullptr, "INTERNAL ERROR: Unable to find method `%s.%s`", type_name, method_name);
+
+	return method;
+}
+
 void
-MonodroidRuntime::init_android_runtime (MonoDomain *domain, JNIEnv *env, jclass runtimeClass, jobject loader)
+MonodroidRuntime::init_android_runtime (MonoDomain *domain, JNIEnv *env, jclass runtimeClass, jobject loader, MonoClass*& jnienv, MonoClassField*& jnienv_bridge_processing_field)
 {
 	mono_add_internal_call ("Java.Interop.TypeManager::monodroid_typemap_java_to_managed", reinterpret_cast<const void*>(typemap_java_to_managed));
 	mono_add_internal_call ("Android.Runtime.JNIEnv::monodroid_typemap_managed_to_java", reinterpret_cast<const void*>(typemap_managed_to_java));
@@ -987,7 +1003,7 @@ MonodroidRuntime::init_android_runtime (MonoDomain *domain, JNIEnv *env, jclass 
 	init.version                = env->GetVersion ();
 	init.androidSdkVersion      = android_api_level;
 	init.localRefsAreIndirect   = LocalRefsAreIndirect (env, runtimeClass, init.androidSdkVersion);
-	init.isRunningOnDesktop     = is_running_on_desktop ? 1 : 0;
+	init.isRunningOnDesktop     = Util::is_running_on_desktop ? 1 : 0;
 	init.brokenExceptionTransitions = application_config.broken_exception_transitions ? 1 : 0;
 	init.packageNamingPolicy    = static_cast<int>(application_config.package_naming_policy);
 	init.boundExceptionType     = application_config.bound_exception_type;
@@ -1011,15 +1027,10 @@ MonodroidRuntime::init_android_runtime (MonoDomain *domain, JNIEnv *env, jclass 
 		lookup_bridge_info (domain, image, &osBridge.get_java_gc_bridge_type (i), &osBridge.get_java_gc_bridge_info (i));
 	}
 
-	// TODO: try looking up the method by its token
-	MonoClass *runtime = utils.monodroid_get_class_from_image (domain, image, "Android.Runtime", "JNIEnv");
-	MonoMethod *method = mono_class_get_method_from_name (runtime, "Initialize", 1);
+	MonoClass *runtime = utils.monodroid_get_required_class (domain, image, managed_token_ids.android_runtime_jnienv, "Android.Runtime", "JNIEnv");
+	jnienv = runtime;
 
-	if (method == nullptr) {
-		log_fatal (LOG_DEFAULT, "INTERNAL ERROR: Unable to find Android.Runtime.JNIEnv.Initialize!");
-		exit (FATAL_EXIT_MISSING_INIT);
-	}
-
+	MonoMethod      *method = monodroid_get_required_method (image, runtime, managed_token_ids.android_runtime_jnienv_initialize, 1, "Android.Runtime.JNIEnv", "Initialize");
 	MonoAssembly    *ji_assm    = utils.monodroid_load_assembly (domain, "Java.Interop");
 	MonoImage       *ji_image   = mono_assembly_get_image  (ji_assm);
 	for ( ; i < OSBridge::NUM_XA_GC_BRIDGE_TYPES + OSBridge::NUM_JI_GC_BRIDGE_TYPES; ++i) {
@@ -1029,19 +1040,14 @@ MonodroidRuntime::init_android_runtime (MonoDomain *domain, JNIEnv *env, jclass 
 	/* If running on desktop, we may be swapping in a new Mono.Android image when calling this
 	 * so always make sure we have the freshest handle to the method.
 	 */
-	if (registerType == nullptr || is_running_on_desktop) {
-		registerType = mono_class_get_method_from_name (runtime, "RegisterJniNatives", 5);
+	if (registerType == nullptr || Util::is_running_on_desktop) {
+		registerType = monodroid_get_required_method (image, runtime, managed_token_ids.android_runtime_jnienv_registerjninatives, 5, "Android.Runtime.JNIEnv", "RegisterJniNatives");
 	}
-	if (registerType == nullptr) {
-		log_fatal (LOG_DEFAULT, "INTERNAL ERROR: Unable to find Android.Runtime.JNIEnv.RegisterJniNatives!");
-		exit (FATAL_EXIT_CANNOT_FIND_JNIENV);
-	}
-	MonoClass *android_runtime_jnienv = runtime;
-	MonoClassField *bridge_processing_field = mono_class_get_field_from_name (runtime, const_cast<char*> ("BridgeProcessing"));
-	if (android_runtime_jnienv ==nullptr || bridge_processing_field == nullptr) {
-		log_fatal (LOG_DEFAULT, "INTERNAL_ERROR: Unable to find Android.Runtime.JNIEnv.BridgeProcessing");
-		exit (FATAL_EXIT_CANNOT_FIND_JNIENV);
-	}
+
+	// Android.Runtime.JNIEnv.BridgeProcessing
+	MonoClassField *bridge_processing_field = utils.monodroid_get_class_field (runtime, managed_token_ids.android_runtime_jnienv_bridgeprocessing, "BridgeProcessing");
+	abort_unless (bridge_processing_field != nullptr, "INTERNAL_ERROR: Unable to find Android.Runtime.JNIEnv.BridgeProcessing");
+	jnienv_bridge_processing_field = bridge_processing_field;
 
 	jclass lrefLoaderClass = env->GetObjectClass (loader);
 	init.Loader_loadClass     = env->GetMethodID (lrefLoaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
@@ -1074,7 +1080,7 @@ MonodroidRuntime::get_android_runtime_class (MonoDomain *domain)
 {
 	MonoAssembly *assm = utils.monodroid_load_assembly (domain, "Mono.Android");
 	MonoImage *image   = mono_assembly_get_image (assm);
-	MonoClass *runtime = utils.monodroid_get_class_from_image (domain, image, "Android.Runtime", "JNIEnv");
+	MonoClass *runtime = utils.monodroid_get_required_class (domain, image, managed_token_ids.android_runtime_jnienv, "Android.Runtime", "JNIEnv");
 
 	return runtime;
 }
@@ -1686,7 +1692,7 @@ MonodroidRuntime::create_and_initialize_domain (JNIEnv* env, jclass runtimeClass
 	MonoDomain* domain = create_domain (env, runtimeApks, is_root_domain);
 
 	// When running on desktop, the root domain is only a dummy so don't initialize it
-	if constexpr (is_running_on_desktop) {
+	if constexpr (Util::is_running_on_desktop) {
 		if (is_root_domain) {
 			return domain;
 		}
@@ -1696,11 +1702,14 @@ MonodroidRuntime::create_and_initialize_domain (JNIEnv* env, jclass runtimeClass
 	if (assembliesBytes != nullptr)
 		designerAssemblies.add_or_update_from_java (domain, env, assemblies, assembliesBytes, assembliesPaths);
 #endif
-	bool preload = (androidSystem.is_assembly_preload_enabled () || (is_running_on_desktop && force_preload_assemblies));
+	bool preload = (androidSystem.is_assembly_preload_enabled () || (Util::is_running_on_desktop && force_preload_assemblies));
 	load_assemblies (domain, preload, assemblies);
-	init_android_runtime (domain, env, runtimeClass, loader);
 
-	osBridge.add_monodroid_domain (domain);
+	MonoClass* jnienv = nullptr;
+	MonoClassField* jnienv_bridge_processing_field = nullptr;
+	init_android_runtime (domain, env, runtimeClass, loader, jnienv, jnienv_bridge_processing_field);
+
+	osBridge.add_monodroid_domain (domain, jnienv, jnienv_bridge_processing_field);
 
 	return domain;
 }
@@ -1845,6 +1854,13 @@ MonodroidRuntime::install_logging_handlers ()
 
 #endif // def ANDROID
 
+void
+MonodroidRuntime::lookup_java_timezone ()
+{
+	std::lock_guard<std::mutex> lock (jni_lookup_lock);
+	java_TimeZone = utils.get_class_from_runtime_field (osBridge.ensure_jnienv (), java_mono_Runtime, "java_util_TimeZone", true);
+}
+
 inline void
 MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass klass, jstring lang, jobjectArray runtimeApksJava,
                                                           jstring runtimeNativeLibDir, jobjectArray appDirs, jobject loader,
@@ -1853,6 +1869,7 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	char *mono_log_mask = nullptr;
 	char *mono_log_level = nullptr;
 
+	java_mono_Runtime = klass;
 	init_logging_categories (mono_log_mask, mono_log_level);
 
 	timing_period total_time;
@@ -1884,8 +1901,6 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	android_api_level = apiLevel;
 	androidSystem.detect_embedded_dso_mode (applicationDirs);
 	androidSystem.set_running_in_emulator (isEmulator);
-
-	java_TimeZone = utils.get_class_from_runtime_field (env, klass, "java_util_TimeZone", true);
 
 	utils.monodroid_store_package_name (application_config.android_package_name);
 
@@ -2058,7 +2073,7 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 #endif // def ANDROID && ndef NET6
 
 	// Install our dummy exception handler on Desktop
-	if constexpr (is_running_on_desktop) {
+	if constexpr (Util::is_running_on_desktop) {
 		mono_add_internal_call ("System.Diagnostics.Debugger::Mono_UnhandledException_internal(System.Exception)",
 		                                 reinterpret_cast<const void*> (monodroid_Mono_UnhandledException_internal));
 	}
@@ -2196,8 +2211,8 @@ MonodroidRuntime::Java_mono_android_Runtime_register (JNIEnv *env, jstring manag
 	domain = mono_domain_get ();
 
 	MonoMethod *register_jni_natives = registerType;
-	if constexpr (is_running_on_desktop) {
-		MonoClass *runtime = utils.monodroid_get_class_from_name (domain, "Mono.Android", "Android.Runtime", "JNIEnv");
+	if constexpr (Util::is_running_on_desktop) {
+		MonoClass *runtime = utils.monodroid_get_class (domain, "Mono.Android", "Android.Runtime", "JNIEnv");
 		register_jni_natives = mono_class_get_method_from_name (runtime, "RegisterJniNatives", 5);
 	}
 	utils.monodroid_runtime_invoke (domain, register_jni_natives, nullptr, args, nullptr);

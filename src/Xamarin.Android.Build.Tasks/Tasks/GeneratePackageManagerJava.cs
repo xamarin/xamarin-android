@@ -282,6 +282,7 @@ namespace Xamarin.Android.Tasks
 					InstantRunEnabled = InstantRunEnabled,
 					JniAddNativeMethodRegistrationAttributePresent = appConfState != null ? appConfState.JniAddNativeMethodRegistrationAttributePresent : false,
 					HaveRuntimeConfigBlob = haveRuntimeConfigBlob,
+					TokenIdCollection = appConfState?.TokenIdCollection ?? new NativeRuntimeTokenIdCollection (Log),
 				};
 
 				using (var sw = MemoryStreamPool.Shared.CreateStreamWriter ()) {

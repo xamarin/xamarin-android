@@ -152,6 +152,8 @@
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Interop.Tools.JavaCallableWrappers.pdb" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Interop.Tools.JavaSource.dll" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Interop.Tools.JavaSource.pdb" />
+    <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Interop.Tools.JavaTypeSystem.dll" />
+    <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Interop.Tools.JavaTypeSystem.pdb" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Runtime.Environment.dll" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Runtime.Environment.pdb" />
     <_MSBuildFiles Include="$(MSBuildSrcDir)\Java.Runtime.Environment.dll.config" Condition=" '$(HostOS)' != 'Windows' " />

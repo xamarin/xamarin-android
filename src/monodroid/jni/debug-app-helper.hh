@@ -12,6 +12,6 @@ extern "C" {
 	 * Signature: ([Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String);[Ljava/lang/String);Ljava/lang/String;IZ)V
 	 */
 	JNIEXPORT void JNICALL Java_mono_android_DebugRuntime_init
-	(JNIEnv *, jclass, jobjectArray, jstring, jobjectArray);
+	(JNIEnv *, jclass, jobjectArray, jstring, jobjectArray, jstring);
 }
 #endif // _Included_mono_android_DebugRuntime

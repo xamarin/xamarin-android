@@ -69,7 +69,7 @@ JNI_OnLoad ([[maybe_unused]] JavaVM *vm, [[maybe_unused]] void *reserved)
 
 JNIEXPORT void JNICALL
 Java_mono_android_DebugRuntime_init (JNIEnv *env, [[maybe_unused]] jclass klass, jobjectArray runtimeApksJava,
-                                     jstring runtimeNativeLibDir, jobjectArray appDirs)
+                                     jstring runtimeNativeLibDir, jobjectArray appDirs, jstring packageName)
 {
 	jstring_array_wrapper applicationDirs (env, appDirs);
 	jstring_array_wrapper runtimeApks (env, runtimeApksJava);
@@ -80,6 +80,11 @@ Java_mono_android_DebugRuntime_init (JNIEnv *env, [[maybe_unused]] jclass klass,
 	androidSystem.setup_app_library_directories (runtimeApks, applicationDirs);
 
 	jstring_wrapper jstr (env);
+
+	if (packageName != nullptr) {
+		jstr = packageName;
+		androidSystem.set_override_dir (1, utils.string_concat ("/data/local/tmp/.xamarin/", jstr.get_cstr ()));
+	}
 
 	if (runtimeNativeLibDir != nullptr) {
 		jstr = runtimeNativeLibDir;

@@ -43,6 +43,7 @@ public class MonoPackageManager {
 				ClassLoader loader  = context.getClassLoader ();
 				String runtimeDir = getNativeLibraryPath (runtimePackage);
 				String[] appDirs = new String[] {filesDir, cacheDir, dataDir};
+				String packageName  = context.getPackageName();
 
 				//
 				// Preload DSOs libmonodroid.so depends on so that the dynamic
@@ -73,7 +74,7 @@ public class MonoPackageManager {
 				//
 				if (BuildConfig.Debug) {
 					System.loadLibrary ("xamarin-debug-app-helper");
-					DebugRuntime.init (apks, runtimeDir, appDirs);
+					DebugRuntime.init (apks, runtimeDir, appDirs, packageName);
 				} else {
 					System.loadLibrary("monosgen-2.0");
 				}

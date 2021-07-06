@@ -170,8 +170,7 @@ namespace Xamarin.Android.Tasks
 					}
 					apk.Flush ();
 				}
-				// this call should be redundant now
-				//apk.FixupWindowsPathSeparators ((a, b) => Log.LogDebugMessage ($"Fixing up malformed entry `{a}` -> `{b}`"));
+				apk.FixupWindowsPathSeparators ((a, b) => Log.LogDebugMessage ($"Fixing up malformed entry `{a}` -> `{b}`"));
 
 				// Add classes.dx
 				CompressionMethod dexCompressionMethod = GetCompressionMethod (".dex");

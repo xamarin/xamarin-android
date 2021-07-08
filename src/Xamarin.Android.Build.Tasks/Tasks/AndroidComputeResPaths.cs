@@ -61,9 +61,9 @@ namespace Xamarin.Android.Tasks
 
 		public override bool RunTask ()
 		{
-			var intermediateFiles = new List<ITaskItem> (ResourceFiles.Length);
+			var intermediateFiles = new Dictionary<string, ITaskItem> (ResourceFiles.Length, StringComparer.OrdinalIgnoreCase);
 			var resolvedFiles = new List<ITaskItem> (ResourceFiles.Length);
-			
+
 			string[] prefixes = Prefixes != null ? Prefixes.Split (';') : null;
 			if (prefixes != null) {
 				for (int i = 0; i < prefixes.Length; i++) {
@@ -134,16 +134,52 @@ namespace Xamarin.Android.Tasks
 					Log.LogCodedError ("XA2001", file: item.ItemSpec, lineNumber: 0, message: Properties.Resources.XA2001, item.ItemSpec);
 					continue;
 				}
+				if (intermediateFiles.TryGetValue (dest, out ITaskItem conflict)) {
+					string conflictItemSpec = conflict.GetMetadata ("OriginalItemSpec");
+					string conflictPath = Path.GetFullPath (conflictItemSpec);
+					string path = Path.GetFullPath (item.ItemSpec);
+					if (string.Compare (conflictPath, path, StringComparison.Ordinal) == 0) {
+						Log.LogCodedWarning (
+							"XA1029",
+							file: conflictItemSpec,
+							lineNumber: 0,
+							message: Properties.Resources.XA1029,
+							conflictItemSpec,
+							conflict.GetMetadata ("LogicalName"),
+							rel);
+						continue;
+					}
+					if (string.Compare (Path.ChangeExtension (conflictPath, ""), Path.ChangeExtension (path, ""), StringComparison.OrdinalIgnoreCase) == 0) {
+						Log.LogCodedError (
+							"XA1030",
+							file: conflictItemSpec,
+							lineNumber: 0,
+							message: Properties.Resources.XA1030,
+							conflictItemSpec,
+							item.ItemSpec);
+						return false;
+					}
+					Log.LogCodedError (
+						"XA1031",
+						file: conflictItemSpec,
+						lineNumber: 0,
+						message: Properties.Resources.XA1031,
+						conflictItemSpec,
+						conflict.GetMetadata ("LogicalName"),
+						item.ItemSpec,
+						rel);
+					return false;
+				}
 				var newItem = new TaskItem (dest);
 				newItem.SetMetadata ("LogicalName", rel);
 				newItem.SetMetadata ("_FlatFile", Monodroid.AndroidResource.CalculateAapt2FlatArchiveFileName (dest));
 				newItem.SetMetadata ("_ArchiveDirectory", AndroidLibraryFlatFilesDirectory);
 				item.CopyMetadataTo (newItem);
-				intermediateFiles.Add (newItem);
+				intermediateFiles.Add (dest, newItem);
 				resolvedFiles.Add (item);
 			}
 
-			IntermediateFiles = intermediateFiles.ToArray ();
+			IntermediateFiles = intermediateFiles.Values.ToArray ();
 			ResolvedResourceFiles = resolvedFiles.ToArray ();
 			MonoAndroidHelper.SaveResourceCaseMap (BuildEngine4, nameCaseMap);
 			return !Log.HasLoggedErrors;

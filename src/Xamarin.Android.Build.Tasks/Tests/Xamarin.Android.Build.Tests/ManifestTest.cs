@@ -497,6 +497,11 @@ namespace Bug12935
 					StringAssert.AreEqualIgnoringCase (expectedItems[i], vc.Value,
 						$"Version Code is incorrect. Found {vc.Value} expect {expectedItems[i]}");
 				}
+				var messages = builder.LastBuildOutput.SkipWhile (x => !x.StartsWith ("Task \"GetManifestVersions\""));
+				foreach (var item in expectedItems) {
+					StringAssertEx.Contains($"VersionCode={item}", messages, $"Build output should contain VersionCode={item}");
+				}
+
 			}
 		}
 

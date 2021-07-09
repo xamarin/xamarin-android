@@ -63,6 +63,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <UsingTask TaskName="Xamarin.Android.Tasks.GetConvertedJavaLibraries" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.GetFilesThatExist" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.GetJavaPlatformJar" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.GetManifestVersions" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.GetMonoPlatformJar" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.Javac" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.KeyTool" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
@@ -1701,6 +1702,17 @@ because xbuild doesn't support framework reference assemblies.
   </ItemGroup>
 </Target>
 
+<Target Name="_GetFinalManifestVersions"
+    Condition="Exists ('$(_ManifestOutput)')"
+    DependsOnTargets="_CreateBaseApk">
+  <GetManifestVersions
+    ManifestPath="$(IntermediateOutputPath)android"
+    PackageName="$(_AndroidPackage)"
+  >
+    <Output TaskParameter="ManifestVersions" ItemName="AndroidManifestVersions" />
+  </GetManifestVersions>
+</Target>
+
 <Target Name="_FindJavaStubFiles" DependsOnTargets="_GenerateJavaStubs;_ManifestMerger;_ConvertCustomView;$(_AfterConvertCustomView);_GenerateEnvironmentFiles;">
   <ItemGroup>
     <_JavaStubFiles Include="$(_AndroidIntermediateJavaSourceDirectory)**\*.java" />
@@ -1734,6 +1746,7 @@ because xbuild doesn't support framework reference assemblies.
 		_GetLibraryImports;
 		_CheckDuplicateJavaLibraries;
 		_CreateBaseApk;
+		_GetFinalManifestVersions;
 		_DetermineJavaLibrariesToCompile;
 		$(_CompileJavaDependsOnTargets)
 	</_CompileJavaDependsOnTargets>

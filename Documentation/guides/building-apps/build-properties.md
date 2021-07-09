@@ -488,6 +488,35 @@ deprecated API's to work.
 
 **Experimental**. This property was added in Xamarin.Android 6.1.
 
+## AndroidManifestVersions
+
+This is an ItemGroup which represents the final `android:versionCode` and
+'android:versionName' which were written to the `AndroidManifest.xml` files.
+
+This are read only and is for information only.
+
+Each item in the group will contain the path to the `AndroidManifest.xml` the
+data was retrieved from and two items of Metadata.
+
+* `VersionCode`: The final code used.
+* `VersionName`: The final name used.
+* `Abi`: The abi for this manifest.
+
+This is an item group because Xamarin.Android allows developers to generate
+multiple apk files per abi. Each Apk can have a slightly different `android:versionCode`.
+
+```xml
+<AndroidManifestVersions Include="com.foo.bar"
+  VersionCode="316241012" VersionName="1.0" Abi="all" />
+<AndroidManifestVersions Include="com.foo.bar-armeabi-v7a"
+  VersionCode="316241012" VersionName="1.0" Abi="armeabi-v7a" />
+<AndroidManifestVersions Include="com.foo.bar-x86"
+  VersionCode="316241012" VersionName="1.0" Abi="x86" />
+```
+
+Added in Xamarin.Android 11.3.
+
+
 ## AndroidGenerateJniMarshalMethods
 
 A bool property which

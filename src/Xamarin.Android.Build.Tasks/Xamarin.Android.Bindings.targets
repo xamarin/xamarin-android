@@ -24,11 +24,11 @@ Copyright (C) 2012 Xamarin Inc. All rights reserved.
   <!--
   *******************************************
     Extensibility hook that allows VS to
-    provide extra behavior without modifying 
+    provide extra behavior without modifying
     the core targets.
   *******************************************
   -->
-  <Import Project="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).Before.targets" 
+  <Import Project="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).Before.targets"
           Condition="Exists('$(MSBuildThisFileDirectory)$(MSBuildThisFileName).Before.targets')"/>
 
   <!--
@@ -59,12 +59,12 @@ Copyright (C) 2012 Xamarin Inc. All rights reserved.
     <AssemblySearchPaths>$([System.String]::Copy('$(AssemblySearchPaths)').Replace('{GAC}',''))</AssemblySearchPaths>
     <AssemblySearchPaths Condition="'$(MSBuildRuntimeVersion)' != ''">$(AssemblySearchPaths.Split(';'))</AssemblySearchPaths>
   </PropertyGroup>
-	
+
   <PropertyGroup>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GetReferenceAssemblyPathsDependsOn>_SetLatestTargetFrameworkVersion</GetReferenceAssemblyPathsDependsOn>
     <AndroidSequencePointsMode Condition=" '$(AndroidSequencePointsMode)' == ''">None</AndroidSequencePointsMode>
-		
+
 	<!-- Prevent warnings about assembly version conflicts -->
 	<AutoUnifyAssemblyReferences>True</AutoUnifyAssemblyReferences>
 	<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
@@ -121,6 +121,12 @@ Copyright (C) 2012 Xamarin Inc. All rights reserved.
 		/>
 	</CreateProperty>
 
+  	<CreateProperty Value="$(_JavaSdkDirectory)bin">
+		<Output TaskParameter="Value" PropertyName="JavacToolPath"
+				Condition="'$(JavacToolPath)' == ''"
+		/>
+	</CreateProperty>
+
     <Message Text="MonoAndroid Tools: $(_MonoAndroidToolsDirectory)"/>
     <Message Text="Android NDK: $(_AndroidNdkDirectory)"/>
     <Message Text="Android SDK: $(_AndroidSdkDirectory)"/>
@@ -152,6 +158,7 @@ Copyright (C) 2012 Xamarin Inc. All rights reserved.
   <Import Project="Xamarin.Android.Bindings.JarToXml.targets"   Condition=" '$(AndroidClassParser)' == 'jar2xml' " />
   <Import Project="Xamarin.Android.DesignTime.targets" />
   <Import Project="Xamarin.Android.Bindings.Documentation.targets" />
+  <Import Project="Xamarin.Android.Javac.targets" />
   <Import Project="Xamarin.Android.EmbeddedResource.targets" />
   <Import Project="Xamarin.Android.PCLSupport.targets" />
   <Import Project="Xamarin.Android.Tooling.targets" />
@@ -160,10 +167,10 @@ Copyright (C) 2012 Xamarin Inc. All rights reserved.
   <!--
   *******************************************
     Extensibility hook that allows VS to
-    provide extra behavior without modifying 
+    provide extra behavior without modifying
     the core targets.
   *******************************************
   -->
-  <Import Project="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).After.targets" 
+  <Import Project="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).After.targets"
           Condition="Exists('$(MSBuildThisFileDirectory)$(MSBuildThisFileName).After.targets')"/>
 </Project>

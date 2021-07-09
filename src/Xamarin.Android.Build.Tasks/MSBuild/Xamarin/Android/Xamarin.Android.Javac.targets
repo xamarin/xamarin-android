@@ -1,0 +1,137 @@
+<!--
+***********************************************************************************************
+Xamarin.Android.Javac.targets
+
+This file contains the core MSBuild logic for Xamarin.Android Java Invocations.
+
+It is shared between "legacy" binding projects and .NET 5 projects.
+
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask TaskName="Xamarin.Android.Tasks.AdjustJavacVersionArguments" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+  <UsingTask TaskName="Xamarin.Android.Tasks.DetermineJavaLibrariesToCompile" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+  <UsingTask TaskName="Xamarin.Android.Tasks.Javac" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+
+  <PropertyGroup>
+    <_AndroidIntermediateBindingJavaClassDirectory>$(IntermediateOutputPath)binding\bin\classes\</_AndroidIntermediateBindingJavaClassDirectory>
+    <_AndroidIntermediateBindingClassesZip>$(IntermediateOutputPath)binding\bin\$(MSBuildProjectName).jar</_AndroidIntermediateBindingClassesZip>
+  </PropertyGroup>
+
+  <Target Name="_AdjustJavacVersionArguments">
+    <AdjustJavacVersionArguments
+        Condition=" '$(JavacTargetVersion)' == '' or '$(JavacSourceVersion)' == '' "
+        JdkVersion="$(_JdkVersion)"
+        DefaultJdkVersion="$(_DefaultJdkVersion)"
+        SkipJavacVersionCheck="$(AndroidSkipJavacVersionCheck)"
+        EnableProguard="$(AndroidEnableProguard)"
+        EnableMultiDex="$(AndroidEnableMultiDex)">
+      <Output TaskParameter="TargetVersion" PropertyName="JavacTargetVersion" />
+      <Output TaskParameter="SourceVersion" PropertyName="JavacSourceVersion" />
+    </AdjustJavacVersionArguments>
+  </Target>
+
+  <Target Name="_DetermineBindingJavaLibrariesToCompile" Condition=" '@(_JavaBindingSource->Count())' != '0' ">
+    <DetermineJavaLibrariesToCompile
+        MonoPlatformJarPaths="$(MonoPlatformJarPath);$(_RuntimeJar)"
+        JavaSourceFiles="@(_JavaBindingSource)"
+        JavaLibraries="@(AndroidJavaLibrary);@(EmbeddedJar)"
+        ExternalJavaLibraries="@(AndroidExternalJavaLibrary)"
+        LibraryProjectJars="@(ExtractedJarImports)"
+        DoNotPackageJavaLibraries="@(_ResolvedDoNotPackageAttributes)"
+        EnableInstantRun="$(_InstantRunEnabled)">
+      <Output TaskParameter="JavaLibrariesToCompile" ItemName="_BindingJavaLibrariesToCompile" />
+      <Output TaskParameter="ReferenceJavaLibraries" ItemName="_ReferenceJavaLibs" />
+    </DetermineJavaLibrariesToCompile>
+  </Target>
+
+  <Target Name="_DetermineJavaLibrariesToCompile">
+
+    <DetermineJavaLibrariesToCompile
+        MonoPlatformJarPaths="$(MonoPlatformJarPath);$(_RuntimeJar)"
+        JavaSourceFiles="@(AndroidJavaSource)"
+        JavaLibraries="@(AndroidJavaLibrary)"
+        ExternalJavaLibraries="@(AndroidExternalJavaLibrary)"
+        LibraryProjectJars="@(ExtractedJarImports)"
+        DoNotPackageJavaLibraries="@(_ResolvedDoNotPackageAttributes)"
+        EnableInstantRun="$(_InstantRunEnabled)">
+      <Output TaskParameter="JavaLibrariesToCompile" ItemName="_JavaLibrariesToCompile" />
+      <Output TaskParameter="ReferenceJavaLibraries" ItemName="_ReferenceJavaLibs" />
+    </DetermineJavaLibrariesToCompile>
+
+    <ItemGroup>
+      <_JavaLibrariesToCompileForApp Include="@(_JavaLibrariesToCompile)" Condition=" '$(_InstantRunEnabled)' != 'True' " />
+      <AndroidExternalJavaLibrary    Include="@(_JavaLibrariesToCompile)" Condition=" '$(_InstantRunEnabled)' == 'True' " />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_CollectJavaSourceForBinding">
+    <ItemGroup>
+      <_JavaBindingSource Include="%(AndroidJavaSource.Identity)" Condition=" '%(AndroidJavaSource.Bind)' == 'True' " />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_CollectJavaSource">
+    <ItemGroup>
+      <_JavaSource Include="%(AndroidJavaSource.Identity)" Condition=" '%(AndroidJavaSource.Bind)' != 'True' " />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_CompileBindingJava"
+      Condition=" '@(_JavaBindingSource->Count())' != '0' "
+      DependsOnTargets="$(_CompileBindingJavaDependsOnTargets)"
+      Inputs="@(_AndroidMSBuildAllProjects);$(MonoPlatformJarPath);@(_JavaBindingSource)"
+      Outputs="$(_AndroidIntermediateBindingClassesZip)">
+
+    <!-- remove existing <Javac /> outputs, since *.class files and classes.zip could contain old files -->
+    <RemoveDirFixed Directories="$(_AndroidIntermediateBindingJavaClassDirectory)" Condition="Exists('$(_AndroidIntermediateBindingJavaClassDirectory)')" />
+    <Delete Files="$(_AndroidIntermediateBindingClassesZip)" Condition="Exists('$(_AndroidIntermediateBindingClassesZip)')" />
+    <!-- Compile java code -->
+    <Javac
+        Condition=" '@(_JavaBindingSource->Count())' != '0' "
+        JavaPlatformJarPath="$(JavaPlatformJarPath)"
+        ClassesOutputDirectory="$(_AndroidIntermediateBindingJavaClassDirectory)"
+        ClassesZip="$(_AndroidIntermediateBindingClassesZip)"
+        StubSourceDirectory="$(_AndroidIntermediateBindingJavaSourceDirectory)"
+        JavaSourceFiles="@(_JavaBindingSource)"
+        ToolPath="$(JavacToolPath)"
+        ToolExe="$(JavacToolExe)"
+        Jars="@(_BindingJavaLibrariesToCompile);@(_ReferenceJavaLibs)"
+        JavacTargetVersion="$(JavacTargetVersion)"
+        JavacSourceVersion="$(JavacSourceVersion)"
+    />
+    <ItemGroup>
+      <EmbeddedJar Include="$(_AndroidIntermediateBindingClassesZip)" Condition="Exists('$(_AndroidIntermediateBindingClassesZip)')" />
+      <AndroidJavaLibrary Include="$(_AndroidIntermediateBindingClassesZip)" Condition="Exists('$(_AndroidIntermediateBindingClassesZip)')" />
+      <FileWrites Include="$(_AndroidIntermediateBindingClassesZip)" Condition="Exists('$(_AndroidIntermediateBindingClassesZip)')" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_CompileJava"
+    DependsOnTargets="$(_CompileJavaDependsOnTargets);_CollectJavaSource"
+    Inputs="@(_AndroidMSBuildAllProjects);$(MonoPlatformJarPath);@(_JavaStubFiles);@(_JavaSource)"
+    Outputs="$(IntermediateOutputPath)_javac.stamp">
+
+    <!-- remove existing <Javac /> outputs, since *.class files and classes.zip could contain old files -->
+    <RemoveDirFixed Directories="$(_AndroidIntermediateJavaClassDirectory)" />
+    <Delete Files="$(_AndroidIntermediateClassesZip)" />
+
+    <!-- Compile java code -->
+    <Javac
+        JavaPlatformJarPath="$(JavaPlatformJarPath)"
+        ClassesOutputDirectory="$(_AndroidIntermediateJavaClassDirectory)"
+        ClassesZip="$(_AndroidIntermediateClassesZip)"
+        StubSourceDirectory="$(_AndroidIntermediateJavaSourceDirectory)"
+        JavaSourceFiles="@(_JavaSource)"
+        ToolPath="$(JavacToolPath)"
+        ToolExe="$(JavacToolExe)"
+        Jars="@(_JavaLibrariesToCompile);@(_InstantRunJavaReference);@(_ReferenceJavaLibs)"
+        JavacTargetVersion="$(JavacTargetVersion)"
+        JavacSourceVersion="$(JavacSourceVersion)"
+    />
+
+    <Touch Files="$(IntermediateOutputPath)_javac.stamp" AlwaysCreate="true" />
+  </Target>
+</Project>

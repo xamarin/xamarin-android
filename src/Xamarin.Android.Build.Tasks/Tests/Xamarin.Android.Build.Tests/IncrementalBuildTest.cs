@@ -261,6 +261,7 @@ public class TestMe {
 	}
 }",
 						Encoding = Encoding.ASCII,
+						MetadataValues = "Bind=False",
 					}
 				},
 			};

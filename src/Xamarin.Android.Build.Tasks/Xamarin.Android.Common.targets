@@ -17,7 +17,6 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="_WriteLockFile">
 <UsingTask TaskName="Xamarin.Android.Tasks.RemoveUnknownFiles" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
-<UsingTask TaskName="Xamarin.Android.Tasks.AdjustJavacVersionArguments" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.AndroidComputeResPaths" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.AndroidSignPackage" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.AndroidCreateDebugKey" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
@@ -62,9 +61,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <UsingTask TaskName="Xamarin.Android.Tasks.GetAppSettingsDirectory" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.GetConvertedJavaLibraries" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.GetFilesThatExist" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
-<UsingTask TaskName="Xamarin.Android.Tasks.GetJavaPlatformJar" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.GetMonoPlatformJar" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
-<UsingTask TaskName="Xamarin.Android.Tasks.Javac" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.KeyTool" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.LinkAssembliesNoShrink" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.Lint" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
@@ -85,7 +82,6 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <UsingTask TaskName="Xamarin.Android.Tasks.CheckProjectItems" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.CheckDuplicateJavaLibraries" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.CollectLibraryAssets" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
-<UsingTask TaskName="Xamarin.Android.Tasks.DetermineJavaLibrariesToCompile" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.CompileNativeAssembly" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.LinkApplicationSharedLibraries" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.PrepareAbiItems" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
@@ -352,6 +348,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Aapt2.targets" Condition=" '$(AndroidUseAapt2)' == 'true' or '$(UsingAndroidNETSdk)' == 'true' " />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.DesignTime.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.EmbeddedResource.targets" />
+<Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Javac.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.SkipCases.projitems" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Tooling.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Legacy.targets" Condition=" '$(UsingAndroidNETSdk)' != 'True' " />
@@ -516,14 +513,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 </Target>
 
 <Target Name="_ValidateAndroidPackageProperties"
-    DependsOnTargets="_GetAndroidPackageName">
-	<GetJavaPlatformJar
-		AndroidSdkPlatform="$(_AndroidApiLevel)"
-		AndroidManifest="$(_AndroidManifestAbs)">
-			<Output TaskParameter="JavaPlatformJarPath" PropertyName="JavaPlatformJarPath" />
-			<Output TaskParameter="TargetSdkVersion"    PropertyName="_AndroidTargetSdkVersion" />
-	</GetJavaPlatformJar>
-
+    DependsOnTargets="_GetAndroidPackageName;_GetJavaPlatformJar">
 	<PropertyGroup>
 		<ApkFileIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage).apk</ApkFileIntermediate>
 		<_BaseZipIntermediate>$(IntermediateOutputPath)android\bin\base.zip</_BaseZipIntermediate>
@@ -1708,20 +1698,6 @@ because xbuild doesn't support framework reference assemblies.
   </ItemGroup>
 </Target>
 
-<Target Name="_AdjustJavacVersionArguments">
-
-	<AdjustJavacVersionArguments
-			Condition=" '$(JavacTargetVersion)' == '' or '$(JavacSourceVersion)' == '' "
-			JdkVersion="$(_JdkVersion)"
-			DefaultJdkVersion="$(_DefaultJdkVersion)"
-			SkipJavacVersionCheck="$(AndroidSkipJavacVersionCheck)"
-			EnableProguard="$(AndroidEnableProguard)"
-			EnableMultiDex="$(AndroidEnableMultiDex)">
-	    <Output TaskParameter="TargetVersion" PropertyName="JavacTargetVersion" />
-	    <Output TaskParameter="SourceVersion" PropertyName="JavacSourceVersion" />
-	</AdjustJavacVersionArguments>
-</Target>
-
 <PropertyGroup>
     <_CompileJavaDependsOnTargets>
 		_AdjustJavacVersionArguments;
@@ -1738,54 +1714,6 @@ because xbuild doesn't support framework reference assemblies.
 		$(_CompileJavaDependsOnTargets)
 	</_CompileJavaDependsOnTargets>
 </PropertyGroup>
-
-<Target Name="_CompileJava"
-  DependsOnTargets="$(_CompileJavaDependsOnTargets)"
-  Inputs="@(_AndroidMSBuildAllProjects);$(MonoPlatformJarPath);@(_JavaStubFiles);@(AndroidJavaSource)"
-  Outputs="$(IntermediateOutputPath)_javac.stamp">
-
-  <!-- remove existing <Javac /> outputs, since *.class files and classes.zip could contain old files -->
-  <RemoveDirFixed Directories="$(_AndroidIntermediateJavaClassDirectory)" />
-  <Delete Files="$(_AndroidIntermediateClassesZip)" />
-
-  <!-- Compile java code -->
-  <Javac
-    JavaPlatformJarPath="$(JavaPlatformJarPath)"
-    ClassesOutputDirectory="$(_AndroidIntermediateJavaClassDirectory)"
-    ClassesZip="$(_AndroidIntermediateClassesZip)"
-    StubSourceDirectory="$(_AndroidIntermediateJavaSourceDirectory)"
-    JavaSourceFiles="@(AndroidJavaSource)"
-    ToolPath="$(JavacToolPath)"
-    ToolExe="$(JavacToolExe)"
-    Jars="@(_JavaLibrariesToCompile);@(_InstantRunJavaReference);@(_ReferenceJavaLibs)"
-    JavacTargetVersion="$(JavacTargetVersion)"
-    JavacSourceVersion="$(JavacSourceVersion)"
-  />
-
-  <Touch Files="$(IntermediateOutputPath)_javac.stamp" AlwaysCreate="true" />
-</Target>
-
-
-<Target Name="_DetermineJavaLibrariesToCompile">
-
-  <DetermineJavaLibrariesToCompile
-    MonoPlatformJarPaths="$(MonoPlatformJarPath);$(_RuntimeJar)"
-    JavaSourceFiles="@(AndroidJavaSource)"
-    JavaLibraries="@(AndroidJavaLibrary)"
-    ExternalJavaLibraries="@(AndroidExternalJavaLibrary)"
-    LibraryProjectJars="@(ExtractedJarImports)"
-    DoNotPackageJavaLibraries="@(_ResolvedDoNotPackageAttributes)"
-    EnableInstantRun="$(_InstantRunEnabled)"
-    >
-    <Output TaskParameter="JavaLibrariesToCompile" ItemName="_JavaLibrariesToCompile" />
-    <Output TaskParameter="ReferenceJavaLibraries" ItemName="_ReferenceJavaLibs" />
-  </DetermineJavaLibrariesToCompile>
-
-  <ItemGroup>
-    <_JavaLibrariesToCompileForApp Include="@(_JavaLibrariesToCompile)" Condition=" '$(_InstantRunEnabled)' != 'True' " />
-    <AndroidExternalJavaLibrary    Include="@(_JavaLibrariesToCompile)" Condition=" '$(_InstantRunEnabled)' == 'True' " />
-  </ItemGroup>
-</Target>
 
 <PropertyGroup>
 	<_CompileToDalvikDependsOnTargets>

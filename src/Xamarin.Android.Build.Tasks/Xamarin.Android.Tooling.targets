@@ -12,6 +12,7 @@ projects.
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <UsingTask TaskName="Xamarin.Android.Tasks.GetJavaPlatformJar" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
   <UsingTask TaskName="Xamarin.Android.Tasks.ResolveSdks" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
   <UsingTask TaskName="Xamarin.Android.Tasks.ResolveJdkJvmPath" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 
@@ -91,4 +92,12 @@ projects.
     </ResolveJdkJvmPath>
   </Target>
 
+  <Target Name="_GetJavaPlatformJar">
+    <GetJavaPlatformJar
+        AndroidSdkPlatform="$(_AndroidApiLevel)"
+        AndroidManifest="$(_AndroidManifestAbs)">
+      <Output TaskParameter="JavaPlatformJarPath" PropertyName="JavaPlatformJarPath" />
+      <Output TaskParameter="TargetSdkVersion"    PropertyName="_AndroidTargetSdkVersion" />
+    </GetJavaPlatformJar>
+  </Target>
 </Project>

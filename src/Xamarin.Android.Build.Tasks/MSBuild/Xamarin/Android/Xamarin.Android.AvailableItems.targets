@@ -66,6 +66,9 @@ This item group populates the Build Action drop-down in IDEs.
       <Bind>true</Bind>
       <Pack Condition=" '$(UsingAndroidNETSdk)' == 'true' ">true</Pack>
     </AndroidLibrary>
+    <AndroidJavaSource>
+      <Bind Condition=" '$(UsingAndroidNETSdk)' == 'true' ">true</Bind>
+    </AndroidJavaSource>
     <AndroidAarLibrary>
       <!-- NOTE: .aar items should skip %(AndroidSkipResourceProcessing) by default -->
       <AndroidSkipResourceProcessing>true</AndroidSkipResourceProcessing>

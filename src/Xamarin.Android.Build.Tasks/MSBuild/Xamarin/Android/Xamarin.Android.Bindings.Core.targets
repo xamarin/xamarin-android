@@ -30,14 +30,14 @@ It is shared between "legacy" binding projects and .NET 5 projects.
 
   <Target Name="ExportJarToXml"
       DependsOnTargets="$(ExportJarToXmlDependsOnTargets)"
-      Condition=" '$(UsingAndroidNETSdk)' != 'true' Or '@(InputJar->Count())' != '0' Or '@(EmbeddedJar->Count())' != '0' Or '@(LibraryProjectZip->Count())' != '0' ">
+      Condition=" '$(UsingAndroidNETSdk)' != 'true' Or '@(InputJar->Count())' != '0' Or '@(EmbeddedJar->Count())' != '0' Or '@(LibraryProjectZip->Count())' != '0' Or '@(_JavaBindingSource->Count())' != 0">
     <PropertyGroup>
       <AllowUnsafeBlocks Condition=" '$(AllowUnsafeBlocks)' != 'true' ">true</AllowUnsafeBlocks>
     </PropertyGroup>
   </Target>
 
   <Target Name="GenerateBindings"
-      Condition=" '$(UsingAndroidNETSdk)' != 'true' Or '@(InputJar->Count())' != '0' Or '@(EmbeddedJar->Count())' != '0' Or '@(LibraryProjectZip->Count())' != '0' "
+      Condition=" '$(UsingAndroidNETSdk)' != 'true' Or '@(InputJar->Count())' != '0' Or '@(EmbeddedJar->Count())' != '0' Or '@(LibraryProjectZip->Count())' != '0' Or '@(_JavaBindingSource->Count())' != 0"
       DependsOnTargets="ExportJarToXml;_ResolveMonoAndroidSdks"
       Inputs="$(ApiOutputFile);@(TransformFile);@(ReferencePath);@(ReferenceDependencyPaths);@(_AndroidMSBuildAllProjects)"
       Outputs="$(_GeneratorStampFile)">
@@ -107,7 +107,7 @@ It is shared between "legacy" binding projects and .NET 5 projects.
     <RemoveDirFixed Directories="$(IntermediateOutputPath)javadocs" />
     <RemoveDirFixed Directories="$(IntermediateOutputPath)javasources" />
   </Target>
-  
+
   <Target Name="CleanLibraryProjectIntermediaries">
     <Delete Files="$(IntermediateOutputPath)__AndroidLibraryProjects__.zip" />
     <Delete Files="$(_AndroidLibraryImportsCache)" />

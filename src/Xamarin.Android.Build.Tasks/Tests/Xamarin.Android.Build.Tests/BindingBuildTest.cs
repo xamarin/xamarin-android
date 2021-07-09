@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using Xamarin.ProjectTools;
+using Microsoft.Android.Build.Tasks;
 
 namespace Xamarin.Android.Build.Tests
 {
@@ -205,7 +207,7 @@ namespace Com.Ipaulpro.Afilechooser {
 		{
 			return (Java.Lang.Object) LoadInBackgroundImpl ();
 		}
-	}                                                   
+	}
 }"
 			});
 			using (var b = CreateDllBuilder ()) {
@@ -364,7 +366,7 @@ namespace Com.Ipaulpro.Afilechooser {
 					FileAssert.DoesNotExist (Path.Combine (dsStorePath, ".DS_Store"));
 					DirectoryAssert.DoesNotExist (Path.Combine (dsStorePath, "_MACOSX"));
 					var svgJar = Builder.UseDotNet ?
-						Path.Combine (libraryProjects, assemblyIdentityMap.IndexOf ($"{binding.ProjectName}.aar").ToString (), "jl", "libs", "FD575F2BC294C4A9.jar") : 
+						Path.Combine (libraryProjects, assemblyIdentityMap.IndexOf ($"{binding.ProjectName}.aar").ToString (), "jl", "libs", "FD575F2BC294C4A9.jar") :
 						Path.Combine (dsStorePath, "svg-android.jar");
 					FileAssert.Exists (svgJar);
 				}
@@ -620,6 +622,59 @@ VNZXRob2RzLmphdmFQSwUGAAAAAAcABwDOAQAAVgMAAAAA
 						.SkipWhile (x => !x.StartsWith ("Build FAILED."))
 						.FirstOrDefault (x => x.Contains ("error XA1019:"));
 				Assert.IsNotNull (error, "Build should have failed with XA1019.");
+			}
+		}
+
+		[Test]
+		public void BindingWithAndroidJavaSource ()
+		{
+			if (!Builder.UseDotNet)
+				Assert.Ignore ("This Feature and Test is not available in Legacy Projects");
+			var path = Path.Combine ("temp", TestName);
+			var lib = new XamarinAndroidBindingProject () {
+				ProjectName = "BindingsProject",
+				AndroidClassParser = "class-parse",
+				Jars = {
+					new AndroidItem.EmbeddedJar ("javasourcejartest.jar") {
+						BinaryContent = () => ResourceData.JavaSourceJarTestJar,
+					}
+				},
+				OtherBuildItems = {
+					new AndroidItem.AndroidJavaSource ("JavaSourceTestExtension.java") {
+						Encoding = Encoding.ASCII,
+						TextContent = () => ResourceData.JavaSourceTestExtension,
+						Metadata = { { "Bind", "True"} },
+					},
+				},
+
+			};
+			var app = new XamarinAndroidApplicationProject () {
+				ProjectName = "App",
+				References = { new BuildItem.ProjectReference ($"..\\{lib.ProjectName}\\{lib.ProjectName}.csproj", lib.ProjectName, lib.ProjectGuid) }
+			};
+			using (var libBuilder = CreateDllBuilder (Path.Combine (path, lib.ProjectName), cleanupAfterSuccessfulBuild: false))
+			using (var appBuilder = CreateApkBuilder (Path.Combine (path, app.ProjectName))) {
+				Assert.IsTrue (libBuilder.Build (lib), "Library build should have succeeded.");
+				var generatedCode = Path.Combine (Root, libBuilder.ProjectDirectory, lib.IntermediateOutputPath,
+					"generated", "src", "Com.Xamarin.Android.Test.Msbuildtest.JavaSourceTestExtension.cs");
+				FileAssert.Exists (generatedCode, $"'{generatedCode}' should have been generated.");
+				appBuilder.Target = "SignAndroidPackage";
+				Assert.IsTrue (appBuilder.Build (app), "App build should have succeeded.");
+				var hash = Files.HashString (Path.Combine (lib.IntermediateOutputPath,
+					"binding", "bin", $"{lib.ProjectName}.jar").Replace ("\\", "/"));
+				var intermediate = Path.Combine (Root, appBuilder.ProjectDirectory, app.IntermediateOutputPath);
+				var lpPath = Path.Combine ("0", "jl", $"{lib.ProjectName}.jar");
+				if (Builder.UseDotNet) {
+					lpPath = Path.Combine ("1", "jl", "libs", $"{hash}.jar");
+				}
+				var jar = Path.Combine (intermediate, "lp", lpPath);
+				FileAssert.Exists (jar, $"'{jar}' should have been generated.");
+				var dexFile = Path.Combine (intermediate, "android", "bin", "classes.dex");
+				FileAssert.Exists (dexFile);
+				string className = "Lcom/xamarin/android/test/msbuildtest/JavaSourceJarTest;";
+				Assert.IsTrue (DexUtils.ContainsClass (className, dexFile, AndroidSdkPath), $"`{dexFile}` should include `{className}`!");
+				className = "Lcom/xamarin/android/test/msbuildtest/JavaSourceTestExtension;";
+				Assert.IsTrue (DexUtils.ContainsClass (className, dexFile, AndroidSdkPath), $"`{dexFile}` should include `{className}`!");
 			}
 		}
 

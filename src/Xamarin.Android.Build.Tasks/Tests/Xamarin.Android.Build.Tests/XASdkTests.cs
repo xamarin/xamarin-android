@@ -190,6 +190,8 @@ namespace Xamarin.Android.Build.Tests
 			FileAssert.Exists (dexFile);
 			var proguardFile = Path.Combine (intermediate, "lp", "3", "jl", "proguard.txt");
 			FileAssert.Exists (proguardFile);
+			proguardFile = Path.Combine (intermediate, "lp", "2", "jl", "proguard.txt");
+			FileAssert.DotNotExists (proguardFile);
 			string className = "Lcom/xamarin/android/test/msbuildtest/JavaSourceJarTest;";
 			Assert.IsTrue (DexUtils.ContainsClass (className, dexFile, AndroidSdkPath), $"`{dexFile}` should include `{className}`!");
 

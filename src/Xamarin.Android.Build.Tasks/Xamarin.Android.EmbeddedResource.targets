@@ -44,6 +44,7 @@ This file is used by all project types, including binding projects.
         OutputDirectory="$(IntermediateOutputPath)"
         AssemblyIdentityMapFile="$(_AndroidLibrayProjectAssemblyMapFile)"
         OutputImportDirectory="$(_AndroidLibrayProjectIntermediatePath)"
+        IsApplication="$(AndroidApplication)"
     />
     <Touch Files="$(_AndroidStampDirectory)_ResolveLibraryProjectImports.stamp" AlwaysCreate="true" />
   </Target>

@@ -11,6 +11,14 @@ java {
 
 repositories {
     jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.conscrypt/conscrypt-openjdk
+    compile group: 'org.conscrypt', name: 'conscrypt-openjdk', version: '2.5.1', classifier: 'windows-x86_64'
+    compile group: 'org.conscrypt', name: 'conscrypt-openjdk', version: '2.5.1', classifier: 'osx-x86_64'
+    compile group: 'org.conscrypt', name: 'conscrypt-openjdk', version: '2.5.1', classifier: 'linux-x86_64'
 }
 
 sourceSets {
@@ -24,7 +32,7 @@ sourceSets {
             srcDirs '../../external/apksig/src/apksigner/java'
         }
     }
- }
+}
 
 jar {
     duplicatesStrategy = 'exclude'
@@ -33,6 +41,8 @@ jar {
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
     }
     archiveName 'apksigner.jar'
 }

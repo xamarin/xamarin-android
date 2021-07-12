@@ -5,7 +5,7 @@
 [submodule "external/apksig"]
     path = external/apksig
     url = https://android.googlesource.com/platform/tools/apksig
-    branch = platform-tools-30.0.3
+    branch = platform-tools-30.0.5
 [submodule "external/debugger-libs"]
     path = external/debugger-libs
     url = https://github.com/mono/debugger-libs

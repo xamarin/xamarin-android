@@ -48,6 +48,8 @@ namespace Xamarin.Android.Build.Tests
 		[Test]
 		public void BuildBasicApplication ([ValueSource (nameof (SupportedTargetFrameworks))] string tfv, [Values (true, false)] bool isRelease)
 		{
+			AssertTargetFrameworkVersionSupported (tfv);
+
 			var proj = new XamarinAndroidApplicationProject {
 				IsRelease = isRelease,
 				TargetFrameworkVersion = tfv,
@@ -1143,8 +1145,6 @@ namespace UnamedProject
 			}
 
 			using (var b = CreateApkBuilder (Path.Combine ("temp", TestName), false, false)) {
-				proj.TargetFrameworkVersion = b.LatestTargetFrameworkVersion ();
-
 				string intermediateDir;
 				if (IsWindows && !Builder.UseDotNet) {
 					intermediateDir = Path.Combine (Root, b.ProjectDirectory, proj.IntermediateOutputPath, proj.TargetFrameworkAbbreviated);
@@ -2348,11 +2348,13 @@ Mono.Unix.UnixFileInfo fileInfo = null;");
 			proj.SetProperty ("AndroidUseLatestPlatformSdk", "False");
 			using (var builder = CreateApkBuilder ()) {
 				builder.GetTargetFrameworkVersionRange (out var _, out string firstFrameworkVersion, out var _, out string lastFrameworkVersion, out string[] _);
+				AssertTargetFrameworkVersionSupported (firstFrameworkVersion);
 				proj.SetProperty ("TargetFrameworkVersion", firstFrameworkVersion);
 				if (!Directory.Exists (Path.Combine (builder.FrameworkLibDirectory, firstFrameworkVersion)))
 					Assert.Ignore ("This is a Pull Request Build. Ignoring test.");
 				Assert.IsTrue (builder.Build (proj), "Build should have succeeded.");
 				Assert.IsTrue (StringAssertEx.ContainsText (builder.LastBuildOutput, $"Output Property: TargetFrameworkVersion={firstFrameworkVersion}"), $"TargetFrameworkVerson should be {firstFrameworkVersion}");
+				AssertTargetFrameworkVersionSupported (lastFrameworkVersion);
 				Assert.IsTrue (builder.Build (proj, parameters: new [] { $"TargetFrameworkVersion={lastFrameworkVersion}" }), "Build should have succeeded.");
 				Assert.IsTrue (StringAssertEx.ContainsText (builder.LastBuildOutput, $"Output Property: TargetFrameworkVersion={lastFrameworkVersion}"), $"TargetFrameworkVersion should be {lastFrameworkVersion}");
 			}

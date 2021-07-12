@@ -23,6 +23,7 @@ called for "legacy" projects in Xamarin.Android.Legacy.targets.
         JavaSdkPath="$(_JavaSdkDirectory)"
         JavaToolExe="$(JavaToolExe)"
         JavacToolExe="$(JavacToolExe)"
+        TargetPlatformVersion="$(TargetPlatformVersion)"
         LatestSupportedJavaVersion="$(LatestSupportedJavaVersion)"
         MinimumSupportedJavaVersion="$(MinimumSupportedJavaVersion)">
       <Output TaskParameter="JdkVersion"                PropertyName="_JdkVersion" />

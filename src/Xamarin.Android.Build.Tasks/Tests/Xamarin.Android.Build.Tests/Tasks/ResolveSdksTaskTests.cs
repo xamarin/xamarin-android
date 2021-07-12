@@ -21,7 +21,10 @@ namespace Xamarin.Android.Build.Tests {
 			new ApiInfo () { Id = "25", Level = 25, Name = "Nougat", FrameworkVersion = "v7.1",  Stable = true },
 			new ApiInfo () { Id = "26", Level = 26, Name = "Oreo", FrameworkVersion = "v8.0",  Stable = true  },
 			new ApiInfo () { Id = "27", Level = 27, Name = "Oreo", FrameworkVersion = "v8.1",  Stable = true  },
-			new ApiInfo () { Id = "P",  Level = 28, Name = "P",    FrameworkVersion = "v8.99", Stable = false },
+			new ApiInfo () { Id = "28", Level = 28, Name = "Pie",    FrameworkVersion = "v9.0", Stable = false },
+			new ApiInfo () { Id = "29", Level = 29, Name = "Android10", FrameworkVersion = "v10.0", Stable = false },
+			new ApiInfo () { Id = "30", Level = 30, Name = "Android11", FrameworkVersion = "v11.0", Stable = false },
+			new ApiInfo () { Id = "S",  Level = 31, Name = "S",         FrameworkVersion = "v11.0.99", Stable = false },
 			new ApiInfo () { Id = "Z",  Level = 127, Name = "Z",    FrameworkVersion = "v108.1.99", Stable = false },
 		};
 
@@ -35,9 +38,9 @@ namespace Xamarin.Android.Build.Tests {
 				/* jdk */ "1.8.0",
 				/* apis*/ apiInfoSelection,
 				/* useLatestAndroidSdk */ true,
-				/* targetFrameworkVersion */ "v8.99",
+				/* targetFrameworkVersion */ "v9.0",
 				/* expectedTaskResult */ true,
-				/* expectedTargetFramework */ "v8.99",
+				/* expectedTargetFramework */ "v9.0",
 				/* expectedError */ "",
 				/* expectedErrorMessage */ "",
 			},
@@ -101,9 +104,9 @@ namespace Xamarin.Android.Build.Tests {
 				/* jdk */ "1.8.0",
 				/* apis*/ apiInfoSelection,
 				/* useLatestAndroidSdk */ false,
-				/* targetFrameworkVersion */ "v8.99",
+				/* targetFrameworkVersion */ "v9.0",
 				/* expectedTaskResult */ true,
-				/* expectedTargetFramework */ "v8.99",
+				/* expectedTargetFramework */ "v9.0",
 				/* expectedError */ "",
 				/* expectedErrorMessage */ "",
 			},
@@ -151,6 +154,17 @@ namespace Xamarin.Android.Build.Tests {
 				/* expectedError */ "XA0001",
 				/* expectedErrorMessage */ "Unsupported or invalid $(TargetFrameworkVersion) value of 'v6.0'. Please update your Project Options.",
 			},
+			new object[] {
+				/* buildtools */   "30.0.0",
+				/* jdk */ "11.0",
+				/* apis*/ apiInfoSelection,
+				/* useLatestAndroidSdk */ false,
+				/* targetFrameworkVersion */ "v11.0.99",
+				/* expectedTaskResult */ true,
+				/* expectedTargetFramework */ "v11.0.99",
+				/* expectedError */ "",
+				/* expectedErrorMessage */ "",
+			},
 		};
 		#pragma warning restore 414
 		[Test]
@@ -184,7 +198,7 @@ namespace Xamarin.Android.Build.Tests {
 				JavaSdkPath = javaPath,
 				JavaToolExe = javaExe,
 				JavacToolExe = javacExe,
-				LatestSupportedJavaVersion = "1.8.0",
+				LatestSupportedJavaVersion = LatestSupportedJavaVersion,
 				MinimumSupportedJavaVersion = "1.7.0",
 			};
 			var androidTooling = new ResolveAndroidTooling {
@@ -429,6 +443,7 @@ namespace Xamarin.Android.Build.Tests {
 			proj.TargetSdkVersion = "19";
 			using (var b = CreateApkBuilder ()) {
 				proj.TargetFrameworkVersion = b.LatestTargetFrameworkVersion ();
+				AssertTargetFrameworkVersionSupported (proj.TargetFrameworkVersion);
 				Assert.IsTrue (b.Build (proj), "Build should have succeeded.");
 			}
 		}

@@ -197,6 +197,16 @@ namespace Xamarin.Android.Build.Tests
 			}
 		}
 
+		protected static void AssertTargetFrameworkVersionSupported (string targetFrameworkVersion)
+		{
+			if (Builder.UseDotNet)
+				return; // N/A in .NET 6
+			if (!Version.TryParse (targetFrameworkVersion.TrimStart ('v'), out var version) || version <= new Version (11, 0))
+				return; // TFV is 11.0 or less
+			if (!TestEnvironment.IsUsingJdk11)
+				Assert.Ignore ("Test is only supported when using JDK 11.");
+		}
+
 		protected static void WaitFor(int milliseconds)
 		{
 			var pause = new ManualResetEvent(false);

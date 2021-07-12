@@ -50,13 +50,8 @@ namespace Xamarin.Android.Tasks.Legacy
 		Version GetJavaVersionForFramework ()
 		{
 			var apiLevel = MonoAndroidHelper.SupportedVersions.GetApiLevelFromFrameworkVersion (TargetFrameworkVersion);
-			if (apiLevel >= 30) {
-				// At present, it *looks like* API-R works with Build-tools r29, but
-				// historically API-X requires Build-tools rX, so if/when API-30
-				// requires Build-tools r30, it will require JDK11.
-				// return new Version (11, 0);
-				return new Version (1, 8);
-			}
+			if (apiLevel >= 31)
+				return new Version (11, 0);
 			if (apiLevel >= 24)
 				return new Version (1, 8);
 			else if (apiLevel == 23)

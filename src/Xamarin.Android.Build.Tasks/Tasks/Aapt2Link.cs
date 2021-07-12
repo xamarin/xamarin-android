@@ -81,6 +81,8 @@ namespace Xamarin.Android.Tasks {
 
 		public string ProguardRuleOutput { get; set; }
 
+		public string PackageId { get; set; }
+
 		AssemblyIdentityMap assemblyMap = new AssemblyIdentityMap ();
 		List<string> tempFiles = new List<string> ();
 		Dictionary<string, long> apks = new Dictionary<string, long> ();
@@ -264,6 +266,12 @@ namespace Xamarin.Android.Tasks {
 
 			if (StaticLibrary)
 				cmd.Add ("--static-lib");
+
+			if (string.IsNullOrEmpty (PackageId)) {
+				cmd.Add ("--allow-reserved-package-id");
+				cmd.Add ("--package-id");
+				cmd.Add (PackageId);
+			}
 
 			if (!string.IsNullOrWhiteSpace (ExtraArgs)) {
 				foreach (Match match in exraArgSplitRegEx.Matches (ExtraArgs)) {

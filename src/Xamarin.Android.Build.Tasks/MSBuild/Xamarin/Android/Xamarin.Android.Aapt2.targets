@@ -289,6 +289,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       AdditionalAndroidResourcePaths="@(_LibraryResourceDirectories)"
       YieldDuringToolExecution="$(YieldDuringToolExecution)"
       PackageName="$(_AndroidPackage)"
+      PackageId="$(FeaturePackageId)"
       JavaPlatformJarPath="$(JavaPlatformJarPath)"
       AdditionalApksToLink="$(_PackagedResources)"
       VersionCodePattern="$(AndroidVersionCodePattern)"

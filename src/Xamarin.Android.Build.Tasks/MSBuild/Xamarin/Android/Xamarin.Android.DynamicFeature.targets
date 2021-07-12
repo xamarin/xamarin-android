@@ -1,13 +1,19 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+<UsingTask Name="Xamarin.Android.Tasks.CalculatePackageIdsForFeatures" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <!-- Andorid Feature Build System-->
 <Target Name="_GetDynamicFeatureOutputs">
     <ItemGroup>
-        <_AndroidDynamicFeature Include="%(ProjectReference.Identity)" Condition=" '%(ProjectReference.AndroidDynamicFeature)' == 'True' " />
+        <_DynamicFeatures Include="%(ProjectReference.Identity)" Condition=" '%(ProjectReference.AndroidDynamicFeature)' == 'True' " />
     </ItemGroup>
-    <MSBuild Projects="@(_AndroidDynamicFeature)" Targets="GetDynamicFeatureOutputs" RebaseOutputs="true" Properties="Configuration=$(Configuration)">
+    <MSBuild Projects="@(_DynamicFeatures)" Targets="GetDynamicFeatureOutputs" RebaseOutputs="true" Properties="Configuration=$(Configuration)">
         <Output TaskParameter="TargetOutputs" ItemName="_DynamicFeatureOutputs" />
     </MSBuild>
+    <CalculatePackageIdsForFeatures
+      FeatureProjects="@(_AndroidDynamicFeature)"
+    >
+        <Output TaskParameter="Output" ItemName="_AndroidDynamicFeature" />
+    </CalculatePackageIdsForFeatures>
 </Target>
 <Target Name="_BuildDynamicFeatures"
       AfterTargets="_CreateBaseApk"

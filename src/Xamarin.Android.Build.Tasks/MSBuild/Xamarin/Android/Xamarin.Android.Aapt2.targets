@@ -276,6 +276,9 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
     Inputs="$(AndroidManifest);@(AndroidAsset);$(_PackagedResources)"
     Outputs="$(_FeaturePackage)"
   >
+  <PropertyGroup>
+    <FeaturePackageName Condition=" '$(FeaturePackageName)' == '' " >$(_AndroidPackage).$(MSBuildProjectName)</FeaturePackageName>
+  </PropertyGroup>
   <Aapt2Link
       AndroidManifestFile="$(AndroidManifest)"
       CompiledResourceFlatFiles="@(_CompiledFlatFiles)"
@@ -288,7 +291,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       OutputFile="$(_FeaturePackageTemp)"
       AdditionalAndroidResourcePaths="@(_LibraryResourceDirectories)"
       YieldDuringToolExecution="$(YieldDuringToolExecution)"
-      PackageName="$(_AndroidPackage)"
+      PackageName="$(FeaturePackageName)"
       PackageId="$(FeaturePackageId)"
       JavaPlatformJarPath="$(JavaPlatformJarPath)"
       AdditionalApksToLink="$(_PackagedResources)"

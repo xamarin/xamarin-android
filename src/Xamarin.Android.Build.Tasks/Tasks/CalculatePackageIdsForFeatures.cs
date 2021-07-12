@@ -29,12 +29,14 @@ namespace Xamarin.Android.Tasks
 		public override bool RunTask ()
 		{
 			List<ITaskItem> output = new List<ITaskItem> ();
-			int packageId = 0x7c;
+			int packageId = 0x7f; // default package Id for the main app.
+			// we now decrement the package id and will use that for
+			// each "feature". This is so resources do not clash.
 			foreach (var feature in FeatureProjects) {
+				packageId--;
 				var item = new TaskItem (feature.ItemSpec);
 				item.SetMetadata ("AdditionalProperties", $"FeaturePackageId=0x{packageId.ToString ("X")}");
 				output.Add (item);
-				packageId++;
 			}
 			Output = output.ToArray ();
 			return !Log.HasLoggedErrors;

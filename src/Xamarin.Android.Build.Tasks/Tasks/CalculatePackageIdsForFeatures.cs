@@ -29,7 +29,7 @@ namespace Xamarin.Android.Tasks
 		public override bool RunTask ()
 		{
 			List<ITaskItem> output = new List<ITaskItem> ();
-			byte packageId = 0x7c;
+			int packageId = 0x7c;
 			foreach (var feature in FeatureProjects) {
 				var item = new TaskItem (feature.ItemSpec);
 				item.SetMetadata ("AdditionalProperties", $"FeaturePackageId=0x{packageId.ToString ("X")}");

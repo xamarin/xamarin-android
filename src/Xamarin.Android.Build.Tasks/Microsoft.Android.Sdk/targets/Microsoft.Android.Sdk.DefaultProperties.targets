@@ -17,7 +17,7 @@
     <!-- mono-symbolicate is not supported -->
     <MonoSymbolArchive>false</MonoSymbolArchive>
     <!--
-      Disable @(Content) from referenced projects 
+      Disable @(Content) from referenced projects
       See: https://github.com/dotnet/sdk/blob/955c0fc7b06e2fa34bacd076ed39f61e4fb61716/src/Tasks/Microsoft.NET.Build.Tasks/targets/Microsoft.NET.Publish.targets#L16
     -->
     <_GetChildProjectCopyToPublishDirectoryItems>false</_GetChildProjectCopyToPublishDirectoryItems>
@@ -43,6 +43,8 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <EmbedAssembliesIntoApk Condition=" '$(EmbedAssembliesIntoApk)' == '' ">true</EmbedAssembliesIntoApk>
     <AndroidManagedSymbols Condition=" '$(AndroidManagedSymbols)' == '' ">true</AndroidManagedSymbols>
+    <AndroidPackageFormat Condition=" '$(AndroidPackageFormat)' == '' " >aab</AndroidPackageFormat>
+    <AndroidPackageFormats Condition=" '$(AndroidPackageFormats)' == '' " >aab;apk</AndroidPackageFormats>
   </PropertyGroup>
 
   <!-- Application project settings -->

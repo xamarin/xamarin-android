@@ -91,6 +91,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <UsingTask TaskName="Xamarin.Android.Tasks.PrepareAbiItems" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.WriteLockFile" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="GenerateCompressedAssembliesNativeSourceFiles" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.Unzip" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 
 <!--
 *******************************************
@@ -2361,11 +2362,44 @@ because xbuild doesn't support framework reference assemblies.
 	<Delete Files="%(ApkAbiFilesUnaligned.FullPath)" />
 </Target>
 
+<Target Name="_CreateUniversalApkFromBundle"
+    Condition=" '$(AndroidPackageFormat)' == 'aab' And $(AndroidPackageFormats.Contains('apk')) "
+    Inputs="$(_AppBundleIntermediate)"
+    Outputs="$(OutDir)$(_AndroidPackage)*-Signed.apk"
+  >
+  <Delete Files="$(_ApkSetIntermediate);$(OutDir)$(_AndroidPackage)*-Signed.apk" />
+  <BuildApkSet
+      ToolPath="$(JavaToolPath)"
+      JavaMaximumHeapSize="$(JavaMaximumHeapSize)"
+      JavaOptions="$(JavaOptions)"
+      JarPath="$(AndroidBundleToolJarPath)"
+      AdbToolPath="$(AdbToolPath)"
+      AdbTarget="$(AdbTarget)"
+      Aapt2ToolPath="$(Aapt2ToolPath)"
+      AppBundle="$(_AppBundleIntermediate)"
+      Output="$(_ApkSetIntermediate)"
+      KeyStore="$(_ApkKeyStore)"
+      KeyAlias="$(_ApkKeyAlias)"
+      KeyPass="$(_ApkKeyPass)"
+      StorePass="$(_ApkStorePass)"
+      ExtraArgs="$(AndroidBundleToolExtraArgs)"
+      GenerateUniversalApkSet="True"
+  />
+  <!-- Extract the univeral.apk from the $(_ApkSetIntermediate) and then copy it to the output directory -->
+  <ItemGroup>
+    <_FilestoExtract Include="universal.apk" >
+      <DestinationFileName>$(_AndroidPackage)-Signed.apk</DestinationFileName>
+    </_FilestoExtract>
+  </ItemGroup>
+  <Unzip Sources="$(_ApkSetIntermediate)" DestinationDirectories="$(OutDir)" Files="@(_FilestoExtract)" />
+</Target>
+
 <PropertyGroup>
   <SignAndroidPackageDependsOn Condition=" '$(BuildingInsideVisualStudio)' != 'True' ">
     Build;
     Package;
     _Sign;
+    _CreateUniversalApkFromBundle;
   </SignAndroidPackageDependsOn>
   <!-- When inside an IDE, Build has just been run. This is a minimal list of targets for SignAndroidPackage. -->
   <SignAndroidPackageDependsOn Condition=" '$(BuildingInsideVisualStudio)' == 'True' ">
@@ -2376,6 +2410,7 @@ because xbuild doesn't support framework reference assemblies.
     CreateSatelliteAssemblies;
     _CopyPackage;
     _Sign;
+    _CreateUniversalApkFromBundle;
   </SignAndroidPackageDependsOn>
 </PropertyGroup>
 <Target Name="SignAndroidPackage" DependsOnTargets="$(SignAndroidPackageDependsOn)">
@@ -2551,6 +2586,7 @@ because xbuild doesn't support framework reference assemblies.
       KeyPass="$(_ApkKeyPass)"
       StorePass="$(_ApkStorePass)"
       ExtraArgs="$(AndroidBundleToolExtraArgs)"
+      Condition="!Exists('$(_ApkSetIntermediate)')"
   />
   <InstallApkSet
       ToolPath="$(JavaToolPath)"

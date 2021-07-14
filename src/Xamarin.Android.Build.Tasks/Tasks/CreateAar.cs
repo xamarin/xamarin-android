@@ -23,6 +23,8 @@ namespace Xamarin.Android.Tasks
 
 		public ITaskItem [] NativeLibraries { get; set; }
 
+		public ITaskItem [] ProguardConfigurationFiles { get; set; }
+
 		[Required]
 		public string AssetDirectory { get; set; }
 
@@ -102,6 +104,13 @@ namespace Xamarin.Android.Tasks
 						aar.AddStream (File.OpenRead (lib.ItemSpec), archivePath);
 						existingEntries.Remove (archivePath);
 					}
+				}
+				if (ProguardConfigurationFiles != null) {
+					var sb = new StringBuilder ();
+					foreach (var file in ProguardConfigurationFiles) {
+						sb.AppendLine (File.ReadAllText (file.ItemSpec));
+					}
+					aar.AddEntry ("proguard.txt", sb.ToString (), Files.UTF8withoutBOM);
 				}
 				foreach (var entry in existingEntries) {
 					Log.LogDebugMessage ($"Removing {entry} as it is not longer required.");

@@ -1,21 +1,21 @@
-// 
+//
 // ReadLibraryProjectImportsCache.cs
-//  
+//
 // Author:
 //       Dean Ellis <dean.ellis@xamarin.com>
-// 
+//
 // Copyright (c) 2015 Xamarin Inc.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@ namespace Xamarin.Android.Tasks
 		public override string TaskPrefix => "RLC";
 
 		[Required]
-		public string CacheFile { get; set;} 
+		public string CacheFile { get; set;}
 
 		[Output]
 		public ITaskItem [] Jars { get; set; }
@@ -55,6 +55,9 @@ namespace Xamarin.Android.Tasks
 		[Output]
 		public ITaskItem [] ResolvedResourceDirectoryStamps { get; set; }
 
+		[Output]
+		public ITaskItem [] ProguardConfigFiles { get; set; }
+
 		public override bool RunTask ()
 		{
 			Log.LogDebugMessage ("Task ReadLibraryProjectImportsCache");
@@ -70,12 +73,14 @@ namespace Xamarin.Android.Tasks
 			ResolvedEnvironmentFiles = doc.GetPathsAsTaskItems ("ResolvedEnvironmentFiles", "ResolvedEnvironmentFile");
 			ResolvedResourceDirectoryStamps = doc.GetPathsAsTaskItems ("ResolvedResourceDirectoryStamps"
 				, "ResolvedResourceDirectoryStamp");
-			
+			ProguardConfigFiles = doc.GetPathsAsTaskItems ("ProguardConfigFiles", "ProguardConfigFile");
+
 			Log.LogDebugTaskItems ("  Jars: ", Jars);
 			Log.LogDebugTaskItems ("  ResolvedAssetDirectories: ", ResolvedAssetDirectories);
 			Log.LogDebugTaskItems ("  ResolvedResourceDirectories: ", ResolvedResourceDirectories);
 			Log.LogDebugTaskItems ("  ResolvedEnvironmentFiles: ", ResolvedEnvironmentFiles);
 			Log.LogDebugTaskItems ("  ResolvedResourceDirectoryStamps: ", ResolvedResourceDirectoryStamps);
+			Log.LogDebugTaskItems ("  ProguardConfigFiles: ", ProguardConfigFiles);
 
 			return !Log.HasLoggedErrors;
 		}

@@ -57,6 +57,9 @@ namespace Xamarin.Android.Build.Tests
 					new AndroidItem.AndroidResource (() => "Resources\\drawable\\IMALLCAPS.png") {
 						BinaryContent = () => XamarinAndroidApplicationProject.icon_binary_mdpi,
 					},
+					new AndroidItem.ProguardConfiguration ("proguard.txt") {
+						TextContent = () => @"-ignorewarnings",
+					},
 				}
 			};
 			libC.OtherBuildItems.Add (new AndroidItem.AndroidAsset ("Assets\\bar\\bar.txt") {
@@ -67,6 +70,13 @@ namespace Xamarin.Android.Build.Tests
 				libC.Sources.Remove (activity);
 			var libCBuilder = CreateDotNetBuilder (libC, Path.Combine (path, libC.ProjectName));
 			Assert.IsTrue (libCBuilder.Build (), $"{libC.ProjectName} should succeed");
+
+			var aarPath = Path.Combine (FullProjectDirectory, libC.OutputPath, $"{libC.ProjectName}.aar");
+			FileAssert.Exists (aarPath);
+			using (var aar = ZipHelper.OpenZip (aarPath)) {
+				aar.AssertContainsEntry (aarPath, "assets/bar/bar.txt");
+				aar.AssertContainsEntry (aarPath, "proguard.txt");
+			}
 
 			var libB = new XASdkProject (outputType: "Library") {
 				ProjectName = "LibraryB",
@@ -124,7 +134,7 @@ namespace Xamarin.Android.Build.Tests
 			Assert.IsTrue (libBBuilder.Build (), $"{libB.ProjectName} should succeed");
 
 			// Check .aar file for class library
-			var aarPath = Path.Combine (FullProjectDirectory, libB.OutputPath, $"{libB.ProjectName}.aar");
+			aarPath = Path.Combine (FullProjectDirectory, libB.OutputPath, $"{libB.ProjectName}.aar");
 			FileAssert.Exists (aarPath);
 			using (var aar = ZipHelper.OpenZip (aarPath)) {
 				aar.AssertContainsEntry (aarPath, "assets/foo/foo.txt");
@@ -178,6 +188,10 @@ namespace Xamarin.Android.Build.Tests
 			var intermediate = Path.Combine (FullProjectDirectory, appA.IntermediateOutputPath);
 			var dexFile = Path.Combine (intermediate, "android", "bin", "classes.dex");
 			FileAssert.Exists (dexFile);
+			var proguardFile = Path.Combine (intermediate, "lp", "3", "jl", "proguard.txt");
+			FileAssert.Exists (proguardFile);
+			proguardFile = Path.Combine (intermediate, "lp", "2", "jl", "proguard.txt");
+			FileAssert.DotNotExists (proguardFile);
 			string className = "Lcom/xamarin/android/test/msbuildtest/JavaSourceJarTest;";
 			Assert.IsTrue (DexUtils.ContainsClass (className, dexFile, AndroidSdkPath), $"`{dexFile}` should include `{className}`!");
 

@@ -2364,7 +2364,7 @@ because xbuild doesn't support framework reference assemblies.
 </Target>
 
 <Target Name="_CreateUniversalApkFromBundle"
-    Condition=" '$(AndroidPackageFormat)' == 'aab' And $(AndroidPackageFormats.Contains('apk')) "
+    Condition=" '$(AndroidPackageFormat)' == 'aab' And $(AndroidAdditionalPackageFormats.Contains('apk')) "
     Inputs="$(_AppBundleIntermediate)"
     Outputs="$(OutDir)$(_AndroidPackage)*-Signed.apk"
   >

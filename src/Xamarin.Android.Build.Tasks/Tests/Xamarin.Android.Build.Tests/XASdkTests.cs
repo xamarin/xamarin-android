@@ -500,7 +500,11 @@ namespace Xamarin.Android.Build.Tests
 			var aab = Path.Combine (publishDirectory, $"{proj.PackageName}.aab");
 			var aabSigned = Path.Combine (publishDirectory, $"{proj.PackageName}-Signed.aab");
 			FileAssert.DoesNotExist (apk);
-			FileAssert.DoesNotExist (apkSigned);
+			if (isRelease) {
+				FileAssert.Exists (apkSigned);
+			} else {
+				FileAssert.DoesNotExist (apkSigned);
+			}
 			FileAssert.Exists (aab);
 			FileAssert.Exists (aabSigned);
 		}

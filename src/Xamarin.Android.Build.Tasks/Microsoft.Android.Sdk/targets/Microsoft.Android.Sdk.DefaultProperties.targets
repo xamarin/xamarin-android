@@ -44,7 +44,7 @@
     <EmbedAssembliesIntoApk Condition=" '$(EmbedAssembliesIntoApk)' == '' ">true</EmbedAssembliesIntoApk>
     <AndroidManagedSymbols Condition=" '$(AndroidManagedSymbols)' == '' ">true</AndroidManagedSymbols>
     <AndroidPackageFormat Condition=" '$(AndroidPackageFormat)' == '' " >aab</AndroidPackageFormat>
-    <AndroidPackageFormats Condition=" '$(AndroidPackageFormats)' == '' " >aab;apk</AndroidPackageFormats>
+    <AndroidAdditionalPackageFormats Condition=" '$(AndroidAdditionalPackageFormats)' == '' " >apk</AndroidAdditionalPackageFormats>
   </PropertyGroup>
 
   <!-- Application project settings -->

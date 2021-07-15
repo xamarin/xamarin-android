@@ -530,6 +530,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 		<_BaseZipIntermediate>$(IntermediateOutputPath)android\bin\base.zip</_BaseZipIntermediate>
 		<_AppBundleIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage).aab</_AppBundleIntermediate>
 		<_ApkSetIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage).apks</_ApkSetIntermediate>
+		<_UniversalApkSetIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage)-Universal.apks</_UniversalApkSetIntermediate>
 		<ApkFile>$(OutDir)$(_AndroidPackage).apk</ApkFile>
 		<ApkFileSigned>$(OutDir)$(_AndroidPackage)-Signed.apk</ApkFileSigned>
 		<_AabFile>$(OutDir)$(_AndroidPackage).aab</_AabFile>
@@ -2367,7 +2368,8 @@ because xbuild doesn't support framework reference assemblies.
     Inputs="$(_AppBundleIntermediate)"
     Outputs="$(OutDir)$(_AndroidPackage)*-Signed.apk"
   >
-  <Delete Files="$(_ApkSetIntermediate);$(OutDir)$(_AndroidPackage)*-Signed.apk" />
+  <!-- Delete the existing files or bundetool will fail. -->
+  <Delete Files="$(_UniversalApkSetIntermediate);$(OutDir)$(_AndroidPackage)*-Signed.apk" />
   <BuildApkSet
       ToolPath="$(JavaToolPath)"
       JavaMaximumHeapSize="$(JavaMaximumHeapSize)"
@@ -2377,7 +2379,7 @@ because xbuild doesn't support framework reference assemblies.
       AdbTarget="$(AdbTarget)"
       Aapt2ToolPath="$(Aapt2ToolPath)"
       AppBundle="$(_AppBundleIntermediate)"
-      Output="$(_ApkSetIntermediate)"
+      Output="$(_UniversalApkSetIntermediate)"
       KeyStore="$(_ApkKeyStore)"
       KeyAlias="$(_ApkKeyAlias)"
       KeyPass="$(_ApkKeyPass)"
@@ -2385,13 +2387,15 @@ because xbuild doesn't support framework reference assemblies.
       ExtraArgs="$(AndroidBundleToolExtraArgs)"
       GenerateUniversalApkSet="True"
   />
-  <!-- Extract the univeral.apk from the $(_ApkSetIntermediate) and then copy it to the output directory -->
+  <!-- Extract the univeral.apk from the $(_UniversalApkSetIntermediate) to the output directory -->
   <ItemGroup>
     <_FilestoExtract Include="universal.apk" >
       <DestinationFileName>$(_AndroidPackage)-Signed.apk</DestinationFileName>
     </_FilestoExtract>
+    <FileWrites Include="$(_UniversalApkSetIntermediate)" />
+    <FileWrites Include="$(OutDir)$(_AndroidPackage)-Signed.apk" />
   </ItemGroup>
-  <Unzip Sources="$(_ApkSetIntermediate)" DestinationDirectories="$(OutDir)" Files="@(_FilestoExtract)" />
+  <Unzip Sources="$(_UniversalApkSetIntermediate)" DestinationDirectories="$(OutDir)" Files="@(_FilestoExtract)" />
 </Target>
 
 <PropertyGroup>

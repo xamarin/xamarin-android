@@ -203,7 +203,7 @@ namespace Xamarin.Android.Build.Tests
 			string assemblyName = proj.ProjectName;
 			using (var b = CreateApkBuilder ()) {
 				Assert.IsTrue (b.Build (proj), "build should have succeeded.");
-				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}.apk");
+				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 				FileAssert.Exists (apk);
 				using (var zip = ZipHelper.OpenZip (apk)) {
 					Assert.IsTrue (zip.ContainsEntry ($"assemblies/{assemblyName}.dll"), $"{assemblyName}.dll should exist in apk!");
@@ -252,7 +252,7 @@ $@"<linker>
 
 				Assert.IsTrue (b.Build (proj, doNotCleanupOnUpdate: true), "second build should have succeeded.");
 
-				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}.apk");
+				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 				FileAssert.Exists (apk);
 				using (var zip = ZipHelper.OpenZip (apk)) {
 					var entry = zip.ReadEntry ($"assemblies/{assembly_name}.dll");

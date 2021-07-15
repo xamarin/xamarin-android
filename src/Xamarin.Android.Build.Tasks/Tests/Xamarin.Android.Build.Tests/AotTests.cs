@@ -399,7 +399,7 @@ namespace "+ libName + @" {
 
 				b.Build (proj);
 
-				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}.apk");
+				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 				FileAssert.Exists (apk);
 				using (var zip = ZipHelper.OpenZip (apk)) {
 					var entry = zip.ReadEntry ($"assemblies/{proj.ProjectName}.dll");

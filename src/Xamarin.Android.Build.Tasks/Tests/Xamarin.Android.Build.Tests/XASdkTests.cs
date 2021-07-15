@@ -451,7 +451,7 @@ namespace Xamarin.Android.Build.Tests
 			}
 
 			bool expectEmbeddedAssembies = !(CommercialBuildAvailable && !isRelease);
-			var apkPath = Path.Combine (outputPath, $"{proj.PackageName}.apk");
+			var apkPath = Path.Combine (outputPath, $"{proj.PackageName}.{ext}");
 			FileAssert.Exists (apkPath);
 			using (var apk = ZipHelper.OpenZip (apkPath)) {
 				apk.AssertContainsEntry (apkPath, $"assemblies/{proj.ProjectName}.dll", shouldContainEntry: expectEmbeddedAssembies);
@@ -493,8 +493,9 @@ namespace Xamarin.Android.Build.Tests
 			Assert.IsTrue (dotnet.Publish (), "first `dotnet publish` should succeed");
 
 			var publishDirectory = Path.Combine (FullProjectDirectory, proj.OutputPath, runtimeIdentifier, "publish");
-			var apk = Path.Combine (publishDirectory, $"{proj.PackageName}.apk");
-			var apkSigned = Path.Combine (publishDirectory, $"{proj.PackageName}-Signed.apk");
+			string ext = isRelease ? "aab" : "apk";
+			var apk = Path.Combine (publishDirectory, $"{proj.PackageName}.{ext}");
+			var apkSigned = Path.Combine (publishDirectory, $"{proj.PackageName}-Signed.{ext}");
 			FileAssert.Exists (apk);
 			FileAssert.Exists (apkSigned);
 

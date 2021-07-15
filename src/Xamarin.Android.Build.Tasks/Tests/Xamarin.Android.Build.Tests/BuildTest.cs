@@ -1174,7 +1174,7 @@ namespace UnamedProject
 			using (var b = CreateApkBuilder ()) {
 				string intermediateDir = Path.Combine (Root, b.ProjectDirectory, proj.IntermediateOutputPath);
 				string androidBinDir = Path.Combine (intermediateDir, "android", "bin");
-				string apkPath = Path.Combine (androidBinDir, $"{proj.PackageName}.apk");
+				string apkPath = Path.Combine (androidBinDir, $"{proj.PackageName}-Signed.apk");
 
 				Assert.IsTrue (b.Build (proj), "Build should have succeeded.");
 				FileAssert.Exists (Path.Combine (androidBinDir, "classes.dex"));
@@ -1970,10 +1970,10 @@ namespace App1
 							Assert.IsTrue (File.Exists (assemblies), "{0} libaot-UnnamedProject.dll.so does not exist", abi);
 							Assert.IsNotNull (ZipHelper.ReadFileFromZip (zipFile,
 								string.Format ("lib/{0}/libaot-UnnamedProject.dll.so", abi)),
-								$"lib/{0}/libaot-UnnamedProject.dll.so should be in the {proj.PackageName}.apk", abi);
+								$"lib/{0}/libaot-UnnamedProject.dll.so should be in the {proj.PackageName}-Signed.apk", abi);
 							Assert.IsNotNull (ZipHelper.ReadFileFromZip (zipFile,
 								"assemblies/UnnamedProject.dll"),
-								$"UnnamedProject.dll should be in the {proj.PackageName}.apk");
+								$"UnnamedProject.dll should be in the {proj.PackageName}-Signed.apk");
 						}
 					}
 					var runtimeInfo = b.GetSupportedRuntimes ();
@@ -2058,9 +2058,8 @@ Mono.Unix.UnixFileInfo fileInfo = null;");
 					Assert.IsTrue (b.Build (dll), "Build should have succeeded.");
 					using (var builder = CreateApkBuilder (Path.Combine (path, proj.ProjectName))) {
 						Assert.IsTrue (builder.Build (proj), "Build should have succeeded.");
-						string ext = isRelease && Builder.UseDotNet ? "aab" : "apk";
 						var apk = Path.Combine (Root, builder.ProjectDirectory,
-							proj.IntermediateOutputPath, "android", "bin", $"{proj.PackageName}.{ext}");
+							proj.IntermediateOutputPath, "android", "bin", $"{proj.PackageName}.apk");
 						FileAssert.Exists (apk);
 						Assert.IsTrue (StringAssertEx.ContainsText (builder.LastBuildOutput, "warning XA4301: APK already contains the item lib/armeabi-v7a/libRSSupport.so; ignoring."),
 							"warning about skipping libRSSupport.so should have been raised");

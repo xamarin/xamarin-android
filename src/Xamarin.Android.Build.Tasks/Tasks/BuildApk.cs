@@ -168,6 +168,7 @@ namespace Xamarin.Android.Tasks
 							apk.Archive.AddStream (ms, entryName, compressionMethod: entry.CompressionMethod);
 						}
 					}
+					apk.Flush ();
 				}
 				apk.FixupWindowsPathSeparators ((a, b) => Log.LogDebugMessage ($"Fixing up malformed entry `{a}` -> `{b}`"));
 

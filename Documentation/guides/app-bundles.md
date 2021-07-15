@@ -156,6 +156,20 @@ device-specific APK set to be deployed. It would make sense, in a
 given Xamarin.Android `.csproj` file to use `apk` for `Debug` builds
 and `aab` for `Release` builds.
 
+If you are targeting other stores in addition to the Google Play Store
+you can make use of the `AndroidAdditionalPackageFormats` property to
+generate a universal `apk` along side the `aab` file. This will allow
+you do publish the same build on multiple stores.
+
+```
+<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <AndroidPackageFormat>aab</AndroidPackageFormat>
+  <AndroidAdditionalPackageFormats>apk</AndroidAdditionalPackageFormats>
+</PropertyGroup>
+```
+
+`AndroidAdditionalPackageFormats` is set to `apk` by default for .net 6.
+
 ## aapt2
 
 The first requirement is that App Bundles require a special protobuf

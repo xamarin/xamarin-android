@@ -172,8 +172,8 @@ Added in Xamarin.Android 10.2.
 ## AndroidBoundInterfacesContainConstants
 
 A boolean property that
-determines whether binding constants on interfaces will be supported, 
-or the workaround of creating an `IMyInterfaceConsts` class 
+determines whether binding constants on interfaces will be supported,
+or the workaround of creating an `IMyInterfaceConsts` class
 will be used.
 
 Defaults to `True` in .NET 6 and `False` for legacy.
@@ -181,8 +181,8 @@ Defaults to `True` in .NET 6 and `False` for legacy.
 ## AndroidBoundInterfacesContainStaticAndDefaultInterfaceMethods
 
 A boolean property that
-whether default and static members on interfaces will be supported, 
-or  old workaround of creating a sibling class containing static 
+whether default and static members on interfaces will be supported,
+or  old workaround of creating a sibling class containing static
 members like `abstract class MyInterface`.
 
 Defaults to `True` in .NET 6 and `False` for legacy.
@@ -190,7 +190,7 @@ Defaults to `True` in .NET 6 and `False` for legacy.
 ## AndroidBoundInterfacesContainTypes
 
 A boolean property that
-whether types nested in interfaces will be supported, or the workaround 
+whether types nested in interfaces will be supported, or the workaround
 of creating a non-nested type like `IMyInterfaceMyNestedClass`.
 
 Defaults to `True` in .NET 6 and `False` for legacy.
@@ -907,6 +907,19 @@ properties are set, which are required for Android App Bundles:
 
 [apk]: https://en.wikipedia.org/wiki/Android_application_package
 [bundle]: https://developer.android.com/platform/technology/app-bundle
+
+## AndroidAdditionalPackageFormats
+
+An enum-style property with valid values of `apk`.
+When targeting `aab` `AndroidPackageFormat` you might want to
+also generate an `apk` for distribution to other stores.
+
+when `AndroidAdditionalPackageFormats` is set to `apk` a universal
+`apk` will be generated along side the `aab` file.
+
+This is enabled by default for .net 6.
+
+Added in Xamarin.Android 11.5.
 
 ## AndroidPackageNamingPolicy
 

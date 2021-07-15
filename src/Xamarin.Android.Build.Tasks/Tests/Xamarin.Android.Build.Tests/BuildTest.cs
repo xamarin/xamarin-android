@@ -2058,8 +2058,10 @@ Mono.Unix.UnixFileInfo fileInfo = null;");
 					Assert.IsTrue (b.Build (dll), "Build should have succeeded.");
 					using (var builder = CreateApkBuilder (Path.Combine (path, proj.ProjectName))) {
 						Assert.IsTrue (builder.Build (proj), "Build should have succeeded.");
+						string ext = isRelease && Builder.UseDotNet ? "aab" : "apk";
 						var apk = Path.Combine (Root, builder.ProjectDirectory,
-							proj.IntermediateOutputPath, "android", "bin", $"{proj.PackageName}.apk");
+							proj.IntermediateOutputPath, "android", "bin", $"{proj.PackageName}.{ext}");
+						FileAssert.Exists (apk);
 						Assert.IsTrue (StringAssertEx.ContainsText (builder.LastBuildOutput, "warning XA4301: APK already contains the item lib/armeabi-v7a/libRSSupport.so; ignoring."),
 							"warning about skipping libRSSupport.so should have been raised");
 						using (var zipFile = ZipHelper.OpenZip (apk)) {

@@ -162,8 +162,9 @@ namespace Xamarin.Android.Build.Tests
 			var appBuilder = CreateDotNetBuilder (appA, Path.Combine (path, appA.ProjectName));
 			Assert.IsTrue (appBuilder.Build (), $"{appA.ProjectName} should succeed");
 
-			// Check .apk for assets, res, and native libraries
-			var apkPath = Path.Combine (FullProjectDirectory, appA.OutputPath, $"{appA.PackageName}.apk");
+			// Check .apk/.aab for assets, res, and native libraries
+			string ext = isRelease ? "aab" : "apk";
+			var apkPath = Path.Combine (FullProjectDirectory, appA.OutputPath, $"{appA.PackageName}.{ext}");
 			FileAssert.Exists (apkPath);
 			using (var apk = ZipHelper.OpenZip (apkPath)) {
 				apk.AssertContainsEntry (apkPath, "assets/foo/foo.txt");
@@ -419,9 +420,10 @@ namespace Xamarin.Android.Build.Tests
 				.Select (Path.GetFileName)
 				.OrderBy (f => f)
 				.ToArray ();
+			string ext = isRelease ? "aab" : "apk";
 			var expectedFiles = new[]{
-				$"{proj.PackageName}.apk",
-				$"{proj.PackageName}-Signed.apk",
+				$"{proj.PackageName}.{ext}",
+				$"{proj.PackageName}-Signed.{ext}",
 				"es",
 				$"{proj.ProjectName}.dll",
 				$"{proj.ProjectName}.pdb",

@@ -15,6 +15,7 @@
     <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Tests\Xamarin.Android.Build.Tests\Utilities\*.cs">
       <Link>Utilities\%(FileName).cs</Link>
     </Compile>
+    <Compile Include="..\..\tools\xabuild\SymbolicLink.cs" />
     <None Include="..\..\src\Xamarin.Android.Build.Tasks\Tests\Xamarin.Android.Build.Tests\App.config" Link="App.config" />
   </ItemGroup>
 

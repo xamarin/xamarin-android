@@ -349,14 +349,20 @@ namespace Xamarin.Android.Tasks
 					}
 
 					string toolchainLibDir;
-					if (ndk.UsesClang)
-						toolchainLibDir = GetNdkToolchainLibraryDir (ndk, toolchainPath, arch);
-					else
+					if (ndk.UsesClang) {
+						if (ndk.NoBinutils) {
+							toolchainLibDir = String.Empty;
+						} else {
+							toolchainLibDir = GetNdkToolchainLibraryDir (ndk, toolchainPath, arch);
+						}
+					} else
 						toolchainLibDir = GetNdkToolchainLibraryDir (ndk, toolchainPath);
 
 					var libs = new List<string>();
 					if (ndk.UsesClang) {
-						libs.Add ($"-L{toolchainLibDir.TrimEnd ('\\')}");
+						if (!String.IsNullOrEmpty (toolchainLibDir)) {
+							libs.Add ($"-L{toolchainLibDir.TrimEnd ('\\')}");
+						}
 						libs.Add ($"-L{androidLibPath.TrimEnd ('\\')}");
 
 						if (arch == AndroidTargetArch.Arm) {
@@ -366,7 +372,9 @@ namespace Xamarin.Android.Tasks
 						}
 					}
 
-					libs.Add (Path.Combine (toolchainLibDir, "libgcc.a"));
+					if (!String.IsNullOrEmpty (toolchainLibDir)) {
+						libs.Add (Path.Combine (toolchainLibDir, "libgcc.a"));
+					}
 					libs.Add (Path.Combine (androidLibPath, "libc.so"));
 					libs.Add (Path.Combine (androidLibPath, "libm.so"));
 

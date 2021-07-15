@@ -14,8 +14,6 @@ namespace Xamarin.Android.Tasks
 		{
 			NdkToolNames[NdkToolKind.Linker] = "ld";
 			NoBinutils = true;
-
-			throw new NotSupportedException ($"NDK {Version} is not supported by this version of Xamarin.Android");
 		}
 
 		public override string GetToolPath (NdkToolKind kind, AndroidTargetArch arch, int apiLevel)
@@ -31,12 +29,28 @@ namespace Xamarin.Android.Tasks
 			}
 		}
 
+		public override string GetToolPath (string name, AndroidTargetArch arch, int apiLevel)
+		{
+			// The only triple-prefixed binaries in NDK r23+ are the compilers, and these are
+			// handled by the other GetToolPath overload.
+
+			// Some tools might not have any prefix, let's check that first
+			string toolPath = MakeToolPath (name, mustExist: false);
+			if (!String.IsNullOrEmpty (toolPath)) {
+				return toolPath;
+			}
+
+			// Otherwise, they might be prefixed with llvm-
+			return MakeToolPath ($"llvm-{name}");
+		}
+
 		string GetEmbeddedToolPath (NdkToolKind kind, AndroidTargetArch arch)
 		{
 			string toolName = GetToolName (kind);
 			string triple = GetArchTriple (arch);
+			string binutilsDir = Path.Combine (MonoAndroidHelper.GetOSBinPath (), "ndk");
 
-			return $"[TODO]/{triple}-{toolName}";
+			return GetExecutablePath (Path.Combine (binutilsDir, $"{triple}-{toolName}"), mustExist: true);
 		}
 	}
 }

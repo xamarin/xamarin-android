@@ -307,35 +307,19 @@ namespace Xamarin.Android.Prepare
 				return false;
 			}
 
-			if (!ParseVersion (pkgRevision, out Version? pkgVer) || pkgVer == null) {
+			if (!Utilities.ParseAndroidPkgRevision (pkgRevision, out Version? pkgVer, out string pkgTag) || pkgVer == null) {
 				Log.DebugLine ($"Failed to parse a valid version from Pkg.Revision ({pkgRevision}) for component '{component.Name}'. Component will be reinstalled.");
 				return false;
 			}
 
-			if (!ParseVersion (component.PkgRevision, out Version? expectedPkgVer) || expectedPkgVer == null)
+			if (!Utilities.ParseAndroidPkgRevision (component.PkgRevision, out Version? expectedPkgVer, out string expectedTag) || expectedPkgVer == null)
 				throw new InvalidOperationException ($"Invalid expected package version for component '{component.Name}': {component.PkgRevision}");
 
-			bool equal = pkgVer == expectedPkgVer;
+			bool equal = (pkgVer == expectedPkgVer) && (pkgTag == expectedTag);
 			if (!equal)
-				Log.DebugLine ($"Installed version of '{component.Name}' ({pkgVer}) is different than the required one ({expectedPkgVer})");
+				Log.DebugLine ($"Installed version of '{component.Name}' ({pkgRevision}) is different than the required one ({component.PkgRevision})");
 
 			return equal;
-		}
-
-		bool ParseVersion (string? v, out Version? version)
-		{
-			string? ver = v?.Trim ();
-			version = null;
-			if (String.IsNullOrEmpty (ver))
-				return false;
-
-			if (ver!.IndexOf ('.') < 0)
-				ver = $"{ver}.0";
-
-			if (Version.TryParse (ver, out version))
-				return true;
-
-			return false;
 		}
 
 		bool IsNdk (AndroidToolchainComponent component)

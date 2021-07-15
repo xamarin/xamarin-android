@@ -29,6 +29,29 @@ namespace Xamarin.Android.Prepare
 
 		public static readonly Encoding UTF8NoBOM = new UTF8Encoding (false);
 
+		public static bool ParseAndroidPkgRevision (string? v, out Version? version, out string? tag)
+		{
+			string? ver = v?.Trim ();
+			version = null;
+			tag = null;
+			if (String.IsNullOrEmpty (ver))
+				return false;
+
+			if (ver!.IndexOf ('.') < 0)
+				ver = $"{ver}.0";
+
+			int tagIdx = ver.IndexOf ('-');
+			if (tagIdx >= 0) {
+				tag = ver.Substring (tagIdx + 1);
+				ver = ver.Substring (0, tagIdx - 1);
+			}
+
+			if (Version.TryParse (ver, out version))
+				return true;
+
+			return false;
+		}
+
 		public static bool AbiChoiceChanged (Context context)
 		{
 			string cacheFile = Configurables.Paths.MonoRuntimesEnabledAbisCachePath;

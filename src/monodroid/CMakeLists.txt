@@ -279,7 +279,6 @@ endif()
 if(ANDROID)
   add_compile_definitions(HAVE_LZ4)
   add_compile_definitions(PLATFORM_ANDROID)
-  add_compile_definitions(__ANDROID_API__=${ANDROID_NATIVE_API_LEVEL})
 
   if(ANDROID_ABI MATCHES "^(arm64-v8a|x86_64)")
     add_compile_definitions(ANDROID64)

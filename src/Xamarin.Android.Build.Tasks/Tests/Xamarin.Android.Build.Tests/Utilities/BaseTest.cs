@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using Xamarin.Android.Build;
 using Xamarin.Android.Tasks;
 using Xamarin.ProjectTools;
 using Microsoft.Android.Build.Tasks;
@@ -22,6 +24,8 @@ namespace Xamarin.Android.Build.Tests
 
 		[SetUpFixture]
 		public class SetUp {
+			const string BinutilsSubdir = "ndk";
+
 			public static string DeviceAbi {
 				get;
 				private set;
@@ -75,6 +79,46 @@ namespace Xamarin.Android.Build.Tests
 				} catch (Exception ex) {
 					Console.Error.WriteLine ("Failed to determine whether there is Android target emulator or not: " + ex);
 				}
+
+				string hostNdkDir = GetHostBinutilsDir ();
+				string xabtDir = Path.GetDirectoryName (typeof (BuildApk).Assembly.Location);
+				string symlinkDir = Path.Combine (xabtDir, hostNdkDir);
+
+				// If directory exists then it's either a valid symlink or a real dir, don't touch anything in such instance
+				if (Directory.Exists (symlinkDir)) {
+					return;
+				}
+
+				// If a file exists and is a symlink, then it's probably a dangling link - recreate it
+				if (File.Exists (symlinkDir)) {
+					if (!SymbolicLink.IsPathSymlink (symlinkDir)) {
+						throw new InvalidOperationException ($"File named '{symlinkDir}' exists where a symbolic link to a directory should be.");
+					}
+
+					File.Delete (symlinkDir);
+				}
+
+				string binutilsDirFullPath = Path.Combine (XABuildPaths.PrefixDirectory, "lib", "xamarin.android", "xbuild", "Xamarin", "Android", hostNdkDir);
+				if (!SymbolicLink.Create (symlinkDir, binutilsDirFullPath)) {
+					throw new InvalidOperationException ($"Failed to create a symbolic link from '{symlinkDir}' to '{binutilsDirFullPath}'");
+				}
+			}
+
+			string GetHostBinutilsDir ()
+			{
+				if (RuntimeInformation.IsOSPlatform (OSPlatform.Windows)) {
+					return BinutilsSubdir;
+				}
+
+				if (RuntimeInformation.IsOSPlatform (OSPlatform.Linux)) {
+					return Path.Combine ("Linux", BinutilsSubdir);
+				}
+
+				if (RuntimeInformation.IsOSPlatform (OSPlatform.OSX)) {
+					return Path.Combine ("Darwin", BinutilsSubdir);
+				}
+
+				throw new InvalidOperationException ($"Unsupported OS");
 			}
 
 			int GetSdkVersion ()

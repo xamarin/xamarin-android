@@ -1033,7 +1033,7 @@ stages:
     parameters:
       job_name: mac_msbuilddevice_tests
       job_suffix: Legacy
-      jdkTestFolder: $(XA.Jdk11.Folder)
+      jdkTestFolder: $(XA.Jdk8.Folder)
 
   # Check - "Xamarin.Android (MSBuild Emulator Tests macOS - One .NET)"
   - template: yaml-templates/run-msbuild-device-tests.yaml

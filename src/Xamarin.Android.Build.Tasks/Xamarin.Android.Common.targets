@@ -264,8 +264,8 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 	<AndroidR8IgnoreWarnings    Condition=" '$(AndroidR8IgnoreWarnings)' == '' ">True</AndroidR8IgnoreWarnings>
 
 	<!-- Figure out which is the main packaging format we want-->
-	<AndroidPackageFormat Condition=" '$(AndroidPackageFormats.Contains('aab'))' And '$(AndroidPackageFormat)' == '' ">aab</AndroidPackageFormat>
-	<_AndroidAdditionalPackageFormats Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidPackageFormats.Contains('apk'))' ">apk</_AndroidAdditionalPackageFormats>
+	<AndroidPackageFormat Condition=" $(AndroidPackageFormats.Contains('aab')) And '$(AndroidPackageFormat)' == '' ">aab</AndroidPackageFormat>
+	<_AndroidAdditionalPackageFormats Condition=" $(AndroidPackageFormats.Contains('apk')) And '$(AndroidPackageFormat)' == 'aab' ">apk</_AndroidAdditionalPackageFormats>
 	<AndroidPackageFormat       Condition=" '$(AndroidPackageFormat)' == '' ">apk</AndroidPackageFormat>
 	<AndroidUseAapt2            Condition=" '$(AndroidPackageFormat)' == 'aab' ">True</AndroidUseAapt2>
 	<AndroidUseApkSigner        Condition=" '$(AndroidPackageFormat)' == 'aab' ">False</AndroidUseApkSigner>

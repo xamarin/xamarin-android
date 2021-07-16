@@ -43,8 +43,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <EmbedAssembliesIntoApk Condition=" '$(EmbedAssembliesIntoApk)' == '' ">true</EmbedAssembliesIntoApk>
     <AndroidManagedSymbols Condition=" '$(AndroidManagedSymbols)' == '' ">true</AndroidManagedSymbols>
-    <AndroidPackageFormat Condition=" '$(AndroidPackageFormat)' == '' " >aab</AndroidPackageFormat>
-    <AndroidAdditionalPackageFormats Condition=" '$(AndroidAdditionalPackageFormats)' == '' " >apk</AndroidAdditionalPackageFormats>
+    <AndroidPackageFormats Condition=" '$(AndroidPackageFormats)' == '' " >aab;apk</AndroidPackageFormats>
   </PropertyGroup>
 
   <!-- Application project settings -->

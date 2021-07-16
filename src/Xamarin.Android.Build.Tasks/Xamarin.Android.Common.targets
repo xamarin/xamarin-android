@@ -262,6 +262,10 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 	<AndroidEnableDesugar  Condition=" '$(AndroidEnableDesugar)' == '' And ('$(AndroidDexTool)' == 'd8' Or '$(AndroidLinkTool)' == 'r8') ">True</AndroidEnableDesugar>
 	<AndroidEnableDesugar  Condition=" '$(AndroidEnableDesugar)' == '' ">False</AndroidEnableDesugar>
 	<AndroidR8IgnoreWarnings    Condition=" '$(AndroidR8IgnoreWarnings)' == '' ">True</AndroidR8IgnoreWarnings>
+
+	<!-- Figure out which is the main packaging format we want-->
+	<AndroidPackageFormat Condition=" '$(AndroidPackageFormats.Contains('aab'))' And '$(AndroidPackageFormat)' == '' ">aab</AndroidPackageFormat>
+	<_AndroidAdditionalPackageFormats Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidPackageFormats.Contains('apk'))' ">apk</_AndroidAdditionalPackageFormats>
 	<AndroidPackageFormat       Condition=" '$(AndroidPackageFormat)' == '' ">apk</AndroidPackageFormat>
 	<AndroidUseAapt2            Condition=" '$(AndroidPackageFormat)' == 'aab' ">True</AndroidUseAapt2>
 	<AndroidUseApkSigner        Condition=" '$(AndroidPackageFormat)' == 'aab' ">False</AndroidUseApkSigner>
@@ -2364,7 +2368,7 @@ because xbuild doesn't support framework reference assemblies.
 </Target>
 
 <Target Name="_CreateUniversalApkFromBundle"
-    Condition=" '$(AndroidPackageFormat)' == 'aab' And $(AndroidAdditionalPackageFormats.Contains('apk')) "
+    Condition=" '$(AndroidPackageFormat)' == 'aab' And $(_AndroidAdditionalPackageFormats.Contains('apk')) "
     Inputs="$(_AppBundleIntermediate)"
     Outputs="$(OutDir)$(_AndroidPackage)*-Signed.apk"
   >

@@ -80,6 +80,11 @@ namespace Xamarin.Android.Build.Tests
 					Console.Error.WriteLine ("Failed to determine whether there is Android target emulator or not: " + ex);
 				}
 
+				CreateBinutilsSymlink ();
+			}
+
+			void CreateBinutilsSymlink ()
+			{
 				Console.Error.WriteLine ("DEBUG: making sure ndk link exists at the test assemblies location:");
 				string hostNdkDir = GetHostBinutilsDir ();
 				Console.Error.WriteLine ($"  DEBUG: hostNdkDir == {hostNdkDir}");
@@ -105,9 +110,16 @@ namespace Xamarin.Android.Build.Tests
 					File.Delete (symlinkDir);
 				}
 
+				// We first try the in-tree location...
 				string binutilsDirFullPath = Path.Combine (XABuildPaths.PrefixDirectory, "lib", "xamarin.android", "xbuild", "Xamarin", "Android", hostNdkDir);
 				if (!Directory.Exists (binutilsDirFullPath)) {
-					throw new InvalidOperationException ($"Host NDK directory does not exist, {hostNdkDir}");
+					Console.Error.WriteLine ($"In-tree binutils not found in {binutilsDirFullPath}, trying the system location");
+
+					// ...since it failed, we'll try to find the system location
+					binutilsDirFullPath = Path.Combine (TestEnvironment.MonoAndroidToolsDirectory, hostNdkDir);
+					if (!Directory.Exists (binutilsDirFullPath)) {
+						throw new InvalidOperationException ($"Host NDK directory does not exist, {binutilsDirFullPath}");
+					}
 				}
 
 				Console.Error.WriteLine ($"  DEBUG: binutilsDirFullPath == {binutilsDirFullPath}");

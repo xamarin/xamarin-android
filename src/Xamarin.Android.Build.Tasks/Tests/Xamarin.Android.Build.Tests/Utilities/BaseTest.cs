@@ -80,12 +80,19 @@ namespace Xamarin.Android.Build.Tests
 					Console.Error.WriteLine ("Failed to determine whether there is Android target emulator or not: " + ex);
 				}
 
+				Console.Error.WriteLine ("DEBUG: making sure ndk link exists at the test assemblies location:");
 				string hostNdkDir = GetHostBinutilsDir ();
+				Console.Error.WriteLine ($"  DEBUG: hostNdkDir == {hostNdkDir}");
 				string xabtDir = Path.GetDirectoryName (typeof (BuildApk).Assembly.Location);
+				Console.Error.WriteLine ($"  DEBUG: xabtDir == {xabtDir}");
 				string symlinkDir = Path.Combine (xabtDir, hostNdkDir);
+				Console.Error.WriteLine ($"  DEBUG: symlinkDir == {symlinkDir}");
 
 				// If directory exists then it's either a valid symlink or a real dir, don't touch anything in such instance
 				if (Directory.Exists (symlinkDir)) {
+					if (!SymbolicLink.IsPathSymlink (symlinkDir)) {
+						Console.Error.WriteLine ($"Warning: a directory exists where a symbolic link was expected, {symlinkDir}");
+					}
 					return;
 				}
 
@@ -99,8 +106,17 @@ namespace Xamarin.Android.Build.Tests
 				}
 
 				string binutilsDirFullPath = Path.Combine (XABuildPaths.PrefixDirectory, "lib", "xamarin.android", "xbuild", "Xamarin", "Android", hostNdkDir);
+				if (!Directory.Exists (binutilsDirFullPath)) {
+					throw new InvalidOperationException ($"Host NDK directory does not exist, {hostNdkDir}");
+				}
+
+				Console.Error.WriteLine ($"  DEBUG: binutilsDirFullPath == {binutilsDirFullPath}");
 				if (!SymbolicLink.Create (symlinkDir, binutilsDirFullPath)) {
 					throw new InvalidOperationException ($"Failed to create a symbolic link from '{symlinkDir}' to '{binutilsDirFullPath}'");
+				}
+
+				if (!Directory.Exists (symlinkDir)) {
+					throw new InvalidOperationException ($"Symbolic link '{symlinkDir}' created but it doesn't appear to point to '{binutilsDirFullPath}");
 				}
 			}
 

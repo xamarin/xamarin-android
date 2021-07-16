@@ -908,16 +908,29 @@ properties are set, which are required for Android App Bundles:
 [apk]: https://en.wikipedia.org/wiki/Android_application_package
 [bundle]: https://developer.android.com/platform/technology/app-bundle
 
-## AndroidAdditionalPackageFormats
+This property will be deprecated for .net 6. Users should switch over to
+the newer [`AndroidPackageFormats`](~/android/deploy-test/building-apps/build-properties.md#androidpackageformats).
 
-An enum-style property with valid values of `apk`.
-When targeting `aab` `AndroidPackageFormat` you might want to
-also generate an `apk` for distribution to other stores.
+## AndroidPackageFormats
 
-when `AndroidAdditionalPackageFormats` is set to `apk` a universal
-`apk` will be generated along side the `aab` file.
+An semi-colon delimited property with valid values of `apk` and `aab`.
+This indicates if you want to package the Android application as
+an [APK file][apk] or [Android App Bundle][bundle]. App Bundles
+are a new format for `Release` builds that are intended for
+submission on Google Play.
 
-This is enabled by default for .net 6.
+When building a Release build you might want to generate both
+and `aab` and an `apk` for distribution to various stores.
+
+Setting `AndroidPackageFormats` to `aab;apk` will result in both
+being generated. Setting `AndroidPackageFormats` to either `aab`
+or `apk` will generate only one file.
+
+For .net 6 `AndroidPackageFormats` will be set to `aab;apk` for
+`Release` builds only. It is recommended that you continue to use
+just `apk` for debugging.
+
+For Legacy Xamarin.Android this value currently defaults to `apk`.
 
 Added in Xamarin.Android 11.5.
 

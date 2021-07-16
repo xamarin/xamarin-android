@@ -913,7 +913,7 @@ the newer [`AndroidPackageFormats`](~/android/deploy-test/building-apps/build-pr
 
 ## AndroidPackageFormats
 
-An semi-colon delimited property with valid values of `apk` and `aab`.
+A semi-colon delimited property with valid values of `apk` and `aab`.
 This indicates if you want to package the Android application as
 an [APK file][apk] or [Android App Bundle][bundle]. App Bundles
 are a new format for `Release` builds that are intended for

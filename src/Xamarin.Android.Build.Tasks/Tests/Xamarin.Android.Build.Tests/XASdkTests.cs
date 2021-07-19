@@ -163,8 +163,7 @@ namespace Xamarin.Android.Build.Tests
 			Assert.IsTrue (appBuilder.Build (), $"{appA.ProjectName} should succeed");
 
 			// Check .apk/.aab for assets, res, and native libraries
-			string ext = isRelease ? "aab" : "apk";
-			var apkPath = Path.Combine (FullProjectDirectory, appA.OutputPath, $"{appA.PackageName}.{ext}");
+			var apkPath = Path.Combine (FullProjectDirectory, appA.OutputPath, $"{appA.PackageName}-Signed.apk");
 			FileAssert.Exists (apkPath);
 			using (var apk = ZipHelper.OpenZip (apkPath)) {
 				apk.AssertContainsEntry (apkPath, "assets/foo/foo.txt");
@@ -420,16 +419,30 @@ namespace Xamarin.Android.Build.Tests
 				.Select (Path.GetFileName)
 				.OrderBy (f => f)
 				.ToArray ();
-			string ext = isRelease ? "aab" : "apk";
-			var expectedFiles = new[]{
-				$"{proj.PackageName}.{ext}",
-				$"{proj.PackageName}-Signed.{ext}",
-				"es",
-				$"{proj.ProjectName}.dll",
-				$"{proj.ProjectName}.pdb",
-				$"{proj.ProjectName}.runtimeconfig.json",
-				$"{proj.ProjectName}.xml",
-			};
+			string[] expectedFiles;
+			if (isRelease) {
+				expectedFiles = new string[] {
+					$"{proj.PackageName}.aab",
+					$"{proj.PackageName}-Signed.aab",
+					$"{proj.PackageName}-Signed.apk",
+					"es",
+					$"{proj.ProjectName}.dll",
+					$"{proj.ProjectName}.pdb",
+					$"{proj.ProjectName}.runtimeconfig.json",
+					$"{proj.ProjectName}.xml",
+				};
+			} else {
+				expectedFiles = new string[] {
+					$"{proj.PackageName}.apk",
+					$"{proj.PackageName}-Signed.apk",
+					"es",
+					$"{proj.ProjectName}.dll",
+					$"{proj.ProjectName}.pdb",
+					$"{proj.ProjectName}.runtimeconfig.json",
+					$"{proj.ProjectName}.xml",
+				};
+			}
+
 			CollectionAssert.AreEqual (expectedFiles, files, $"Expected: {string.Join (";", expectedFiles)}\n   Found: {string.Join (";", files)}");
 
 			var assemblyPath = Path.Combine (outputPath, $"{proj.ProjectName}.dll");
@@ -540,7 +553,7 @@ namespace Xamarin.Android.Build.Tests
 
 			Assert.IsTrue (dotnet.Build (), "`dotnet build` should succeed");
 
-			var apkPath = Path.Combine (FullProjectDirectory, proj.OutputPath, $"{proj.PackageName}.apk");
+			var apkPath = Path.Combine (FullProjectDirectory, proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 			FileAssert.Exists (apkPath);
 			using (var apk = ZipHelper.OpenZip (apkPath)) {
 				apk.AssertContainsEntry (apkPath, "res/raw/foo.txt");

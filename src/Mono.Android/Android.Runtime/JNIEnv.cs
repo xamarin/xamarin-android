@@ -241,18 +241,10 @@ namespace Android.Runtime {
 			GC.SuppressFinalize (obj);
 		}
 
-		static Action<Exception> mono_unhandled_exception = null!;
 		static Action<AppDomain, UnhandledExceptionEventArgs> AppDomain_DoUnhandledException = null!;
 
 		static void Initialize ()
 		{
-			if (mono_unhandled_exception == null) {
-				var mono_UnhandledException = typeof (System.Diagnostics.Debugger)
-					.GetMethod ("Mono_UnhandledException", BindingFlags.NonPublic | BindingFlags.Static);
-				if (mono_UnhandledException != null)
-					mono_unhandled_exception = (Action<Exception>) Delegate.CreateDelegate (typeof(Action<Exception>), mono_UnhandledException);
-			}
-
 			if (AppDomain_DoUnhandledException == null) {
 				var ad_due = typeof (AppDomain)
 					.GetMethod ("DoUnhandledException",
@@ -279,10 +271,6 @@ namespace Android.Runtime {
 			}
 
 			var javaException = JavaObject.GetObject<Java.Lang.Throwable> (env, javaExceptionPtr, JniHandleOwnership.DoNotTransfer)!;
-
-			// Disabled until Linker error surfaced in https://github.com/xamarin/xamarin-android/pull/4302#issuecomment-596400025 is resolved
-			//System.Diagnostics.Debugger.Mono_UnhandledException (javaException);
-			mono_unhandled_exception?.Invoke (javaException);
 
 			try {
 				var jltp = javaException as JavaProxyThrowable;

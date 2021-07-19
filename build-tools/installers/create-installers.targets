@@ -312,18 +312,18 @@
     <_MSBuildFilesWin Include="$(MSBuildSrcDir)\lib64\libZipSharpNative.pdb" />
     <_MSBuildFilesWin Include="$(MSBuildSrcDir)\proguard\bin\proguard.bat" />
     <_MSBuildFilesWin Include="$(MSBuildSrcDir)\aapt2.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\aarch64-linux-android-as.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\aarch64-linux-android-ld.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\aarch64-linux-android-strip.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\arm-linux-androideabi-as.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\arm-linux-androideabi-ld.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\arm-linux-androideabi-strip.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\i686-linux-android-as.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\i686-linux-android-ld.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\i686-linux-android-strip.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\x86_64-linux-android-as.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\x86_64-linux-android-ld.exe" />
-    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\ndk\x86_64-linux-android-strip.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\aarch64-linux-android-as.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\aarch64-linux-android-ld.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\aarch64-linux-android-strip.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\arm-linux-androideabi-as.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\arm-linux-androideabi-ld.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\arm-linux-androideabi-strip.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\i686-linux-android-as.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\i686-linux-android-ld.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\i686-linux-android-strip.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\x86_64-linux-android-as.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\x86_64-linux-android-ld.exe" />
+    <_MSBuildFilesWin Include="$(MSBuildSrcDir)\binutils\x86_64-linux-android-strip.exe" />
     <_MSBuildLibHostFilesWin Include="$(MSBuildSrcDir)\lib\host-mxe-Win64\libmono-android.debug.dll"   Condition=" '$(HostOS)' != 'Windows' " />
     <_MSBuildLibHostFilesWin Include="$(MSBuildSrcDir)\lib\host-mxe-Win64\libmono-android.release.dll" Condition=" '$(HostOS)' != 'Windows' " />
     <_MSBuildLibHostFilesWin Include="$(MSBuildSrcDir)\lib\host-mxe-Win64\libMonoPosixHelper.dll" />
@@ -343,18 +343,18 @@
     </_MSBuildFilesUnixSignAndHarden>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\aarch64-linux-android-as" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\aarch64-linux-android-ld" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\aarch64-linux-android-strip" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\arm-linux-androideabi-as" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\arm-linux-androideabi-ld" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\arm-linux-androideabi-strip" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\i686-linux-android-as" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\i686-linux-android-ld" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\i686-linux-android-strip" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\x86_64-linux-android-as" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\x86_64-linux-android-ld" />
-    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\ndk\x86_64-linux-android-strip" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\aarch64-linux-android-as" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\aarch64-linux-android-ld" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\aarch64-linux-android-strip" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\arm-linux-androideabi-as" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\arm-linux-androideabi-ld" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\arm-linux-androideabi-strip" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\i686-linux-android-as" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\i686-linux-android-ld" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\i686-linux-android-strip" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\x86_64-linux-android-as" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\x86_64-linux-android-ld" />
+    <_MSBuildFilesUnixSignAndHarden Include="$(MSBuildSrcDir)\$(HostOS)\binutils\x86_64-linux-android-strip" />
     <_MSBuildFilesUnix Include="$(MSBuildSrcDir)\$(HostOS)\illinkanalyzer" Permission="755" />
     <_MSBuildFilesUnix Include="$(MSBuildSrcDir)\$(HostOS)\jit-times" Permission="755" />
     <_MSBuildFilesUnix Include="$(MSBuildSrcDir)\$(HostOS)\aprofutil" ExcludeFromAndroidNETSdk="true" />

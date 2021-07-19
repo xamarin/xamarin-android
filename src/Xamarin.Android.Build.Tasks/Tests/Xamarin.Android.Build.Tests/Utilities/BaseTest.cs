@@ -24,7 +24,7 @@ namespace Xamarin.Android.Build.Tests
 
 		[SetUpFixture]
 		public class SetUp {
-			const string BinutilsSubdir = "ndk";
+			const string BinutilsSubdir = "binutils";
 
 			public static string DeviceAbi {
 				get;
@@ -85,13 +85,9 @@ namespace Xamarin.Android.Build.Tests
 
 			void CreateBinutilsSymlink ()
 			{
-				Console.Error.WriteLine ("DEBUG: making sure ndk link exists at the test assemblies location:");
 				string hostNdkDir = GetHostBinutilsDir ();
-				Console.Error.WriteLine ($"  DEBUG: hostNdkDir == {hostNdkDir}");
 				string xabtDir = Path.GetDirectoryName (typeof (BuildApk).Assembly.Location);
-				Console.Error.WriteLine ($"  DEBUG: xabtDir == {xabtDir}");
 				string symlinkDir = Path.Combine (xabtDir, hostNdkDir);
-				Console.Error.WriteLine ($"  DEBUG: symlinkDir == {symlinkDir}");
 
 				// If directory exists then it's either a valid symlink or a real dir, don't touch anything in such instance
 				if (Directory.Exists (symlinkDir)) {
@@ -113,8 +109,6 @@ namespace Xamarin.Android.Build.Tests
 				// We first try the in-tree location...
 				string binutilsDirFullPath = Path.Combine (XABuildPaths.PrefixDirectory, "lib", "xamarin.android", "xbuild", "Xamarin", "Android", hostNdkDir);
 				if (!Directory.Exists (binutilsDirFullPath)) {
-					Console.Error.WriteLine ($"In-tree binutils not found in {binutilsDirFullPath}, trying the system location");
-
 					// ...since it failed, we'll try to find the system location
 					binutilsDirFullPath = Path.Combine (TestEnvironment.MonoAndroidToolsDirectory, hostNdkDir);
 					if (!Directory.Exists (binutilsDirFullPath)) {
@@ -122,7 +116,6 @@ namespace Xamarin.Android.Build.Tests
 					}
 				}
 
-				Console.Error.WriteLine ($"  DEBUG: binutilsDirFullPath == {binutilsDirFullPath}");
 				if (!SymbolicLink.Create (symlinkDir, binutilsDirFullPath)) {
 					throw new InvalidOperationException ($"Failed to create a symbolic link from '{symlinkDir}' to '{binutilsDirFullPath}'");
 				}

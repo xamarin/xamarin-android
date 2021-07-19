@@ -48,7 +48,7 @@ namespace Xamarin.Android.Tasks
 		{
 			string toolName = GetToolName (kind);
 			string triple = GetArchTriple (arch);
-			string binutilsDir = Path.Combine (MonoAndroidHelper.GetOSBinPath (), "ndk");
+			string binutilsDir = Path.Combine (MonoAndroidHelper.GetOSBinPath (), "binutils");
 
 			return GetExecutablePath (Path.Combine (binutilsDir, $"{triple}-{toolName}"), mustExist: true);
 		}

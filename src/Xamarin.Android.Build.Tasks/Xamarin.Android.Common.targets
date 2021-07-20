@@ -2370,7 +2370,7 @@ because xbuild doesn't support framework reference assemblies.
 <Target Name="_CreateUniversalApkFromBundle"
     Condition=" '$(AndroidPackageFormat)' == 'aab' And $(_AndroidAdditionalPackageFormats.Contains('apk')) "
     Inputs="$(_AppBundleIntermediate)"
-    Outputs="$(OutDir)$(_AndroidPackage)*-Signed.apk"
+    Outputs="$(OutDir)$(_AndroidPackage)-Signed.apk"
   >
   <!-- Delete the existing files or bundetool will fail. -->
   <Delete Files="$(_UniversalApkSetIntermediate);$(OutDir)$(_AndroidPackage)*-Signed.apk" />

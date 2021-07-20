@@ -940,6 +940,9 @@ configuration.
 <AndroidPackageFormats>aab;apk</AndroidPackageFormats>
 ```
 
+You will also need to remove the existing `AndroidPackageFormat` for
+that configuration if you have it.
+
 Added in Xamarin.Android 11.5.
 
 ## AndroidPackageNamingPolicy

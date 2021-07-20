@@ -253,7 +253,7 @@ namespace Xamarin.Android.Build.Tests
 						"aot", abi, "libaot-UnnamedProject.dll.so");
 					Assert.IsTrue (File.Exists (assemblies), "{0} libaot-UnnamedProject.dll.so does not exist", abi);
 					var apk = Path.Combine (Root, b.ProjectDirectory,
-						proj.OtuputPath, $"{proj.PackageName}-Signed.apk");
+						proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 					using (var zipFile = ZipHelper.OpenZip (apk)) {
 						Assert.IsNotNull (ZipHelper.ReadFileFromZip (zipFile,
 							string.Format ("lib/{0}/libaot-UnnamedProject.dll.so", abi)),

@@ -272,7 +272,7 @@ namespace Android.Runtime {
 		}
 
 #if NETCOREAPP
-		[DllImport (AndroidRuntime.InternalDllName, CallingConvention = CallingConvention.Cdecl)]
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern static void monodroid_unhandled_exception (Exception javaException);
 #endif
 

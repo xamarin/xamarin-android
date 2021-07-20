@@ -345,12 +345,6 @@ monodroid_get_dylib (void)
 	return nullptr;
 }
 
-static void
-monodroid_unhandled_exception (MonoObject *java_exception)
-{
-	monodroidRuntime.unhandled_exception (java_exception);
-}
-
 #define PINVOKE_SYMBOL(_sym_) { #_sym_, reinterpret_cast<void*>(&_sym_) }
 
 MonodroidRuntime::pinvoke_api_map MonodroidRuntime::xa_pinvoke_map = {
@@ -589,7 +583,6 @@ MonodroidRuntime::pinvoke_api_map MonodroidRuntime::xa_pinvoke_map = {
 	PINVOKE_SYMBOL (recv_uninterrupted),
 	PINVOKE_SYMBOL (send_uninterrupted),
 	PINVOKE_SYMBOL (set_world_accessable),
-	PINVOKE_SYMBOL (monodroid_unhandled_exception),
 };
 
 MonodroidRuntime::pinvoke_library_map MonodroidRuntime::other_pinvoke_map (MonodroidRuntime::LIBRARY_MAP_INITIAL_BUCKET_COUNT);

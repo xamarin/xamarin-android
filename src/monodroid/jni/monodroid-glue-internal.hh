@@ -174,6 +174,11 @@ namespace xamarin::android::internal
 		}
 
 #if defined (NET6)
+		void unhandled_exception (MonoObject *java_exception)
+		{
+			mono_unhandled_exception (java_exception);
+		}
+
 		void propagate_uncaught_exception (JNIEnv *env, jobject javaThread, jthrowable javaException);
 #else // def NET6
 		void propagate_uncaught_exception (MonoDomain *domain, JNIEnv *env, jobject javaThread, jthrowable javaException);

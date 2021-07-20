@@ -930,7 +930,15 @@ For .net 6 `AndroidPackageFormats` will be set to `aab;apk` for
 `Release` builds only. It is recommended that you continue to use
 just `apk` for debugging.
 
-For Legacy Xamarin.Android this value currently defaults to `apk`.
+For Legacy Xamarin.Android this value currently defaults to ``.
+As a result Legacy Xamarin.Android will NOT by default produce
+both as part of a release build. If a user wants to produce both
+outputs they will need to define the following in their `Release`
+configuration.
+
+```
+<AndroidPackageFormats>aab;apk</AndroidPackageFormats>
+```
 
 Added in Xamarin.Android 11.5.
 

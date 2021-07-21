@@ -284,6 +284,9 @@ namespace xamarin::android::internal
 		static MonoReflectionType* typemap_java_to_managed (MonoString *java_type_name);
 
 		static const char* typemap_managed_to_java (MonoReflectionType *type, const uint8_t *mvid);
+#if defined (NET6)
+		static void monodroid_debugger_unhandled_exception (MonoException *ex);
+#endif
 
 #if defined (DEBUG)
 		void set_debug_env_vars (void);

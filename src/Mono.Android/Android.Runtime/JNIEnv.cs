@@ -241,7 +241,12 @@ namespace Android.Runtime {
 			GC.SuppressFinalize (obj);
 		}
 
-		static Action<Exception> mono_unhandled_exception = null!;
+#if NETCOREAPP
+		internal static Action<Exception> mono_unhandled_exception = monodroid_debugger_unhandled_exception;
+#else  // NETCOREAPP
+		internal static Action<Exception> mono_unhandled_exception = null!;
+#endif  // NETCOREAPP
+
 		static Action<AppDomain, UnhandledExceptionEventArgs> AppDomain_DoUnhandledException = null!;
 
 		static void Initialize ()
@@ -681,6 +686,11 @@ namespace Android.Runtime {
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		static extern unsafe IntPtr monodroid_typemap_managed_to_java (Type type, byte* mvid);
+
+#if NETCOREAPP
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		static extern unsafe void monodroid_debugger_unhandled_exception (Exception e);
+#endif  // NETCOREAPP
 
 		internal static void LogTypemapTrace (StackTrace st)
 		{

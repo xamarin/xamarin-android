@@ -28,6 +28,13 @@
       "description": "Overrides the package name in the AndroidManifest.xml",
       "datatype": "string",
       "replaces": "com.companyname.AndroidApp1"
+    },
+    "supportedOSVersion": {
+      "type": "parameter",
+      "description": "Overrides $(SupportedOSPlatformVersion) in the project",
+      "datatype": "string",
+      "replaces": "SUPPORTED_OS_PLATFORM_VERSION",
+      "defaultValue": "21.0"
     }
   },
   "defaultName": "AndroidApp1"

@@ -56,8 +56,7 @@ namespace Xamarin.ProjectTools
 		{
 			Sdk = "Microsoft.NET.Sdk";
 			TargetFramework = "net6.0-android";
-
-			TargetSdkVersion = AndroidSdkResolver.GetMaxInstalledPlatform ().ToString ();
+			SupportedOSPlatformVersion = "21.0";
 			PackageName = $"com.xamarin.{(packageName ?? ProjectName).ToLower ()}";
 			JavaPackageName = JavaPackageName ?? PackageName.ToLowerInvariant ();
 			GlobalPackagesFolder = FileSystemUtils.FindNugetGlobalPackageFolder ();
@@ -89,34 +88,19 @@ namespace Xamarin.ProjectTools
 		public string AndroidManifest { get; set; } = default_android_manifest;
 
 		/// <summary>
-		/// Defaults to AndroidSdkResolver.GetMaxInstalledPlatform ()
+		/// Defaults to 21.0
 		/// </summary>
-		public string TargetSdkVersion { get; set; }
-
-		/// <summary>
-		/// Defaults to API 19
-		/// </summary>
-		public string MinSdkVersion { get; set; } = "19";
+		public string SupportedOSPlatformVersion {
+			get { return GetProperty (KnownProperties.SupportedOSPlatformVersion); }
+			set { SetProperty (KnownProperties.SupportedOSPlatformVersion, value); }
+		}
 
 		public virtual string ProcessManifestTemplate ()
 		{
-			var uses_sdk = new StringBuilder ("<uses-sdk ");
-			if (!string.IsNullOrEmpty (MinSdkVersion)) {
-				uses_sdk.Append ("android:minSdkVersion=\"");
-				uses_sdk.Append (MinSdkVersion);
-				uses_sdk.Append ("\" ");
-			}
-			if (!string.IsNullOrEmpty (TargetSdkVersion)) {
-				uses_sdk.Append ("android:targetSdkVersion=\"");
-				uses_sdk.Append (TargetSdkVersion);
-				uses_sdk.Append ("\" ");
-			}
-			uses_sdk.Append ("/>");
-
 			return AndroidManifest
 				.Replace ("${PROJECT_NAME}", ProjectName)
 				.Replace ("${PACKAGENAME}", PackageName)
-				.Replace ("${USES_SDK}", uses_sdk.ToString ());
+				.Replace ("${USES_SDK}", "");
 		}
 
 		public override string ProcessSourceTemplate (string source)

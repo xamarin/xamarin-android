@@ -82,6 +82,8 @@ namespace Xamarin.Android.Tasks
 
 		public string CheckedBuild { get; set; }
 
+		public string SupportedOSPlatformVersion { get; set; }
+
 		[Output]
 		public string [] GeneratedBinaryTypeMaps { get; set; }
 
@@ -259,6 +261,12 @@ namespace Xamarin.Android.Tasks
 					Log.LogCodedError ("XA4215", Properties.Resources.XA4215_Details, kvp.Key, typeName);
 			}
 
+			// NOTE: $(SupportedOSPlatformVersion) will potentially be 21.0
+			string minSdkVersion = null;
+			if (Version.TryParse (SupportedOSPlatformVersion, out var version)) {
+				minSdkVersion = version.Major.ToString ();
+			}
+
 			// Step 3 - Merge [Activity] and friends into AndroidManifest.xml
 			var manifest = new ManifestDocument (ManifestTemplate) {
 				PackageName = PackageName,
@@ -267,7 +275,8 @@ namespace Xamarin.Android.Tasks
 				Placeholders = ManifestPlaceholders,
 				Resolver = res,
 				SdkDir = AndroidSdkDir,
-				SdkVersion = AndroidSdkPlatform,
+				TargetSdkVersion = AndroidSdkPlatform,
+				MinSdkVersion = minSdkVersion,
 				Debug = Debug,
 				MultiDex = MultiDex,
 				NeedsInternet = NeedsInternet,

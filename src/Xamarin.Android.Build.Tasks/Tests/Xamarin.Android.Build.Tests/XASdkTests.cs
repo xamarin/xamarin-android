@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Xml.Linq;
 using Mono.Cecil;
 using NUnit.Framework;
 using Xamarin.Android.Tasks;
@@ -448,6 +448,15 @@ namespace Xamarin.Android.Build.Tests
 				}
 			}
 
+			// Check AndroidManifest.xml
+			var manifestPath = Path.Combine (intermediateOutputPath, "android", "AndroidManifest.xml");
+			FileAssert.Exists (manifestPath);
+			var manifest = XDocument.Load (manifestPath);
+			XNamespace ns = "http://schemas.android.com/apk/res/android";
+			var uses_sdk = manifest.Root.Element ("uses-sdk");
+			Assert.AreEqual ("21", uses_sdk.Attribute (ns + "minSdkVersion").Value);
+			Assert.AreEqual ("30", uses_sdk.Attribute (ns + "targetSdkVersion").Value);
+
 			bool expectEmbeddedAssembies = !(CommercialBuildAvailable && !isRelease);
 			var apkPath = Path.Combine (outputPath, $"{proj.PackageName}.apk");
 			FileAssert.Exists (apkPath);
@@ -466,6 +475,32 @@ namespace Xamarin.Android.Build.Tests
 					}
 				}
 			}
+		}
+
+		[Test]
+		public void SupportedOSPlatformVersion ([Values (21, 30)] int minSdkVersion)
+		{
+			var proj = new XASdkProject {
+				SupportedOSPlatformVersion = $"{minSdkVersion}.0",
+			};
+			// Call AccessibilityTraversalAfter from API level 22
+			// https://developer.android.com/reference/android/view/View#getAccessibilityTraversalAfter()
+			proj.MainActivity = proj.DefaultMainActivity.Replace ("button.Click", "button.AccessibilityTraversalAfter.ToString ();\nbutton.Click");
+
+			var dotnet = CreateDotNetBuilder (proj);
+			Assert.IsTrue (dotnet.Build (), "`dotnet build` should succeed");
+
+			if (minSdkVersion < 22) {
+				StringAssertEx.Contains ("warning CA1416", dotnet.LastBuildOutput, "Should get warning about Android 22 API");
+			} else {
+				dotnet.AssertHasNoWarnings ();
+			}
+
+			var manifestPath = Path.Combine (FullProjectDirectory, proj.IntermediateOutputPath, "android", "AndroidManifest.xml");
+			FileAssert.Exists (manifestPath);
+			var manifest = XDocument.Load (manifestPath);
+			XNamespace ns = "http://schemas.android.com/apk/res/android";
+			Assert.AreEqual (minSdkVersion.ToString (), manifest.Root.Element ("uses-sdk").Attribute (ns + "minSdkVersion").Value);
 		}
 
 		[Test]

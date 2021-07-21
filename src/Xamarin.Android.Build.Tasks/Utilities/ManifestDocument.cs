@@ -84,7 +84,8 @@ namespace Xamarin.Android.Tasks {
 		public List<string> Assemblies { get; set; }
 		public DirectoryAssemblyResolver Resolver { get; set; }
 		public string SdkDir { get; set; }
-		public string SdkVersion { get; set; }
+		public string TargetSdkVersion { get; set; }
+		public string MinSdkVersion { get; set; }
 		public bool Debug { get; set; }
 		public bool MultiDex { get; set; }
 		public bool NeedsInternet { get; set; }
@@ -118,7 +119,7 @@ namespace Xamarin.Android.Tasks {
 			var minAttr = doc.Root.Element ("uses-sdk")?.Attribute (androidNs + "minSdkVersion");
 			if (minAttr == null) {
 				int minSdkVersion;
-				if (!int.TryParse (SdkVersionName, out minSdkVersion))
+				if (!int.TryParse (MinSdkVersionName, out minSdkVersion))
 					minSdkVersion = defaultMinSdkVersion;
 				return Math.Min (minSdkVersion, defaultMinSdkVersion).ToString ();
 			}
@@ -129,7 +130,7 @@ namespace Xamarin.Android.Tasks {
 		{
 			var targetAttr = doc.Root.Element ("uses-sdk")?.Attribute (androidNs + "targetSdkVersion");
 			if (targetAttr == null) {
-				return SdkVersionName;
+				return TargetSdkVersionName;
 			}
 			return targetAttr.Value;
 		}
@@ -150,9 +151,12 @@ namespace Xamarin.Android.Tasks {
 			}
 		}
 
-		string SdkVersionName {
-			get { return MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (SdkVersion); }
-		}
+		string TargetSdkVersionName => MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (TargetSdkVersion);
+
+		string MinSdkVersionName =>
+			string.IsNullOrEmpty (MinSdkVersion) ?
+				TargetSdkVersionName :
+				MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (MinSdkVersion);
 
 		string ToFullyQualifiedName (string typeName)
 		{
@@ -293,8 +297,8 @@ namespace Xamarin.Android.Tasks {
 			if (!manifest.Elements ("uses-sdk").Any ()) {
 				manifest.AddFirst (
 						new XElement ("uses-sdk",
-							new XAttribute (androidNs + "minSdkVersion", SdkVersionName),
-							new XAttribute (androidNs + "targetSdkVersion", SdkVersionName)));
+							new XAttribute (androidNs + "minSdkVersion", MinSdkVersionName),
+							new XAttribute (androidNs + "targetSdkVersion", TargetSdkVersionName)));
 			}
 
 			// If no minSdkVersion is specified, set it to TargetFrameworkVersion
@@ -302,7 +306,7 @@ namespace Xamarin.Android.Tasks {
 
 			if (uses.Attribute (androidNs + "minSdkVersion") == null) {
 				int minSdkVersion;
-				if (!int.TryParse (SdkVersionName, out minSdkVersion))
+				if (!int.TryParse (MinSdkVersionName, out minSdkVersion))
 					minSdkVersion = XABuildConfig.NDKMinimumApiAvailable;
 				minSdkVersion = Math.Min (minSdkVersion, XABuildConfig.NDKMinimumApiAvailable);
 				uses.SetAttributeValue (androidNs + "minSdkVersion", minSdkVersion.ToString ());
@@ -313,7 +317,7 @@ namespace Xamarin.Android.Tasks {
 			if (tsv != null)
 				targetSdkVersion = tsv.Value;
 			else {
-				targetSdkVersion = SdkVersionName;
+				targetSdkVersion = TargetSdkVersionName;
 				uses.AddBeforeSelf (new XComment ("suppress UsesMinSdkAttributes"));
 			}
 

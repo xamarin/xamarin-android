@@ -1449,6 +1449,7 @@ because xbuild doesn't support framework reference assemblies.
       FrameworkDirectories="$(_XATargetFrameworkDirectories);$(_XATargetFrameworkDirectories)Facades"
       AcwMapFile="$(_AcwMapFile)"
       SupportedAbis="@(_BuildTargetAbis)"
+      SupportedOSPlatformVersion="$(SupportedOSPlatformVersion)"
       SkipJniAddNativeMethodRegistrationAttributeScan="$(_SkipJniAddNativeMethodRegistrationAttributeScan)"
       CheckedBuild="$(_AndroidCheckedBuild)">
     <Output TaskParameter="GeneratedBinaryTypeMaps" ItemName="_AndroidTypeMapping" Condition=" '$(_InstantRunEnabled)' == 'True' " />

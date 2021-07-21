@@ -15,5 +15,14 @@
   "primaryOutputs": [
     { "path": "AndroidBinding1.csproj" }
   ],
+  "symbols": {
+    "supportedOSVersion": {
+      "type": "parameter",
+      "description": "Overrides $(SupportedOSPlatformVersion) in the project",
+      "datatype": "string",
+      "replaces": "SUPPORTED_OS_PLATFORM_VERSION",
+      "defaultValue": "21.0"
+    }
+  },
   "defaultName": "AndroidBinding1"
 }

@@ -17,6 +17,7 @@ namespace Xamarin.ProjectTools
 		public const string RuntimeIdentifier = "RuntimeIdentifier";
 		public const string RuntimeIdentifiers = "RuntimeIdentifiers";
 		public const string PublishTrimmed = "PublishTrimmed";
+		public const string SupportedOSPlatformVersion = "SupportedOSPlatformVersion";
 
 		public const string Deterministic = "Deterministic";
 		public const string BundleAssemblies = "BundleAssemblies";

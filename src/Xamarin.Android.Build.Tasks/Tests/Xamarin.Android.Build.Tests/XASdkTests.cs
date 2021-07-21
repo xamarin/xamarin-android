@@ -433,8 +433,8 @@ namespace Xamarin.Android.Build.Tests
 				};
 			} else {
 				expectedFiles = new string[] {
-					$"{proj.PackageName}.apk",
 					$"{proj.PackageName}-Signed.apk",
+					$"{proj.PackageName}.apk",
 					"es",
 					$"{proj.ProjectName}.dll",
 					$"{proj.ProjectName}.pdb",

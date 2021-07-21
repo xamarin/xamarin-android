@@ -37,6 +37,7 @@ projects, these properties are set in Xamarin.Android.Legacy.targets.
       $(BuildDependsOn);
       _CopyPackage;
       _Sign;
+      _CreateUniversalApkFromBundle;
     </BuildDependsOn>
     <IncrementalCleanDependsOn>
       _PrepareAssemblies;

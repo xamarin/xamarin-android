@@ -99,6 +99,7 @@ Copyright (C) 2016 Xamarin. All rights reserved.
       FrameworkDirectories="$(_XATargetFrameworkDirectories);$(_XATargetFrameworkDirectories)Facades"
       AcwMapFile="$(_AcwMapFile)"
       SupportedAbis="$(_BuildTargetAbis)"
+      SupportedOSPlatformVersion="$(SupportedOSPlatformVersion)"
       InstantRunEnabled="$(_InstantRunEnabled)">
   </GenerateJavaStubs>
   <ManifestMerger

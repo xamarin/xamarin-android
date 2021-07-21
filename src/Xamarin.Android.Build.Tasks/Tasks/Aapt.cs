@@ -263,7 +263,7 @@ namespace Xamarin.Android.Tasks
 			Directory.CreateDirectory (manifestDir);
 			manifestFile = Path.Combine (manifestDir, Path.GetFileName (ManifestFile));
 			ManifestDocument manifest = new ManifestDocument (ManifestFile);
-			manifest.SdkVersion = AndroidSdkPlatform;
+			manifest.TargetSdkVersion = AndroidSdkPlatform;
 			if (!string.IsNullOrEmpty (VersionCodePattern)) {
 				try {
 					manifest.CalculateVersionCode (currentAbi, VersionCodePattern, VersionCodeProperties);

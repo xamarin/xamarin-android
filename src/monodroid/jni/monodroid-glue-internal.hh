@@ -261,6 +261,8 @@ namespace xamarin::android::internal
 		}
 
 #if defined (NET6)
+		static void monodroid_unhandled_exception (MonoObject *java_exception);
+
 		MonoClass* get_android_runtime_class ();
 #else // def NET6
 		MonoClass* get_android_runtime_class (MonoDomain *domain);

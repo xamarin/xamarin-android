@@ -4,11 +4,59 @@
     "AndroidManifest.xml": {
       "Size": 2584
     },
-    "res/drawable-mdpi-v4/icon.png": {
-      "Size": 2200
+    "assemblies/Java.Interop.dll": {
+      "Size": 67758
+    },
+    "assemblies/Mono.Android.dll": {
+      "Size": 246233
+    },
+    "assemblies/mscorlib.dll": {
+      "Size": 769324
+    },
+    "assemblies/System.Core.dll": {
+      "Size": 28186
+    },
+    "assemblies/System.dll": {
+      "Size": 9171
+    },
+    "assemblies/UnnamedProject.dll": {
+      "Size": 2862
+    },
+    "classes.dex": {
+      "Size": 316760
+    },
+    "lib/arm64-v8a/libmono-btls-shared.so": {
+      "Size": 1613872
+    },
+    "lib/arm64-v8a/libmono-native.so": {
+      "Size": 707024
+    },
+    "lib/arm64-v8a/libmonodroid.so": {
+      "Size": 281352
+    },
+    "lib/arm64-v8a/libmonosgen-2.0.so": {
+      "Size": 4037584
+    },
+    "lib/arm64-v8a/libxa-internal-api.so": {
+      "Size": 65624
+    },
+    "lib/arm64-v8a/libxamarin-app.so": {
+      "Size": 19696
+    },
+    "META-INF/ANDROIDD.RSA": {
+      "Size": 1213
+    },
+    "META-INF/ANDROIDD.SF": {
+      "Size": 2225
+    },
+    "META-INF/MANIFEST.MF": {
+      "Size": 2098
     },
     "res/drawable-hdpi-v4/icon.png": {
       "Size": 4762
+    },
+    "res/drawable-mdpi-v4/icon.png": {
+      "Size": 2200
     },
     "res/drawable-xhdpi-v4/icon.png": {
       "Size": 7462
@@ -24,55 +72,7 @@
     },
     "resources.arsc": {
       "Size": 1724
-    },
-    "classes.dex": {
-      "Size": 316700
-    },
-    "assemblies/UnnamedProject.dll": {
-      "Size": 2851
-    },
-    "assemblies/Java.Interop.dll": {
-      "Size": 67719
-    },
-    "assemblies/Mono.Android.dll": {
-      "Size": 246165
-    },
-    "assemblies/mscorlib.dll": {
-      "Size": 769192
-    },
-    "assemblies/System.Core.dll": {
-      "Size": 28168
-    },
-    "assemblies/System.dll": {
-      "Size": 9163
-    },
-    "lib/arm64-v8a/libxamarin-app.so": {
-      "Size": 19696
-    },
-    "lib/arm64-v8a/libmonodroid.so": {
-      "Size": 268792
-    },
-    "lib/arm64-v8a/libxa-internal-api.so": {
-      "Size": 65312
-    },
-    "lib/arm64-v8a/libmono-btls-shared.so": {
-      "Size": 1613872
-    },
-    "lib/arm64-v8a/libmonosgen-2.0.so": {
-      "Size": 4050176
-    },
-    "lib/arm64-v8a/libmono-native.so": {
-      "Size": 707024
-    },
-    "META-INF/ANDROIDD.SF": {
-      "Size": 2225
-    },
-    "META-INF/ANDROIDD.RSA": {
-      "Size": 1213
-    },
-    "META-INF/MANIFEST.MF": {
-      "Size": 2098
     }
   },
-  "PackageSize": 3962580
+  "PackageSize": 3970772
 }

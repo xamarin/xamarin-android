@@ -62,7 +62,7 @@ namespace Xamarin.Android.Tasks
 
 		public override string GetToolPath (string name, AndroidTargetArch arch, int apiLevel)
 		{
-			return MakeToolPath ($"{GetArchTriple (arch)}-{name}");
+			return MakeToolPath ($"{GetArchTriple (arch)}-{name}", mustExist: false);
 		}
 
 		public override string GetClangDeviceLibraryPath ()
@@ -99,11 +99,11 @@ namespace Xamarin.Android.Tasks
 			return arch == AndroidTargetArch.Arm ? "armv7a-linux-androideabi" : GetArchTriple (arch);
 		}
 
-		protected string MakeToolPath (string toolName)
+		protected string MakeToolPath (string toolName, bool mustExist = true)
 		{
 			string toolPath = Path.Combine (GetToolchainDir (), "bin", toolName);
 
-			return GetExecutablePath (toolPath, mustExist: true)!;
+			return GetExecutablePath (toolPath, mustExist) ?? String.Empty;
 		}
 
 		protected string GetToolchainDir ()

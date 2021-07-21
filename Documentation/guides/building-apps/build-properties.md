@@ -129,14 +129,14 @@ Added in Xamarin.Android 6.1.
 
 A path to a directory containing
 the Android [binutils][binutils] such as `ld`, the native linker,
-and `as`, the native assembler. These tools are part of the Android
-NDK and are also included in the Xamarin.Android installation.
+and `as`, the native assembler. These tools are included in the
+Xamarin.Android installation.
 
-The default value is `$(MonoAndroidBinDirectory)\ndk\`.
+The default value is `$(MonoAndroidBinDirectory)\binutils\`.
 
 Added in Xamarin.Android 10.0.
 
-[binutils]: https://android.googlesource.com/toolchain/binutils/
+[binutils]: https://github.com/xamarin/xamarin-android-binutils/
 
 ## AndroidBoundExceptionType
 

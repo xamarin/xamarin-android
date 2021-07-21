@@ -24,7 +24,7 @@ namespace Xamarin.Android.Prepare
 			OutputMonoBtlsFilename        = Configurables.Defaults.MonoRuntimeOutputMonoBtlsFilename;
 			OutputMonoPosixHelperFilename = Configurables.Defaults.MonoRuntimeOutputMonoPosixHelperFilename;
 			OutputProfilerFilename        = Configurables.Defaults.MonoRuntimeOutputProfilerFilename;
-			Strip                         = Path.Combine (Configurables.Paths.AndroidToolchainBinDirectory, $"{Configurables.Defaults.AndroidToolchainPrefixes [Name]}-strip");
+			Strip                         = Path.Combine (Configurables.Paths.AndroidToolchainBinDirectory, "llvm-strip");
 		}
 	}
 }

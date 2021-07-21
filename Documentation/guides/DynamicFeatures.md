@@ -99,6 +99,10 @@ feature. It will also pack those into a separate feature. The new meta
 Data `AndroidDynamicFeature` allows the build system to pick up project
 references which are "features".
 
+As part of the build system all `Features` will include a `Reference` to
+the main application `Assembly`. So there is no need to add any `PackageReference`
+items to any NuGet which is already being used by main app.
+
 _NOTE: The above is really important. Without these changes the Dynamic
 Feature build system will NOT work._
 

@@ -267,7 +267,7 @@ namespace Xamarin.Android.Tasks {
 			if (StaticLibrary)
 				cmd.Add ("--static-lib");
 
-			if (string.IsNullOrEmpty (PackageId)) {
+			if (!string.IsNullOrEmpty (PackageId)) {
 				cmd.Add ("--allow-reserved-package-id");
 				cmd.Add ("--package-id");
 				cmd.Add (PackageId);

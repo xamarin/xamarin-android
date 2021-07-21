@@ -230,6 +230,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       YieldDuringToolExecution="$(YieldDuringToolExecution)"
       PackageName="$(_AndroidPackage)"
       JavaPlatformJarPath="$(JavaPlatformJarPath)"
+      AdditionalApksToLink="@(_AdditionalApksToLink)"
       VersionCodePattern="$(AndroidVersionCodePattern)"
       VersionCodeProperties="$(AndroidVersionCodeProperties)"
       SupportedAbis="@(_BuildTargetAbis)"
@@ -246,6 +247,8 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       UncompressedFileExtensions="$(AndroidStoreUncompressedFileExtensions)"
   />
 </Target>
+
+<!-- Dynamic Feature Section -->
 
 <Target Name="_GenerateDynamicFeatureManifest"
     Inputs="$(MSBuildProjectFile)"
@@ -271,14 +274,30 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
   </ItemGroup>
 </Target>
 
+<Target Name="_ConvertAppPackageForFeatureCompilation"
+    Condition=" '@(_AndroidDynamicFeature->Count())' != '0' "
+    Inputs="$(_PackagedResources)"
+    Outputs="$(_PackagedResources).ap_">
+  <Aapt2Convert
+    DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
+    DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
+    OutputArchive="$(_PackagedResources).ap_"
+    Files="$(_PackagedResources)"
+    OutputFormat="binary"
+    ToolPath="$(Aapt2ToolPath)"
+    ToolExe="$(Aapt2ToolExe)"
+  />
+  <ItemGroup>
+    <FileWrites Include="$(_PackagedResources).ap_" />
+  </ItemGroup>
+</Target>
+
 <Target Name="_CreateFeaturePackageWithAapt2"
-    DependsOnTargets="UpdateAndroidAssets;_GenerateDynamicFeatureManifest"
-    Inputs="$(AndroidManifest);@(AndroidAsset);$(_PackagedResources)"
+    DependsOnTargets="UpdateAndroidAssets"
+    Inputs="$(AndroidManifest);@(AndroidAsset);$(_AppPackagedResources)"
     Outputs="$(_FeaturePackage)"
   >
-  <PropertyGroup>
-    <FeaturePackageName Condition=" '$(FeaturePackageName)' == '' " >$(_AndroidPackage).$(MSBuildProjectName)</FeaturePackageName>
-  </PropertyGroup>
+  <MakeDir Directories="$(_AndroidIntermediateDexOutputDirectory)" />
   <Aapt2Link
       AndroidManifestFile="$(AndroidManifest)"
       CompiledResourceFlatFiles="@(_CompiledFlatFiles)"
@@ -288,13 +307,12 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       AssemblyIdentityMapFile="$(_AndroidLibrayProjectAssemblyMapFile)"
       ImportsDirectory="$(_LibraryProjectImportsDirectoryName)"
       OutputImportDirectory="$(_AndroidLibrayProjectIntermediatePath)"
-      OutputFile="$(_FeaturePackageTemp)"
-      AdditionalAndroidResourcePaths="@(_LibraryResourceDirectories)"
+      OutputFile="$(_PackagedResources)"
       YieldDuringToolExecution="$(YieldDuringToolExecution)"
       PackageName="$(FeaturePackageName)"
       PackageId="$(FeaturePackageId)"
       JavaPlatformJarPath="$(JavaPlatformJarPath)"
-      AdditionalApksToLink="$(_PackagedResources)"
+      AdditionalApksToLink="@(_AdditionalApksToLink)"
       VersionCodePattern="$(AndroidVersionCodePattern)"
       VersionCodeProperties="$(AndroidVersionCodeProperties)"
       SupportedAbis="@(_BuildTargetAbis)"
@@ -305,20 +323,19 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       JavaDesignerOutputDirectory="$(AaptTemporaryDirectory)"
       ManifestFiles="$(AndroidManifest)"
       ProtobufFormat="False"
-      StaticLibrary="True"
       ExtraArgs="$(AndroidAapt2LinkExtraArgs)"
       ToolPath="$(Aapt2ToolPath)"
       ToolExe="$(Aapt2ToolExe)"
       UncompressedFileExtensions="$(AndroidStoreUncompressedFileExtensions)"
-    />
-    <Aapt2Convert
+  />
+  <Aapt2Convert
       DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
       DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
       OutputArchive="$(_FeaturePackage)"
-      Files="$(_FeaturePackageTemp)"
+      Files="$(_PackagedResources)"
       OutputFormat="proto"
       ToolPath="$(Aapt2ToolPath)"
       ToolExe="$(Aapt2ToolExe)"
-    />
+  />
 </Target>
 </Project>

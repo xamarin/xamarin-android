@@ -290,6 +290,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 	<AndroidGenerateJniMarshalMethods Condition=" '$(AndroidGenerateJniMarshalMethods)' == '' ">False</AndroidGenerateJniMarshalMethods>
 	<AndroidMakeBundleKeepTemporaryFiles Condition=" '$(AndroidMakeBundleKeepTemporaryFiles)' == '' ">False</AndroidMakeBundleKeepTemporaryFiles>
 
+	<_AndroidIncludeRuntime Condition=" '$(_AndroidIncludeRuntime)' == '' ">True</_AndroidIncludeRuntime>
 	<!-- If true it will cause all the assemblies in the apk to be preloaded on startup time -->
 	<_AndroidEnablePreloadAssembliesDefault Condition=" '$(UsingAndroidNETSdk)' == 'true' ">False</_AndroidEnablePreloadAssembliesDefault>
 	<_AndroidEnablePreloadAssembliesDefault Condition=" '$(UsingAndroidNETSdk)' != 'true' ">True</_AndroidEnablePreloadAssembliesDefault>
@@ -350,6 +351,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.DX.targets" Condition=" '$(AndroidDexTool)' == 'dx' and '$(UsingAndroidNETSdk)' != 'true' " />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Aapt.targets"  Condition=" '$(AndroidUseAapt2)' != 'true' and '$(UsingAndroidNETSdk)' != 'true' " />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Aapt2.targets" Condition=" '$(AndroidUseAapt2)' == 'true' or '$(UsingAndroidNETSdk)' == 'true' " />
+<Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.DynamicFeature.targets" Condition=" '$(AndroidUseAapt2)' == 'true' or '$(UsingAndroidNETSdk)' == 'true' " />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.DesignTime.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.EmbeddedResource.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.SkipCases.projitems" />
@@ -1506,6 +1508,8 @@ because xbuild doesn't support framework reference assemblies.
     <Output TaskParameter="EmbeddedDSOsEnabled" PropertyName="_EmbeddedDSOsEnabled" />
     <Output TaskParameter="UsesLibraries"       ItemName="AndroidExternalJavaLibrary" />
     <Output TaskParameter="UseEmbeddedDex"      PropertyName="_UseEmbeddedDex" />
+    <Output TaskParameter="MinSdkVersion"       PropertyName="_MinSdkVersion" />
+    <Output TaskParameter="TargetSdkVersion"    PropertyName="_TargetSdkVersion" />
   </ReadAndroidManifest>
   <PropertyGroup>
     <AndroidStoreUncompressedFileExtensions Condition=" '$(_EmbeddedDSOsEnabled)' == 'True' ">.so;$(AndroidStoreUncompressedFileExtensions)</AndroidStoreUncompressedFileExtensions>
@@ -2064,6 +2068,7 @@ because xbuild doesn't support framework reference assemblies.
     ProjectFullPath="$(MSBuildProjectFullPath)"
     IncludeWrapSh="$(AndroidIncludeWrapSh)"
     CheckedBuild="$(_AndroidCheckedBuild)"
+    IncludeRuntime="$(_AndroidIncludeRuntime)"
     RuntimeConfigBinFilePath="$(_BinaryRuntimeConfigPath)">
     <Output TaskParameter="OutputFiles" ItemName="ApkFiles" />
   </BuildApk>
@@ -2096,6 +2101,7 @@ because xbuild doesn't support framework reference assemblies.
       ProjectFullPath="$(MSBuildProjectFullPath)"
       IncludeWrapSh="$(AndroidIncludeWrapSh)"
       CheckedBuild="$(_AndroidCheckedBuild)"
+      IncludeRuntime="$(_AndroidIncludeRuntime)"
       RuntimeConfigBinFilePath="$(_BinaryRuntimeConfigPath)">
     <Output TaskParameter="OutputFiles" ItemName="BaseZipFile" />
   </BuildBaseAppBundle>

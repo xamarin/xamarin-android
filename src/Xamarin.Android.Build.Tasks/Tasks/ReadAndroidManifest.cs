@@ -35,11 +35,18 @@ namespace Xamarin.Android.Tasks
 		[Output]
 		public bool UseEmbeddedDex { get; set; } = false;
 
+		[Output]
+		public string MinSdkVersion { get; set; }
+
+		[Output]
+		public string TargetSdkVersion { get; set; }
+
 		public override bool RunTask ()
 		{
 			var androidNs = AndroidAppManifest.AndroidXNamespace;
 			var manifest = AndroidAppManifest.Load (ManifestFile, MonoAndroidHelper.SupportedVersions);
 			var app = manifest.Document.Element ("manifest")?.Element ("application");
+			var usesSdk = manifest.Document.Element ("manifest")?.Element ("uses-sdk");
 
 			if (app != null) {
 				string text = app.Attribute (androidNs + "extractNativeLibs")?.Value;
@@ -65,6 +72,10 @@ namespace Xamarin.Android.Tasks
 					}
 				}
 				UsesLibraries = libraries.ToArray ();
+			}
+			if (usesSdk != null) {
+				MinSdkVersion = usesSdk.Attribute (androidNs + "minSdkVersion")?.Value;
+				TargetSdkVersion = usesSdk.Attribute (androidNs + "targetSdkVersion")?.Value;
 			}
 
 			return !Log.HasLoggedErrors;

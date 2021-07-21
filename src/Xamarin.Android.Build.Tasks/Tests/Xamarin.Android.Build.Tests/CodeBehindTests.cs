@@ -478,8 +478,6 @@ namespace Xamarin.Android.Build.Tests
 			var ret = new List <string> {
 				"AndroidGenerateLayoutBindings=true"
 			};
-			if (!Builder.UseDotNet)
-				ret.Add ("TargetFrameworkVersion=" + builder.LatestTargetFrameworkVersion ());
 			if (manyBuild)
 				ret.Add ("ForceParallelBuild=true");
 

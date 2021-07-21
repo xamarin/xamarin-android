@@ -244,7 +244,7 @@ namespace Android.Runtime {
 		static Action<Exception> mono_unhandled_exception = null!;
 #if !NETCOREAPP
 		static Action<AppDomain, UnhandledExceptionEventArgs> AppDomain_DoUnhandledException = null!;
-#endif
+#endif // ndef NETCOREAPP
 
 		static void Initialize ()
 		{
@@ -268,13 +268,13 @@ namespace Android.Runtime {
 						typeof (Action<AppDomain, UnhandledExceptionEventArgs>), ad_due);
 				}
 			}
-#endif
+#endif // ndef NETCOREAPP
 		}
 
 #if NETCOREAPP
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern static void monodroid_unhandled_exception (Exception javaException);
-#endif
+#endif // def NETCOREAPP
 
 		internal static void PropagateUncaughtException (IntPtr env, IntPtr javaThreadPtr, IntPtr javaExceptionPtr)
 		{
@@ -305,9 +305,9 @@ namespace Android.Runtime {
 				// Disabled until Linker error surfaced in https://github.com/xamarin/xamarin-android/pull/4302#issuecomment-596400025 is resolved
 				//AppDomain.CurrentDomain.DoUnhandledException (args);
 				AppDomain_DoUnhandledException?.Invoke (AppDomain.CurrentDomain, args);
-#else
+#else // ndef NETCOREAPP
 				monodroid_unhandled_exception (innerException ?? javaException);
-#endif
+#endif // def NETCOREAPP
 			} catch (Exception e) {
 				Logger.Log (LogLevel.Error, "monodroid", "Exception thrown while raising AppDomain.UnhandledException event: " + e.ToString ());
 			}

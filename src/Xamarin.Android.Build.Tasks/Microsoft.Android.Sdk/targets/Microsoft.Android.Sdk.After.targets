@@ -18,6 +18,7 @@ This file is imported *after* the Microsoft.NET.Sdk/Sdk.targets.
   <Import Project="..\tools\Xamarin.Android.Bindings.Core.targets" />
   <Import Project="..\tools\Xamarin.Android.Bindings.ClassParse.targets" />
   <Import Project="Microsoft.Android.Sdk.AndroidLibraries.targets" />
+  <Import Project="Microsoft.Android.Sdk.Aot.targets"         Condition=" '$(AndroidApplication)' == 'true' " />
   <Import Project="Microsoft.Android.Sdk.Application.targets" Condition=" '$(AndroidApplication)' == 'true' " />
   <Import Project="Microsoft.Android.Sdk.AssemblyResolution.targets" />
   <Import Project="Microsoft.Android.Sdk.ILLink.targets" />

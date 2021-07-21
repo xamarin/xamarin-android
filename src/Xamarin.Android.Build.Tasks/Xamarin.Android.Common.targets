@@ -1972,68 +1972,6 @@ because xbuild doesn't support framework reference assemblies.
   Inputs="$(_BuildApkEmbedInputs)"
   Outputs="$(_BuildApkEmbedOutputs)"
   Condition="'$(EmbedAssembliesIntoApk)' == 'True'">
-
-  <PropertyGroup>
-    <_StartupAotProfile Condition="'%(ResolvedAssemblies.Filename)' == 'Xamarin.Forms.Platform.Android'">startup-xf.aotprofile</_StartupAotProfile>
-    <_StartupAotProfile Condition="'$(_StartupAotProfile)' == ''">startup.aotprofile</_StartupAotProfile>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(AndroidUseDefaultAotProfile)' != 'False'">
-    <AndroidAotProfile Include="$(MSBuildThisFileDirectory)$(_StartupAotProfile)" />
-  </ItemGroup>
-  <SplitProperty Value="$(AndroidAotProfiles)" Condition="'$(AndroidAotProfiles)' != ''">
-    <Output TaskParameter="Output" ItemName="_AotProfiles" />
-  </SplitProperty>
-  <ItemGroup Condition="'$(AndroidEnableProfiledAot)' == 'True'">
-    <_AotProfiles Include="@(AndroidAotProfile)" />
-  </ItemGroup>
-  <Aot
-	Condition="'$(AotAssemblies)' == 'True'"
-	AndroidAotMode="$(AndroidAotMode)"
-	AndroidNdkDirectory="$(_AndroidNdkDirectory)"
-	AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
-	AndroidApiLevel="$(_AndroidApiLevel)"
-	ManifestFile="$(IntermediateOutputPath)android\AndroidManifest.xml"
-	SupportedAbis="@(_BuildTargetAbis)"
-	AndroidSequencePointsMode="$(_SequencePointsMode)"
-	AotAdditionalArguments="$(AndroidAotAdditionalArguments)"
-	ExtraAotOptions="$(AndroidExtraAotOptions)"
-	ResolvedAssemblies="@(_ShrunkAssemblies)"
-	AotOutputDirectory="$(_AndroidAotBinDirectory)"
-	IntermediateAssemblyDir="$(MonoAndroidIntermediateAssemblyDir)"
-	LinkMode="$(AndroidLinkMode)"
-	AdditionalNativeLibraryReferences="@(_AdditionalNativeLibraryReferences)"
-	YieldDuringToolExecution="$(YieldDuringToolExecution)"
-	EnableLLVM="$(EnableLLVM)"
-	Profiles="@(_AotProfiles)">
-	   <Output TaskParameter="NativeLibrariesReferences" ItemName="_AdditionalNativeLibraryReferences" />
-  </Aot>
-
-  <ItemGroup Condition=" '$(AndroidAotMode)' == 'Hybrid' And '$(AotAssemblies)' == 'True' ">
-    <_CilStripAssemblies Include="@(_ShrunkAssemblies)" Condition=" '%(FileName)' != 'Mono.Android' " />
-  </ItemGroup>
-
-  <!-- Strip the IL code of the resolved managed assemblies -->
-   <CilStrip
-	Condition=" '$(AndroidAotMode)' == 'Hybrid' And '$(AotAssemblies)' == 'True' "
-	AndroidAotMode="$(AndroidAotMode)"
-	ToolPath="$(_MonoAndroidToolsDirectory)"
-	ApkOutputPath="$(_BuildApkEmbedOutputs)"
-	ResolvedAssemblies="@(_CilStripAssemblies)">
-  </CilStrip>
-
-  <!-- Bundle the assemblies into native libraries in the apk -->
-  <MakeBundleNativeCodeExternal
-		Condition="'$(BundleAssemblies)' == 'True'"
-		KeepTemp="$(AndroidMakeBundleKeepTemporaryFiles)"
-		AndroidNdkDirectory="$(_AndroidNdkDirectory)"
-		Assemblies="@(_ShrunkAssemblies);@(_AndroidResolvedSatellitePaths)"
-		IncludePath="$(MonoAndroidIncludeDirectory)"
-		SupportedAbis="@(_BuildTargetAbis)"
-		TempOutputPath="$(IntermediateOutputPath)"
-		ToolPath="$(_MonoAndroidToolsDirectory)"
-		BundleApiPath="$(MSBuildThisFileDirectory)\mkbundle-api.h">
- 	<Output TaskParameter="OutputNativeLibraries" PropertyName="_BundleResultNativeLibraries" />
-  </MakeBundleNativeCodeExternal>
   <!-- Put the assemblies and native libraries in the apk -->
   <BuildApk
     Condition=" '$(AndroidPackageFormat)' != 'aab' "

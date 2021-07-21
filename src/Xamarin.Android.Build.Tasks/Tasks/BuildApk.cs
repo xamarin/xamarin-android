@@ -696,7 +696,11 @@ namespace Xamarin.Android.Tasks
 				return;
 
 			var libs = AdditionalNativeLibraryReferences
-				.Select (l => new LibInfo { Path = l.ItemSpec, Abi = AndroidRidAbiHelper.GetNativeLibraryAbi (l) });
+				.Select (l => new LibInfo {
+					Path = l.ItemSpec,
+					Abi = AndroidRidAbiHelper.GetNativeLibraryAbi (l),
+					ArchiveFileName = l.GetMetadata ("ArchiveFileName"),
+				});
 
 			AddNativeLibraries (files, supportedAbis, libs);
 		}

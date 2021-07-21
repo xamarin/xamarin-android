@@ -49,7 +49,7 @@ variables:
   # - This is a non-fork branch with name containing "mono-" (for Mono bumps)
   IsMonoBranch: $[and(ne(variables['System.PullRequest.IsFork'], 'True'), or(contains(variables['Build.SourceBranchName'], 'mono-'), contains(variables['System.PullRequest.SourceBranch'], 'mono-')))]
   RunAllTests: $[or(eq(variables['XA.RunAllTests'], true), eq(variables['IsMonoBranch'], true))]
-  DotNetNUnitCategories: '& TestCategory != DotNetIgnore & TestCategory != AOT & TestCategory != MkBundle & TestCategory != MonoSymbolicate & TestCategory != PackagesConfig & TestCategory != StaticProject & TestCategory != Debugger & TestCategory != SystemApplication'
+  DotNetNUnitCategories: '& TestCategory != DotNetIgnore & TestCategory != MkBundle & TestCategory != MonoSymbolicate & TestCategory != PackagesConfig & TestCategory != StaticProject & TestCategory != Debugger & TestCategory != SystemApplication'
   NUnit.NumberOfTestWorkers: 4
   GitHub.Token: $(github--pat--vs-mobiletools-engineering-service2)
   CONVERT_JAVADOC_TO_XMLDOC: $[ne(variables['Build.DefinitionName'], 'Xamarin.Android-PR')]
@@ -796,6 +796,17 @@ stages:
         extraBuildArgs: /p:TestsFlavor=Interpreter /p:UseInterpreter=True
         artifactSource: bin/Test$(XA.Build.Configuration)/net6.0-android/Mono.Android.NET_Tests-Signed.apk
         artifactFolder: net6-Interpreter
+        useDotNet: true
+
+    - template: yaml-templates/apk-instrumentation.yaml
+      parameters:
+        configuration: $(XA.Build.Configuration)
+        testName: Mono.Android.NET_Tests-Aot
+        project: tests/Mono.Android-Tests/Runtime-Microsoft.Android.Sdk/Mono.Android.NET-Tests.csproj
+        testResultsFiles: TestResult-Mono.Android.NET_Tests-$(XA.Build.Configuration)-Aot.xml
+        extraBuildArgs: /p:RunAOTCompilation=true
+        artifactSource: bin/Test$(XA.Build.Configuration)/net6.0-android/Mono.Android.NET_Tests-Signed.apk
+        artifactFolder: net6-aot
         useDotNet: true
 
     - task: MSBuild@1

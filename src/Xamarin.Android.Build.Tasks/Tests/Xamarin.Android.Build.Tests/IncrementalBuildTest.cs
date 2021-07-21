@@ -1269,7 +1269,7 @@ namespace Lib2
 				TextContent = () => text
 			});
 			using (var b = CreateApkBuilder ()) {
-				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}.apk");
+				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 				Assert.IsTrue (b.Build (proj), "first build should succeed");
 				AssertAssetContents (apk);
 
@@ -1310,7 +1310,7 @@ namespace Lib2
 			using (var b = CreateApkBuilder ()) {
 				Assert.IsTrue (b.Build (proj), "first build should succeed");
 
-				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}.apk");
+				var apk = Path.Combine (Root, b.ProjectDirectory, proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 				FileAssert.Exists (apk);
 				using (var zip = ZipHelper.OpenZip (apk)) {
 					Assert.IsTrue (zip.ContainsEntry ("assets/foo/bar.txt"), "bar.txt should exist in apk!");

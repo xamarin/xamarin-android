@@ -42,6 +42,8 @@ namespace Xamarin.Android.Tasks
 
 		public string ExtraArgs { get; set; }
 
+		public bool GenerateUniversalApkSet { get; set; } = false;
+
 		public override bool RunTask ()
 		{
 			//NOTE: bundletool will not overwrite
@@ -69,11 +71,15 @@ namespace Xamarin.Android.Tasks
 			var aapt2 = string.IsNullOrEmpty (Aapt2ToolExe) ? Aapt2ToolName : Aapt2ToolExe;
 			var cmd   = base.GetCommandLineBuilder ();
 			cmd.AppendSwitch ("build-apks");
-			cmd.AppendSwitch ("--connected-device");
+			if (GenerateUniversalApkSet) {
+				cmd.AppendSwitchIfNotNull ("--mode ", "universal");
+			} else {
+				cmd.AppendSwitch ("--connected-device");
+				cmd.AppendSwitchIfNotNull ("--mode ", "default");
+				AppendAdbOptions (cmd);
+			}
 			cmd.AppendSwitchIfNotNull ("--bundle ", AppBundle);
 			cmd.AppendSwitchIfNotNull ("--output ", Output);
-			cmd.AppendSwitchIfNotNull ("--mode ", "default");
-			AppendAdbOptions (cmd);
 			cmd.AppendSwitchIfNotNull ("--aapt2 ", Path.Combine (Aapt2ToolPath, aapt2));
 			cmd.AppendSwitchIfNotNull ("--ks ", KeyStore);
 			cmd.AppendSwitchIfNotNull ("--ks-key-alias ", KeyAlias);

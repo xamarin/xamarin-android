@@ -172,8 +172,8 @@ Added in Xamarin.Android 10.2.
 ## AndroidBoundInterfacesContainConstants
 
 A boolean property that
-determines whether binding constants on interfaces will be supported, 
-or the workaround of creating an `IMyInterfaceConsts` class 
+determines whether binding constants on interfaces will be supported,
+or the workaround of creating an `IMyInterfaceConsts` class
 will be used.
 
 Defaults to `True` in .NET 6 and `False` for legacy.
@@ -181,8 +181,8 @@ Defaults to `True` in .NET 6 and `False` for legacy.
 ## AndroidBoundInterfacesContainStaticAndDefaultInterfaceMethods
 
 A boolean property that
-whether default and static members on interfaces will be supported, 
-or  old workaround of creating a sibling class containing static 
+whether default and static members on interfaces will be supported,
+or  old workaround of creating a sibling class containing static
 members like `abstract class MyInterface`.
 
 Defaults to `True` in .NET 6 and `False` for legacy.
@@ -190,7 +190,7 @@ Defaults to `True` in .NET 6 and `False` for legacy.
 ## AndroidBoundInterfacesContainTypes
 
 A boolean property that
-whether types nested in interfaces will be supported, or the workaround 
+whether types nested in interfaces will be supported, or the workaround
 of creating a non-nested type like `IMyInterfaceMyNestedClass`.
 
 Defaults to `True` in .NET 6 and `False` for legacy.
@@ -907,6 +907,43 @@ properties are set, which are required for Android App Bundles:
 
 [apk]: https://en.wikipedia.org/wiki/Android_application_package
 [bundle]: https://developer.android.com/platform/technology/app-bundle
+
+This property will be deprecated for .net 6. Users should switch over to
+the newer [`AndroidPackageFormats`](~/android/deploy-test/building-apps/build-properties.md#androidpackageformats).
+
+## AndroidPackageFormats
+
+A semi-colon delimited property with valid values of `apk` and `aab`.
+This indicates if you want to package the Android application as
+an [APK file][apk] or [Android App Bundle][bundle]. App Bundles
+are a new format for `Release` builds that are intended for
+submission on Google Play.
+
+When building a Release build you might want to generate both
+and `aab` and an `apk` for distribution to various stores.
+
+Setting `AndroidPackageFormats` to `aab;apk` will result in both
+being generated. Setting `AndroidPackageFormats` to either `aab`
+or `apk` will generate only one file.
+
+For .net 6 `AndroidPackageFormats` will be set to `aab;apk` for
+`Release` builds only. It is recommended that you continue to use
+just `apk` for debugging.
+
+For Legacy Xamarin.Android this value currently defaults to ``.
+As a result Legacy Xamarin.Android will NOT by default produce
+both as part of a release build. If a user wants to produce both
+outputs they will need to define the following in their `Release`
+configuration.
+
+```
+<AndroidPackageFormats>aab;apk</AndroidPackageFormats>
+```
+
+You will also need to remove the existing `AndroidPackageFormat` for
+that configuration if you have it.
+
+Added in Xamarin.Android 11.5.
 
 ## AndroidPackageNamingPolicy
 

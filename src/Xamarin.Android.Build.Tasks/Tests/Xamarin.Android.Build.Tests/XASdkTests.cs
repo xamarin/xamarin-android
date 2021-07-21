@@ -162,8 +162,8 @@ namespace Xamarin.Android.Build.Tests
 			var appBuilder = CreateDotNetBuilder (appA, Path.Combine (path, appA.ProjectName));
 			Assert.IsTrue (appBuilder.Build (), $"{appA.ProjectName} should succeed");
 
-			// Check .apk for assets, res, and native libraries
-			var apkPath = Path.Combine (FullProjectDirectory, appA.OutputPath, $"{appA.PackageName}.apk");
+			// Check .apk/.aab for assets, res, and native libraries
+			var apkPath = Path.Combine (FullProjectDirectory, appA.OutputPath, $"{appA.PackageName}-Signed.apk");
 			FileAssert.Exists (apkPath);
 			using (var apk = ZipHelper.OpenZip (apkPath)) {
 				apk.AssertContainsEntry (apkPath, "assets/foo/foo.txt");
@@ -419,15 +419,30 @@ namespace Xamarin.Android.Build.Tests
 				.Select (Path.GetFileName)
 				.OrderBy (f => f)
 				.ToArray ();
-			var expectedFiles = new[]{
-				$"{proj.PackageName}.apk",
-				$"{proj.PackageName}-Signed.apk",
-				"es",
-				$"{proj.ProjectName}.dll",
-				$"{proj.ProjectName}.pdb",
-				$"{proj.ProjectName}.runtimeconfig.json",
-				$"{proj.ProjectName}.xml",
-			};
+			string[] expectedFiles;
+			if (isRelease) {
+				expectedFiles = new string[] {
+					$"{proj.PackageName}.aab",
+					$"{proj.PackageName}-Signed.aab",
+					$"{proj.PackageName}-Signed.apk",
+					"es",
+					$"{proj.ProjectName}.dll",
+					$"{proj.ProjectName}.pdb",
+					$"{proj.ProjectName}.runtimeconfig.json",
+					$"{proj.ProjectName}.xml",
+				};
+			} else {
+				expectedFiles = new string[] {
+					$"{proj.PackageName}-Signed.apk",
+					$"{proj.PackageName}.apk",
+					"es",
+					$"{proj.ProjectName}.dll",
+					$"{proj.ProjectName}.pdb",
+					$"{proj.ProjectName}.runtimeconfig.json",
+					$"{proj.ProjectName}.xml",
+				};
+			}
+
 			CollectionAssert.AreEqual (expectedFiles, files, $"Expected: {string.Join (";", expectedFiles)}\n   Found: {string.Join (";", files)}");
 
 			var assemblyPath = Path.Combine (outputPath, $"{proj.ProjectName}.dll");
@@ -449,7 +464,7 @@ namespace Xamarin.Android.Build.Tests
 			}
 
 			bool expectEmbeddedAssembies = !(CommercialBuildAvailable && !isRelease);
-			var apkPath = Path.Combine (outputPath, $"{proj.PackageName}.apk");
+			var apkPath = Path.Combine (outputPath, $"{proj.PackageName}-Signed.apk");
 			FileAssert.Exists (apkPath);
 			using (var apk = ZipHelper.OpenZip (apkPath)) {
 				apk.AssertContainsEntry (apkPath, $"assemblies/{proj.ProjectName}.dll", shouldContainEntry: expectEmbeddedAssembies);
@@ -491,8 +506,9 @@ namespace Xamarin.Android.Build.Tests
 			Assert.IsTrue (dotnet.Publish (), "first `dotnet publish` should succeed");
 
 			var publishDirectory = Path.Combine (FullProjectDirectory, proj.OutputPath, runtimeIdentifier, "publish");
-			var apk = Path.Combine (publishDirectory, $"{proj.PackageName}.apk");
-			var apkSigned = Path.Combine (publishDirectory, $"{proj.PackageName}-Signed.apk");
+			string ext = isRelease ? "aab" : "apk";
+			var apk = Path.Combine (publishDirectory, $"{proj.PackageName}.{ext}");
+			var apkSigned = Path.Combine (publishDirectory, $"{proj.PackageName}-Signed.{ext}");
 			FileAssert.Exists (apk);
 			FileAssert.Exists (apkSigned);
 
@@ -500,7 +516,11 @@ namespace Xamarin.Android.Build.Tests
 			var aab = Path.Combine (publishDirectory, $"{proj.PackageName}.aab");
 			var aabSigned = Path.Combine (publishDirectory, $"{proj.PackageName}-Signed.aab");
 			FileAssert.DoesNotExist (apk);
-			FileAssert.DoesNotExist (apkSigned);
+			if (isRelease) {
+				FileAssert.Exists (apkSigned);
+			} else {
+				FileAssert.DoesNotExist (apkSigned);
+			}
 			FileAssert.Exists (aab);
 			FileAssert.Exists (aabSigned);
 		}
@@ -533,7 +553,7 @@ namespace Xamarin.Android.Build.Tests
 
 			Assert.IsTrue (dotnet.Build (), "`dotnet build` should succeed");
 
-			var apkPath = Path.Combine (FullProjectDirectory, proj.OutputPath, $"{proj.PackageName}.apk");
+			var apkPath = Path.Combine (FullProjectDirectory, proj.OutputPath, $"{proj.PackageName}-Signed.apk");
 			FileAssert.Exists (apkPath);
 			using (var apk = ZipHelper.OpenZip (apkPath)) {
 				apk.AssertContainsEntry (apkPath, "res/raw/foo.txt");

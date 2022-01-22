@@ -463,6 +463,24 @@ In this message, the term "binding" means a piece of generated code that makes i
     <value>The 'AndroidEnableProguard' MSBuild property is set to 'true' and the 'AndroidLinkTool' MSBuild property is empty, so 'AndroidLinkTool' will default to 'proguard'.</value>
     <comment>The following are literal names and should not be translated: 'AndroidEnableProguard', 'true', 'AndroidLinkTool', 'proguard'</comment>
   </data>
+  <data name="XA1029" xml:space="preserve">
+    <value>'{0}' is included in the project under duplicate names, once as '{1}' and once as '{2}'. Remove one of the duplicates to resolve this warning.</value>
+    <comment>{0} - The actual name of the file
+{1} - The first alias name used for the file
+{2} - The second alias name used for the file</comment>
+  </data>
+  <data name="XA1030" xml:space="preserve">
+    <value>'{0}' conflicts with '{1}' because the file names only differ by file extension or capitalization. Please rename or remove one of the files.</value>
+    <comment>{0} - The name of the first file
+{1} - The name of the second file</comment>
+  </data>
+  <data name="XA1031" xml:space="preserve">
+    <value>'{0}' with name '{1}' conflicts with '{2}' with name '{3}' because the names are the same or only differ by file extension or capitalization. Please rename or remove one of the files.</value>
+    <comment>{0} - The actual name of the first file
+{1} - The alias name used for the first file
+{2} - The actual name of the second file
+{3} - The alias name used for the second file</comment>
+  </data>
   <data name="XA2000" xml:space="preserve">
     <value>Use of AppDomain.CreateDomain() detected in assembly: {0}. .NET 6 and higher will only support a single AppDomain, so this API will no longer be available in Xamarin.Android once .NET 6 is released.</value>
     <comment>The following are literal names and should not be translated: AppDomain.CreateDomain(), AppDomain

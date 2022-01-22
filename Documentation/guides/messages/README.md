@@ -124,6 +124,9 @@ or 'Help->Report a Problem' in Visual Studio for Mac.
 + [XA1025](xa1025.md): The experimental 'Hybrid' value for the 'AndroidAotMode' MSBuild property is not currently compatible with the armeabi-v7a target ABI.
 + [XA1027](xa1027.md): The 'EnableProguard' MSBuild property is set to 'true' and the 'AndroidLinkTool' MSBuild property is empty, so 'AndroidLinkTool' will default to 'proguard'.
 + [XA1028](xa1028.md): The 'AndroidEnableProguard' MSBuild property is set to 'true' and the 'AndroidLinkTool' MSBuild property is empty, so 'AndroidLinkTool' will default to 'proguard'.
++ [XA1029](xa1029.md): '{item}' is included in the project under duplicate names, once as '{name1}', and once as '{name2}'. Remove one of the duplicates to resolve this warning.
++ [XA1030](xa1030.md): '{resource1}' conflicts with '{resource2}' because the file names only differ by file extension or capitalization. Please rename or remove one of the files.
++ [XA1031](xa1031.md): '{item1}' with name '{name1}' conflicts with '{item2}' with name '{name2}' because the names are the same or only differ by file extension or capitalization. Please rename or remove one of the files.
 
 ## XA2xxx: Linker
 

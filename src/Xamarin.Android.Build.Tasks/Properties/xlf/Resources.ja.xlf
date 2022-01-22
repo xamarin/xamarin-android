@@ -69,12 +69,26 @@ The capitalized word "Portable" that appears earlier in the message is plain tex
         <target state="new">The 'AndroidEnableProguard' MSBuild property is set to 'true' and the 'AndroidLinkTool' MSBuild property is empty, so 'AndroidLinkTool' will default to 'proguard'.</target>
         <note>The following are literal names and should not be translated: 'AndroidEnableProguard', 'true', 'AndroidLinkTool', 'proguard'</note>
       </trans-unit>
-      <trans-unit id="XA4300">
-        <source>Native library '{0}' will not be bundled because it has an unsupported ABI. Move this file to a directory with a valid Android ABI name such as 'libs/armeabi-v7a/'.</source>
-        <target state="new">Native library '{0}' will not be bundled because it has an unsupported ABI. Move this file to a directory with a valid Android ABI name such as 'libs/armeabi-v7a/'.</target>
-        <note>In this message, the term "bundled" is a short way of saying "included into the final application package."
-The following are literal names and should not be translated: ABI, 'libs/armeabi-v7a/'
-{0} - The file path</note>
+      <trans-unit id="XA1029">
+        <source>'{0}' is included in the project under duplicate names, once as '{1}' and once as '{2}'. Remove one of the duplicates to resolve this warning.</source>
+        <target state="new">'{0}' is included in the project under duplicate names, once as '{1}' and once as '{2}'. Remove one of the duplicates to resolve this warning.</target>
+        <note>{0} - The actual name of the file
+{1} - The first alias name used for the file
+{2} - The second alias name used for the file</note>
+      </trans-unit>
+      <trans-unit id="XA1030">
+        <source>'{0}' conflicts with '{1}' because the file names only differ by file extension or capitalization. Please rename or remove one of the files.</source>
+        <target state="new">'{0}' conflicts with '{1}' because the file names only differ by file extension or capitalization. Please rename or remove one of the files.</target>
+        <note>{0} - The name of the first file
+{1} - The name of the second file</note>
+      </trans-unit>
+      <trans-unit id="XA1031">
+        <source>'{0}' with name '{1}' conflicts with '{2}' with name '{3}' because the names are the same or only differ by file extension or capitalization. Please rename or remove one of the files.</source>
+        <target state="new">'{0}' with name '{1}' conflicts with '{2}' with name '{3}' because the names are the same or only differ by file extension or capitalization. Please rename or remove one of the files.</target>
+        <note>{0} - The actual name of the first file
+{1} - The alias name used for the first file
+{2} - The actual name of the second file
+{3} - The alias name used for the second file</note>
       </trans-unit>
       <trans-unit id="XA4301_ABI_NuGet">
         <source>Cannot determine ABI of native library '{0}'. Remove the '{1}' NuGet package, or notify the library author.</source>
@@ -512,6 +526,13 @@ In this message, the term "binding" means a piece of generated code that makes i
         <target state="translated">参照されたアセンブリ {0} では、Java.Interop.DoNotPackageAttribute に Null 以外のファイル名が必要です。</target>
         <note>The following are literal names and should not be translated: Java.Interop.DoNotPackageAttribute
 {0} - The assembly name</note>
+      </trans-unit>
+      <trans-unit id="XA4300">
+        <source>Native library '{0}' will not be bundled because it has an unsupported ABI. Move this file to a directory with a valid Android ABI name such as 'libs/armeabi-v7a/'.</source>
+        <target state="new">Native library '{0}' will not be bundled because it has an unsupported ABI. Move this file to a directory with a valid Android ABI name such as 'libs/armeabi-v7a/'.</target>
+        <note>In this message, the term "bundled" is a short way of saying "included into the final application package."
+The following are literal names and should not be translated: ABI, 'libs/armeabi-v7a/'
+{0} - The file path</note>
       </trans-unit>
       <trans-unit id="XA3001">
         <source>Could not AOT the assembly: {0}</source>

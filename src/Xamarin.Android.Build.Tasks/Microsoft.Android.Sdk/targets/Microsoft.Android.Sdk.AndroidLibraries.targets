@@ -24,16 +24,21 @@ projects.
       <_AarSearchDirectory   Include="@(_ReferenceDependencyPaths->'%(RootDir)%(Directory)')" />
       <_AarDistinctDirectory Include="@(_AarSearchDirectory->Distinct())" />
       <_AarFromLibraries     Include="%(_AarDistinctDirectory.Identity)*.aar" />
+      <!--
+        We have to use the FullPath for the AndroidAarLibrary items as the previous step
+        produces items with a FullPath. @(AndroidAarLibrary) items are generally relative
+        so they never get excluded.
+      -->
+      <_AarFromLibraries     Remove="%(AndroidAarLibrary.FullPath)" />
     </ItemGroup>
-    <ItemGroup Condition=" '@(_AarFromLibraries->Count())' != '0' ">
+    <ItemGroup Condition=" '@(_AarFromLibraries->Distinct()->Count())' != '0' ">
       <!--
         NOTE:
         * set %(Pack) to false for located .aar files, we should not repackage into NuGets
         * %(AndroidSkipResourceProcessing) is required for located .aar's; there could be custom views.
       -->
       <AndroidAarLibrary
-          Include="@(_AarFromLibraries)"
-          Exclude="@(AndroidAarLibrary)"
+          Include="@(_AarFromLibraries->Distinct())"
           Pack="false"
           AndroidSkipResourceProcessing="false"
       />

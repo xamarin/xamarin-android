@@ -18,6 +18,9 @@ https://github.com/dotnet/designs/blob/4703666296f5e59964961464c25807c727282cae/
 
   <PropertyGroup>
     <_DefaultJavaSourceJarPattern>**\*-source.jar;**\*-sources.jar;**\*-src.jar</_DefaultJavaSourceJarPattern>
+    <!-- Ignore Resources and files in SubDirectories -->
+    <_DefaultLibraryItemExcludes Condition=" '$(Configuration)' == 'Debug' " >$(DefaultItemExcludes);**/bin/Release/**;**/obj/Release/**</_DefaultLibraryItemExcludes>
+    <_DefaultLibraryItemExcludes Condition=" '$(Configuration)' == 'Release' ">$(DefaultItemExcludes);**/bin/Debug/**;**/obj/Debug/**</_DefaultLibraryItemExcludes>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetPlatformIdentifier)' == 'android' and ('$(ImplicitUsings)' == 'true' or '$(ImplicitUsings)' == 'enable') ">
@@ -45,7 +48,7 @@ https://github.com/dotnet/designs/blob/4703666296f5e59964961464c25807c727282cae/
     <TransformFile Include="Transforms\**\*.xml" />
     <!-- Default Java or native libraries -->
     <AndroidLibrary       Include="**\*.jar" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder);$(_DefaultJavaSourceJarPattern)" />
-    <AndroidLibrary       Include="**\*.aar" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <AndroidLibrary       Include="**\*.aar" Exclude="$(_DefaultLibraryItemExcludes);$(DefaultExcludesInProjectFolder)" />
     <AndroidNativeLibrary Include="**\*.so"  Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     <JavaSourceJar        Include="$(_DefaultJavaSourceJarPattern)"   Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     <AndroidJavaSource    Include="**\*.java" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />

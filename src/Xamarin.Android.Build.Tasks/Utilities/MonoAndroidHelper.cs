@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Xamarin.Android.Tools;
@@ -493,6 +494,24 @@ namespace Xamarin.Android.Tasks
 			var head = string.Join ("\\", path.Split (DirectorySeparators).TakeWhile (s => !s.Equals (assetsDirectory, StringComparison.OrdinalIgnoreCase)));
 			path = head.Length == path.Length ? path : path.Substring ((head.Length == 0 ? 0 : head.Length + 1) + assetsDirectory.Length).TrimStart (DirectorySeparators);
 			return path;
+		}
+
+		/// <summary>
+		/// Returns the appropriate path for dotnet, pass in $(NetCoreRoot)
+		/// </summary>
+		public static string FindDotnet (string netCoreRoot)
+		{
+			if (Directory.Exists (netCoreRoot)) {
+				var dotnetPath = Path.Combine (netCoreRoot, (RuntimeInformation.IsOSPlatform (OSPlatform.Windows) ? "dotnet.exe" : "dotnet"));
+				if (File.Exists (dotnetPath))
+					return dotnetPath;
+			}
+
+			var dotnetHostPath = Environment.GetEnvironmentVariable ("DOTNET_HOST_PATH");
+			if (File.Exists (dotnetHostPath))
+				return dotnetHostPath;
+
+			return "dotnet";
 		}
 	}
 }

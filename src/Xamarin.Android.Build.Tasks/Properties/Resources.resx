@@ -303,6 +303,11 @@ The term "lock file" comes from NuGet. For example, search for "UnauthorizedLock
     <value>Disabling the interpreter; using the interpreter and AOT at the same time is not supported. Use the interpreter for hot reload support in Debug configurations and AOT for Release configurations.</value>
     <comment>The following are literal names and should not be translated: AOT, Debug, Release.</comment>
   </data>
+  <data name="XA0119_Target" xml:space="preserve">
+    <value>It is recommended to use the '{0}' target with Release builds.</value>
+    <comment>The following are literal names and should not be translated: Release
+{0} - The name of the MSBuild target, such as 'BuildAndStartProfiling'</comment>
+  </data>
   <data name="XA0121" xml:space="preserve">
     <value>Assembly '{0}' is using '[assembly: {1}]', which is no longer supported. Use a newer version of this NuGet package or notify the library author.</value>
     <comment>The following are literal names and should not be translated: [assembly: {1}], NuGet

@@ -154,6 +154,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Java.Runtime.Environment", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "create-android-api", "build-tools\create-android-api\create-android-api.csproj", "{BA4D889D-066B-4C2C-A973-09E319CBC396}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "console-ctrl", "src\console-ctrl\console-ctrl.csproj", "{01241541-7A39-4271-BFD8-C7A23E878DBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -416,6 +418,10 @@ Global
 		{BA4D889D-066B-4C2C-A973-09E319CBC396}.Debug|AnyCPU.Build.0 = Debug|Any CPU
 		{BA4D889D-066B-4C2C-A973-09E319CBC396}.Release|AnyCPU.ActiveCfg = Release|Any CPU
 		{BA4D889D-066B-4C2C-A973-09E319CBC396}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{01241541-7A39-4271-BFD8-C7A23E878DBC}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{01241541-7A39-4271-BFD8-C7A23E878DBC}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{01241541-7A39-4271-BFD8-C7A23E878DBC}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{01241541-7A39-4271-BFD8-C7A23E878DBC}.Release|AnyCPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

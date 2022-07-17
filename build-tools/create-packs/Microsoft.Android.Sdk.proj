@@ -54,6 +54,9 @@ core workload SDK packs imported by WorkloadManifest.targets.
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)generator.dll" PackagePath="tools" />
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)generator.pdb" PackagePath="tools" />
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)generator.runtimeconfig.json" PackagePath="tools" />
+      <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)console-ctrl.dll" Condition=" '$(HostOS)' == 'Windows' " PackagePath="tools" />
+      <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)console-ctrl.pdb" Condition=" '$(HostOS)' == 'Windows' " PackagePath="tools" />
+      <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)console-ctrl.runtimeconfig.json" Condition=" '$(HostOS)' == 'Windows' " PackagePath="tools" />
       <_PackageFiles Include="@(VersionFiles)" PackagePath="tools" />
       <_PackageFiles Include="$(XamarinAndroidSourcePath)src\Xamarin.Android.Build.Tasks\Microsoft.Android.Sdk\Sdk\**" PackagePath="Sdk" />
       <_PackageFiles Include="$(XamarinAndroidSourcePath)src\Microsoft.Android.Sdk.ILLink\PreserveLists\**" PackagePath="PreserveLists" />

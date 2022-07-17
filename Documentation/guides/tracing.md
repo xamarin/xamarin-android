@@ -1,6 +1,40 @@
-# Using a device connected via USB
+# `dotnet trace` support for Android
 
-## Startup profiling
+## .NET 7
+
+.NET 7 has new MSBuild targets to simplify `dotnet trace` usage.
+
+First, you'll need to install two .NET global tools:
+
+```
+$ dotnet tool install -g dotnet-trace
+$ dotnet tool install -g dotnet-dsrouter --add-source=https://aka.ms/dotnet-tools/index.json --prerelease
+```
+
+Then to profile a `Release` build on an arm64 Android device:
+
+```
+$ dotnet build -t:BuildAndStartTracing -c Release -r android-arm64
+```
+
+If you would like `.speedscope` output instead of `.nettrace`, you can
+use `-p:TraceFormat=speedscope`. This corresponds to the `--format`
+flag of `dotnet trace`.
+
+After the app is launched, and you are ready to complete the trace, run:
+
+```
+$ dotnet build -t:FinishTracing
+```
+
+You should find the appropriate `.speedscope` or `.nettrace` files in
+the project directory.
+
+## .NET 6
+
+The new MSBuild targets do not exist in .NET 6, but you can achieve
+the same results manually.
+
 ### Set up reverse port forwarding:
 ```
 $ adb reverse tcp:9000 tcp:9001

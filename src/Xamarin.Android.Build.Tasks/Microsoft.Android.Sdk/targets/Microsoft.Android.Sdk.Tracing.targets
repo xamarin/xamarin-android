@@ -1,0 +1,86 @@
+<!--
+***********************************************************************************************
+Microsoft.Android.Sdk.Tracing.targets
+
+Targets to simplify usage of `dotnet-trace` and `dotnet-dsrouter` for
+Android projects.
+
+***********************************************************************************************
+-->
+<Project>
+
+  <UsingTask TaskName="Xamarin.Android.Tasks.StopTracing" AssemblyFile="$(_XamarinAndroidBuildTasksAssembly)" />
+
+  <PropertyGroup>
+    <AndroidTracingRemotePort Condition=" '$(AndroidTracingRemotePort)' == '' ">9000</AndroidTracingRemotePort>
+    <AndroidTracingHostPort Condition=" '$(AndroidTracingHostPort)' == '' ">9001</AndroidTracingHostPort>
+    <AndroidTracingTempPath Condition=" '$(AndroidTracingTempPath)' == '' ">/tmp/$(MSBuildProjectName)</AndroidTracingTempPath>
+    <!-- PID files use $(BaseIntermediateOutputPath) so you don't have to specify `-c Release -r android-arm64` with -t:FinishTracing -->
+    <_DotnetDSRouterPidFile>$(BaseIntermediateOutputPath)dotnet-dsrouter-pid.txt</_DotnetDSRouterPidFile>
+    <_DotnetTracePidFile>$(BaseIntermediateOutputPath)dotnet-trace-pid.txt</_DotnetTracePidFile>
+    <_BuildAndStartTracingDependsOnTargets>
+      _SetupTracing;
+      Build;
+      Install;
+      _SetupAdbForTracing;
+      _StartDotnetDSRouter;
+      _StartDotnetTrace;
+      StartAndroidActivity;
+    </_BuildAndStartTracingDependsOnTargets>
+  </PropertyGroup>
+
+  <Target Name="_SetupTracing">
+    <PropertyGroup>
+      <AndroidEnableProfiler>true</AndroidEnableProfiler>
+    </PropertyGroup>
+    <AndroidWarning
+        Code="XA0119"
+        ResourceName="XA0119_Target"
+        FormatArguments="BuildAndStartTracing"
+        Condition=" '$(Configuration)' != 'Release' "
+    />
+  </Target>
+
+  <Target Name="_SetupAdbForTracing">
+    <Exec Command="&quot;$(AdbToolPath)adb&quot; $(AdbTarget) reverse tcp:$(AndroidTracingRemotePort) tcp:$(AndroidTracingHostPort)" />
+    <Exec Command="&quot;$(AdbToolPath)adb&quot; $(AdbTarget) shell setprop debug.mono.profile '127.0.0.1:$(AndroidTracingRemotePort),suspend'" />
+    <!-- Just in case previously running -->
+    <StopTracing
+        DotnetDSRouterPidFile="$(_DotnetDSRouterPidFile)"
+        DotnetTracePidFile="$(_DotnetTracePidFile)"
+        KillDotnetTrace="true"
+    />
+  </Target>
+
+  <Target Name="_StartDotnetDSRouter">
+    <AsyncExec Command="&quot;$(DotnetDSRouterPath)dotnet-dsrouter&quot; client-server -tcps 127.0.0.1:$(AndroidTracingHostPort) -ipcc $(AndroidTracingTempPath) $(DotnetDSRouterExtraArgs) &gt; $(IntermediateOutputPath)dotnet-dsrouter-output.txt">
+      <Output TaskParameter="ProcessId" PropertyName="_DotnetDSRouterProcessId" />
+    </AsyncExec>
+    <WriteLinesToFile File="$(_DotnetDSRouterPidFile)" Lines="$(_DotnetDSRouterProcessId)" Overwrite="true" />
+  </Target>
+
+  <Target Name="_StartDotnetTrace">
+    <PropertyGroup>
+      <DotnetTraceExtraArgs Condition=" '$(TraceFormat)' != '' ">--format $(TraceFormat) $(DotnetTraceExtraArgs)</DotnetTraceExtraArgs>
+    </PropertyGroup>
+    <AsyncExec Command="&quot;$(DotnetTracePath)dotnet-trace&quot; collect --diagnostic-port $(AndroidTracingTempPath) $(DotnetTraceExtraArgs) &gt; $(IntermediateOutputPath)dotnet-trace-output.txt">
+      <Output TaskParameter="ProcessId" PropertyName="_DotnetTraceProcessId" />
+    </AsyncExec>
+    <WriteLinesToFile File="$(_DotnetTracePidFile)" Lines="$(_DotnetTraceProcessId)" Overwrite="true" />
+  </Target>
+
+  <Target Name="BuildAndStartTracing" DependsOnTargets="$(_BuildAndStartTracingDependsOnTargets)">
+    <Message Importance="High" Text="Tracing started. Run 'dotnet build -t:FinishTracing' to complete." />
+  </Target>
+
+  <Target Name="FinishTracing" DependsOnTargets="_ResolveMonoAndroidSdks">
+    <StopTracing
+        NetCoreRoot="$(NetCoreRoot)"
+        MonoAndroidToolsDirectory="$(MonoAndroidToolsDirectory)"
+        DotnetDSRouterPidFile="$(_DotnetDSRouterPidFile)"
+        DotnetTracePidFile="$(_DotnetTracePidFile)"
+    />
+    <Delete Files="$(_DotnetDSRouterPidFile);$(_DotnetTracePidFile)" />
+  </Target>
+
+</Project>

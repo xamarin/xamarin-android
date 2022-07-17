@@ -43,6 +43,12 @@ This error is likely caused by an issue with the AndroidManifest.xml file or an 
         <target state="new">Disabling the interpreter; using the interpreter and AOT at the same time is not supported. Use the interpreter for hot reload support in Debug configurations and AOT for Release configurations.</target>
         <note>The following are literal names and should not be translated: AOT, Debug, Release.</note>
       </trans-unit>
+      <trans-unit id="XA0119_Target">
+        <source>It is recommended to use the '{0}' target with Release builds.</source>
+        <target state="new">It is recommended to use the '{0}' target with Release builds.</target>
+        <note>The following are literal names and should not be translated: Release
+{0} - The name of the MSBuild target, such as 'BuildAndStartProfiling'</note>
+      </trans-unit>
       <trans-unit id="XA0125">
         <source>'{0}' is using a deprecated debug information level.
 Set the debugging information to Portable in the Visual Studio project property pages or edit the project file in a text editor and set the 'DebugType' MSBuild property to 'portable' to use the newer, cross-platform debug information level.

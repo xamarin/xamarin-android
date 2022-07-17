@@ -42,7 +42,7 @@ namespace Xamarin.Android.Tasks
 				ToolPath = null;
 				ToolExe = null;
 
-				Log.LogDebugMessage ($"Using: {FindDotnet ()} {AssemblyPath}");
+				Log.LogDebugMessage ($"Using: {MonoAndroidHelper.FindDotnet (NetCoreRoot)} {AssemblyPath}");
 			} else {
 				if (!RuntimeInformation.IsOSPlatform (OSPlatform.Windows) &&
 						!RuntimeInformation.FrameworkDescription.StartsWith ("Mono", StringComparison.OrdinalIgnoreCase)) {
@@ -75,25 +75,10 @@ namespace Xamarin.Android.Tasks
 		protected override string GenerateFullPathToTool ()
 		{
 			if (NeedsDotnet)
-				return FindDotnet ();
+				return MonoAndroidHelper.FindDotnet (NetCoreRoot);
 			if (NeedsMono)
 				return FindMono ();
 			return Path.Combine (ToolPath, ToolExe);
-		}
-
-		string FindDotnet ()
-		{
-			if (Directory.Exists (NetCoreRoot)) {
-				var dotnetPath = Path.Combine (NetCoreRoot, (RuntimeInformation.IsOSPlatform (OSPlatform.Windows) ? "dotnet.exe" : "dotnet"));
-				if (File.Exists (dotnetPath))
-					return dotnetPath;
-			}
-
-			var dotnetHostPath = Environment.GetEnvironmentVariable ("DOTNET_HOST_PATH");
-			if (File.Exists (dotnetHostPath))
-				return dotnetHostPath;
-
-			return "dotnet";
 		}
 
 		const RegisteredTaskObjectLifetime Lifetime = RegisteredTaskObjectLifetime.Build;

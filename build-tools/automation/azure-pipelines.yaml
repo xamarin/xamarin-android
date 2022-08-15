@@ -14,12 +14,12 @@ resources:
   - repository: yaml
     type: github
     name: xamarin/yaml-templates
-    ref: refs/heads/main
+    ref: refs/heads/multitarget-drops
     endpoint: xamarin
   - repository: sdk-insertions
     type: github
     name: xamarin/sdk-insertions
-    ref: refs/heads/main
+    ref: refs/heads/multitarget-drops
     endpoint: xamarin
   - repository: monodroid
     type: github
@@ -1441,7 +1441,7 @@ stages:
       usePipelineArtifactTasks: true
 
   # Check - "Xamarin.Android (Prepare .NET Release Convert NuGet to MSI)"
-  - template: nuget-msi-convert/job/v2.yml@yaml
+  - template: nuget-msi-convert/job/v3.yml@yaml
     parameters:
       yamlResourceName: yaml
       dependsOn: sign_net_mac_win
@@ -1450,8 +1450,6 @@ stages:
         !*Darwin*
       propsArtifactName: $(NuGetArtifactName)
       signType: $(MicroBuildSignType)
-      runInParallel: false
-      useDateTimeVersion: true
       postConvertSteps:
       - task: DownloadPipelineArtifact@2
         inputs:
@@ -1530,6 +1528,20 @@ stages:
           inputs:
             artifactName: vsdrop-signed
             downloadPath: $(Build.StagingDirectory)\$(VSDropCommitStatusName)
+
+    - template: templates\common\upload-vs-insertion-artifacts.yml@sdk-insertions
+      parameters:
+        githubToken: $(GitHub.Token)
+        githubContext: $(MultiTargetVSDropCommitStatusName)
+        blobName: $(MultiTargetVSDropCommitStatusName)
+        packagePrefix: xamarin-android
+        artifactsPath: $(Build.StagingDirectory)\$(MultiTargetVSDropCommitStatusName)
+        yamlResourceName: yaml
+        downloadSteps:
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifactName: vsdrop-multitarget-signed
+            downloadPath: $(Build.StagingDirectory)\$(MultiTargetVSDropCommitStatusName)
 
     - powershell: >-
         & dotnet build -v:n -c $(XA.Build.Configuration)

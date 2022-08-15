@@ -1,8 +1,8 @@
 <Project>
   <ImportGroup Condition=" '$(TargetPlatformIdentifier)' == 'android' ">
-    <Import Project="Sdk.targets" Sdk="Microsoft.Android.Sdk"
+    <Import Project="Sdk.targets" Sdk="Microsoft.Android.Sdk.net7"
         Condition=" $([MSBuild]::VersionEquals($(TargetFrameworkVersion), '7.0')) " />
-    <Import Project="Sdk.targets" Sdk="Microsoft.Android.Sdk.NET6"
+    <Import Project="Sdk.targets" Sdk="Microsoft.Android.Sdk.net6"
         Condition=" $([MSBuild]::VersionEquals($(TargetFrameworkVersion), '6.0')) " />
   </ImportGroup>
 

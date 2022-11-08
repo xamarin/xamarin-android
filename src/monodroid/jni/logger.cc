@@ -1,9 +1,10 @@
-#include <stdlib.h>
-#include <stdarg.h>
+#include <array>
+#include <cstdlib>
+#include <cstdarg>
 #include <strings.h>
-#include <string.h>
+#include <cstring>
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -15,7 +16,7 @@
 #include "monodroid-glue.hh"
 #include "debug.hh"
 #include "util.hh"
-#include "globals.hh"
+#include "strings.hh"
 
 #undef DO_LOG
 #define DO_LOG(_level_,_category_,_format_,_args_)						                        \
@@ -27,7 +28,7 @@ using namespace xamarin::android;
 using namespace xamarin::android::internal;
 
 // Must match the same ordering as LogCategories
-static const char* log_names[] = {
+static constexpr const char* const log_names[] = {
 	"*none*",
 	"monodroid",
 	"monodroid-assembly",
@@ -49,7 +50,10 @@ static const char* log_names[] = {
 #endif
 
 // ffs(value) returns index of lowest bit set in `value`
-#define CATEGORY_NAME(value) (value == 0 ? log_names [0] : log_names [ffs (value)])
+force_inline static const char* CATEGORY_NAME (LogCategories value) noexcept
+{
+	return value == 0 ? log_names [0] : log_names [ffs (value)];
+}
 
 #ifndef ANDROID
 static void
@@ -75,27 +79,27 @@ int gc_spew_enabled;
 static FILE*
 open_file (LogCategories category, const char *path, const char *override_dir, const char *filename)
 {
-	char *p = NULL;
+	char *p = nullptr;
 	FILE *f;
 
 	if (path && access (path, W_OK) < 0) {
 		log_warn (category, "Could not open path '%s' for logging (\"%s\"). Using '%s/%s' instead.",
 				path, strerror (errno), override_dir, filename);
-		path  = NULL;
+		path  = nullptr;
 	}
 
 	if (!path) {
-		utils.create_public_directory (override_dir);
-		p     = utils.path_combine (override_dir, filename);
+		Util::create_public_directory (override_dir);
+		p     = Util::path_combine (override_dir, filename);
 		path  = p;
 	}
 
 	unlink (path);
 
-	f = utils.monodroid_fopen (path, "a");
+	f = Util::monodroid_fopen (path, "a");
 
 	if (f) {
-		utils.set_world_accessable (path);
+		Util::set_world_accessable (path);
 	} else {
 		log_warn (category, "Could not open path '%s' for logging: %s",
 				path, strerror (errno));
@@ -151,12 +155,12 @@ init_logging_categories (char*& mono_log_mask, char*& mono_log_level)
 	mono_log_level = nullptr;
 
 #if !ANDROID
-	log_categories = LOG_DEFAULT;
+	log_categories = LOG_DEFAULT | LOG_ASSEMBLY;
 #endif
 	log_timing_categories = LOG_TIMING_DEFAULT;
 
 	dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN> value;
-	if (androidSystem.monodroid_get_system_property (Debug::DEBUG_MONO_LOG_PROPERTY, value) == 0)
+	if (AndroidSystem::monodroid_get_system_property (Debug::DEBUG_MONO_LOG_PROPERTY, value) == 0)
 		return;
 
 	string_segment param;
@@ -212,7 +216,7 @@ init_logging_categories (char*& mono_log_mask, char*& mono_log_level)
 		constexpr char CAT_GREF_EQUALS[] = "gref=";
 		constexpr size_t CAT_GREF_EQUALS_LEN = sizeof(CAT_GREF_EQUALS) - 1;
 		if (set_category (CAT_GREF_EQUALS, param, LOG_GREF, true /* arg_starts_with_name */)) {
-			gref_file = utils.strdup_new (param, CAT_GREF_EQUALS_LEN);
+			gref_file = Util::strdup_new (param, CAT_GREF_EQUALS_LEN);
 			continue;
 		}
 
@@ -229,7 +233,7 @@ init_logging_categories (char*& mono_log_mask, char*& mono_log_level)
 		constexpr char CAT_LREF_EQUALS[] = "lref=";
 		constexpr size_t CAT_LREF_EQUALS_LEN = sizeof(CAT_LREF_EQUALS) - 1;
 		if (set_category (CAT_LREF_EQUALS, param, LOG_LREF, true /* arg_starts_with_name */)) {
-			lref_file = utils.strdup_new (param, CAT_LREF_EQUALS_LEN);
+			lref_file = Util::strdup_new (param, CAT_LREF_EQUALS_LEN);
 			continue;
 		}
 
@@ -258,14 +262,14 @@ init_logging_categories (char*& mono_log_mask, char*& mono_log_level)
 		constexpr char MONO_LOG_MASK_ARG[] = "mono_log_mask=";
 		constexpr size_t MONO_LOG_MASK_ARG_LEN = sizeof(MONO_LOG_MASK_ARG) - 1;
 		if (param.starts_with (MONO_LOG_MASK_ARG)) {
-			mono_log_mask = utils.strdup_new (param, MONO_LOG_MASK_ARG_LEN);
+			mono_log_mask = Util::strdup_new (param, MONO_LOG_MASK_ARG_LEN);
 			continue;
 		}
 
 		constexpr char MONO_LOG_LEVEL_ARG[] = "mono_log_level=";
 		constexpr size_t MONO_LOG_LEVEL_ARG_LEN = sizeof(MONO_LOG_LEVEL_ARG) - 1;
 		if (param.starts_with (MONO_LOG_LEVEL_ARG)) {
-			mono_log_level = utils.strdup_new (param, MONO_LOG_LEVEL_ARG_LEN);
+			mono_log_level = Util::strdup_new (param, MONO_LOG_LEVEL_ARG_LEN);
 			continue;
 		}
 
@@ -275,7 +279,7 @@ init_logging_categories (char*& mono_log_mask, char*& mono_log_level)
 		if (param.starts_with (DEBUGGER_LOG_LEVEL)) {
 			dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN> level;
 			level.assign (param.start () + DEBUGGER_LOG_LEVEL_LEN, param.length () - DEBUGGER_LOG_LEVEL_LEN);
-			debug.set_debugger_log_level (level.get ());
+			Debug::set_debugger_log_level (level.get ());
 		}
 #endif
 	}
@@ -352,7 +356,7 @@ static constexpr size_t loglevel_map_max_index = (sizeof(loglevel_map) / sizeof(
 void
 log_write (LogCategories category, LogLevel level, const char *message) noexcept
 {
-	size_t map_index = static_cast<size_t>(level);
+	auto map_index = static_cast<size_t>(level);
 	android_LogPriority priority;
 
 	if (map_index > loglevel_map_max_index) {
@@ -362,4 +366,41 @@ log_write (LogCategories category, LogLevel level, const char *message) noexcept
 	}
 
 	__android_log_write (priority, CATEGORY_NAME (category), message);
+}
+
+void
+Log::init () noexcept
+{
+	const char *envvar = getenv (LOG_LEVEL_ENVVAR);
+	if (envvar == nullptr) {
+		return;
+	}
+
+	dynamic_local_string<SharedConstants::SENSIBLE_LOG_LEVEL_ENVVAR_SIZE> level;
+	level.assign_c (envvar);
+
+	// TODO: switch to https://github.com/Neargye/magic_enum in a separate PR
+	constexpr char LEVEL_VERBOSE[] = "verbose";
+	constexpr char LEVEL_DEBUG[] = "debug";
+	constexpr char LEVEL_INFO[] = "info";
+	constexpr char LEVEL_WARN[] = "warn";
+	constexpr char LEVEL_ERROR[] = "error";
+	constexpr char LEVEL_FATAL[] = "fatal";
+	constexpr char LEVEL_SILENT[] = "silent";
+
+	if (level.equals (LEVEL_VERBOSE)) {
+		_log_level = LogLevel::Verbose;
+	} else if (level.equals (LEVEL_DEBUG)) {
+		_log_level = LogLevel::Debug;
+	} else if (level.equals (LEVEL_INFO)) {
+		_log_level = LogLevel::Info;
+	} else if (level.equals (LEVEL_WARN)) {
+		_log_level = LogLevel::Warn;
+	} else if (level.equals (LEVEL_ERROR)) {
+		_log_level = LogLevel::Error;
+	} else if (level.equals (LEVEL_FATAL)) {
+		_log_level = LogLevel::Fatal;
+	} else if (level.equals (LEVEL_SILENT)) {
+		_log_level = LogLevel::Silent;
+	}
 }

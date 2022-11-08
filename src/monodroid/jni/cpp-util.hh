@@ -37,11 +37,27 @@ do_abort_unless (const char* fmt, ...)
 
 #define abort_unless(_condition_, _fmt_, ...) \
 	if (XA_UNLIKELY (!(_condition_))) { \
-		do_abort_unless ("%s:%d (%s): " _fmt_, __FILE__, __LINE__, __FUNCTION__, ## __VA_ARGS__); \
+		do_abort_unless ("%s:%d (%s): " _fmt_, __FILE__, __LINE__, static_cast<const char*>(__FUNCTION__), ## __VA_ARGS__); \
 	}
 
 #define abort_if_invalid_pointer_argument(_ptr_) abort_unless ((_ptr_) != nullptr, "Parameter '%s' must be a valid pointer", #_ptr_)
 #define abort_if_negative_integer_argument(_arg_) abort_unless ((_arg_) > 0, "Parameter '%s' must be larger than 0", #_arg_)
+
+#if defined (__GNUC__) && !defined (__clang__)
+
+// g++ gets confused about the various timing `*_index` variables being uninitialized, it's analyzer isn't good enough
+// to see that we  initialize them when the `if` condition is the same as used here. In theory the diagnostic is correct
+// as the value returned from `FastTiming::enabled ()` can change between the call above and the one below, but even if
+// we cache result of the first call above in a variable, the warnning is still issued.
+#define DEAR_GCC_THIS_VARIABLE_IS_INITIALIZED_START \
+	_Pragma ("GCC diagnostic push") \
+	_Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+
+#define DEAR_GCC_THIS_VARIABLE_IS_INITIALIZED_END _Pragma ("GCC diagnostic pop")
+#else
+#define DEAR_GCC_THIS_VARIABLE_IS_INITIALIZED_START
+#define DEAR_GCC_THIS_VARIABLE_IS_INITIALIZED_END
+#endif
 
 namespace xamarin::android
 {

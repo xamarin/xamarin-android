@@ -12,10 +12,13 @@
 #include "cpp-util.hh"
 #include "cpu-arch.hh"
 
+using namespace xamarin::android::internal;
+
 #if __ANDROID__
-#define BUF_SIZE 512
 
 #if __arm__
+constexpr size_t BUF_SIZE = 512;
+
 static int
 find_in_maps (const char *str)
 {
@@ -43,85 +46,6 @@ detect_houdini ()
 }
 #endif
 #endif // __ANDROID__
-
-static unsigned char
-is_64_bit ()
-{
-	return sizeof (char*) == 8;
-}
-
-static int
-get_built_for_cpu_windows ([[maybe_unused]] unsigned short *built_for_cpu)
-{
-#if _WIN32
-#if _M_AMD64 || _M_X64
-	*built_for_cpu = CPU_KIND_X86_64;
-#elif _M_IX86
-	*built_for_cpu = CPU_KIND_X86;
-#elif _M_ARM
-	*built_for_cpu = CPU_KIND_ARM;
-#else
-	*built_for_cpu = CPU_KIND_UNKNOWN;
-#endif
-	return 1;
-#else
-	return 0;
-#endif
-}
-
-static int
-get_built_for_cpu_apple ([[maybe_unused]] unsigned short *built_for_cpu)
-{
-#if __APPLE__
-#if __x86_64__
-	*built_for_cpu = CPU_KIND_X86_64;
-#elif __i386__
-	*built_for_cpu = CPU_KIND_X86;
-#else
-	*built_for_cpu = CPU_KIND_UNKNOWN;
-#endif
-	return 1;
-#else
-	return 0;
-#endif
-}
-
-static int
-get_built_for_cpu_android ([[maybe_unused]] unsigned short *built_for_cpu)
-{
-	int retval = 1;
-
-#if __arm__
-	*built_for_cpu = CPU_KIND_ARM;
-#elif __aarch64__
-	*built_for_cpu = CPU_KIND_ARM64;
-#elif __x86_64__
-	*built_for_cpu = CPU_KIND_X86_64;
-#elif __i386__
-	*built_for_cpu = CPU_KIND_X86;
-#elif __mips__
-	*built_for_cpu = CPU_KIND_MIPS;
-#else
-	retval = 0;
-#endif
-
-	return retval;
-}
-
-static void
-get_built_for_cpu (unsigned short *built_for_cpu)
-{
-	if (get_built_for_cpu_windows (built_for_cpu))
-		return;
-
-	if (get_built_for_cpu_apple (built_for_cpu))
-		return;
-
-	if (get_built_for_cpu_android (built_for_cpu))
-		return;
-
-	*built_for_cpu = CPU_KIND_UNKNOWN;
-}
 
 static int
 get_running_on_cpu_windows ([[maybe_unused]] unsigned short *running_on_cpu)
@@ -183,10 +107,10 @@ get_running_on_cpu_apple ([[maybe_unused]] unsigned short *running_on_cpu)
 #endif
 }
 
-static int
+static bool
 get_running_on_cpu_android ([[maybe_unused]] unsigned short *running_on_cpu)
 {
-	int retval = 1;
+	bool retval = true;
 
 #if __arm__
 	if (!detect_houdini ()) {
@@ -200,39 +124,45 @@ get_running_on_cpu_android ([[maybe_unused]] unsigned short *running_on_cpu)
 #elif __x86_64__
 	*running_on_cpu = CPU_KIND_X86_64;
 #elif __i386__
-	*running_on_cpu = is_64_bit () ? CPU_KIND_X86_64 : CPU_KIND_X86;
+	*running_on_cpu = BuiltForCpu::is_64_bit () ? CPU_KIND_X86_64 : CPU_KIND_X86;
 #elif __mips__
 	*running_on_cpu = CPU_KIND_MIPS;
 #else
-	retval = 0;
+	retval = false;
 #endif
 
-	return retval = 1;
+	return retval;
 }
 
 static void
 get_running_on_cpu (unsigned short *running_on_cpu)
 {
+	if (get_running_on_cpu_android (running_on_cpu))
+		return;
+
 	if (get_running_on_cpu_windows (running_on_cpu))
 		return;
 
 	if (get_running_on_cpu_apple (running_on_cpu))
 		return;
 
-	if (get_running_on_cpu_android (running_on_cpu))
-		return;
-
 	*running_on_cpu = CPU_KIND_UNKNOWN;
+}
+
+void
+_monodroid_detect_running_cpu (unsigned short *running_on_cpu)
+{
+	abort_if_invalid_pointer_argument (running_on_cpu);
+	get_running_on_cpu (running_on_cpu);
 }
 
 void
 _monodroid_detect_cpu_and_architecture (unsigned short *built_for_cpu, unsigned short *running_on_cpu, unsigned char *is64bit)
 {
 	abort_if_invalid_pointer_argument (built_for_cpu);
-	abort_if_invalid_pointer_argument (running_on_cpu);
 	abort_if_invalid_pointer_argument (is64bit);
 
-	*is64bit = is_64_bit ();
-	get_built_for_cpu (built_for_cpu);
-	get_running_on_cpu (running_on_cpu);
+	_monodroid_detect_running_cpu (running_on_cpu);
+	*built_for_cpu = BuiltForCpu::cpu ();
+	*is64bit = BuiltForCpu::is_64_bit ();
 }

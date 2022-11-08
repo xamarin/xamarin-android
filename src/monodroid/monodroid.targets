@@ -273,6 +273,13 @@
   <Target Name="_GetCompileCommandsDirs"
           DependsOnTargets="_BuildHostRuntimes;_BuildAndroidRuntimes">
     <ItemGroup>
+      <_CompileCommandsDir Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Debug">
+        <LogTag>%(AndroidSupportedTargetJitAbi.AndroidRID)-Debug</LogTag>
+      </_CompileCommandsDir>
+      <_CompileCommandsDir Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Release">
+        <LogTag>%(AndroidSupportedTargetJitAbi.AndroidRID)-Release</LogTag>
+      </_CompileCommandsDir>
+
       <_CompileCommandsDir Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-Debug">
         <LogTag>%(AndroidSupportedTargetJitAbi.Identity)-Debug</LogTag>
       </_CompileCommandsDir>
@@ -297,10 +304,17 @@
       <ClangTidy>$(AndroidNdkDirectory)\toolchains\llvm\prebuilt\$(NdkLlvmTag)\bin\clang-tidy</ClangTidy>
     </PropertyGroup>
 
+    <ItemGroup>
+      <_CppSources Include="jni\*.cc" />
+      <_CppSources Remove="jni\generate-pinvoke-tables.cc" />
+      <_CppSources Remove="jni\application_dso_stub.cc" />
+      <_CppSources Remove="jni\xamarin-app-marshaling.cc" />
+    </ItemGroup>
+
     <Exec
         ContinueOnError="ErrorAndContinue"
-        Command="$(ClangTidy) -p $(MSBuildThisFileDirectory)%(_CompileCommandsDir.Identity) *.cc > ..\..\..\bin\Build$(Configuration)\clang-tidy.%(_CompileCommandsDir.LogTag).log"
-        WorkingDirectory="$(MSBuildThisFileDirectory)\jni"
+        Command="$(ClangTidy) --config-file=$(MSBuildThisFileDirectory)\clang-tidy.yaml -p $(MSBuildThisFileDirectory)%(_CompileCommandsDir.Identity) @(_CppSources, ' ') > ..\..\bin\Build$(Configuration)\clang-tidy.%(_CompileCommandsDir.LogTag).log"
+        WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
   </Target>
 

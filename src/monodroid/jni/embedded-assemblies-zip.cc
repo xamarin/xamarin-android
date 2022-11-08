@@ -9,7 +9,7 @@
 
 #include "embedded-assemblies.hh"
 #include "cpp-util.hh"
-#include "globals.hh"
+#include "util.hh"
 #include "xamarin-app.hh"
 
 using namespace xamarin::android::internal;
@@ -28,9 +28,9 @@ using read_count_type = size_t;
 force_inline bool
 EmbeddedAssemblies::is_debug_file (dynamic_local_string<SENSIBLE_PATH_MAX> const& name) noexcept
 {
-	return utils.ends_with (name, ".pdb")
+	return Util::ends_with (name, ".pdb")
 #if !defined (NET)
-		|| utils.ends_with (name, ".mdb")
+		|| Util::ends_with (name, ".mdb")
 #endif
 		;
 }
@@ -47,12 +47,12 @@ EmbeddedAssemblies::zip_load_entry_common (size_t entry_index, std::vector<uint8
 #endif
 	if (!result || entry_name.empty ()) {
 		log_fatal (LOG_ASSEMBLY, "Failed to read Central Directory info for entry %u in APK file %s", entry_index, state.apk_name);
-		exit (FATAL_EXIT_NO_ASSEMBLIES);
+		abort ();
 	}
 
 	if (!zip_adjust_data_offset (state.apk_fd, state)) {
 		log_fatal (LOG_ASSEMBLY, "Failed to adjust data start offset for entry %u in APK file %s", entry_index, state.apk_name);
-		exit (FATAL_EXIT_NO_ASSEMBLIES);
+		abort ();
 	}
 #ifdef DEBUG
 	log_info (LOG_ASSEMBLY, "    ZIP: local header offset: %u; data offset: %u; file size: %u", state.local_header_offset, state.data_offset, state.file_size);
@@ -67,7 +67,7 @@ EmbeddedAssemblies::zip_load_entry_common (size_t entry_index, std::vector<uint8
 
 #if defined (NET)
 	if (application_config.have_runtime_config_blob && !runtime_config_blob_found) {
-		if (utils.ends_with (entry_name, SharedConstants::RUNTIME_CONFIG_BLOB_NAME)) {
+		if (Util::ends_with (entry_name, SharedConstants::RUNTIME_CONFIG_BLOB_NAME)) {
 			runtime_config_blob_found = true;
 			runtime_config_blob_mmap = md_mmap_apk_file (state.apk_fd, state.data_offset, state.file_size, entry_name.get ());
 			return false;
@@ -79,7 +79,7 @@ EmbeddedAssemblies::zip_load_entry_common (size_t entry_index, std::vector<uint8
 	if ((state.data_offset & 0x3) != 0) {
 		log_fatal (LOG_ASSEMBLY, "Assembly '%s' is located at bad offset %lu within the .apk\n", entry_name.get (), state.data_offset);
 		log_fatal (LOG_ASSEMBLY, "You MUST run `zipalign` on %s\n", strrchr (state.apk_name, '/') + 1);
-		exit (FATAL_EXIT_MISSING_ZIPALIGN);
+		abort ();
 	}
 
 	return true;
@@ -107,7 +107,7 @@ EmbeddedAssemblies::zip_load_individual_assembly_entries (std::vector<uint8_t> c
 		}
 
 #if defined (DEBUG)
-		const char *last_slash = utils.find_last (entry_name, '/');
+		const char *last_slash = Util::find_last (entry_name, '/');
 		bool entry_is_overridden = last_slash == nullptr ? false : !should_register (last_slash + 1);
 #else
 		constexpr bool entry_is_overridden = false;
@@ -115,7 +115,7 @@ EmbeddedAssemblies::zip_load_individual_assembly_entries (std::vector<uint8_t> c
 
 		if (register_debug_symbols && !entry_is_overridden && is_debug_file (entry_name)) {
 			if (bundled_debug_data == nullptr) {
-				bundled_debug_data = new std::vector<XamarinAndroidBundledAssembly> ();
+				bundled_debug_data = new bundled_assembly_vector ();
 				bundled_debug_data->reserve (application_config.number_of_assemblies_in_apk);
 			}
 
@@ -125,7 +125,7 @@ EmbeddedAssemblies::zip_load_individual_assembly_entries (std::vector<uint8_t> c
 		}
 
 #if !defined(NET)
-		if (utils.ends_with (entry_name, ".config")) {
+		if (Util::ends_with (entry_name, ".config")) {
 			char *assembly_name = strdup (basename (entry_name.get ()));
 			// Remove '.config' suffix
 			*strrchr (assembly_name, '.') = '\0';
@@ -137,7 +137,7 @@ EmbeddedAssemblies::zip_load_individual_assembly_entries (std::vector<uint8_t> c
 		}
 #endif // ndef NET
 
-		if (!utils.ends_with (entry_name, SharedConstants::DLL_EXTENSION))
+		if (!Util::ends_with (entry_name, SharedConstants::DLL_EXTENSION))
 			continue;
 
 #if defined (DEBUG)
@@ -151,7 +151,7 @@ EmbeddedAssemblies::zip_load_individual_assembly_entries (std::vector<uint8_t> c
 			}
 
 			if (extra_bundled_assemblies == nullptr) {
-				extra_bundled_assemblies = new std::vector<XamarinAndroidBundledAssembly> ();
+				extra_bundled_assemblies = new bundled_assembly_vector ();
 			}
 
 			extra_bundled_assemblies->emplace_back ();
@@ -244,7 +244,7 @@ EmbeddedAssemblies::zip_load_assembly_store_entries (std::vector<uint8_t> const&
 	bool common_assembly_store_found = false;
 	bool arch_assembly_store_found = false;
 
-	log_debug (LOG_ASSEMBLY, "Looking for assembly stores in APK (common: '%s'; arch-specific: '%s')", assembly_store_common_file_name.data (), assembly_store_arch_file_name.data ());
+	log_info (LOG_ASSEMBLY, "Looking for assembly stores in APK (common: '%s'; arch-specific: '%s')", assembly_store_common_file_name.data (), assembly_store_arch_file_name.data ());
 	for (size_t i = 0; i < num_entries; i++) {
 		if (all_required_zip_entries_found ()) {
 			need_to_scan_more_apks = false;
@@ -256,12 +256,12 @@ EmbeddedAssemblies::zip_load_assembly_store_entries (std::vector<uint8_t> const&
 			continue;
 		}
 
-		if (!common_assembly_store_found && utils.ends_with (entry_name, assembly_store_common_file_name)) {
+		if (!common_assembly_store_found && Util::ends_with (entry_name, assembly_store_common_file_name)) {
 			common_assembly_store_found = true;
 			map_assembly_store (entry_name, state);
 		}
 
-		if (!arch_assembly_store_found && utils.ends_with (entry_name, assembly_store_arch_file_name)) {
+		if (!arch_assembly_store_found && Util::ends_with (entry_name, assembly_store_arch_file_name)) {
 			arch_assembly_store_found = true;
 			map_assembly_store (entry_name, state);
 		}
@@ -269,7 +269,7 @@ EmbeddedAssemblies::zip_load_assembly_store_entries (std::vector<uint8_t> const&
 }
 
 void
-EmbeddedAssemblies::zip_load_entries (int fd, const char *apk_name, [[maybe_unused]] monodroid_should_register should_register)
+EmbeddedAssemblies::zip_load_entries (int fd, const char *apk_name, [[maybe_unused]] monodroid_should_register should_register) noexcept
 {
 	uint32_t cd_offset;
 	uint32_t cd_size;
@@ -277,17 +277,15 @@ EmbeddedAssemblies::zip_load_entries (int fd, const char *apk_name, [[maybe_unus
 
 	if (!zip_read_cd_info (fd, cd_offset, cd_size, cd_entries)) {
 		log_fatal (LOG_ASSEMBLY,  "Failed to read the EOCD record from APK file %s", apk_name);
-		exit (FATAL_EXIT_NO_ASSEMBLIES);
+		abort ();
 	}
-#ifdef DEBUG
-	log_info (LOG_ASSEMBLY, "Central directory offset: %u", cd_offset);
-	log_info (LOG_ASSEMBLY, "Central directory size: %u", cd_size);
-	log_info (LOG_ASSEMBLY, "Central directory entries: %u", cd_entries);
-#endif
+
+	log_info (LOG_ASSEMBLY, "Central directory info: offset == %u; size == %u; entries == %u", cd_offset, cd_size, cd_entries);
+
 	off_t retval = ::lseek (fd, static_cast<off_t>(cd_offset), SEEK_SET);
 	if (retval < 0) {
 		log_fatal (LOG_ASSEMBLY, "Failed to seek to central directory position in the APK file %s. %s (result: %d; errno: %d)", apk_name, std::strerror (errno), retval, errno);
-		exit (FATAL_EXIT_NO_ASSEMBLIES);
+		abort ();
 	}
 
 	std::vector<uint8_t>  buf (cd_size);
@@ -306,7 +304,7 @@ EmbeddedAssemblies::zip_load_entries (int fd, const char *apk_name, [[maybe_unus
 	ssize_t nread = read (fd, buf.data (), static_cast<read_count_type>(buf.size ()));
 	if (static_cast<size_t>(nread) != cd_size) {
 		log_fatal (LOG_ASSEMBLY, "Failed to read Central Directory from the APK archive %s. %s (nread: %d; errno: %d)", apk_name, std::strerror (errno), nread, errno);
-		exit (FATAL_EXIT_NO_ASSEMBLIES);
+		abort ();
 	}
 
 	if (application_config.have_assembly_store) {
@@ -322,7 +320,7 @@ EmbeddedAssemblies::set_entry_data (XamarinAndroidBundledAssembly &entry, int ap
 {
 	entry.apk_fd = apk_fd;
 	if constexpr (NeedsNameAlloc) {
-		entry.name = utils.strdup_new (entry_name.get () + prefix_len);
+		entry.name = Util::strdup_new (entry_name.get () + prefix_len);
 	} else {
 		// entry.name is preallocated on build time here and is max_name_size + 1 bytes long, filled with 0s, thus we
 		// don't need to append the terminating NUL even for strings of `max_name_size` characters
@@ -346,7 +344,7 @@ EmbeddedAssemblies::set_debug_entry_data (XamarinAndroidBundledAssembly &entry, 
 }
 
 bool
-EmbeddedAssemblies::zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries)
+EmbeddedAssemblies::zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries) noexcept
 {
 	// The simplest case - no file comment
 	off_t ret = ::lseek (fd, -ZIP_EOCD_LEN, SEEK_END);
@@ -355,7 +353,7 @@ EmbeddedAssemblies::zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_
 		return false;
 	}
 
-	std::array<uint8_t, ZIP_EOCD_LEN> eocd;
+	UNINITIALIZED std::array<uint8_t, ZIP_EOCD_LEN> eocd;
 	ssize_t nread = ::read (fd, eocd.data (), static_cast<read_count_type>(eocd.size ()));
 	if (nread < 0 || nread != eocd.size ()) {
 		log_error (LOG_ASSEMBLY, "Failed to read EOCD from the APK: %s (nread: %d; errno: %d)", std::strerror (errno), nread, errno);
@@ -363,7 +361,7 @@ EmbeddedAssemblies::zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_
 	}
 
 	size_t index = 0; // signature
-	std::array<uint8_t, 4> signature;
+	UNINITIALIZED std::array<uint8_t, 4> signature;
 
 	if (!zip_read_field (eocd, index, signature)) {
 		log_error (LOG_ASSEMBLY, "Failed to read EOCD signature");
@@ -394,7 +392,7 @@ EmbeddedAssemblies::zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_
 	// We scan from the end to save time
 	bool found = false;
 	const uint8_t* data = buf.data ();
-	for (ssize_t i = static_cast<ssize_t>(alloc_size - (ZIP_EOCD_LEN + 2)); i >= 0; i--) {
+	for (auto i = static_cast<ssize_t>(alloc_size - (ZIP_EOCD_LEN + 2)); i >= 0; i--) {
 		if (memcmp (data + i, ZIP_EOCD_MAGIC, sizeof(ZIP_EOCD_MAGIC)) != 0)
 			continue;
 
@@ -412,7 +410,7 @@ EmbeddedAssemblies::zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_
 }
 
 bool
-EmbeddedAssemblies::zip_adjust_data_offset (int fd, ZipEntryLoadState &state)
+EmbeddedAssemblies::zip_adjust_data_offset (int fd, ZipEntryLoadState &state) noexcept
 {
 	static constexpr size_t LH_FILE_NAME_LENGTH_OFFSET   = 26;
 	static constexpr size_t LH_EXTRA_LENGTH_OFFSET       = 28;
@@ -423,15 +421,14 @@ EmbeddedAssemblies::zip_adjust_data_offset (int fd, ZipEntryLoadState &state)
 		return false;
 	}
 
-	std::array<uint8_t, ZIP_LOCAL_LEN> local_header;
-	std::array<uint8_t, 4> signature;
-
+	UNINITIALIZED std::array<uint8_t, ZIP_LOCAL_LEN> local_header;
 	ssize_t nread = ::read (fd, local_header.data (), local_header.size ());
 	if (nread < 0 || nread != ZIP_LOCAL_LEN) {
 		log_error (LOG_ASSEMBLY, "Failed to read local header at offset %u: %s (nread: %d; errno: %d)", state.local_header_offset, std::strerror (errno), nread, errno);
 		return false;
 	}
 
+	UNINITIALIZED std::array<uint8_t, 4> signature;
 	size_t index = 0;
 	if (!zip_read_field (local_header, index, signature)) {
 		log_error (LOG_ASSEMBLY, "Failed to read Local Header entry signature at offset %u", state.local_header_offset);
@@ -443,28 +440,28 @@ EmbeddedAssemblies::zip_adjust_data_offset (int fd, ZipEntryLoadState &state)
 		return false;
 	}
 
-	uint16_t file_name_length;
 	index = LH_FILE_NAME_LENGTH_OFFSET;
-	if (!zip_read_field (local_header, index, file_name_length)) {
+	std::optional<uint16_t> file_name_length = zip_read_field_u16 (local_header, index);
+	if (!file_name_length) {
 		log_error (LOG_ASSEMBLY, "Failed to read Local Header 'file name length' field at offset %u", (state.local_header_offset + index));
 		return false;
 	}
 
-	uint16_t extra_field_length;
 	index = LH_EXTRA_LENGTH_OFFSET;
-	if (!zip_read_field (local_header, index, extra_field_length)) {
+	std::optional<uint16_t> extra_field_length = zip_read_field_u16 (local_header, index);
+	if (!extra_field_length) {
 		log_error (LOG_ASSEMBLY, "Failed to read Local Header 'extra field length' field at offset %u", (state.local_header_offset + index));
 		return false;
 	}
 
-	state.data_offset = static_cast<uint32_t>(state.local_header_offset) + file_name_length + extra_field_length + local_header.size ();
+	state.data_offset = static_cast<uint32_t>(state.local_header_offset) + *file_name_length + *extra_field_length + local_header.size ();
 
 	return true;
 }
 
 template<size_t BufSize>
 bool
-EmbeddedAssemblies::zip_extract_cd_info (std::array<uint8_t, BufSize> const& buf, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries)
+EmbeddedAssemblies::zip_extract_cd_info (std::array<uint8_t, BufSize> const& buf, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries) noexcept
 {
 	constexpr size_t EOCD_TOTAL_ENTRIES_OFFSET = 10;
 	constexpr size_t EOCD_CD_SIZE_OFFSET       = 12;
@@ -472,27 +469,33 @@ EmbeddedAssemblies::zip_extract_cd_info (std::array<uint8_t, BufSize> const& buf
 
 	static_assert (BufSize >= ZIP_EOCD_LEN, "Buffer too short for EOCD");
 
-	if (!zip_read_field (buf, EOCD_TOTAL_ENTRIES_OFFSET, cd_entries)) {
+	std::optional<uint16_t> field_value_u16 = zip_read_field_u16 (buf, EOCD_TOTAL_ENTRIES_OFFSET);
+	if (!field_value_u16) {
 		log_error (LOG_ASSEMBLY, "Failed to read EOCD 'total number of entries' field");
 		return false;
 	}
+	cd_entries = *field_value_u16;
 
-	if (!zip_read_field (buf, EOCD_CD_START_OFFSET, cd_offset)) {
+	std::optional<uint32_t> field_value_u32 = zip_read_field_u32 (buf, EOCD_CD_START_OFFSET);
+	if (!field_value_u32) {
 		log_error (LOG_ASSEMBLY, "Failed to read EOCD 'central directory size' field");
 		return false;
 	}
+	cd_offset = *field_value_u32;
 
-	if (!zip_read_field (buf, EOCD_CD_SIZE_OFFSET, cd_size)) {
+	field_value_u32 = zip_read_field_u32 (buf, EOCD_CD_SIZE_OFFSET);
+	if (!field_value_u32) {
 		log_error (LOG_ASSEMBLY, "Failed to read EOCD 'central directory offset' field");
 		return false;
 	}
+	cd_size = *field_value_u32;
 
 	return true;
 }
 
 template<class T>
 force_inline bool
-EmbeddedAssemblies::zip_ensure_valid_params (T const& buf, size_t index, size_t to_read) const noexcept
+EmbeddedAssemblies::zip_ensure_valid_params (T const& buf, size_t index, size_t to_read) noexcept
 {
 	if (index + to_read > buf.size ()) {
 		log_error (LOG_ASSEMBLY, "Buffer too short to read %u bytes of data", to_read);
@@ -503,38 +506,35 @@ EmbeddedAssemblies::zip_ensure_valid_params (T const& buf, size_t index, size_t 
 }
 
 template<ByteArrayContainer T>
-bool
-EmbeddedAssemblies::zip_read_field (T const& src, size_t source_index, uint16_t& dst) const noexcept
+std::optional<uint16_t>
+EmbeddedAssemblies::zip_read_field_u16 (T const& src, size_t source_index) noexcept
 {
-	if (!zip_ensure_valid_params (src, source_index, sizeof (dst))) {
-		return false;
+	if (!zip_ensure_valid_params (src, source_index, sizeof (uint16_t))) {
+		return std::make_optional<uint16_t> ();
 	}
 
-	dst = static_cast<uint16_t>((src [source_index + 1] << 8) | src [source_index]);
-
-	return true;
+	return std::make_optional<uint16_t> (static_cast<uint16_t>((src [source_index + 1] << 8) | src [source_index]));
 }
 
 template<ByteArrayContainer T>
-bool
-EmbeddedAssemblies::zip_read_field (T const& src, size_t source_index, uint32_t& dst) const noexcept
+std::optional<uint32_t>
+EmbeddedAssemblies::zip_read_field_u32 (T const& src, size_t source_index) noexcept
 {
-	if (!zip_ensure_valid_params (src, source_index, sizeof (dst))) {
-		return false;
+	if (!zip_ensure_valid_params (src, source_index, sizeof (uint32_t))) {
+		return std::make_optional<uint32_t> ();
 	}
 
-	dst =
+	return std::make_optional<uint32_t> (
 		(static_cast<uint32_t> (src [source_index + 3]) << 24) |
 		(static_cast<uint32_t> (src [source_index + 2]) << 16) |
 		(static_cast<uint32_t> (src [source_index + 1]) << 8)  |
-		(static_cast<uint32_t> (src [source_index + 0]));
-
-	return true;
+		(static_cast<uint32_t> (src [source_index + 0]))
+	);
 }
 
 template<ByteArrayContainer T>
 bool
-EmbeddedAssemblies::zip_read_field (T const& src, size_t source_index, std::array<uint8_t, 4>& dst_sig) const noexcept
+EmbeddedAssemblies::zip_read_field (T const& src, size_t source_index, std::array<uint8_t, 4>& dst_sig) noexcept
 {
 	if (!zip_ensure_valid_params (src, source_index, dst_sig.size ())) {
 		return false;
@@ -546,7 +546,7 @@ EmbeddedAssemblies::zip_read_field (T const& src, size_t source_index, std::arra
 
 template<ByteArrayContainer T>
 bool
-EmbeddedAssemblies::zip_read_field (T const& buf, size_t index, size_t count, dynamic_local_string<SENSIBLE_PATH_MAX>& characters) const noexcept
+EmbeddedAssemblies::zip_read_field (T const& buf, size_t index, size_t count, dynamic_local_string<SENSIBLE_PATH_MAX>& characters) noexcept
 {
 	if (!zip_ensure_valid_params (buf, index, count)) {
 		return false;
@@ -557,7 +557,7 @@ EmbeddedAssemblies::zip_read_field (T const& buf, size_t index, size_t count, dy
 }
 
 bool
-EmbeddedAssemblies::zip_read_entry_info (std::vector<uint8_t> const& buf, dynamic_local_string<SENSIBLE_PATH_MAX>& file_name, ZipEntryLoadState &state)
+EmbeddedAssemblies::zip_read_entry_info (std::vector<uint8_t> const& buf, dynamic_local_string<SENSIBLE_PATH_MAX>& file_name, ZipEntryLoadState &state) noexcept
 {
 	constexpr size_t CD_COMPRESSION_METHOD_OFFSET = 10;
 	constexpr size_t CD_UNCOMPRESSED_SIZE_OFFSET  = 24;
@@ -569,7 +569,7 @@ EmbeddedAssemblies::zip_read_entry_info (std::vector<uint8_t> const& buf, dynami
 	size_t index = state.buf_offset;
 	zip_ensure_valid_params (buf, index, ZIP_CENTRAL_LEN);
 
-	std::array<uint8_t, 4> signature;
+	UNINITIALIZED std::array<uint8_t, 4> signature;
 	if (!zip_read_field (buf, index, signature)) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry signature");
 		return false;
@@ -581,52 +581,58 @@ EmbeddedAssemblies::zip_read_entry_info (std::vector<uint8_t> const& buf, dynami
 	}
 
 	index = state.buf_offset + CD_COMPRESSION_METHOD_OFFSET;
-	if (!zip_read_field (buf, index, state.compression_method)) {
+	std::optional<uint16_t> compression_method = zip_read_field_u16 (buf, index);
+	if (!compression_method) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry 'compression method' field");
 		return false;
 	}
+	state.compression_method = *compression_method;
 
 	index = state.buf_offset + CD_UNCOMPRESSED_SIZE_OFFSET;;
-	if (!zip_read_field (buf, index, state.file_size)) {
+	std::optional<uint32_t> field_value_u32 = zip_read_field_u32 (buf, index);
+	if (!field_value_u32) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry 'uncompressed size' field");
 		return false;
 	}
+	state.file_size = *field_value_u32;
 
-	uint16_t file_name_length;
 	index = state.buf_offset + CD_FILENAME_LENGTH_OFFSET;
-	if (!zip_read_field (buf, index, file_name_length)) {
+	std::optional<uint16_t> file_name_length = zip_read_field_u16 (buf, index);
+	if (!file_name_length) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry 'file name length' field");
 		return false;
 	}
 
-	uint16_t extra_field_length;
 	index = state.buf_offset + CD_EXTRA_LENGTH_OFFSET;
-	if (!zip_read_field (buf, index, extra_field_length)) {
+	std::optional<uint16_t> extra_field_length = zip_read_field_u16 (buf, index);
+	if (!extra_field_length) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry 'extra field length' field");
 		return false;
 	}
 
-	uint16_t comment_length;
 	index = state.buf_offset + CD_COMMENT_LENGTH_OFFSET;
-	if (!zip_read_field (buf, index, comment_length)) {
+	std::optional<uint16_t> comment_length = zip_read_field_u16 (buf, index);
+	if (!comment_length) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry 'file comment length' field");
 		return false;
 	}
 
 	index = state.buf_offset + CD_LOCAL_HEADER_POS_OFFSET;
-	if (!zip_read_field (buf, index, state.local_header_offset)) {
+	field_value_u32 = zip_read_field_u32 (buf, index);
+	if (!field_value_u32) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry 'relative offset of local header' field");
 		return false;
 	}
+	state.local_header_offset = *field_value_u32;
 	index += sizeof(state.local_header_offset);
 
 	if (file_name_length == 0) {
 		file_name.clear ();
-	} else if (!zip_read_field (buf, index, file_name_length, file_name)) {
+	} else if (!zip_read_field (buf, index, *file_name_length, file_name)) {
 		log_error (LOG_ASSEMBLY, "Failed to read Central Directory entry 'file name' field");
 		return false;
 	}
 
-	state.buf_offset += ZIP_CENTRAL_LEN + file_name_length + extra_field_length + comment_length;
+	state.buf_offset += ZIP_CENTRAL_LEN + *file_name_length + *extra_field_length + *comment_length;
 	return true;
 }

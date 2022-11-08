@@ -381,6 +381,13 @@ namespace xamarin::android::internal
 				assign (token.start (), token.length ());
 		}
 
+		template<size_t N>
+		explicit string_base (const char (&str)[N])
+			: string_base (N)
+		{
+			append (str);
+		}
+
 		force_inline size_t length () const noexcept
 		{
 			return idx;
@@ -600,6 +607,16 @@ namespace xamarin::android::internal
 			return -1;
 		}
 
+		template<size_t Size>
+		force_inline bool equals (const char (&candidate)[Size]) const noexcept
+		{
+			if (Size > buffer.size () || Size != length ()) {
+				return false;
+			}
+
+			return memcmp (buffer.get (), candidate, Size) == 0;
+		}
+
 		force_inline bool starts_with (const TChar *s, size_t s_length) const noexcept
 		{
 			if (s == nullptr || s_length == 0 || s_length > buffer.size ())
@@ -631,7 +648,7 @@ namespace xamarin::android::internal
 		force_inline void set_at (size_t index, const TChar ch) noexcept
 		{
 			ensure_valid_index (index);
-			TChar *p = buffer + index;
+			TChar *p = buffer.get () + index;
 			if (*p == NUL) {
 				return;
 			}
@@ -710,7 +727,7 @@ namespace xamarin::android::internal
 					y = static_cast<uint64_t>(i);
 				}
 				while (y > std::numeric_limits<uint32_t>::max ()) {
-					*--p = (y % 10) + ZERO;
+					*--p = static_cast<TChar>((y % 10) + ZERO);
 					y /= 10;
 				}
 				x = static_cast<uint32_t>(y);
@@ -723,7 +740,7 @@ namespace xamarin::android::internal
 			}
 
 			while (x > 0) {
-				*--p = (x % 10) + ZERO;
+				*--p = static_cast<TChar>(x % 10) + ZERO;
 				x /= 10;
 			}
 
@@ -781,47 +798,9 @@ namespace xamarin::android::internal
 	};
 
 	template<size_t MaxStackSize, typename TChar = char>
-	class static_local_string : public string_base<MaxStackSize, static_local_storage<MaxStackSize, TChar>, TChar>
-	{
-		using base = string_base<MaxStackSize, static_local_storage<MaxStackSize, TChar>, TChar>;
-
-	public:
-		explicit static_local_string (size_t initial_size = 0) noexcept
-			: base (initial_size)
-		{}
-
-		explicit static_local_string (const string_segment &token) noexcept
-			: base (token)
-		{}
-
-		template<size_t N>
-		explicit static_local_string (const char (&str)[N])
-			: base (N)
-		{
-			append (str);
-		}
-	};
+	using static_local_string = string_base<MaxStackSize, static_local_storage<MaxStackSize, TChar>, TChar>;
 
 	template<size_t MaxStackSize, typename TChar = char>
-	class dynamic_local_string : public string_base<MaxStackSize, dynamic_local_storage<MaxStackSize, TChar>, TChar>
-	{
-		using base = string_base<MaxStackSize, dynamic_local_storage<MaxStackSize, TChar>, TChar>;
-
-	public:
-		explicit dynamic_local_string (size_t initial_size = 0)
-			: base (initial_size)
-		{}
-
-		explicit dynamic_local_string (const string_segment &token) noexcept
-			: base (token)
-		{}
-
-		template<size_t N>
-		explicit dynamic_local_string (const char (&str)[N])
-			: base (N)
-		{
-			base::append (str);
-		}
-	};
+	using dynamic_local_string = string_base<MaxStackSize, dynamic_local_storage<MaxStackSize, TChar>, TChar>;
 }
 #endif // __STRINGS_HH

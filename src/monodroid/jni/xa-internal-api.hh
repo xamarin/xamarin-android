@@ -52,8 +52,6 @@ namespace xamarin::android
 		virtual int monodroid_embedded_assemblies_set_assemblies_prefix (const char *prefix) = 0;
 		virtual managed_timing_sequence* monodroid_timing_start (const char *message) = 0;
 		virtual void monodroid_timing_stop (managed_timing_sequence *sequence, const char *message) = 0;
-		virtual void monodroid_strfreev (char **str_array) = 0;
-		virtual char** monodroid_strsplit (const char *str, const char *delimiter, size_t max_tokens) = 0;
 		virtual char* monodroid_strdup_printf (const char *format, va_list args) = 0;
 		virtual char* monodroid_TypeManager_get_java_class_name (jclass klass) = 0;
 		virtual void monodroid_store_package_name (const char *name) = 0;

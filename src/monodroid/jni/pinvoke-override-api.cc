@@ -1,6 +1,7 @@
+#if defined (NET)
 #include <compare>
 #include <unistd.h>
-#include <stdarg.h>
+#include <cstdarg>
 #include <mono/utils/mono-publib.h>
 #include <mono/utils/mono-dl-fallback.h>
 
@@ -17,6 +18,7 @@ extern "C" {
 #include "xxhash.hh"
 #include "startup-aware-lock.hh"
 #include "jni-remapping.hh"
+#include "embedded-assemblies.hh"
 
 extern "C" {
 	int _monodroid_getifaddrs (struct _monodroid_ifaddrs **ifap);
@@ -30,10 +32,6 @@ int _monodroid_get_dns_servers (void **dns_servers_array);
 using namespace xamarin::android;
 using namespace xamarin::android::internal;
 
-void* MonodroidRuntime::system_native_library_handle = nullptr;
-void* MonodroidRuntime::system_security_cryptography_native_android_library_handle = nullptr;
-void* MonodroidRuntime::system_io_compression_native_library_handle = nullptr;
-
 static unsigned int
 monodroid_get_log_categories ()
 {
@@ -43,13 +41,13 @@ monodroid_get_log_categories ()
 static int
 monodroid_get_system_property (const char *name, char **value)
 {
-        return androidSystem.monodroid_get_system_property (name, value);
+        return AndroidSystem::monodroid_get_system_property (name, value);
 }
 
 static int
 monodroid_embedded_assemblies_set_assemblies_prefix (const char *prefix)
 {
-        embeddedAssemblies.set_assemblies_prefix (prefix);
+        EmbeddedAssemblies::set_assemblies_prefix (prefix);
         return 0;
 }
 
@@ -96,62 +94,62 @@ monodroid_free (void *ptr)
 static int
 _monodroid_max_gref_get ()
 {
-        return static_cast<int>(androidSystem.get_max_gref_count ());
+        return static_cast<int>(AndroidSystem::get_max_gref_count ());
 }
 
 static int
 _monodroid_gref_get ()
 {
-	return osBridge.get_gc_gref_count ();
+	return OSBridge::get_gc_gref_count ();
 }
 
 
 static void
 _monodroid_gref_log (const char *message)
 {
-        osBridge._monodroid_gref_log (message);
+        OSBridge::_monodroid_gref_log (message);
 }
 
 static int
 _monodroid_gref_log_new (jobject curHandle, char curType, jobject newHandle, char newType, const char *threadName, int threadId, const char *from, int from_writable)
 {
-        return osBridge._monodroid_gref_log_new (curHandle, curType, newHandle, newType, threadName, threadId, from, from_writable);
+        return OSBridge::_monodroid_gref_log_new (curHandle, curType, newHandle, newType, threadName, threadId, from, from_writable);
 }
 
 static void
 _monodroid_gref_log_delete (jobject handle, char type, const char *threadName, int threadId, const char *from, int from_writable)
 {
-        osBridge._monodroid_gref_log_delete (handle, type, threadName, threadId, from, from_writable);
+        OSBridge::_monodroid_gref_log_delete (handle, type, threadName, threadId, from, from_writable);
 }
 
 static int
 _monodroid_weak_gref_get ()
 {
-	return osBridge.get_gc_weak_gref_count ();
+	return OSBridge::get_gc_weak_gref_count ();
 }
 
 static void
 _monodroid_weak_gref_new (jobject curHandle, char curType, jobject newHandle, char newType, const char *threadName, int threadId, const char *from, int from_writable)
 {
-        osBridge._monodroid_weak_gref_new (curHandle, curType, newHandle, newType, threadName, threadId, from, from_writable);
+        OSBridge::_monodroid_weak_gref_new (curHandle, curType, newHandle, newType, threadName, threadId, from, from_writable);
 }
 
 static void
 _monodroid_weak_gref_delete (jobject handle, char type, const char *threadName, int threadId, const char *from, int from_writable)
 {
-        osBridge._monodroid_weak_gref_delete (handle, type, threadName, threadId, from, from_writable);
+        OSBridge::_monodroid_weak_gref_delete (handle, type, threadName, threadId, from, from_writable);
 }
 
 static void
 _monodroid_lref_log_new (int lrefc, jobject handle, char type, const char *threadName, int threadId, const char *from, int from_writable)
 {
-        osBridge._monodroid_lref_log_new (lrefc, handle, type, threadName, threadId, from, from_writable);
+        OSBridge::_monodroid_lref_log_new (lrefc, handle, type, threadName, threadId, from, from_writable);
 }
 
 static void
 _monodroid_lref_log_delete (int lrefc, jobject handle, char type, const char *threadName, int threadId, const char *from, int from_writable)
 {
-        osBridge._monodroid_lref_log_delete (lrefc, handle, type, threadName, threadId, from, from_writable);
+        OSBridge::_monodroid_lref_log_delete (lrefc, handle, type, threadName, threadId, from, from_writable);
 }
 
 static void
@@ -163,30 +161,30 @@ _monodroid_gc_wait_for_bridge_processing ()
 static int
 _monodroid_get_android_api_level ()
 {
-        return monodroidRuntime.get_android_api_level ();
+        return MonodroidRuntime::get_android_api_level ();
 }
 
 static void
 monodroid_clear_gdb_wait ()
 {
-        monodroidRuntime.set_monodroid_gdb_wait (false);
+        MonodroidRuntime::set_monodroid_gdb_wait (false);
 }
 
 static void*
 _monodroid_get_identity_hash_code (JNIEnv *env, void *v)
 {
-        intptr_t rv = env->CallStaticIntMethod (monodroidRuntime.get_java_class_System (), monodroidRuntime.get_java_class_method_System_identityHashCode (), v);
+        intptr_t rv = env->CallStaticIntMethod (MonodroidRuntime::get_java_class_System (), MonodroidRuntime::get_java_class_method_System_identityHashCode (), v);
         return (void*) rv;
 }
 
 static void*
 _monodroid_timezone_get_default_id ()
 {
-	JNIEnv *env          = osBridge.ensure_jnienv ();
-	jmethodID getDefault = env->GetStaticMethodID (monodroidRuntime.get_java_class_TimeZone (), "getDefault", "()Ljava/util/TimeZone;");
-	jmethodID getID      = env->GetMethodID (monodroidRuntime.get_java_class_TimeZone (), "getID",      "()Ljava/lang/String;");
-	jobject d            = env->CallStaticObjectMethod (monodroidRuntime.get_java_class_TimeZone (), getDefault);
-	jstring id           = reinterpret_cast<jstring> (env->CallObjectMethod (d, getID));
+	JNIEnv *env          = OSBridge::ensure_jnienv ();
+	jmethodID getDefault = env->GetStaticMethodID (MonodroidRuntime::get_java_class_TimeZone (), "getDefault", "()Ljava/util/TimeZone;");
+	jmethodID getID      = env->GetMethodID (MonodroidRuntime::get_java_class_TimeZone (), "getID",      "()Ljava/lang/String;");
+	jobject d            = env->CallStaticObjectMethod (MonodroidRuntime::get_java_class_TimeZone (), getDefault);
+	auto id              = reinterpret_cast<jstring> (env->CallObjectMethod (d, getID));
 	const char *mutf8    = env->GetStringUTFChars (id, nullptr);
 
 	if (mutf8 == nullptr) {
@@ -209,17 +207,18 @@ static void
 _monodroid_counters_dump ([[maybe_unused]] const char *format, [[maybe_unused]] va_list args)
 {
 #if !defined (NET)
-	monodroidRuntime.dump_counters_v (format, args);
+	MonodroidRuntime::dump_counters_v (format, args);
 #endif // ndef NET
 }
 
 static managed_timing_sequence*
 monodroid_timing_start (const char *message)
 {
-	if (timing == nullptr)
+	if (!MonodroidRuntime::managed_timing_available ()) {
 		return nullptr;
+	}
 
-	managed_timing_sequence *ret = timing->get_available_sequence ();
+	managed_timing_sequence *ret = MonodroidRuntime::managed_timing ()->get_available_sequence ();
 	if (message != nullptr) {
 		log_write (LOG_TIMING, LogLevel::Info, message);
 	}
@@ -233,24 +232,13 @@ monodroid_timing_stop (managed_timing_sequence *sequence, const char *message)
 {
 	static constexpr const char DEFAULT_MESSAGE[] = "Managed Timing";
 
-	if (sequence == nullptr)
+	if (sequence == nullptr || !MonodroidRuntime::managed_timing_available ()) {
 		return;
+	}
 
 	sequence->period.mark_end ();
 	Timing::info (sequence->period, message == nullptr ? DEFAULT_MESSAGE : message);
-	timing->release_sequence (sequence);
-}
-
-static char**
-monodroid_strsplit (const char *str, const char *delimiter, size_t max_tokens)
-{
-	return utils.monodroid_strsplit (str, delimiter, max_tokens);
-}
-
-static void
-monodroid_strfreev (char **str_array)
-{
-	utils.monodroid_strfreev (str_array);
+	MonodroidRuntime::managed_timing ()->release_sequence (sequence);
 }
 
 static char*
@@ -259,7 +247,7 @@ monodroid_strdup_printf (const char *format, ...)
 	va_list args;
 
 	va_start (args, format);
-	char *ret = utils.monodroid_strdup_vprintf (format, args);
+	char *ret = Util::monodroid_strdup_vprintf (format, args);
 	va_end (args);
 
 	return ret;
@@ -268,25 +256,25 @@ monodroid_strdup_printf (const char *format, ...)
 static char*
 monodroid_TypeManager_get_java_class_name (jclass klass)
 {
-	return monodroidRuntime.get_java_class_name_for_TypeManager (klass);
+	return MonodroidRuntime::get_java_class_name_for_TypeManager (klass);
 }
 
 static void
 monodroid_store_package_name (const char *name)
 {
-	utils.monodroid_store_package_name (name);
+	Util::monodroid_store_package_name (name);
 }
 
 static int
 monodroid_get_namespaced_system_property (const char *name, char **value)
 {
-	return static_cast<int>(androidSystem.monodroid_get_system_property (name, value));
+	return static_cast<int>(AndroidSystem::monodroid_get_system_property (name, value));
 }
 
 static FILE*
 monodroid_fopen (const char* filename, const char* mode)
 {
-	return utils.monodroid_fopen (filename, mode);
+	return Util::monodroid_fopen (filename, mode);
 }
 
 static int
@@ -294,7 +282,7 @@ send_uninterrupted (int fd, void *buf, int len)
 {
 	if (len < 0)
 		len = 0;
-	return utils.send_uninterrupted (fd, buf, static_cast<size_t>(len));
+	return Util::send_uninterrupted (fd, buf, static_cast<size_t>(len));
 }
 
 static int
@@ -302,25 +290,25 @@ recv_uninterrupted (int fd, void *buf, int len)
 {
 	if (len < 0)
 		len = 0;
-	return static_cast<int>(utils.recv_uninterrupted (fd, buf, static_cast<size_t>(len)));
+	return static_cast<int>(Util::recv_uninterrupted (fd, buf, static_cast<size_t>(len)));
 }
 
 static void
 set_world_accessable (const char *path)
 {
-	utils.set_world_accessable (path);
+	Util::set_world_accessable (path);
 }
 
 static void
 create_public_directory (const char *dir)
 {
-	utils.create_public_directory (dir);
+	Util::create_public_directory (dir);
 }
 
 static char*
 path_combine (const char *path1, const char *path2)
 {
-	return utils.path_combine (path1, path2);
+	return Util::path_combine (path1, path2);
 }
 
 static void*
@@ -350,7 +338,7 @@ monodroid_dylib_mono_init (void *mono_imports, [[maybe_unused]] const char *libm
 }
 
 static void*
-monodroid_get_dylib (void)
+monodroid_get_dylib ()
 {
 	return nullptr;
 }
@@ -512,7 +500,7 @@ MonodroidRuntime::handle_other_pinvoke_request (const char *library_name, hash_t
 }
 
 void*
-MonodroidRuntime::monodroid_pinvoke_override (const char *library_name, const char *entrypoint_name)
+MonodroidRuntime::monodroid_pinvoke_override (const char *library_name, const char *entrypoint_name) noexcept
 {
 	if (library_name == nullptr || entrypoint_name == nullptr) {
 		return nullptr;
@@ -574,3 +562,4 @@ MonodroidRuntime::monodroid_pinvoke_override (const char *library_name, const ch
 
 	return handle_other_pinvoke_request (library_name, library_name_hash, entrypoint_name, entrypoint_hash);
 }
+#endif // def NET

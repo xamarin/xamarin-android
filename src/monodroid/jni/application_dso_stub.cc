@@ -52,6 +52,7 @@ const ApplicationConfig application_config = {
 	.jni_add_native_method_registration_attribute_present = false,
 	.have_runtime_config_blob = false,
 	.have_assembly_store = false,
+	.marshal_methods_enabled = true,
 	.bound_exception_type = 0, // System
 	.package_naming_policy = 0,
 	.environment_variable_count = 0,

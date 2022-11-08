@@ -9,7 +9,7 @@ using namespace xamarin::android::internal;
 force_inline bool
 JniRemapping::equal (JniRemappingString const& left, const char *right, size_t right_len) noexcept
 {
-	if (left.length != static_cast<uint32_t>(right_len) || left.str[0] != *right) {
+	if (right == nullptr || left.length != static_cast<uint32_t>(right_len) || left.str[0] != *right) {
 		return false;
 	}
 
@@ -66,8 +66,9 @@ JniRemapping::lookup_replacement_method_info (const char *jniSourceType, const c
 		return nullptr;
 	}
 
+	bool have_signature = jniMethodSignature != nullptr;
 	size_t method_name_len = strlen (jniMethodName);
-	size_t signature_len = jniMethodSignature == nullptr ? 0 : strlen (jniMethodSignature);
+	size_t signature_len = have_signature ? strlen (jniMethodSignature) : 0;
 
 	for (size_t i = 0; i < type->method_count; i++) {
 		JniRemappingIndexMethodEntry const& entry = type->methods[i];
@@ -76,8 +77,12 @@ JniRemapping::lookup_replacement_method_info (const char *jniSourceType, const c
 			continue;
 		}
 
-		if (entry.signature.length == 0 || equal (entry.signature, jniMethodSignature, signature_len)) {
+		if (entry.signature.length == 0 || (have_signature && equal (entry.signature, jniMethodSignature, signature_len))) {
 			return &type->methods[i].replacement;
+		}
+
+		if (!have_signature) {
+			continue;
 		}
 
 		const char *sig_end = jniMethodSignature + signature_len;

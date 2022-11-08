@@ -65,7 +65,6 @@ static PinvokeEntry internal_pinvokes[] = {
 	{0x31b69ab8f1525bde, "java_interop_jnienv_call_nonvirtual_float_method_a", reinterpret_cast<void*>(&java_interop_jnienv_call_nonvirtual_float_method_a)},
 	{0x31cd2d84737102f0, "java_interop_jnienv_get_float_field", reinterpret_cast<void*>(&java_interop_jnienv_get_float_field)},
 	{0x322143827dfc2ced, "java_interop_jnienv_push_local_frame", reinterpret_cast<void*>(&java_interop_jnienv_push_local_frame)},
-	{0x32bf1b201328ec3b, "monodroid_strfreev", reinterpret_cast<void*>(&monodroid_strfreev)},
 	{0x34186fceaf3080a9, "java_interop_jnienv_call_object_method", reinterpret_cast<void*>(&java_interop_jnienv_call_object_method)},
 	{0x35217dfb42e3c1fd, "java_interop_jnienv_call_boolean_method", reinterpret_cast<void*>(&java_interop_jnienv_call_boolean_method)},
 	{0x353c0831eea4258e, "java_interop_jnienv_exception_describe", reinterpret_cast<void*>(&java_interop_jnienv_exception_describe)},
@@ -180,7 +179,6 @@ static PinvokeEntry internal_pinvokes[] = {
 	{0xb41a410ab17a3a73, "java_interop_jnienv_is_same_object", reinterpret_cast<void*>(&java_interop_jnienv_is_same_object)},
 	{0xb5e54efc86b04e21, "java_interop_jnienv_release_string_chars", reinterpret_cast<void*>(&java_interop_jnienv_release_string_chars)},
 	{0xb81e103dfd29eb97, "java_interop_jnienv_set_long_array_region", reinterpret_cast<void*>(&java_interop_jnienv_set_long_array_region)},
-	{0xb8b6638548d5aa08, "monodroid_strsplit", reinterpret_cast<void*>(&monodroid_strsplit)},
 	{0xb902428434fd0192, "monodroid_free", reinterpret_cast<void*>(&monodroid_free)},
 	{0xba09732e7f72fce4, "monodroid_dylib_mono_init", reinterpret_cast<void*>(&monodroid_dylib_mono_init)},
 	{0xbcca2ef83c3c4071, "java_interop_jnienv_get_field_id", reinterpret_cast<void*>(&java_interop_jnienv_get_field_id)},
@@ -797,7 +795,6 @@ static PinvokeEntry internal_pinvokes[] = {
 	{0x9205e017, "java_interop_jnienv_unregister_natives", reinterpret_cast<void*>(&java_interop_jnienv_unregister_natives)},
 	{0x925f2972, "java_interop_jnienv_new_short_array", reinterpret_cast<void*>(&java_interop_jnienv_new_short_array)},
 	{0x93118264, "java_interop_jnienv_get_char_field", reinterpret_cast<void*>(&java_interop_jnienv_get_char_field)},
-	{0x934790b1, "monodroid_strsplit", reinterpret_cast<void*>(&monodroid_strsplit)},
 	{0x937603da, "java_interop_jnienv_set_static_int_field", reinterpret_cast<void*>(&java_interop_jnienv_set_static_int_field)},
 	{0x940d8730, "java_interop_jnienv_get_java_vm", reinterpret_cast<void*>(&java_interop_jnienv_get_java_vm)},
 	{0x942abdd7, "java_interop_jnienv_call_static_byte_method", reinterpret_cast<void*>(&java_interop_jnienv_call_static_byte_method)},
@@ -814,7 +811,6 @@ static PinvokeEntry internal_pinvokes[] = {
 	{0x9d45c4a4, "java_interop_jnienv_call_static_int_method_a", reinterpret_cast<void*>(&java_interop_jnienv_call_static_int_method_a)},
 	{0xa0015b66, "java_interop_jnienv_set_static_boolean_field", reinterpret_cast<void*>(&java_interop_jnienv_set_static_boolean_field)},
 	{0xa04e5d1c, "monodroid_free", reinterpret_cast<void*>(&monodroid_free)},
-	{0xa11d71da, "monodroid_strfreev", reinterpret_cast<void*>(&monodroid_strfreev)},
 	{0xa2239fee, "java_interop_jnienv_call_nonvirtual_void_method_a", reinterpret_cast<void*>(&java_interop_jnienv_call_nonvirtual_void_method_a)},
 	{0xa3b03370, "java_interop_jnienv_call_static_boolean_method", reinterpret_cast<void*>(&java_interop_jnienv_call_static_boolean_method)},
 	{0xa4390bae, "java_interop_jnienv_call_nonvirtual_float_method_a", reinterpret_cast<void*>(&java_interop_jnienv_call_nonvirtual_float_method_a)},
@@ -1329,5 +1325,5 @@ constexpr hash_t system_io_compression_native_library_hash = 0xafe3142c;
 constexpr hash_t system_security_cryptography_native_android_library_hash = 0x93625cd;
 #endif
 
-constexpr size_t internal_pinvokes_count = 237;
+constexpr size_t internal_pinvokes_count = 235;
 constexpr size_t dotnet_pinvokes_count = 410;

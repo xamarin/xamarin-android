@@ -2,6 +2,7 @@
 #define __STARTUP_AWARE_LOCK_HH
 
 #include "globals.hh"
+#include "monodroid-glue-internal.hh"
 
 namespace xamarin::android::internal
 {

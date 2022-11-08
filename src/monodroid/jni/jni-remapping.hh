@@ -14,7 +14,6 @@ namespace xamarin::android::internal
 		static const JniRemappingReplacementMethod* lookup_replacement_method_info (const char *jniSourceType, const char *jniMethodName, const char *jniMethodSignature) noexcept;
 
 	private:
-		[[gnu::nonnull (2)]]
 		static bool equal (JniRemappingString const& left, const char *right, size_t right_len) noexcept;
 	};
 }

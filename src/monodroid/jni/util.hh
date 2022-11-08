@@ -83,35 +83,35 @@ namespace xamarin::android
 		static constexpr uint32_t ms_in_nsec = 1000000ULL;
 
 	public:
-		Util ();
+		static void initialize () noexcept;
 
-		int              monodroid_getpagesize () const noexcept
+		static int monodroid_getpagesize () noexcept
 		{
 			return page_size;
 		}
 
-		void             monodroid_store_package_name (const char *name);
-		MonoAssembly    *monodroid_load_assembly (MonoDomain *domain, const char *basename);
+		static void             monodroid_store_package_name (const char *name) noexcept;
+		static MonoAssembly    *monodroid_load_assembly (MonoDomain *domain, const char *basename) noexcept;
 #if defined (NET)
-		MonoAssembly    *monodroid_load_assembly (MonoAssemblyLoadContextGCHandle alc_handle, const char *basename);
+		static MonoAssembly    *monodroid_load_assembly (MonoAssemblyLoadContextGCHandle alc_handle, const char *basename) noexcept;
 #else // def NET
-		MonoObject      *monodroid_runtime_invoke (MonoDomain *domain, MonoMethod *method, void *obj, void **params, MonoObject **exc);
+		static MonoObject      *monodroid_runtime_invoke (MonoDomain *domain, MonoMethod *method, void *obj, void **params, MonoObject **exc) noexcept;
 #endif // ndef NET
-		MonoClass       *monodroid_get_class_from_name (MonoDomain *domain, const char* assembly, const char *_namespace, const char *type);
+		static MonoClass       *monodroid_get_class_from_name (MonoDomain *domain, const char* assembly, const char *_namespace, const char *type) noexcept;
 #if !defined (NET)
-		MonoDomain      *monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendly_name, int shadow_copy, const char *shadow_directories);
-		MonoClass       *monodroid_get_class_from_image (MonoDomain *domain, MonoImage* image, const char *_namespace, const char *type);
+		static MonoDomain      *monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendly_name, int shadow_copy, const char *shadow_directories) noexcept;
+		static MonoClass       *monodroid_get_class_from_image (MonoDomain *domain, MonoImage* image, const char *_namespace, const char *type) noexcept;
 #endif
-		int              send_uninterrupted (int fd, void *buf, size_t len);
-		ssize_t          recv_uninterrupted (int fd, void *buf, size_t len);
-		jclass           get_class_from_runtime_field (JNIEnv *env, jclass runtime, const char *name, bool make_gref = false);
+		static int              send_uninterrupted (int fd, void *buf, size_t len) noexcept;
+		static ssize_t          recv_uninterrupted (int fd, void *buf, size_t len) noexcept;
+		static jclass           get_class_from_runtime_field (JNIEnv *env, jclass runtime, const char *name, bool make_gref = false) noexcept;
 
 		static bool should_log (LogCategories category) noexcept
 		{
 			return (log_categories & category) != 0;
 		}
 
-		MonoDomain *get_current_domain (bool attach_thread_if_needed = true) const noexcept
+		static MonoDomain *get_current_domain (bool attach_thread_if_needed = true) noexcept
 		{
 			MonoDomain *ret = mono_domain_get ();
 			if (ret != nullptr) {
@@ -132,18 +132,18 @@ namespace xamarin::android
 	private:
 		//char *monodroid_strdup_printf (const char *format, va_list vargs);
 #if !defined (NET)
-		void  monodroid_property_set (MonoDomain *domain, MonoProperty *property, void *obj, void **params, MonoObject **exc);
+		static void  monodroid_property_set (MonoDomain *domain, MonoProperty *property, void *obj, void **params, MonoObject **exc) noexcept;
 #endif // ndef NET
 
 		template<typename IdxType>
-		void package_hash_to_hex (IdxType idx);
+		static void package_hash_to_hex (IdxType idx) noexcept;
 
 		template<typename IdxType = size_t, typename ...Indices>
-		void package_hash_to_hex (uint32_t hash, IdxType idx, Indices... indices);
+		static void package_hash_to_hex (uint32_t hash, IdxType idx, Indices... indices) noexcept;
 
 	private:
-		char package_property_suffix[9];
-		int page_size;
+		static inline char package_property_suffix[9];
+		static inline int page_size;
 	};
 }
 #endif // __cplusplus

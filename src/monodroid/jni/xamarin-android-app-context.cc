@@ -1,3 +1,4 @@
+#if defined (NET)
 #include <mono/metadata/class.h>
 #include <mono/metadata/debug-helpers.h>
 
@@ -125,3 +126,4 @@ MonodroidRuntime::get_function_pointer_at_runtime (uint32_t mono_image_index, ui
 {
 	get_function_pointer<true> (mono_image_index, class_index, method_token, target_ptr);
 }
+#endif // def NET

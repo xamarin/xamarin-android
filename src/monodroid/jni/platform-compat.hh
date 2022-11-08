@@ -38,6 +38,12 @@ typedef struct dirent monodroid_dirent_t;
 
 #define force_inline inline __attribute__((always_inline))
 #define never_inline __attribute__((noinline))
+
+#if defined (__clang__)
+#define UNINITIALIZED [[clang::uninitialized]]
+#elif __GNUC__ >= 11  // def __clang
+#define UNINITIALIZED [[gnu::uninitialized]]
+#endif // ndef __clang
 #endif // _MSV_VER
 
 #ifndef force_inline
@@ -58,6 +64,10 @@ typedef struct dirent monodroid_dirent_t;
 
 #ifndef XA_UNLIKELY
 #define XA_UNLIKELY(expr) (expr)
+#endif
+
+#ifndef UNINITIALIZED
+#define UNINITIALIZED
 #endif
 
 #endif // __PLATFORM_COMPAT_HH

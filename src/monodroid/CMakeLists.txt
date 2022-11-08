@@ -343,6 +343,7 @@ set(LOCAL_COMMON_COMPILER_ARGS
   -Wformat
   -Wformat-security
   -Wmisleading-indentation
+  -Wmismatched-new-delete
   -Wnull-dereference
   -Wpointer-arith
   -Wshadow
@@ -358,6 +359,9 @@ endif()
 
 set(LOCAL_COMMON_LINKER_ARGS "")
 if(ANDROID)
+  # We don't need thread-safe initialization of statics on Android, our entire init sequence runs in a single thread
+  list(APPEND LOCAL_COMMON_COMPILER_ARGS -fno-threadsafe-statics)
+
   if (ENABLE_CLANG_ASAN OR ENABLE_CLANG_UBSAN)
     list(APPEND LOCAL_COMMON_COMPILER_ARGS
       -fno-omit-frame-pointer
@@ -566,7 +570,14 @@ set(XAMARIN_DEBUG_APP_HELPER_SOURCES
   ${SOURCES_DIR}/debug-app-helper.cc
   ${SOURCES_DIR}/new_delete.cc
   ${SOURCES_DIR}/shared-constants.cc
+)
+
+if(ANDROID)
+  list(APPEND XAMARIN_DEBUG_APP_HELPER_SOURCES
+    ${SOURCES_DIR}/cxx-abi/string.cc
+    ${SOURCES_DIR}/cxx-abi/vector.cc
   )
+endif()
 
 # Build
 configure_file(jni/host-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/host-config.h)

@@ -10,7 +10,7 @@
 #endif
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <string.h>
+#include <cstring>
 #ifdef HAVE_BSD_STRING_H
 #include <bsd/string.h>
 #endif
@@ -45,7 +45,8 @@ timing_diff::timing_diff (const timing_period &period)
 	FastTiming::calculate_interval (period.start, period.end, *this);
 }
 
-Util::Util ()
+void
+Util::initialize () noexcept
 {
 #ifndef WINDOWS
 	page_size = getpagesize ();
@@ -57,7 +58,7 @@ Util::Util ()
 }
 
 int
-Util::send_uninterrupted (int fd, void *buf, size_t len)
+Util::send_uninterrupted (int fd, void *buf, size_t len) noexcept
 {
 	ssize_t res;
 #ifdef WINDOWS
@@ -82,7 +83,7 @@ Util::send_uninterrupted (int fd, void *buf, size_t len)
 }
 
 ssize_t
-Util::recv_uninterrupted (int fd, void *buf, size_t len)
+Util::recv_uninterrupted (int fd, void *buf, size_t len) noexcept
 {
 #if defined (WINDOWS)
 	using nbytes_type = int;
@@ -107,21 +108,21 @@ Util::recv_uninterrupted (int fd, void *buf, size_t len)
 
 template<typename IdxType>
 inline void
-Util::package_hash_to_hex (IdxType /* idx */)
+Util::package_hash_to_hex (IdxType /* idx */) noexcept
 {
 	package_property_suffix[sizeof (package_property_suffix) / sizeof (char) - 1] = 0x00;
 }
 
 template<typename IdxType, typename ...Indices>
 inline void
-Util::package_hash_to_hex (uint32_t hash, IdxType idx, Indices... indices)
+Util::package_hash_to_hex (uint32_t hash, IdxType idx, Indices... indices) noexcept
 {
 	package_property_suffix [idx] = hex_chars [(hash & (0xF0000000 >> idx * 4)) >> ((7 - idx) * 4)];
 	package_hash_to_hex <IdxType> (hash, indices...);
 }
 
 void
-Util::monodroid_store_package_name (const char *name)
+Util::monodroid_store_package_name (const char *name) noexcept
 {
 	if (!name || *name == '\0')
 		return;
@@ -148,7 +149,7 @@ Util::monodroid_store_package_name (const char *name)
 
 #if defined (NET)
 MonoAssembly*
-Util::monodroid_load_assembly (MonoAssemblyLoadContextGCHandle alc_handle, const char *basename)
+Util::monodroid_load_assembly (MonoAssemblyLoadContextGCHandle alc_handle, const char *basename) noexcept
 {
 	MonoImageOpenStatus  status;
 	MonoAssemblyName    *aname = mono_assembly_name_new (basename);
@@ -165,7 +166,7 @@ Util::monodroid_load_assembly (MonoAssemblyLoadContextGCHandle alc_handle, const
 #endif // def NET
 
 MonoAssembly *
-Util::monodroid_load_assembly (MonoDomain *domain, const char *basename)
+Util::monodroid_load_assembly (MonoDomain *domain, const char *basename) noexcept
 {
 	MonoAssembly         *assm;
 	MonoAssemblyName     *aname;
@@ -193,7 +194,7 @@ Util::monodroid_load_assembly (MonoDomain *domain, const char *basename)
 
 #if !defined (NET)
 MonoObject *
-Util::monodroid_runtime_invoke (MonoDomain *domain, MonoMethod *method, void *obj, void **params, MonoObject **exc)
+Util::monodroid_runtime_invoke (MonoDomain *domain, MonoMethod *method, void *obj, void **params, MonoObject **exc) noexcept
 {
 	MonoDomain *current = get_current_domain ();
 	if (domain == current) {
@@ -207,7 +208,7 @@ Util::monodroid_runtime_invoke (MonoDomain *domain, MonoMethod *method, void *ob
 }
 
 void
-Util::monodroid_property_set (MonoDomain *domain, MonoProperty *property, void *obj, void **params, MonoObject **exc)
+Util::monodroid_property_set (MonoDomain *domain, MonoProperty *property, void *obj, void **params, MonoObject **exc) noexcept
 {
 	MonoDomain *current = get_current_domain ();
 	if (domain == current) {
@@ -221,7 +222,7 @@ Util::monodroid_property_set (MonoDomain *domain, MonoProperty *property, void *
 }
 
 MonoDomain*
-Util::monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendly_name, int shadow_copy, const char *shadow_directories)
+Util::monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendly_name, int shadow_copy, const char *shadow_directories) noexcept
 {
 	MonoClass *appdomain_setup_klass = monodroid_get_class_from_name (parent_domain, "mscorlib", "System", "AppDomainSetup");
 	MonoClass *appdomain_klass = monodroid_get_class_from_name (parent_domain, "mscorlib", "System", "AppDomain");
@@ -248,7 +249,7 @@ Util::monodroid_create_appdomain (MonoDomain *parent_domain, const char *friendl
 #endif // ndef NET
 
 MonoClass*
-Util::monodroid_get_class_from_name ([[maybe_unused]] MonoDomain *domain, const char* assembly, const char *_namespace, const char *type)
+Util::monodroid_get_class_from_name ([[maybe_unused]] MonoDomain *domain, const char* assembly, const char *_namespace, const char *type) noexcept
 {
 #if !defined (NET)
 	MonoDomain *current = get_current_domain ();
@@ -278,7 +279,7 @@ Util::monodroid_get_class_from_name ([[maybe_unused]] MonoDomain *domain, const 
 
 #if !defined (NET)
 MonoClass*
-Util::monodroid_get_class_from_image (MonoDomain *domain, MonoImage *image, const char *_namespace, const char *type)
+Util::monodroid_get_class_from_image (MonoDomain *domain, MonoImage *image, const char *_namespace, const char *type) noexcept
 {
 	MonoDomain *current = get_current_domain ();
 
@@ -295,7 +296,7 @@ Util::monodroid_get_class_from_image (MonoDomain *domain, MonoImage *image, cons
 #endif // ndef NET
 
 jclass
-Util::get_class_from_runtime_field (JNIEnv *env, jclass runtime, const char *name, bool make_gref)
+Util::get_class_from_runtime_field (JNIEnv *env, jclass runtime, const char *name, bool make_gref) noexcept
 {
 	static constexpr char java_lang_class_sig[] = "Ljava/lang/Class;";
 
@@ -307,5 +308,5 @@ Util::get_class_from_runtime_field (JNIEnv *env, jclass runtime, const char *nam
 	if (field == nullptr)
 		return nullptr;
 
-	return reinterpret_cast<jclass> (make_gref ? osBridge.lref_to_gref (env, field) : field);
+	return reinterpret_cast<jclass> (make_gref ? OSBridge::lref_to_gref (env, field) : field);
 }

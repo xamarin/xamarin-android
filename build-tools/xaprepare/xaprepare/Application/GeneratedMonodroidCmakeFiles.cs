@@ -271,7 +271,7 @@ namespace Xamarin.Android.Prepare
 				sw.WriteLine ($"{indent}__FORCE=\"${{force}}\"");
 				if (!command.IsHost) {
 					sw.WriteLine ($"{indent}__NATIVE_ABI={abi}");
-					sw.WriteLine ($"{indent}__NATIVE_API_LEVEL=${{{minApiLevel}}}");
+					sw.WriteLine ($"{indent}__NATIVE_API_LEVEL={minApiLevel}");
 				}
 				sw.WriteLine ();
 				if (!command.IsHost) {

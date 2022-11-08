@@ -132,7 +132,7 @@ namespace xamarin::android::internal
 
 		force_inline static void initialize (bool log_immediately) noexcept
 		{
-			if (XA_LIKELY (!utils.should_log (LOG_TIMING))) {
+			if (XA_LIKELY (!Util::should_log (LOG_TIMING))) {
 				return;
 			}
 
@@ -198,7 +198,7 @@ namespace xamarin::android::internal
 				return;
 			}
 
-			events[event_index].more_info = utils.strdup_new (str.get (), str.length ());
+			events[event_index].more_info = Util::strdup_new (str.get (), str.length ());
 			log (events[event_index], false /* skip_log_if_more_info_missing */);
 		}
 
@@ -208,7 +208,7 @@ namespace xamarin::android::internal
 				return;
 			}
 
-			events[event_index].more_info = utils.strdup_new (str, strlen (str));
+			events[event_index].more_info = Util::strdup_new (str, strlen (str));
 			log (events[event_index], false /* skip_log_if_more_info_missing */);
 		}
 

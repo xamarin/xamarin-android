@@ -21,7 +21,7 @@ namespace xamarin::android
 
 			if (XA_UNLIKELY (__builtin_add_overflow (a, b, &ret))) {
 				log_fatal (LOG_DEFAULT, "Integer overflow on addition at %s:%u", file, line);
-				exit (FATAL_EXIT_OUT_OF_MEMORY);
+				abort ();
 				return static_cast<Ret>(0);
 			}
 
@@ -46,7 +46,7 @@ namespace xamarin::android
 
 			if (XA_UNLIKELY (__builtin_mul_overflow (a, b, &ret))) {
 				log_fatal (LOG_DEFAULT, "Integer overflow on multiplication at %s:%u", file, line);
-				exit (FATAL_EXIT_OUT_OF_MEMORY);
+				abort ();
 				return static_cast<Ret>(0);
 			}
 

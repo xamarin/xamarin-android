@@ -8,19 +8,19 @@
       "Size": 7215
     },
     "assemblies/Java.Interop.dll": {
-      "Size": 70056
+      "Size": 70057
     },
     "assemblies/Mono.Android.dll": {
-      "Size": 571897
+      "Size": 571229
     },
     "assemblies/Mono.Security.dll": {
-      "Size": 68433
+      "Size": 68432
     },
     "assemblies/mscorlib.dll": {
-      "Size": 915406
+      "Size": 915408
     },
     "assemblies/System.Core.dll": {
-      "Size": 164047
+      "Size": 164045
     },
     "assemblies/System.dll": {
       "Size": 388864
@@ -38,13 +38,13 @@
       "Size": 186660
     },
     "assemblies/System.ServiceModel.Internals.dll": {
-      "Size": 26593
+      "Size": 26594
     },
     "assemblies/System.Xml.dll": {
       "Size": 395656
     },
     "assemblies/UnnamedProject.dll": {
-      "Size": 116897
+      "Size": 116898
     },
     "assemblies/Xamarin.AndroidX.Activity.dll": {
       "Size": 7697
@@ -65,7 +65,7 @@
       "Size": 131930
     },
     "assemblies/Xamarin.AndroidX.DrawerLayout.dll": {
-      "Size": 15425
+      "Size": 15426
     },
     "assemblies/Xamarin.AndroidX.Fragment.dll": {
       "Size": 43135
@@ -113,7 +113,7 @@
       "Size": 43497
     },
     "classes.dex": {
-      "Size": 3482568
+      "Size": 3482812
     },
     "lib/arm64-v8a/libmono-btls-shared.so": {
       "Size": 1613872
@@ -122,16 +122,16 @@
       "Size": 750976
     },
     "lib/arm64-v8a/libmonodroid.so": {
-      "Size": 332880
+      "Size": 416888
     },
     "lib/arm64-v8a/libmonosgen-2.0.so": {
-      "Size": 4051864
+      "Size": 4039176
     },
     "lib/arm64-v8a/libxa-internal-api.so": {
-      "Size": 66184
+      "Size": 65800
     },
     "lib/arm64-v8a/libxamarin-app.so": {
-      "Size": 106160
+      "Size": 107024
     },
     "META-INF/android.support.design_material.version": {
       "Size": 12
@@ -1883,5 +1883,5 @@
       "Size": 341040
     }
   },
-  "PackageSize": 9549982
+  "PackageSize": 9570462
 }

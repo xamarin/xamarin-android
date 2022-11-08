@@ -78,6 +78,9 @@ namespace xamarin::android::internal
 
 		// Documented in NDK's <android/log.h> comments
 		static constexpr size_t MAX_LOGCAT_MESSAGE_LENGTH = 1023;
+
+		// in bytes, including the terminating \0
+		static constexpr size_t SENSIBLE_LOG_LEVEL_ENVVAR_SIZE = 64;
 	};
 }
 #endif // __SHARED_CONSTANTS_HH

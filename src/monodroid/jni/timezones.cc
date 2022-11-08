@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstdlib>
 
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/assembly.h>
@@ -33,7 +33,7 @@ init ()
 	if (AndroidEnvironment_NotifyTimeZoneChanged)
 		return;
 
-	Mono_Android_dll                          = utils.monodroid_load_assembly (utils.get_current_domain (), SharedConstants::MONO_ANDROID_ASSEMBLY_NAME);
+	Mono_Android_dll                          = Util::monodroid_load_assembly (Util::get_current_domain (), SharedConstants::MONO_ANDROID_ASSEMBLY_NAME);
 	Mono_Android_image                        = mono_assembly_get_image (Mono_Android_dll);
 	AndroidEnvironment                        = mono_class_from_name (Mono_Android_image,  SharedConstants::ANDROID_RUNTIME_NS_NAME, SharedConstants::ANDROID_ENVIRONMENT_CLASS_NAME);
 	AndroidEnvironment_NotifyTimeZoneChanged  = mono_class_get_method_from_name (AndroidEnvironment, "NotifyTimeZoneChanged", 0);

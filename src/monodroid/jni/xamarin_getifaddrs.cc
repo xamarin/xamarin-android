@@ -32,7 +32,10 @@
 #include "logger.hh"
 
 #include "globals.hh"
+#include "util.hh"
 #include "xamarin_getifaddrs.h"
+
+using namespace xamarin::android;
 
 /* Some of these aren't defined in android's rtnetlink.h (as of ndk 16). We define values for all of
  * them if they aren't found so that the debug code works properly. We could skip them but future
@@ -556,7 +559,7 @@ parse_netlink_reply (netlink_session *session, struct _monodroid_ifaddrs **ifadd
 		}
 
 #if DEBUG
-		if (utils.should_log (LOG_NETLINK)) {
+		if (Util::should_log (LOG_NETLINK)) {
 			log_debug_nocheck (LOG_NETLINK, "response flags:");
 			if (netlink_reply.msg_flags == 0)
 				log_debug_nocheck (LOG_NETLINK, "   [NONE]");
@@ -818,7 +821,7 @@ calculate_address_netmask (struct _monodroid_ifaddrs *ifa, struct ifaddrmsg *net
 			if (prefix_bytes + 2 < data_length)
 				/* Set the rest of the mask bits in the byte following the last 0xFF value */
 				netmask_data [prefix_bytes + 1] = static_cast<unsigned char>(0xff << (8 - (prefix_length % 8)));
-			if (utils.should_log (LOG_NETLINK)) {
+			if (Util::should_log (LOG_NETLINK)) {
 				log_debug_nocheck (LOG_NETLINK, "   netmask is: ");
 				for (uint32_t i = 0; i < data_length; i++) {
 					log_debug_nocheck (LOG_NETLINK, "%s%u", i == 0 ? " " : ".", (unsigned char)ifa->ifa_netmask->sa_data [i]);
@@ -1013,7 +1016,7 @@ get_link_info (const struct nlmsghdr *message)
 				if (!ifa->ifa_name) {
 					goto error;
 				}
-				if (utils.should_log (LOG_NETLINK)) {
+				if (Util::should_log (LOG_NETLINK)) {
 					log_debug_nocheck (LOG_NETLINK, "   interface name (payload length: %d; string length: %d)\n", RTA_PAYLOAD (attribute), strlen (ifa->ifa_name));
 					log_debug_nocheck (LOG_NETLINK, "     %s\n", ifa->ifa_name);
 				}
@@ -1134,7 +1137,7 @@ struct enumvalue iflas[] = {
 static void
 print_ifla_name (int id)
 {
-	if (!utils.should_log (LOG_NETLINK))
+	if (!Util::should_log (LOG_NETLINK))
 		return;
 
 	int i = 0;
@@ -1156,7 +1159,7 @@ print_ifla_name (int id)
 static void
 print_address_list (const char title[], struct _monodroid_ifaddrs *list)
 {
-	if (!utils.should_log (LOG_NETLINK))
+	if (!Util::should_log (LOG_NETLINK))
 		return;
 
 	struct _monodroid_ifaddrs *cur;

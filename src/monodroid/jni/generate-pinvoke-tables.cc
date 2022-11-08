@@ -252,8 +252,6 @@ const std::vector<std::string> internal_pinvoke_names = {
 	"_monodroid_max_gref_get",
 	"monodroid_store_package_name",
 	"monodroid_strdup_printf",
-	"monodroid_strfreev",
-	"monodroid_strsplit",
 	"_monodroid_timezone_get_default_id",
 	"monodroid_timing_start",
 	"monodroid_timing_stop",

@@ -8,6 +8,7 @@
 #include <cstring>
 #include <limits>
 #include <functional>
+#include <optional>
 #include <vector>
 #include <semaphore.h>
 
@@ -24,6 +25,7 @@
 #include "mono-image-loader.hh"
 #include "shared-constants.hh"
 #include "xxhash.hh"
+#include "gsl.hh"
 
 #undef HAVE_CONCEPTS
 
@@ -118,38 +120,48 @@ namespace xamarin::android::internal {
 #endif  // def RELEASE && def ANDROID
 
 #if defined (DEBUG) || !defined (ANDROID)
-		void try_load_typemaps_from_directory (const char *path);
+		static void try_load_typemaps_from_directory (const char *path) noexcept;
 #endif
-		STATIC_IN_ANDROID_RELEASE const char* typemap_managed_to_java (MonoReflectionType *type, const uint8_t *mvid) noexcept;
+		static const char* typemap_managed_to_java (MonoReflectionType *type, const uint8_t *mvid) noexcept;
 
-		void install_preload_hooks_for_appdomains ();
+		static void install_preload_hooks_for_appdomains () noexcept;
 #if defined (NET)
-		void install_preload_hooks_for_alc ();
+		static void install_preload_hooks_for_alc () noexcept;
 #endif // def NET
-		STATIC_IN_ANDROID_RELEASE MonoReflectionType* typemap_java_to_managed (MonoString *java_type) noexcept;
+		static MonoReflectionType* typemap_java_to_managed (MonoString *java_type) noexcept;
 
 		/* returns current number of *all* assemblies found from all invocations */
 		template<bool (*should_register_fn)(const char*)>
-		size_t register_from (const char *apk_file)
+		static size_t register_from (const char *apk_file) noexcept
 		{
+			LOG_FUNC_ENTER ();
+
 			static_assert (should_register_fn != nullptr, "should_register_fn is a required template parameter");
+
+			LOG_FUNC_LEAVE ();
 			return register_from (apk_file, should_register_fn);
 		}
 
-		bool get_register_debug_symbols () const
+		static bool get_register_debug_symbols () noexcept
 		{
+			LOG_FUNC_ENTER ();
+			LOG_FUNC_LEAVE ();
 			return register_debug_symbols;
 		}
 
-		void set_register_debug_symbols (bool value)
+		static void set_register_debug_symbols (bool value) noexcept
 		{
+			LOG_FUNC_ENTER ();
+
 			register_debug_symbols = value;
+
+			LOG_FUNC_LEAVE ();
 		}
 
-		void set_assemblies_prefix (const char *prefix);
+		static void set_assemblies_prefix (const char *prefix) noexcept;
 
 #if defined (NET)
-		void get_runtime_config_blob (const char *& area, uint32_t& size) const
+		static void get_runtime_config_blob (const char *& area, uint32_t& size) noexcept
 		{
 			area = static_cast<char*>(runtime_config_blob_mmap.area);
 
@@ -157,18 +169,17 @@ namespace xamarin::android::internal {
 			size = static_cast<uint32_t>(runtime_config_blob_mmap.size);
 		}
 
-		bool have_runtime_config_blob () const noexcept
+		static bool have_runtime_config_blob () noexcept
 		{
 			return application_config.have_runtime_config_blob && runtime_config_blob_mmap.area != nullptr;
 		}
 #endif
-
-		bool keep_scanning () const noexcept
+		static bool keep_scanning () noexcept
 		{
 			return need_to_scan_more_apks;
 		}
 
-		void ensure_valid_assembly_stores () const noexcept
+		static void ensure_valid_assembly_stores () noexcept
 		{
 			if (!application_config.have_assembly_store) {
 				return;
@@ -178,27 +189,27 @@ namespace xamarin::android::internal {
 		}
 
 	private:
-		STATIC_IN_ANDROID_RELEASE const char* typemap_managed_to_java (MonoType *type, MonoClass *klass, const uint8_t *mvid) noexcept;
-		STATIC_IN_ANDROID_RELEASE MonoReflectionType* typemap_java_to_managed (hash_t hash, const MonoString *java_type_name) noexcept;
-		size_t register_from (const char *apk_file, monodroid_should_register should_register);
-		void gather_bundled_assemblies_from_apk (const char* apk, monodroid_should_register should_register);
+		static const char* typemap_managed_to_java (MonoType *type, MonoClass *klass, const uint8_t *mvid) noexcept;
+		static MonoReflectionType* typemap_java_to_managed (hash_t hash, const MonoString *java_type_name) noexcept;
+		static size_t register_from (const char *apk_file, monodroid_should_register should_register) noexcept;
+		static void gather_bundled_assemblies_from_apk (const char* apk, monodroid_should_register should_register) noexcept;
 
 		template<LoaderData TLoaderData>
-		MonoAssembly* individual_assemblies_open_from_bundles (dynamic_local_string<SENSIBLE_PATH_MAX>& name, TLoaderData loader_data, bool ref_only) noexcept;
+		static MonoAssembly* individual_assemblies_open_from_bundles (dynamic_local_string<SENSIBLE_PATH_MAX>& name, TLoaderData loader_data, bool ref_only) noexcept;
 
 		template<LoaderData TLoaderData>
-		MonoAssembly* assembly_store_open_from_bundles (dynamic_local_string<SENSIBLE_PATH_MAX>& name, TLoaderData loader_data, bool ref_only) noexcept;
+		static MonoAssembly* assembly_store_open_from_bundles (dynamic_local_string<SENSIBLE_PATH_MAX>& name, TLoaderData loader_data, bool ref_only) noexcept;
 
 		template<LoaderData TLoaderData>
-		MonoAssembly* open_from_bundles (MonoAssemblyName* aname, TLoaderData loader_data, MonoError *error, bool ref_only) noexcept;
+		static MonoAssembly* open_from_bundles (MonoAssemblyName* aname, TLoaderData loader_data, MonoError *error, bool ref_only) noexcept;
 
 		template<bool LogMapping>
-		void map_runtime_file (XamarinAndroidBundledAssembly& file) noexcept;
-		void map_assembly (XamarinAndroidBundledAssembly& file) noexcept;
-		void map_debug_data (XamarinAndroidBundledAssembly& file) noexcept;
+		static void map_runtime_file (XamarinAndroidBundledAssembly& file) noexcept;
+		static void map_assembly (XamarinAndroidBundledAssembly& file) noexcept;
+		static void map_debug_data (XamarinAndroidBundledAssembly& file) noexcept;
 
 		template<LoaderData TLoaderData>
-		MonoAssembly* load_bundled_assembly (
+		static MonoAssembly* load_bundled_assembly (
 			XamarinAndroidBundledAssembly& assembly,
 			dynamic_local_string<SENSIBLE_PATH_MAX> const& name,
 			dynamic_local_string<SENSIBLE_PATH_MAX> const& abi_name,
@@ -207,13 +218,13 @@ namespace xamarin::android::internal {
 
 #if defined (DEBUG) || !defined (ANDROID)
 		template<typename H>
-		bool typemap_read_header (int dir_fd, const char *file_type, const char *dir_path, const char *file_path, uint32_t expected_magic, H &header, size_t &file_size, int &fd);
-		std::unique_ptr<uint8_t[]> typemap_load_index (int dir_fd, const char *dir_path, const char *index_path);
-		std::unique_ptr<uint8_t[]> typemap_load_index (TypeMapIndexHeader &header, size_t file_size, int index_fd);
-		bool typemap_load_file (int dir_fd, const char *dir_path, const char *file_path, TypeMap &module);
-		bool typemap_load_file (BinaryTypeMapHeader &header, const char *dir_path, const char *file_path, int file_fd, TypeMap &module);
-		static ssize_t do_read (int fd, void *buf, size_t count);
-		const TypeMapEntry *typemap_managed_to_java (const char *managed_type_name) noexcept;
+		static bool typemap_read_header (int dir_fd, const char *file_type, const char *dir_path, const char *file_path, uint32_t expected_magic, H &header, size_t &file_size, int &fd) noexcept;
+		static std::unique_ptr<uint8_t[]> typemap_load_index (int dir_fd, const char *dir_path, const char *index_path) noexcept;
+		static std::unique_ptr<uint8_t[]> typemap_load_index (TypeMapIndexHeader &header, size_t file_size, int index_fd) noexcept;
+		static bool typemap_load_file (int dir_fd, const char *dir_path, const char *file_path, TypeMap &module) noexcept;
+		static bool typemap_load_file (BinaryTypeMapHeader &header, const char *dir_path, const char *file_path, int file_fd, TypeMap &module) noexcept;
+		static ssize_t do_read (int fd, void *buf, size_t count) noexcept;
+		static const TypeMapEntry *typemap_managed_to_java (const char *managed_type_name) noexcept;
 #endif // DEBUG || !ANDROID
 
 		static md_mmap_info md_mmap_apk_file (int fd, uint32_t offset, size_t size, const char* filename);
@@ -227,55 +238,44 @@ namespace xamarin::android::internal {
 		static void get_assembly_data (XamarinAndroidBundledAssembly const& e, uint8_t*& assembly_data, uint32_t& assembly_data_size) noexcept;
 		static void get_assembly_data (AssemblyStoreSingleAssemblyRuntimeData const& e, uint8_t*& assembly_data, uint32_t& assembly_data_size) noexcept;
 
-		void zip_load_entries (int fd, const char *apk_name, monodroid_should_register should_register);
-		void zip_load_individual_assembly_entries (std::vector<uint8_t> const& buf, uint32_t num_entries, monodroid_should_register should_register, ZipEntryLoadState &state) noexcept;
-		void zip_load_assembly_store_entries (std::vector<uint8_t> const& buf, uint32_t num_entries, ZipEntryLoadState &state) noexcept;
-		bool zip_load_entry_common (size_t entry_index, std::vector<uint8_t> const& buf, dynamic_local_string<SENSIBLE_PATH_MAX> &entry_name, ZipEntryLoadState &state) noexcept;
-		bool zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries);
-		bool zip_adjust_data_offset (int fd, ZipEntryLoadState &state);
+		static void zip_load_entries (int fd, const char *apk_name, monodroid_should_register should_register) noexcept;
+		static void zip_load_individual_assembly_entries (std::vector<uint8_t> const& buf, uint32_t num_entries, monodroid_should_register should_register, ZipEntryLoadState &state) noexcept;
+		static void zip_load_assembly_store_entries (std::vector<uint8_t> const& buf, uint32_t num_entries, ZipEntryLoadState &state) noexcept;
+		static bool zip_load_entry_common (size_t entry_index, std::vector<uint8_t> const& buf, dynamic_local_string<SENSIBLE_PATH_MAX> &entry_name, ZipEntryLoadState &state) noexcept;
+		static bool zip_read_cd_info (int fd, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries) noexcept;
+		static bool zip_adjust_data_offset (int fd, ZipEntryLoadState &state) noexcept;
 
 		template<size_t BufSize>
-		bool zip_extract_cd_info (std::array<uint8_t, BufSize> const& buf, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries);
+		static bool zip_extract_cd_info (std::array<uint8_t, BufSize> const& buf, uint32_t& cd_offset, uint32_t& cd_size, uint16_t& cd_entries) noexcept;
 
 		template<class T>
-		bool zip_ensure_valid_params (T const& buf, size_t index, size_t to_read) const noexcept;
-
-		// template<size_t BufSize>
-		// bool zip_read_field (std::array<uint8_t, BufSize> const& buf, size_t index, uint16_t& u)
-		// {
-		// 	return zip_read_field_unchecked (buf, u, index);
-		// }
-
-		// bool zip_read_field (std::vector<uint8_t> const& buf, size_t index, uint16_t& u)
-		// {
-		// 	return zip_read_field_unchecked (buf, u, index);
-		// }
+		static bool zip_ensure_valid_params (T const& buf, size_t index, size_t to_read) noexcept;
 
 		template<ByteArrayContainer T>
-		bool zip_read_field (T const& src, size_t source_index, uint16_t& dst) const noexcept;
+		static std::optional<uint16_t> zip_read_field_u16 (T const& src, size_t source_index) noexcept;
 
 		template<ByteArrayContainer T>
-		bool zip_read_field (T const& src, size_t source_index, uint32_t& dst) const noexcept;
+		static std::optional<uint32_t> zip_read_field_u32 (T const& src, size_t source_index) noexcept;
 
 		template<ByteArrayContainer T>
-		bool zip_read_field (T const& src, size_t source_index, std::array<uint8_t, 4>& dst_sig) const noexcept;
+		static bool zip_read_field (T const& src, size_t source_index, std::array<uint8_t, 4>& dst_sig) noexcept;
 
 		template<ByteArrayContainer T>
-		bool zip_read_field (T const& buf, size_t index, size_t count, dynamic_local_string<SENSIBLE_PATH_MAX>& characters) const noexcept;
+		static bool zip_read_field (T const& buf, size_t index, size_t count, dynamic_local_string<SENSIBLE_PATH_MAX>& characters) noexcept;
 
-		bool zip_read_entry_info (std::vector<uint8_t> const& buf, dynamic_local_string<SENSIBLE_PATH_MAX>& file_name, ZipEntryLoadState &state);
+		static bool zip_read_entry_info (std::vector<uint8_t> const& buf, dynamic_local_string<SENSIBLE_PATH_MAX>& file_name, ZipEntryLoadState &state) noexcept;
 
-		const char* get_assemblies_prefix () const
+		static const char* get_assemblies_prefix () noexcept
 		{
 			return assemblies_prefix_override != nullptr ? assemblies_prefix_override : assemblies_prefix;
 		}
 
-		uint32_t get_assemblies_prefix_length () const noexcept
+		static uint32_t get_assemblies_prefix_length () noexcept
 		{
 			return assemblies_prefix_override != nullptr ? static_cast<uint32_t>(strlen (assemblies_prefix_override)) : sizeof(assemblies_prefix) - 1;
 		}
 
-		bool all_required_zip_entries_found () const noexcept
+		static bool all_required_zip_entries_found () noexcept
 		{
 			return
 				number_of_mapped_assembly_stores == application_config.number_of_assembly_store_files
@@ -290,7 +290,7 @@ namespace xamarin::android::internal {
 			return c_unique_ptr<char> (mono_string_to_utf8 (const_cast<MonoString*>(s)));
 		}
 
-		bool is_debug_file (dynamic_local_string<SENSIBLE_PATH_MAX> const& name) noexcept;
+		static bool is_debug_file (dynamic_local_string<SENSIBLE_PATH_MAX> const& name) noexcept;
 
 		template<typename Key, typename Entry, int (*compare)(const Key*, const Entry*), bool use_extra_size = false>
 		static const Entry* binary_search (const Key *key, const Entry *base, size_t nmemb, size_t extra_size = 0) noexcept;
@@ -302,37 +302,39 @@ namespace xamarin::android::internal {
 		static const TypeMapModuleEntry* binary_search (uint32_t key, const TypeMapModuleEntry *arr, uint32_t n) noexcept;
 #endif
 		template<bool NeedsNameAlloc>
-		void set_entry_data (XamarinAndroidBundledAssembly &entry, int apk_fd, uint32_t data_offset, uint32_t data_size, uint32_t prefix_len, uint32_t max_name_size, dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name) noexcept;
-		void set_assembly_entry_data (XamarinAndroidBundledAssembly &entry, int apk_fd, uint32_t data_offset, uint32_t data_size, uint32_t prefix_len, uint32_t max_name_size, dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name) noexcept;
-		void set_debug_entry_data (XamarinAndroidBundledAssembly &entry, int apk_fd, uint32_t data_offset, uint32_t data_size, uint32_t prefix_len, uint32_t max_name_size, dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name) noexcept;
-		void map_assembly_store (dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name, ZipEntryLoadState &state) noexcept;
-		const AssemblyStoreHashEntry* find_assembly_store_entry (hash_t hash, const AssemblyStoreHashEntry *entries, size_t entry_count) noexcept;
+		static void set_entry_data (XamarinAndroidBundledAssembly &entry, int apk_fd, uint32_t data_offset, uint32_t data_size, uint32_t prefix_len, uint32_t max_name_size, dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name) noexcept;
+		static void set_assembly_entry_data (XamarinAndroidBundledAssembly &entry, int apk_fd, uint32_t data_offset, uint32_t data_size, uint32_t prefix_len, uint32_t max_name_size, dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name) noexcept;
+		static void set_debug_entry_data (XamarinAndroidBundledAssembly &entry, int apk_fd, uint32_t data_offset, uint32_t data_size, uint32_t prefix_len, uint32_t max_name_size, dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name) noexcept;
+		static void map_assembly_store (dynamic_local_string<SENSIBLE_PATH_MAX> const& entry_name, ZipEntryLoadState &state) noexcept;
+		static const AssemblyStoreHashEntry* find_assembly_store_entry (hash_t hash, const AssemblyStoreHashEntry *entries, size_t entry_count) noexcept;
 
 	private:
-		std::vector<XamarinAndroidBundledAssembly> *bundled_debug_data = nullptr;
-		std::vector<XamarinAndroidBundledAssembly> *extra_bundled_assemblies = nullptr;
+		using bundled_assembly_vector = std::vector<XamarinAndroidBundledAssembly>;
 
-		bool                   register_debug_symbols;
-		bool                   have_and_want_debug_symbols;
-		size_t                 bundled_assembly_index = 0;
-		size_t                 number_of_found_assemblies = 0;
+		static inline gsl::owner<bundled_assembly_vector*> bundled_debug_data = nullptr;
+		static inline gsl::owner<bundled_assembly_vector*> extra_bundled_assemblies = nullptr;
+
+		static inline bool                     register_debug_symbols = false;
+		static inline bool                     have_and_want_debug_symbols = false;
+		static inline size_t                   bundled_assembly_index = 0;
+		static inline size_t                   number_of_found_assemblies = 0;
 
 #if defined (DEBUG) || !defined (ANDROID)
-		TypeMappingInfo       *java_to_managed_maps;
-		TypeMappingInfo       *managed_to_java_maps;
-		TypeMap               *type_maps;
-		size_t                 type_map_count;
+		static inline TypeMappingInfo         *java_to_managed_maps = nullptr;
+		static inline TypeMappingInfo         *managed_to_java_maps = nullptr;
+		static inline TypeMap                 *type_maps = nullptr;
+		static inline size_t                   type_map_count = 0;
 #endif // DEBUG || !ANDROID
-		const char            *assemblies_prefix_override = nullptr;
+		static inline const char              *assemblies_prefix_override = nullptr;
 #if defined (NET)
-		md_mmap_info           runtime_config_blob_mmap{};
-		bool                   runtime_config_blob_found = false;
+		static inline md_mmap_info             runtime_config_blob_mmap{};
+		static inline bool                     runtime_config_blob_found = false;
 #endif // def NET
-		uint32_t               number_of_mapped_assembly_stores = 0;
-		bool                   need_to_scan_more_apks = true;
+		static inline uint32_t                 number_of_mapped_assembly_stores = 0;
+		static inline bool                     need_to_scan_more_apks = true;
 
-		AssemblyStoreHeader *index_assembly_store_header = nullptr;
-		AssemblyStoreHashEntry             *assembly_store_hashes;
+		static inline AssemblyStoreHeader     *index_assembly_store_header = nullptr;
+		static inline AssemblyStoreHashEntry  *assembly_store_hashes;
 	};
 }
 

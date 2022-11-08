@@ -1,3 +1,4 @@
+#if defined (NET)
 #include "monovm-properties.hh"
 
 using namespace xamarin::android::internal;
@@ -13,3 +14,4 @@ MonoVMProperties::property_array MonoVMProperties::_property_values {
 	nullptr,
 	nullptr,
 };
+#endif // def NET

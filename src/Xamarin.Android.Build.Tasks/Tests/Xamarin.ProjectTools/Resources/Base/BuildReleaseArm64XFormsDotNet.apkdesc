@@ -11,10 +11,10 @@
       "Size": 66843
     },
     "assemblies/Mono.Android.dll": {
-      "Size": 444299
+      "Size": 444221
     },
     "assemblies/Mono.Android.Runtime.dll": {
-      "Size": 5921
+      "Size": 5866
     },
     "assemblies/mscorlib.dll": {
       "Size": 3860
@@ -128,7 +128,7 @@
       "Size": 1862
     },
     "assemblies/UnnamedProject.dll": {
-      "Size": 117372
+      "Size": 117368
     },
     "assemblies/Xamarin.AndroidX.Activity.dll": {
       "Size": 5872
@@ -200,7 +200,7 @@
       "Size": 3090508
     },
     "lib/arm64-v8a/libmonodroid.so": {
-      "Size": 434632
+      "Size": 534832
     },
     "lib/arm64-v8a/libmonosgen-2.0.so": {
       "Size": 3078808
@@ -215,7 +215,7 @@
       "Size": 149552
     },
     "lib/arm64-v8a/libxamarin-app.so": {
-      "Size": 333376
+      "Size": 333336
     },
     "META-INF/android.support.design_material.version": {
       "Size": 12
@@ -782,7 +782,7 @@
       "Size": 470
     },
     "res/drawable-hdpi-v4/icon.png": {
-      "Size": 4762
+      "Size": 4791
     },
     "res/drawable-hdpi-v4/notification_bg_low_normal.9.png": {
       "Size": 212
@@ -1970,5 +1970,5 @@
       "Size": 341228
     }
   },
-  "PackageSize": 7971397
+  "PackageSize": 7991877
 }

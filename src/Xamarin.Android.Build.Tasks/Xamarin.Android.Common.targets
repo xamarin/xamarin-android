@@ -1496,6 +1496,8 @@ because xbuild doesn't support framework reference assemblies.
       UsingAndroidNETSdk="$(UsingAndroidNETSdk)"
   />
   <ItemGroup>
+    <_AllJavaStubHashFile Include="@(ResolvedAssemblies->'$(MonoAndroidIntermediateAssemblyDir)%(DestinationSubPath).hash')" />
+    <_JavaStubHashFile Include="@(_AllJavaStubHashFile)" Condition="Exists('%(_AllJavaStubHashFile.Identity)')" />
     <FileWrites Include="$(MonoAndroidIntermediateAssemblyDir)**" />
   </ItemGroup>
 </Target>
@@ -1525,7 +1527,7 @@ because xbuild doesn't support framework reference assemblies.
 
 <Target Name="_GenerateJavaStubs"
     DependsOnTargets="$(_GenerateJavaStubsDependsOnTargets);$(BeforeGenerateAndroidManifest)"
-    Inputs="@(_AndroidMSBuildAllProjects);@(_ResolvedUserMonoAndroidAssemblies);$(_AndroidManifestAbs);$(_AndroidBuildPropertiesCache);@(AndroidEnvironment);@(LibraryEnvironments)"
+    Inputs="@(_AndroidMSBuildAllProjects);@(_JavaStubHashFile);$(_AndroidManifestAbs);$(_AndroidBuildPropertiesCache);@(AndroidEnvironment);@(LibraryEnvironments)"
     Outputs="$(_AndroidStampDirectory)_GenerateJavaStubs.stamp">
 
   <PropertyGroup>

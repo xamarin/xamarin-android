@@ -1,14 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\Configuration.props" />
+  <Import Project="..\..\external\java.interop\src\Java.Interop.NamingCustomAttributes\Java.Interop.NamingCustomAttributes.projitems" Label="Shared" Condition="Exists('..\..\external\java.interop\src\Java.Interop.NamingCustomAttributes\Java.Interop.NamingCustomAttributes.projitems')" />
   <PropertyGroup>
     <TargetFramework>$(DotNetTargetFramework)</TargetFramework>
-    <DefineConstants>ILLINK</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>ILLINK;HAVE_CECIL</DefineConstants>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>$(MicrosoftAndroidSdkOutDir)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.ILLink" Version="$(MicrosoftNETILLinkTasksPackageVersion)" />
     <ProjectReference Include="..\..\external\Java.Interop\src\Java.Interop.Export\Java.Interop.Export.csproj" />
+    <ProjectReference Include="..\..\external\Java.Interop\src\Java.Interop.Localization\Java.Interop.Localization.csproj" />
+    <ProjectReference Include="..\..\external\xamarin-android-tools\src\Microsoft.Android.Build.BaseTasks\Microsoft.Android.Build.BaseTasks.csproj" />
     <ProjectReference Include="..\Xamarin.Android.Build.Tasks\Xamarin.Android.Build.Tasks.csproj" ReferenceOutputAssembly="False" />
 
     <Compile Include="..\Xamarin.Android.Build.Tasks\obj\$(Configuration)\Profile.g.cs" Link="Profile.g.cs" />
@@ -45,6 +49,13 @@
     <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.Cecil\Java.Interop.Tools.Cecil\MethodDefinitionRocks.cs" Link="Java.Interop\MethodDefinitionRocks.cs" />
     <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.Cecil\Java.Interop.Tools.Cecil\TypeDefinitionCache.cs" Link="Java.Interop\TypeDefinitionCache.cs" />
     <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.Cecil\Java.Interop.Tools.Cecil\TypeDefinitionRocks.cs" Link="Java.Interop\TypeDefinitionRocks.cs" />
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.Diagnostics\Java.Interop.Tools.Diagnostics\Diagnostic.cs" Link="Java.Interop.Tools.Diagnostics\Diagnostic.cs" />
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.Diagnostics\Java.Interop.Tools.Diagnostics\XamarinAndroidException.cs" Link="Java.Interop.Tools.Diagnostics\XamarinAndroidException.cs" />
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\Crc64Helper.cs" Link="Java.Interop.Tools.JavaCallableWrappers\Crc64Helper.cs" />
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\Crc64.Table.cs" Link="Java.Interop.Tools.JavaCallableWrappers\Crc64.Table.cs" />
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\JavaTypeScanner.cs" Link="Java.Interop.Tools.JavaCallableWrappers\JavaTypeScanner.cs" />
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\JavaCallableWrapperGenerator.cs" Link="Java.Interop.Tools.JavaCallableWrappers\JavaCallableWrapperGenerator.cs" />
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.TypeNameMappings\Java.Interop.Tools.TypeNameMappings\JavaNativeTypeManager.cs" Link="Java.Interop.Tools.TypeNameMappings\JavaNativeTypeManager.cs" />
     <Compile Include="..\Xamarin.Android.Build.Tasks\Utilities\MonoAndroidHelper.Linker.cs" Link="Utilities\MonoAndroidHelper.Linker.cs" />
   </ItemGroup>
   <ItemGroup>

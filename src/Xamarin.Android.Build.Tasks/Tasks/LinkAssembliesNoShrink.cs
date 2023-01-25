@@ -4,6 +4,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Mono.Cecil;
 using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.Android.Build.Tasks;
 
@@ -54,7 +55,8 @@ namespace Xamarin.Android.Tasks
 				DeterministicMvid = Deterministic,
 			};
 
-			using (var resolver = new DirectoryAssemblyResolver (this.CreateTaskLogger (), loadDebugSymbols: true, loadReaderParameters: readerParameters)) {
+			var logger = this.CreateTaskLogger ();
+			using (var resolver = new DirectoryAssemblyResolver (logger, loadDebugSymbols: true, loadReaderParameters: readerParameters)) {
 				// Add SearchDirectories with ResolvedAssemblies
 				foreach (var assembly in ResolvedAssemblies) {
 					var path = Path.GetFullPath (Path.GetDirectoryName (assembly.ItemSpec));
@@ -67,6 +69,7 @@ namespace Xamarin.Android.Tasks
 				var fixAbstractMethodsStep = new FixAbstractMethodsStep (resolver, cache, Log);
 				var addKeepAliveStep = new AddKeepAlivesStep (resolver, cache, Log, UsingAndroidNETSdk);
 				var fixLegacyResourceDesignerStep = new FixLegacyResourceDesignerStep (resolver, Log);
+				var javaStubHashStep = new MonoDroid.Tuner.CalculateJavaStubHashStep (logger, cache);
 				for (int i = 0; i < SourceFiles.Length; i++) {
 					var source = SourceFiles [i];
 					var destination = DestinationFiles [i];
@@ -89,16 +92,16 @@ namespace Xamarin.Android.Tasks
 						fixAbstractMethodsStep.CheckAppDomainUsage (assemblyDefinition, (string msg) => Log.LogCodedWarning ("XA2000", msg));
 					}
 
-					// Only run the step on "MonoAndroid" assemblies
+					// Only run the following step(s) on "MonoAndroid" assemblies
 					if (MonoAndroidHelper.IsMonoAndroidAssembly (source) && !MonoAndroidHelper.IsSharedRuntimeAssembly (source.ItemSpec)) {
-						if (assemblyDefinition == null)
-							assemblyDefinition = resolver.GetAssembly (source.ItemSpec);
+						assemblyDefinition ??= resolver.GetAssembly (source.ItemSpec);
 
 						bool save = fixAbstractMethodsStep.FixAbstractMethods (assemblyDefinition);
 						if (UseDesignerAssembly)
 							save |= fixLegacyResourceDesignerStep.ProcessAssemblyDesigner (assemblyDefinition);
 						if (AddKeepAlives)
 							save |= addKeepAliveStep.AddKeepAlives (assemblyDefinition);
+						javaStubHashStep.Calculate (assemblyDefinition, Path.GetDirectoryName (destination.ItemSpec));
 						if (save) {
 							Log.LogDebugMessage ($"Saving modified assembly: {destination.ItemSpec}");
 							writerParameters.WriteSymbols = assemblyDefinition.MainModule.HasSymbols;

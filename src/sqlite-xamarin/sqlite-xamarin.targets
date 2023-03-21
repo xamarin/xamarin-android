@@ -17,7 +17,7 @@
       <_ConfigureSqliteCommands
           Include="@(AndroidSupportedTargetJitAbi)">
         <Command>$(CmakePath)</Command>
-        <Arguments>$(_CmakeAndroidFlags) -DANDROID_NATIVE_API_LEVEL=%(AndroidSupportedTargetJitAbi.ApiLevel) -DANDROID_PLATFORM=android-%(AndroidSupportedTargetJitAbi.ApiLevel) -DANDROID_ABI=%(AndroidSupportedTargetJitAbi.Identity) -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$(OutputPath)%(AndroidSupportedTargetJitAbi.Identity)" -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$(OutputPath)%(AndroidSupportedTargetJitAbi.Identity)" -DCMAKE_BUILD_TYPE=$(Configuration) -DSQLITE_SOURCE_DIR="$(SqliteSourceFullPath)" -DSQLITE_LIBRARY_NAME="$(_SqliteBaseLibName)" -DSQLITE_OUTPUT_DIR="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)')" $(MSBuildThisFileDirectory)</Arguments>
+        <Arguments>$(_CmakeAndroidFlags) -DANDROID_NATIVE_API_LEVEL=%(AndroidSupportedTargetJitAbi.ApiLevelNET) -DANDROID_PLATFORM=android-%(AndroidSupportedTargetJitAbi.ApiLevelNET) -DANDROID_ABI=%(AndroidSupportedTargetJitAbi.Identity) -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$(OutputPath)%(AndroidSupportedTargetJitAbi.Identity)" -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$(OutputPath)%(AndroidSupportedTargetJitAbi.Identity)" -DCMAKE_BUILD_TYPE=$(Configuration) -DSQLITE_SOURCE_DIR="$(SqliteSourceFullPath)" -DSQLITE_LIBRARY_NAME="$(_SqliteBaseLibName)" -DSQLITE_OUTPUT_DIR="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)')" $(MSBuildThisFileDirectory)</Arguments>
         <WorkingDirectory>$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-$(Configuration)</WorkingDirectory>
       </_ConfigureSqliteCommands>
     </ItemGroup>

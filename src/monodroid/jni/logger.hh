@@ -3,20 +3,6 @@
 
 #include "java-interop-logger.h"
 
-#ifndef ANDROID
-typedef enum android_LogPriority {
-    ANDROID_LOG_UNKNOWN = 0,
-    ANDROID_LOG_DEFAULT,    /* only for SetMinPriority() */
-    ANDROID_LOG_VERBOSE,
-    ANDROID_LOG_DEBUG,
-    ANDROID_LOG_INFO,
-    ANDROID_LOG_WARN,
-    ANDROID_LOG_ERROR,
-    ANDROID_LOG_FATAL,
-    ANDROID_LOG_SILENT,     /* only for SetMinPriority(); must be last */
-} android_LogPriority;
-#endif
-
 void init_logging_categories (char*& mono_log_mask, char*& mono_log_level);
 
 void init_reference_logging (const char *override_dir);

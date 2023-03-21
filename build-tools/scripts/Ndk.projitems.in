@@ -2,13 +2,9 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <AndroidNdkVersion Condition=" '$(AndroidNdkVersion)' == '' ">@NDK_RELEASE@</AndroidNdkVersion>
-    <AndroidNdkApiLevel_ArmV7a Condition=" '$(AndroidNdkApiLevel_ArmV7a)' == '' ">@NDK_ARMEABI_V7_API@</AndroidNdkApiLevel_ArmV7a>
     <AndroidNdkApiLevel_Arm Condition=" '$(AndroidNdkApiLevel_Arm)' == '' ">@NDK_ARMEABI_V7_API_NET@</AndroidNdkApiLevel_Arm>
-    <AndroidNdkApiLevel_ArmV8a Condition=" '$(AndroidNdkApiLevel_ArmV8a)' == '' ">@NDK_ARM64_V8A_API@</AndroidNdkApiLevel_ArmV8a>
     <AndroidNdkApiLevel_Arm64 Condition=" '$(AndroidNdkApiLevel_Arm64)' == '' ">@NDK_ARM64_V8A_API_NET@</AndroidNdkApiLevel_Arm64>
-    <AndroidNdkApiLevel_X86_Legacy Condition=" '$(AndroidNdkApiLevel_X86_Legacy)' == '' ">@NDK_X86_API@</AndroidNdkApiLevel_X86_Legacy>
     <AndroidNdkApiLevel_X86 Condition=" '$(AndroidNdkApiLevel_X86)' == '' ">@NDK_X86_API_NET@</AndroidNdkApiLevel_X86>
-    <AndroidNdkApiLevel_X86_64 Condition=" '$(AndroidNdkApiLevel_X86_64)' == '' ">@NDK_X86_64_API@</AndroidNdkApiLevel_X86_64>
     <AndroidNdkApiLevel_X64 Condition=" '$(AndroidNdkApiLevel_X64)' == '' ">@NDK_X86_64_API_NET@</AndroidNdkApiLevel_X64>
   </PropertyGroup>
 
@@ -16,7 +12,6 @@
     <AndroidSupportedTargetJitAbi
         Include="armeabi-v7a"
         Condition=" $(AndroidSupportedTargetJitAbisForConditionalChecks.Contains (':armeabi-v7a:')) ">
-      <ApiLevel>$(AndroidNdkApiLevel_ArmV7a)</ApiLevel>
       <ApiLevelNET>$(AndroidNdkApiLevel_Arm)</ApiLevelNET>
       <AndroidRID>android-arm</AndroidRID>
     </AndroidSupportedTargetJitAbi>
@@ -24,7 +19,6 @@
     <AndroidSupportedTargetJitAbi
         Include="arm64-v8a"
         Condition=" $(AndroidSupportedTargetJitAbisForConditionalChecks.Contains (':arm64-v8a:')) ">
-      <ApiLevel>$(AndroidNdkApiLevel_ArmV8a)</ApiLevel>
       <ApiLevelNET>$(AndroidNdkApiLevel_Arm64)</ApiLevelNET>
       <AndroidRID>android-arm64</AndroidRID>
     </AndroidSupportedTargetJitAbi>
@@ -32,7 +26,6 @@
     <AndroidSupportedTargetJitAbi
         Include="x86"
         Condition=" $(AndroidSupportedTargetJitAbisForConditionalChecks.Contains (':x86:')) ">
-      <ApiLevel>$(AndroidNdkApiLevel_X86_Legacy)</ApiLevel>
       <ApiLevelNET>$(AndroidNdkApiLevel_X86)</ApiLevelNET>
       <AndroidRID>android-x86</AndroidRID>
     </AndroidSupportedTargetJitAbi>
@@ -40,7 +33,6 @@
     <AndroidSupportedTargetJitAbi
         Include="x86_64"
         Condition=" $(AndroidSupportedTargetJitAbisForConditionalChecks.Contains (':x86_64:')) ">
-      <ApiLevel>$(AndroidNdkApiLevel_X86_64)</ApiLevel>
       <ApiLevelNET>$(AndroidNdkApiLevel_X64)</ApiLevelNET>
       <AndroidRID>android-x64</AndroidRID>
     </AndroidSupportedTargetJitAbi>

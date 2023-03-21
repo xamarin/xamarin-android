@@ -1,9 +1,7 @@
 #if !defined (__BUILD_INFO_HH)
 #define __BUILD_INFO_HH
 
-#if defined (ANDROID)
 #include <android/ndk-version.h>
-#endif // def ANDROID
 
 namespace xamarin::android::internal
 {

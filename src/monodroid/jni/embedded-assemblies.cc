@@ -1,8 +1,6 @@
 #include <host-config.h>
 
-#if !defined (__MINGW32__) || (defined (__MINGW32__) && __GNUC__ >= 10)
 #include <compare>
-#endif // ndef MINGW32 || def MINGW32 && GNUC >= 10
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -84,7 +82,7 @@ EmbeddedAssemblies::set_assembly_data_and_size (uint8_t* source_assembly_data, u
 force_inline void
 EmbeddedAssemblies::get_assembly_data (uint8_t *data, uint32_t data_size, [[maybe_unused]] const char *name, uint8_t*& assembly_data, uint32_t& assembly_data_size) noexcept
 {
-#if defined (ANDROID) && defined (HAVE_LZ4) && defined (RELEASE)
+#if defined (HAVE_LZ4) && defined (RELEASE)
 	auto header = reinterpret_cast<const CompressedAssemblyHeader*>(data);
 	if (header->magic == COMPRESSED_DATA_MAGIC) {
 		if (XA_UNLIKELY (compressed_assemblies.descriptors == nullptr)) {
@@ -275,10 +273,6 @@ EmbeddedAssemblies::load_bundled_assembly (
 		return nullptr;
 	}
 
-#if !defined (NET)
-	// In dotnet the call is a no-op
-	mono_config_for_assembly (image);
-#endif
 	return a;
 }
 
@@ -322,7 +316,6 @@ EmbeddedAssemblies::individual_assemblies_open_from_bundles (dynamic_local_strin
 force_inline const AssemblyStoreHashEntry*
 EmbeddedAssemblies::find_assembly_store_entry ([[maybe_unused]] hash_t hash, [[maybe_unused]] const AssemblyStoreHashEntry *entries, [[maybe_unused]] size_t entry_count) noexcept
 {
-#if !defined (__MINGW32__) || (defined (__MINGW32__) && __GNUC__ >= 10)
 	hash_t entry_hash;
 	const AssemblyStoreHashEntry *ret = nullptr;
 
@@ -344,7 +337,6 @@ EmbeddedAssemblies::find_assembly_store_entry ([[maybe_unused]] hash_t hash, [[m
 			return ret;
 		}
 	}
-#endif // ndef __MINGW32__ || (def __MINGW32__ && __GNUC__ >= 10)
 
 	return nullptr;
 }
@@ -397,17 +389,6 @@ EmbeddedAssemblies::assembly_store_open_from_bundles (dynamic_local_string<SENSI
 		if (bba->debug_data_offset != 0) {
 			assembly_runtime_info.debug_info_data = rd.data_start + bba->debug_data_offset;
 		}
-#if !defined (NET)
-		if (bba->config_data_size != 0) {
-			assembly_runtime_info.config_data = rd.data_start + bba->config_data_offset;
-
-			// Mono takes ownership of the pointers
-			mono_register_config_for_assembly (
-				utils.string_concat (name.get (), ".dll"),
-				utils.strdup_new (reinterpret_cast<const char*>(assembly_runtime_info.config_data))
-			);
-		}
-#endif // NET
 
 		log_debug (
 			LOG_ASSEMBLY,
@@ -452,9 +433,6 @@ EmbeddedAssemblies::assembly_store_open_from_bundles (dynamic_local_string<SENSI
 		return nullptr;
 	}
 
-#if !defined (NET)
-	mono_config_for_assembly (image);
-#endif
 	return a;
 }
 
@@ -489,26 +467,12 @@ EmbeddedAssemblies::open_from_bundles (MonoAssemblyName* aname, TLoaderData load
 	return a;
 }
 
-#if defined (NET)
 MonoAssembly*
 EmbeddedAssemblies::open_from_bundles (MonoAssemblyLoadContextGCHandle alc_gchandle, MonoAssemblyName *aname, [[maybe_unused]] char **assemblies_path, [[maybe_unused]] void *user_data, MonoError *error)
 {
 	constexpr bool ref_only = false;
 	return embeddedAssemblies.open_from_bundles (aname, alc_gchandle, error, ref_only);
 }
-#else // def NET
-
-// The duplicated `ref_only` parameters in the two functions below look weird, but the first one of them is used to
-// call the right instance of the templateed MonoImageLoader::load method (just as`alc_gchandle` above) which loads a
-// `MonoImage`, while the other is used when loading a `MonoAssembly`
-MonoAssembly*
-EmbeddedAssemblies::open_from_bundles_refonly (MonoAssemblyName *aname, [[maybe_unused]] char **assemblies_path, [[maybe_unused]] void *user_data)
-{
-	constexpr bool ref_only = true;
-
-	return embeddedAssemblies.open_from_bundles (aname, ref_only /* loader_data */, nullptr /* error */, ref_only);
-}
-#endif // ndef NET
 
 MonoAssembly*
 EmbeddedAssemblies::open_from_bundles_full (MonoAssemblyName *aname, [[maybe_unused]] char **assemblies_path, [[maybe_unused]] void *user_data)
@@ -522,12 +486,8 @@ void
 EmbeddedAssemblies::install_preload_hooks_for_appdomains ()
 {
 	mono_install_assembly_preload_hook (open_from_bundles_full, nullptr);
-#if !defined (NET)
-	mono_install_assembly_refonly_preload_hook (open_from_bundles_refonly, nullptr);
-#endif // ndef NET
 }
 
-#if defined (NET)
 void
 EmbeddedAssemblies::install_preload_hooks_for_alc ()
 {
@@ -537,7 +497,6 @@ EmbeddedAssemblies::install_preload_hooks_for_alc ()
 		0 /* append */
 	);
 }
-#endif // def NET
 
 template<typename Key, typename Entry, int (*compare)(const Key*, const Entry*), bool use_precalculated_size>
 force_inline const Entry*
@@ -591,7 +550,7 @@ EmbeddedAssemblies::binary_search (const Key *key, const Entry *base, size_t nme
 	return nullptr;
 }
 
-#if defined (RELEASE) && defined (ANDROID)
+#if defined (RELEASE)
 force_inline const TypeMapModuleEntry*
 EmbeddedAssemblies::binary_search (uint32_t key, const TypeMapModuleEntry *arr, uint32_t n) noexcept
 {
@@ -610,9 +569,9 @@ EmbeddedAssemblies::binary_search (uint32_t key, const TypeMapModuleEntry *arr, 
 
 	return arr[right].type_token_id == key ? &arr[right] : nullptr;
 }
-#endif // def RELEASE && def ANDROID
+#endif // def RELEASE
 
-#if defined (DEBUG) || !defined (ANDROID)
+#if defined (DEBUG)
 force_inline int
 EmbeddedAssemblies::compare_type_name (const char *type_name, const TypeMapEntry *entry) noexcept
 {
@@ -708,14 +667,11 @@ EmbeddedAssemblies::typemap_java_to_managed (hash_t hash, const MonoString *java
 		return nullptr;
 	}
 
-#if defined (NET)
 	// MonoVM in dotnet runtime doesn't use the `domain` parameter passed to `mono_type_get_object` (since AppDomains
 	// are gone in NET 6+), in fact, the function `mono_type_get_object` calls (`mono_type_get_object_checked`) itself
 	// calls `mono_get_root_domain`. Thus, we can save on a one function call here by passing `nullptr`
 	constexpr MonoDomain *domain = nullptr;
-#else
-	MonoDomain *domain = utils.get_current_domain ();
-#endif
+
 	MonoReflectionType *ret = mono_type_get_object (domain, mono_class_get_type (klass));
 	if (ret == nullptr) {
 		log_warn (LOG_ASSEMBLY, "typemap: unable to instantiate managed type with token ID %u in assembly '%s', corresponding to Java type '%s'", java_entry->type_token_id, module->assembly_name, to_utf8 (java_type_name).get ());
@@ -759,7 +715,7 @@ EmbeddedAssemblies::typemap_java_to_managed (MonoString *java_type) noexcept
 	return ret;
 }
 
-#if defined (DEBUG) || !defined (ANDROID)
+#if defined (DEBUG)
 force_inline const TypeMapEntry*
 EmbeddedAssemblies::typemap_managed_to_java (const char *managed_type_name) noexcept
 {
@@ -941,7 +897,7 @@ EmbeddedAssemblies::gather_bundled_assemblies_from_apk (const char* apk, monodro
 	zip_load_entries (fd, apk, should_register);
 }
 
-#if defined (DEBUG) || !defined (ANDROID)
+#if defined (DEBUG)
 ssize_t EmbeddedAssemblies::do_read (int fd, void *buf, size_t count)
 {
 	ssize_t ret;
@@ -965,14 +921,8 @@ bool
 EmbeddedAssemblies::typemap_read_header ([[maybe_unused]] int dir_fd, const char *file_type, const char *dir_path, const char *file_path, uint32_t expected_magic, H &header, size_t &file_size, int &fd)
 {
 	struct stat sbuf;
-	int res;
+	int res = fstatat (dir_fd, file_path, &sbuf, 0);
 
-#if __ANDROID_API__ < 21
-	std::unique_ptr<char> full_file_path {utils.path_combine (dir_path, file_path)};
-	res = stat (full_file_path.get (), &sbuf);
-#else
-	res = fstatat (dir_fd, file_path, &sbuf, 0);
-#endif
 	if (res < 0) {
 		log_error (LOG_ASSEMBLY, "typemap: failed to stat %s file '%s/%s': %s", file_type, dir_path, file_path, strerror (errno));
 		return false;
@@ -984,11 +934,7 @@ EmbeddedAssemblies::typemap_read_header ([[maybe_unused]] int dir_fd, const char
 		return false;
 	}
 
-#if __ANDROID_API__ < 21
-	fd = open (full_file_path.get (), O_RDONLY);
-#else
 	fd = openat (dir_fd, file_path, O_RDONLY);
-#endif
 	if (fd < 0) {
 		log_error (LOG_ASSEMBLY, "typemap: failed to open %s file %s/%s for reading: %s", file_type, dir_path, file_path, strerror (errno));
 		return false;
@@ -1189,12 +1135,7 @@ EmbeddedAssemblies::try_load_typemaps_from_directory (const char *path)
 		return;
 	}
 
-	int dir_fd;
-#if __ANDROID_API__ < 21
-	dir_fd = -1;
-#else
-	dir_fd = dirfd (dir);
-#endif
+	int dir_fd = dirfd (dir);
 
 	constexpr char index_name[] = "typemap.index";
 

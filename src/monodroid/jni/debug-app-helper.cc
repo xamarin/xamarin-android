@@ -6,9 +6,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#ifdef ANDROID
 #include <android/log.h>
-#endif
 
 #include "basic-android-system.hh"
 #include "basic-utilities.hh"
@@ -37,23 +35,6 @@ bool maybe_load_library (const char *path);
 	va_start ((_args_), (_format_)); \
 	__android_log_vprint ((_level_), (_tag_), (_format_), (_args_)); \
 	va_end ((_args_));
-
-#ifndef ANDROID
-#define ANDROID_LOG_INFO  1
-#define ANDROID_LOG_WARN  2
-#define ANDROID_LOG_ERROR 3
-#define ANDROID_LOG_FATAL 4
-#define ANDROID_LOG_DEBUG 5
-
-static void
-__android_log_vprint (int prio, const char* tag, const char* fmt, va_list ap)
-{
-	printf ("%d [%s] ", prio, tag);
-	vprintf (fmt, ap);
-	putchar ('\n');
-	fflush (stdout);
-}
-#endif
 
 static constexpr char TAG[] = "debug-app-helper";
 
@@ -95,7 +76,6 @@ Java_mono_android_DebugRuntime_init (JNIEnv *env, [[maybe_unused]] jclass klass,
 	}
 }
 
-#if defined (ANDROID)
 static void
 copy_file_to_internal_location (char *to_dir, char *from_dir, char *file)
 {
@@ -130,12 +110,6 @@ copy_file_to_internal_location (char *to_dir, char *from_dir, char *file)
 	delete[] from_file;
 	delete[] to_file;
 }
-#else  /* !defined (ANDROID) */
-static void
-copy_file_to_internal_location ([[maybe_unused]] char *to_dir, [[maybe_unused]] char *from_dir, [[maybe_unused]] char* file)
-{
-}
-#endif /* defined (ANDROID) */
 
 static void
 copy_native_libraries_to_internal_location ()
@@ -162,15 +136,8 @@ copy_native_libraries_to_internal_location ()
 		while ((e = readdir (dir)) != nullptr) {
 			log_warn (LOG_DEFAULT, "checking file: `%s`", e->d_name);
 			if (utils.monodroid_dirent_hasextension (e, ".so")) {
-#if WINDOWS
-				char *file_name = utils.utf16_to_utf8 (e->d_name);
-#else   /* def WINDOWS */
 				char *file_name = e->d_name;
-#endif  /* ndef WINDOWS */
 				copy_file_to_internal_location (androidSystem.get_primary_override_dir (), dir_path, file_name);
-#if WINDOWS
-				free (file_name);
-#endif  /* def WINDOWS */
 			}
 		}
 		utils.monodroid_closedir (dir);
@@ -254,11 +221,6 @@ get_libmonosgen_path ()
 	if (libmonoso != nullptr && utils.file_exists (libmonoso))
 		return libmonoso;
 	delete[] libmonoso;
-
-#ifdef WINDOWS
-	if (runtime_exists (get_libmonoandroid_directory_path (), libmonoso))
-		return libmonoso;
-#endif
 
 	if (runtime_exists (BasicAndroidSystem::SYSTEM_LIB_PATH, libmonoso))
 		return libmonoso;

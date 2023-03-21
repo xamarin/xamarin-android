@@ -240,20 +240,7 @@ namespace xamarin::android
 
 			return ret;
 		}
-#if defined (WINDOWS)
-		/* Those two conversion functions are only properly implemented on Windows
-		 * because that's the only place where they should be useful.
-		 */
-		char            *utf16_to_utf8 (const wchar_t *widestr)
-		{
-			return ::utf16_to_utf8 (widestr);
-		}
 
-		wchar_t         *utf8_to_utf16 (const char *mbstr)
-		{
-			return ::utf8_to_utf16 (mbstr);
-		}
-#endif // def WINDOWS
 		bool            is_path_rooted (const char *path);
 
 		template<typename CharType = char>
@@ -286,11 +273,7 @@ namespace xamarin::android
 
 		int make_directory (const char *path, [[maybe_unused]] mode_t mode)
 		{
-#if WINDOWS
-			return mkdir (path);
-#else
 			return mkdir (path, mode);
-#endif
 		}
 
 	private:

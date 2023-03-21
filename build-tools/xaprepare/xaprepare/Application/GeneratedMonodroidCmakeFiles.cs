@@ -45,12 +45,6 @@ namespace Xamarin.Android.Prepare
 			AbiNames.TargetJit.AndroidX86_64,
 		};
 
-		static readonly string[] HostAbis = new [] {
-			Context.Instance.OS.Type,
-			AbiNames.HostJit.Win32,
-			AbiNames.HostJit.Win64,
-		};
-
 		void GenerateShellConfig (Context context, StreamWriter sw)
 		{
 			var commonReplacements = new Dictionary<string, string> (StringComparer.Ordinal) {
@@ -73,15 +67,7 @@ namespace Xamarin.Android.Prepare
 				{ "@AndroidToolchainPath@", GetRelativeToolchainDefinitionPath () },
 			};
 
-			var hostRuntimeReplacements = new Dictionary<string, string> (StringComparer.Ordinal) {
-				{ "@CmakeHostFlags@", "" },
-				{ "@MingwDependenciesRootDirectory@", CmakeBuilds.MingwDependenciesRootDirectory },
-				{ "@MxeToolchainBasePath@", "${MXE_TOOLCHAIN_BASE_PATH}" },
-				{ "@BITNESS@", "" },
-			};
-
 			AddReplacements (commonReplacements, androidRuntimeReplacements);
-			AddReplacements (commonReplacements, hostRuntimeReplacements);
 
 			string monodroidObjDir = Path.Combine (Configurables.Paths.MonodroidSourceDir, "obj", context.Configuration);
 			string jdkInfoPropsPath = Path.Combine (Configurables.Paths.ExternalJavaInteropDir, "bin", $"Build{context.Configuration}", "JdkInfo.props");
@@ -136,56 +122,8 @@ namespace Xamarin.Android.Prepare
 			sw.WriteLine ("}");
 			sw.WriteLine ();
 
-			sw.WriteLine ("function __xa_configure_host_runtime()");
-			sw.WriteLine ("{");
-			sw.WriteLine ($"{indent}local is_mxe=$1");
-			sw.WriteLine ();
-
-			WriteVariableValidationCode ("__BUILD_DIR");
-			WriteVariableValidationCode ("__CONFIGURATION");
-			WriteVariableValidationCode ("__BUILD_TYPE");
-			WriteVariableValidationCode ("__OUTPUT_DIR");
-
-			sw.WriteLine ($"{indent}cleanup_build_dir");
-			sw.WriteLine ();
-
-			sw.WriteLine ($"{indent}shift");
-			sw.WriteLine ();
-			sw.WriteLine ($"{indent}if [ \"${{is_mxe}}\" = \"yes\" ]; then");
-			indent = "\t\t";
-
-			// Windows cross builds
-			flags.Clear ();
-			indent = "\t\t\t";
-			AppendFlags (flags, CmakeBuilds.CommonFlags, indent);
-			AppendFlags (flags, CmakeBuilds.MonodroidCommonDefines, indent);
-			AppendFlags (flags, CmakeBuilds.MonodroidMxeCommonFlags, indent);
-			AppendFlags (flags, CmakeBuilds.ConfigureHostRuntimeCommandsCommonFlags, indent);
-			indent = "\t\t";
-			WriteCmakeCall (flags, hostRuntimeReplacements);
-
-			// Host build
-			sw.WriteLine ($"\telse");
-			indent = "\t\t\t";
-			flags.Clear ();
-			AppendFlags (flags, CmakeBuilds.CommonFlags, indent);
-			AppendFlags (flags, CmakeBuilds.MonodroidCommonDefines, indent);
-			AppendFlags (flags, CmakeBuilds.ConfigureHostRuntimeCommandsCommonFlags, indent);
-			indent = "\t\t";
-			WriteCmakeCall (flags, hostRuntimeReplacements);
-
-			indent = "\t";
-			sw.WriteLine ($"{indent}fi");
-
-			sw.WriteLine ("}");
-			sw.WriteLine ();
-
 			foreach (CmakeBuilds.RuntimeCommand rc in CmakeBuilds.AndroidRuntimeCommands) {
 				WriteShellRuntimeCommand (sw, JitAbis, rc, androidRuntimeReplacements);
-			}
-
-			foreach (CmakeBuilds.RuntimeCommand rc in CmakeBuilds.HostRuntimeCommands) {
-				WriteShellRuntimeCommand (sw, HostAbis, rc, hostRuntimeReplacements);
 			}
 
 			void WriteCmakeCall (StringBuilder args, Dictionary<string, string> replacements)
@@ -223,29 +161,11 @@ namespace Xamarin.Android.Prepare
 
 			foreach (var a in abis) {
 				string abi = a;
-				uint minApiLevel = command.IsDotNet ? BuildAndroidPlatforms.NdkMinimumAPI : !command.IsHost ? BuildAndroidPlatforms.NdkMinimumAPIMap [abi] : 0;
-				string outputDirName = command.IsDotNet ? AbiNames.AbiToRuntimeIdentifier (abi) : abi;
+				uint minApiLevel = BuildAndroidPlatforms.NdkMinimumAPI;
+				string outputDirName = AbiNames.AbiToRuntimeIdentifier (abi);
 				string isMxe = "no";
 				string mxeBitness = String.Empty;
 				bool forMxe = false;
-
-				if (command.IsHost) {
-					if (String.Compare (abi, AbiNames.HostJit.Win32, StringComparison.OrdinalIgnoreCase) == 0) {
-						mxeBitness = "32";
-					} else if (String.Compare (abi, AbiNames.HostJit.Win64, StringComparison.OrdinalIgnoreCase) == 0) {
-						mxeBitness = "64";
-					}
-
-					if (mxeBitness.Length > 0) {
-						isMxe = "yes";
-						forMxe = true;
-					}
-				}
-
-				if (command.IsHost) {
-					outputDirName = $"host-{outputDirName}";
-					abi = $"host-{abi}";
-				}
 
 				funcName.Clear ();
 				funcName.Append (abi.ToLowerInvariant ());
@@ -269,16 +189,11 @@ namespace Xamarin.Android.Prepare
 				sw.WriteLine ($"{indent}__BUILD_TYPE={command.BuildType}");
 				sw.WriteLine ($"{indent}__REBUILD=\"${{rebuild}}\"");
 				sw.WriteLine ($"{indent}__FORCE=\"${{force}}\"");
-				if (!command.IsHost) {
-					sw.WriteLine ($"{indent}__NATIVE_ABI={abi}");
-					sw.WriteLine ($"{indent}__NATIVE_API_LEVEL=${{{minApiLevel}}}");
-				}
+				sw.WriteLine ($"{indent}__NATIVE_ABI={abi}");
+				sw.WriteLine ($"{indent}__NATIVE_API_LEVEL=${{{minApiLevel}}}");
 				sw.WriteLine ();
-				if (!command.IsHost) {
-					sw.Write ($"{indent}__xa_configure_android_runtime");
-				} else {
-					sw.Write ($"{indent}__xa_configure_host_runtime {isMxe}");
-				}
+
+				sw.Write ($"{indent}__xa_configure_android_runtime");
 
 				StringBuilder? flags = null;
 				if (forMxe) {
@@ -339,26 +254,15 @@ namespace Xamarin.Android.Prepare
 				{ "@OUTPUT_DIRECTORY@", "" },
 			};
 
-			var hostRuntimeReplacements = new Dictionary<string, string> (StringComparer.Ordinal) {
-				{ "@CmakeHostFlags@", "%(_HostRuntime.CmakeFlags)" },
-				{ "@JdkIncludePath@", "@(JdkIncludePath->'%(Identity)', ' ')" },
-				{ "@OUTPUT_DIRECTORY@", "" },
-			};
-
 			AddReplacements (commonReplacements, androidRuntimeReplacements);
-			AddReplacements (commonReplacements, hostRuntimeReplacements);
 
 			WriteMSBuildProjectStart (sw);
-			sw.WriteLine ("  <Target Name=\"_PrepareConfigureRuntimeCommands\" DependsOnTargets=\"_GetBuildHostRuntimes\">");
+			sw.WriteLine ("  <Target Name=\"_PrepareConfigureRuntimeCommands\">");
 
 			string indent = "    ";
 			foreach (CmakeBuilds.RuntimeCommand rc in CmakeBuilds.AndroidRuntimeCommands) {
 				WriteMSBuildConfigureAndroidRuntimeCommands (sw, indent, rc, androidRuntimeReplacements);
 			}
-
-			foreach (CmakeBuilds.RuntimeCommand rc in CmakeBuilds.HostRuntimeCommands) {
-				WriteMSBuildConfigureHostRuntimeCommands (sw, indent, rc, hostRuntimeReplacements);
-			};
 
 			sw.WriteLine ("  </Target>");
 			WriteMSBuildProjectEnd (sw);
@@ -405,34 +309,18 @@ namespace Xamarin.Android.Prepare
 
 		void WriteMSBuildConfigureAndroidRuntimeCommands (StreamWriter sw, string indent, CmakeBuilds.RuntimeCommand command, Dictionary<string, string> replacements)
 		{
-			const string LegacyOutputDirectory = "%(AndroidSupportedTargetJitAbi.Identity)";
 			const string OutputDirectory = "%(AndroidSupportedTargetJitAbi.AndroidRID)";
 
 			WriteMSBuildConfigureRuntimeCommands (
 				sw,
 				indent,
-				command.IsDotNet ? $"$(IntermediateOutputPath){OutputDirectory}-{command.Suffix}" : $"$(IntermediateOutputPath){LegacyOutputDirectory}-{command.Suffix}",
-				command.IsDotNet ? $"$(OutputPath){OutputDirectory}" : $"$(OutputPath){LegacyOutputDirectory}",
+				$"$(IntermediateOutputPath){OutputDirectory}-{command.Suffix}",
+				$"$(OutputPath){OutputDirectory}",
 				"@(AndroidSupportedTargetJitAbi)",
 				CmakeBuilds.ConfigureAndroidRuntimeCommandsCommonFlags,
 				command,
 				replacements,
 				true
-			);
-		}
-
-		void WriteMSBuildConfigureHostRuntimeCommands (StreamWriter sw, string indent, CmakeBuilds.RuntimeCommand command, Dictionary<string, string> replacements)
-		{
-			WriteMSBuildConfigureRuntimeCommands (
-				sw,
-				indent,
-				$"$(IntermediateOutputPath)%(_HostRuntime.OutputDirectory)-{command.Suffix}",
-				"$(OutputPath)/%(_HostRuntime.OutputDirectory)",
-				"@(_HostRuntime)",
-				CmakeBuilds.ConfigureHostRuntimeCommandsCommonFlags,
-				command,
-				replacements,
-				false
 			);
 		}
 
@@ -468,7 +356,6 @@ namespace Xamarin.Android.Prepare
 			string propertyIndent = "    ";
 			sw.WriteLine ("  <PropertyGroup>");
 			WriteProperty (sw, propertyIndent, "_CmakeAndroidFlags", flags, MSBuildReplacements);
-			WriteProperty (sw, propertyIndent, "_CmakeCommonHostFlags", sharedByAll, MSBuildReplacements);
 			sw.WriteLine ("  </PropertyGroup>");
 
 			if (CmakeBuilds.MxeToolchainBasePath.Length > 0 && CmakeBuilds.MingwDependenciesRootDirectory.Length > 0) {

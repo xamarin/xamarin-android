@@ -44,7 +44,6 @@ else()
   set(STRIP_DEBUG_DEFAULT ON)
 endif()
 
-option(ENABLE_NET "Enable compilation for .NET 6+" OFF)
 option(ENABLE_TIMING "Build with timing support" OFF)
 option(STRIP_DEBUG "Strip debugging information when linking" ${STRIP_DEBUG_DEFAULT})
 option(DISABLE_DEBUG "Disable the built-in debugging code" OFF)
@@ -182,7 +181,7 @@ endif()
 
 include("${XA_BUILD_DIR}/xa_build_configuration.cmake")
 
-if(ENABLE_NET)
+if(ANDROID)
   if(ANDROID_ABI MATCHES "^arm64-v8a")
     set(NET_RUNTIME_DIR "${NETCORE_APP_RUNTIME_DIR_ARM64}")
   elseif(ANDROID_ABI MATCHES "^armeabi-v7a")
@@ -243,7 +242,7 @@ if (WIN32)
   include_directories(BEFORE "jni/win32")
 endif()
 
-if(ENABLE_NET)
+if(ANDROID)
   include_directories("${NET_RUNTIME_DIR}/native/include/mono-2.0")
 else()
   include_directories("${XA_BIN_DIR}/include/mono-2.0")
@@ -275,7 +274,7 @@ add_compile_definitions(_REENTRANT)
 add_compile_definitions(JI_DLL_EXPORT)
 add_compile_definitions(MONO_DLL_EXPORT)
 
-if(ENABLE_NET)
+if(ANDROID)
   add_compile_definitions(NET)
   add_compile_definitions(JI_NO_VISIBILITY)
 endif()
@@ -425,14 +424,9 @@ endif()
 
 # Library directories
 if(ANDROID)
-  if(ENABLE_NET)
-    set(XA_LIBRARY_OUTPUT_DIRECTORY "${XA_LIB_TOP_DIR}/lib/${ANDROID_RID}")
-    set(XA_LIBRARY_STUBS_OUTPUT_DIRECTORY "${XA_LIB_TOP_DIR}/libstubs/${ANDROID_RID}")
-    link_directories("${NET_RUNTIME_DIR}/native")
-  else()
-    set(XA_LIBRARY_OUTPUT_DIRECTORY "${XA_LIB_TOP_DIR}/lib/${ANDROID_ABI}")
-    link_directories("${XA_LIBRARY_OUTPUT_DIRECTORY}")
-  endif()
+  set(XA_LIBRARY_OUTPUT_DIRECTORY "${XA_LIB_TOP_DIR}/lib/${ANDROID_RID}")
+  set(XA_LIBRARY_STUBS_OUTPUT_DIRECTORY "${XA_LIB_TOP_DIR}/libstubs/${ANDROID_RID}")
+  link_directories("${NET_RUNTIME_DIR}/native")
 endif()
 
 if(WIN32 OR MINGW)
@@ -508,7 +502,7 @@ if(ANDROID)
     ${LZ4_SOURCES}
     )
 
-  if(NOT DEBUG_BUILD AND ENABLE_NET)
+  if(NOT DEBUG_BUILD)
     list(APPEND XAMARIN_MONODROID_SOURCES
       ${SOURCES_DIR}/xamarin-android-app-context.cc
       )
@@ -538,7 +532,7 @@ if(UNIX)
     )
 endif()
 
-if(ANDROID AND ENABLE_NET)
+if(ANDROID)
   list(APPEND XAMARIN_MONODROID_SOURCES
     ${SOURCES_DIR}/monovm-properties.cc
     ${SOURCES_DIR}/pinvoke-override-api.cc
@@ -584,7 +578,7 @@ else()
   list(APPEND MONOSGEN_LIB_LINK -lmonosgen-2.0)
 endif()
 
-if(NOT (ANDROID AND ENABLE_NET))
+if(NOT ANDROID)
   add_library(
     ${XAMARIN_INTERNAL_API_LIB}
     SHARED
@@ -722,7 +716,7 @@ target_link_libraries(
   ${LINK_LIBS} xamarin-app
   )
 
-if(ANDROID AND ENABLE_NET)
+if(ANDROID)
   add_library(
     c
     SHARED ${XAMARIN_STUB_LIB_SOURCES}

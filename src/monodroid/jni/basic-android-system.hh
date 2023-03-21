@@ -39,14 +39,6 @@ namespace xamarin::android::internal
 		static constexpr char SYSTEM_LIB_PATH[] = "/system/lib64";
 #elif ANDROID
 		static constexpr char SYSTEM_LIB_PATH[] = "/system/lib";
-#elif LINUX_FLATPAK
-		static constexpr char SYSTEM_LIB_PATH[] = "/app/lib/mono";
-#elif defined (__linux__) || defined (__linux)
-		static constexpr char SYSTEM_LIB_PATH[] = "/usr/lib";
-#elif APPLE_OS_X
-		static constexpr char SYSTEM_LIB_PATH[] = "/Library/Frameworks/Xamarin.Android.framework/Versions/Current/lib/xamarin.android/xbuild/Xamarin/Android/lib/host-Darwin";
-#elif WINDOWS
-		static const char *SYSTEM_LIB_PATH;
 #else
 		static constexpr char SYSTEM_LIB_PATH[] = "";
 #endif

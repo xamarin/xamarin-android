@@ -5,9 +5,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#ifdef ANDROID
 #include <android/log.h>
-#endif
 
 #include "logger.hh"
 
@@ -50,23 +48,6 @@ static const char* log_names[] = {
 
 // ffs(value) returns index of lowest bit set in `value`
 #define CATEGORY_NAME(value) (value == 0 ? log_names [0] : log_names [ffs (value)])
-
-#ifndef ANDROID
-static void
-__android_log_vprint (int prio, const char* tag, const char* fmt, va_list ap)
-{
-  printf ("%d [%s] ", prio, tag);
-  vprintf (fmt, ap);
-  putchar ('\n');
-  fflush (stdout);
-}
-
-static void
-__android_log_write (int prio, const char* tag, const char* message)
-{
-	printf ("%d [%s] %s\n", prio, tag, message);
-}
-#endif
 
 unsigned int log_categories = LOG_NONE;
 unsigned int log_timing_categories;
@@ -149,10 +130,6 @@ init_logging_categories (char*& mono_log_mask, char*& mono_log_level)
 {
 	mono_log_mask = nullptr;
 	mono_log_level = nullptr;
-
-#if !ANDROID
-	log_categories = LOG_DEFAULT;
-#endif
 	log_timing_categories = LOG_TIMING_DEFAULT;
 
 	dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN> value;
@@ -265,7 +242,7 @@ init_logging_categories (char*& mono_log_mask, char*& mono_log_level)
 			continue;
 		}
 
-#if !defined (WINDOWS) && defined (DEBUG)
+#if defined (DEBUG)
 		constexpr char DEBUGGER_LOG_LEVEL[] = "debugger-log-level=";
 		constexpr size_t DEBUGGER_LOG_LEVEL_LEN = sizeof (DEBUGGER_LOG_LEVEL) - 1;
 		if (param.starts_with (DEBUGGER_LOG_LEVEL)) {

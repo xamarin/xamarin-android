@@ -53,7 +53,7 @@ namespace xamarin::android
 		bool load_profiler (void *handle, const char *desc, const char *symbol);
 		bool load_profiler_from_handle (void *dso_handle, const char *desc, const char *name);
 
-#if !defined (WINDOWS) && defined (DEBUG)
+#if defined (DEBUG)
 	public:
 		bool         enable_soft_breakpoints ();
 		void         start_debugging_and_profiling ();

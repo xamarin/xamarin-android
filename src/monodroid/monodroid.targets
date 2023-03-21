@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <Target Name="_BuildRuntimes" BeforeTargets="Build"
-      DependsOnTargets="_GenerateIncludeFiles;_ConfigureRuntimes;_BuildAndroidRuntimes;_BuildAndroidAnalyzerRuntimes;_BuildHostRuntimes;_CopyToPackDirs">
+      DependsOnTargets="_GenerateIncludeFiles;_ConfigureRuntimes;_BuildAndroidRuntimes;_BuildAndroidAnalyzerRuntimes;_CopyToPackDirs">
   </Target>
   <Target Name="_TestPinvokeTables" Condition=" '$(HostOS)' == 'Linux' And '$(RunningOnCI)' == 'true' ">
     <Exec
@@ -65,12 +65,8 @@
     <ItemGroup>
       <_ConfigureRuntimesInputs  Include="CMakeLists.txt" />
       <_ConfigureRuntimesInputs  Include="..\..\build-tools\scripts\Ndk.targets" />
-      <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(Identity)-Debug\CMakeCache.txt')" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Debug\CMakeCache.txt')" />
-      <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(Identity)-Release\CMakeCache.txt')" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Release\CMakeCache.txt')" />
-      <_ConfigureRuntimesOutputs Include="@(_HostRuntime->'$(IntermediateOutputPath)%(OutputDirectory)-Debug\CMakeCache.txt')" />
-      <_ConfigureRuntimesOutputs Include="@(_HostRuntime->'$(IntermediateOutputPath)%(OutputDirectory)-Release\CMakeCache.txt')" />
     </ItemGroup>
   </Target>
 
@@ -91,29 +87,19 @@
   <Target Name="_BuildAndroidRuntimesInputs"
       DependsOnTargets="_FindMonoDroidSources">
     <ItemGroup>
-      <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(Identity)-Debug\CMakeCache.txt')" />
       <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Debug\CMakeCache.txt')" />
-      <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(Identity)-Release\CMakeCache.txt')" />
       <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Release\CMakeCache.txt')" />
       <_BuildAndroidRuntimesInputs  Include="@(_MonoDroidSources)" />
       <_BuildAndroidRuntimesInputs  Include="..\..\build-tools\scripts\Ndk.targets" />
-      <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android.debug.so')" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.debug.so')" />
-      <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android.release.so')" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.release.so')" />
-      <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\Debug\libxamarin-app.so')" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\Debug\libxamarin-app.so')" />
-      <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\Release\libxamarin-app.so')" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\Release\libxamarin-app.so')" />
     </ItemGroup>
     <ItemGroup  Condition=" '$(EnableNativeAnalyzers)' == 'true' ">
-      <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android-checked+ubsan.debug.so')" />
       <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android-checked+ubsan.debug.so')" />
-      <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android-checked+asan.debug.so')" />
       <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android-checked+asan.debug.so')" />
-      <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android-checked+asan.release.so')" />
       <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android-checked+asan.release.so')" />
-      <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android-checked+ubsan.release.so')" />
       <_BuildAndroidAnalyzerRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android-checked+ubsan.release.so')" />
     </ItemGroup>
   </Target>
@@ -124,17 +110,7 @@
       Outputs="@(_BuildAndroidRuntimesOutputs)">
     <Exec
         Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-Debug"
-    />
-
-    <Exec
-        Command="$(NinjaPath) -v"
         WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Debug"
-    />
-
-    <Exec
-        Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-Release"
     />
 
     <Exec
@@ -152,17 +128,7 @@
       Outputs="@(_BuildAndroidAnalyzerRuntimesOutputs)">
     <Exec
         Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-asan-Debug"
-    />
-
-    <Exec
-        Command="$(NinjaPath) -v"
         WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-asan-Debug"
-    />
-
-    <Exec
-        Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-ubsan-Debug"
     />
 
     <Exec
@@ -172,17 +138,7 @@
 
     <Exec
         Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-asan-Release"
-    />
-
-    <Exec
-        Command="$(NinjaPath) -v"
         WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-asan-Release"
-    />
-
-    <Exec
-        Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-ubsan-Release"
     />
 
     <Exec
@@ -193,47 +149,7 @@
     <Touch Files="@(_BuildAndroidAnalyzerRuntimesOutputs)" />
   </Target>
 
-  <Target Name="_BuildHostRuntimesInputs"
-      DependsOnTargets="_FindMonoDroidSources">
-    <ItemGroup>
-      <_BuildHostRuntimesInputs  Include="@(_HostRuntime->'$(IntermediateOutputPath)%(OutputDirectory)-Debug\CMakeCache.txt')" />
-      <_BuildHostRuntimesInputs  Include="@(_HostRuntime->'$(IntermediateOutputPath)%(OutputDirectory)-Release\CMakeCache.txt')" />
-      <_BuildHostRuntimesInputs  Include="@(_MonoDroidSources)" />
-      <_BuildHostRuntimesOutputs Include="@(_HostRuntime->'$(OutputPath)%(OutputDirectory)\libmono-android.debug.%(NativeLibraryExtension)')" />
-      <_BuildHostRuntimesOutputs Include="@(_HostRuntime->'$(OutputPath)%(OutputDirectory)\libmono-android.release.%(NativeLibraryExtension)')" />
-      <_BuildHostRuntimesOutputs Include="@(_HostRuntime->'$(OutputPath)%(OutputDirectory)\libxamarin-app.%(NativeLibraryExtension)')" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="_BuildHostRuntimes"
-      DependsOnTargets="_BuildHostRuntimesInputs"
-      Inputs="@(_BuildHostRuntimesInputs)"
-      Outputs="@(_BuildHostRuntimesOutputs)">
-    <Message Text="Building host runtime %(_HostRuntime.Identity) in $(OutputPath)%(_HostRuntime.OutputDirectory)"/>
-    <MakeDir Directories="$(OutputPath)%(_HostRuntime.OutputDirectory)" />
-
-    <Exec
-        Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(_HostRuntime.OutputDirectory)-Debug"
-    />
-    <Copy
-        SourceFiles="@(_HostRuntime->'$(OutputPath)%(OutputDirectory)\libmono-android.debug.%(NativeLibraryExtension)')"
-        DestinationFiles="@(_HostRuntime->'$(OutputPath)%(OutputDirectory)\libmono-android.debug.d.%(NativeLibraryExtension)')"
-    />
-
-    <Exec
-        Command="$(NinjaPath) -v"
-        WorkingDirectory="$(IntermediateOutputPath)%(_HostRuntime.OutputDirectory)-Release"
-    />
-    <Copy
-        SourceFiles="@(_HostRuntime->'$(OutputPath)%(OutputDirectory)\libmono-android.release.%(NativeLibraryExtension)')"
-        DestinationFiles="@(_HostRuntime->'$(OutputPath)%(OutputDirectory)\libmono-android.release.d.%(NativeLibraryExtension)')"
-    />
-
-    <Touch Files="@(_BuildHostRuntimesOutputs)" />
-  </Target>
   <Target Name="_CleanRuntimes"
-      DependsOnTargets="_GetBuildHostRuntimes"
       AfterTargets="Clean">
     <Exec
         Command="$(NinjaPath) -v clean"
@@ -247,22 +163,11 @@
     <RemoveDir Directories="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-Debug" />
     <RemoveDir Directories="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-Release" />
     <Delete Files="jni\config.include;jni\machine.config.include;jni\Application.mk" />
-    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android.debug.so')" />
-    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android.debug.d.so')" />
-    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android.release.so')" />
-    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\libmono-android.release.d.so')" />
+    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.debug.so')" />
+    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.debug.d.so')" />
+    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.release.so')" />
+    <Delete Files="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.release.d.so')" />
     <Delete Files="%(_EmbeddedBlob.Include)" />
-    <Delete
-        Files="@(_OutputDebugPath);@(_OutputDebugStripPath);@(_OutputReleasePath);@(_OutputReleaseStripPath)"
-    />
-  </Target>
-  <Target Name="_GetBuildHostRuntimes">
-    <ItemGroup>
-      <_OutputDebugPath         Include="$(OutputPath)%(_HostRuntime.OutputDirectory)\libmono-android.debug.d.%(_HostRuntime.NativeLibraryExtension)" />
-      <_OutputDebugStripPath    Include="$(OutputPath)%(_HostRuntime.OutputDirectory)\libmono-android.debug.%(_HostRuntime.NativeLibraryExtension)" />
-      <_OutputReleasePath       Include="$(OutputPath)%(_HostRuntime.OutputDirectory)\libmono-android.release.d.%(_HostRuntime.NativeLibraryExtension)" />
-      <_OutputReleaseStripPath  Include="$(OutputPath)%(_HostRuntime.OutputDirectory)\libmono-android.release.%(_HostRuntime.NativeLibraryExtension)" />
-    </ItemGroup>
   </Target>
 
   <Target Name="CoreCompile"
@@ -270,21 +175,13 @@
   </Target>
 
   <Target Name="_GetCompileCommandsDirs"
-          DependsOnTargets="_BuildHostRuntimes;_BuildAndroidRuntimes">
+          DependsOnTargets="_BuildAndroidRuntimes">
     <ItemGroup>
       <_CompileCommandsDir Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-Debug">
         <LogTag>%(AndroidSupportedTargetJitAbi.Identity)-Debug</LogTag>
       </_CompileCommandsDir>
       <_CompileCommandsDir Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-Release">
         <LogTag>%(AndroidSupportedTargetJitAbi.Identity)-Release</LogTag>
-      </_CompileCommandsDir>
-
-      <!-- clang-tidy won't work with mingw builds, we need to disable them -->
-      <_CompileCommandsDir Include="$(IntermediateOutputPath)%(_HostRuntime.OutputDirectory)-Debug" Condition=" '%(_HostRuntime.Identity)' != 'host-mxe-Win64' And '%(_HostRuntime.Identity)' != 'host-mxe-Win32' ">
-        <LogTag>%(_HostRuntime.OutputDirectory)-Debug</LogTag>
-      </_CompileCommandsDir>
-      <_CompileCommandsDir Include="$(IntermediateOutputPath)%(_HostRuntime.OutputDirectory)-Release" Condition=" '%(_HostRuntime.Identity)' != 'host-mxe-Win64' And '%(_HostRuntime.Identity)' != 'host-mxe-Win32' ">
-        <LogTag>%(_HostRuntime.OutputDirectory)-Release</LogTag>
       </_CompileCommandsDir>
     </ItemGroup>
   </Target>

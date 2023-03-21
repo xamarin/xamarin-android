@@ -20,8 +20,6 @@ namespace Xamarin.Android.Prepare
 			public string Suffix = String.Empty;
 			public string MSBuildApiLevel = String.Empty;
 			public List<string>? ExtraOptions = null;
-			public bool IsDotNet = false;
-			public bool IsHost = false;
 		};
 
 		const string msbuildApiLevelLegacy = "%(AndroidSupportedTargetJitAbi.ApiLevel)";
@@ -95,33 +93,20 @@ namespace Xamarin.Android.Prepare
 			"-DANDROID_CPP_FEATURES=\"rtti exceptions\"",
 		};
 
-		const string enableNet = "-DENABLE_NET=ON";
-		public static readonly List<string> NetExtraOptions = new List<string> {
-			enableNet,
-		};
-
-		public static readonly List<string> NetAsanExtraOptions = new List<string> (AsanExtraOptions) {
-			enableNet,
-		};
-
-		public static readonly List<string> NetUbsanExtraOptions = new List<string> (UbsanExtraOptions) {
-			enableNet,
-		};
-
 		public static readonly List<RuntimeCommand> AndroidRuntimeCommands = new List<RuntimeCommand> {
 			// Debug builds
 			new RuntimeCommand {
 				Suffix = "Debug",
 				Configuration = "Release",
 				BuildType = "Debug",
-				MSBuildApiLevel = msbuildApiLevelLegacy,
+				MSBuildApiLevel = msbuildApiLevel,
 			},
 
 			new RuntimeCommand {
 				Suffix = "asan-Debug",
 				Configuration = "Release",
 				BuildType = "Debug",
-				MSBuildApiLevel = msbuildApiLevelLegacy,
+				MSBuildApiLevel = msbuildApiLevel,
 				ExtraOptions = AsanExtraOptions,
 			},
 
@@ -129,51 +114,23 @@ namespace Xamarin.Android.Prepare
 				Suffix = "ubsan-Debug",
 				Configuration = "Release",
 				BuildType = "Debug",
-				MSBuildApiLevel = msbuildApiLevelLegacy,
+				MSBuildApiLevel = msbuildApiLevel,
 				ExtraOptions = UbsanExtraOptions,
-			},
-
-			new RuntimeCommand {
-				Suffix = "Debug",
-				Configuration = "Release",
-				BuildType = "Debug",
-				MSBuildApiLevel = msbuildApiLevel,
-				ExtraOptions = NetExtraOptions,
-				IsDotNet = true,
-			},
-
-			new RuntimeCommand {
-				Suffix = "asan-Debug",
-				Configuration = "Release",
-				BuildType = "Debug",
-				MSBuildApiLevel = msbuildApiLevel,
-				ExtraOptions = NetAsanExtraOptions,
-				IsDotNet = true,
-			},
-
-			new RuntimeCommand {
-				Suffix = "ubsan-Debug",
-				Configuration = "Release",
-				BuildType = "Debug",
-				MSBuildApiLevel = msbuildApiLevel,
-				ExtraOptions = NetUbsanExtraOptions,
-				IsDotNet = true,
 			},
 
 			// Release builds
-
 			new RuntimeCommand {
 				Suffix = "Release",
 				Configuration = "Debug",
 				BuildType = "Release",
-				MSBuildApiLevel = msbuildApiLevelLegacy,
+				MSBuildApiLevel = msbuildApiLevel,
 			},
 
 			new RuntimeCommand {
 				Suffix = "asan-Release",
 				Configuration = "Debug",
 				BuildType = "Release",
-				MSBuildApiLevel = msbuildApiLevelLegacy,
+				MSBuildApiLevel = msbuildApiLevel,
 				ExtraOptions = AsanExtraOptions,
 			},
 
@@ -181,51 +138,8 @@ namespace Xamarin.Android.Prepare
 				Suffix = "ubsan-Release",
 				Configuration = "Debug",
 				BuildType = "Release",
-				MSBuildApiLevel = msbuildApiLevelLegacy,
+				MSBuildApiLevel = msbuildApiLevel,
 				ExtraOptions = UbsanExtraOptions,
-			},
-
-			new RuntimeCommand {
-				Suffix = "Release",
-				Configuration = "Debug",
-				BuildType = "Release",
-				MSBuildApiLevel = msbuildApiLevel,
-				ExtraOptions = NetExtraOptions,
-				IsDotNet = true,
-			},
-
-			new RuntimeCommand {
-				Suffix = "asan-Release",
-				Configuration = "Debug",
-				BuildType = "Release",
-				MSBuildApiLevel = msbuildApiLevel,
-				ExtraOptions = NetAsanExtraOptions,
-				IsDotNet = true,
-			},
-
-			new RuntimeCommand {
-				Suffix = "ubsan-Release",
-				Configuration = "Debug",
-				BuildType = "Release",
-				MSBuildApiLevel = msbuildApiLevel,
-				ExtraOptions = NetUbsanExtraOptions,
-				IsDotNet = true,
-			},
-		};
-
-		public static readonly List<RuntimeCommand> HostRuntimeCommands = new List<RuntimeCommand> {
-			new RuntimeCommand {
-				Suffix = "Debug",
-				Configuration = "Release",
-				BuildType = "Debug",
-				IsHost = true,
-			},
-
-			new RuntimeCommand {
-				Suffix = "Release",
-				Configuration = "Debug",
-				BuildType = "Release",
-				IsHost = true,
 			},
 		};
 	}

@@ -2,11 +2,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#ifdef WINDOWS
-#include <direct.h>
-#include <shlwapi.h>
-#endif
-
 #include "basic-utilities.hh"
 #include "logger.hh"
 #include "cpp-util.hh"
@@ -38,15 +33,9 @@ BasicUtilities::path_combine (const char *path1, const char *path2)
 void
 BasicUtilities::create_public_directory (const char *dir)
 {
-#ifndef WINDOWS
 	mode_t m = umask (0);
 	mkdir (dir, 0777);
 	umask (m);
-#else
-	wchar_t *buffer = utf8_to_utf16 (dir);
-	_wmkdir (buffer);
-	free (buffer);
-#endif
 }
 
 int
@@ -59,12 +48,8 @@ BasicUtilities::create_directory (const char *pathname, mode_t mode)
 		errno = EINVAL;
 		return -1;
 	}
-#ifdef WINDOWS
-	int oldumask;
-#else
-	mode_t oldumask;
-#endif
-	oldumask = umask (022);
+
+	mode_t oldumask = umask (022);
 	std::unique_ptr<char> path {strdup_new (pathname)};
 	int rv, ret = 0;
 	for (char *d = path.get (); d != nullptr && *d; ++d) {
@@ -91,7 +76,6 @@ BasicUtilities::create_directory (const char *pathname, mode_t mode)
 void
 BasicUtilities::set_world_accessable ([[maybe_unused]] const char *path)
 {
-#ifdef ANDROID
 	int r;
 	do
 		r = chmod (path, 0664);
@@ -99,13 +83,11 @@ BasicUtilities::set_world_accessable ([[maybe_unused]] const char *path)
 
 	if (r == -1)
 		log_error (LOG_DEFAULT, "chmod(\"%s\", 0664) failed: %s", path, strerror (errno));
-#endif
 }
 
 void
 BasicUtilities::set_user_executable ([[maybe_unused]] const char *path)
 {
-#ifdef ANDROID
 	int r;
 	do {
 		r = chmod (path, S_IRUSR | S_IWUSR | S_IXUSR);
@@ -113,7 +95,6 @@ BasicUtilities::set_user_executable ([[maybe_unused]] const char *path)
 
 	if (r == -1)
 		log_error (LOG_DEFAULT, "chmod(\"%s\") failed: %s", path, strerror (errno));
-#endif
 }
 
 bool
@@ -184,34 +165,18 @@ BasicUtilities::is_path_rooted (const char *path)
 {
 	if (path == nullptr)
 		return false;
-#ifdef WINDOWS
-	LPCWSTR wpath = utf8_to_utf16 (path);
-	bool ret = !PathIsRelativeW (wpath);
-	free (const_cast<void*> (reinterpret_cast<const void*> (wpath)));
-	return ret;
-#else
+
 	return path [0] == MONODROID_PATH_SEPARATOR_CHAR;
-#endif
 }
 
 FILE *
 BasicUtilities::monodroid_fopen (const char *filename, const char *mode)
 {
-	FILE *ret;
-#ifndef WINDOWS
 	/* On Unix, both path and system calls are all assumed
 	 * to be UTF-8 compliant.
 	 */
-	ret = fopen (filename, mode);
-#else
-	// Convert the path and mode to a UTF-16 and then use the wide variant of fopen
-	wchar_t *wpath = utf8_to_utf16 (filename);
-	wchar_t *wmode = utf8_to_utf16 (mode);
+	FILE *ret = fopen (filename, mode);
 
-	ret = _wfopen (wpath, wmode);
-	free (wpath);
-	free (wmode);
-#endif // ndef WINDOWS
 	if (ret == nullptr) {
 		log_error (LOG_DEFAULT, "fopen failed for file %s: %s", filename, strerror (errno));
 		return nullptr;
@@ -223,53 +188,25 @@ BasicUtilities::monodroid_fopen (const char *filename, const char *mode)
 int
 BasicUtilities::monodroid_stat (const char *path, monodroid_stat_t *s)
 {
-	int result;
-
-#ifndef WINDOWS
-	result = stat (path, s);
-#else
-	wchar_t *wpath = utf8_to_utf16 (path);
-	result = _wstat (wpath, s);
-	free (wpath);
-#endif
-
-	return result;
+	return stat (path, s);
 }
 
 monodroid_dir_t*
 BasicUtilities::monodroid_opendir (const char *filename)
 {
-#ifndef WINDOWS
 	return opendir (filename);
-#else
-	wchar_t *wfilename = utf8_to_utf16 (filename);
-	monodroid_dir_t *result = _wopendir (wfilename);
-	free (wfilename);
-	return result;
-#endif
 }
 
 int
 BasicUtilities::monodroid_closedir (monodroid_dir_t *dirp)
 {
-#ifndef WINDOWS
 	return closedir (dirp);
-#else
-	return _wclosedir (dirp);
-#endif
 }
 
 int
 BasicUtilities::monodroid_dirent_hasextension (monodroid_dirent_t *e, const char *extension)
 {
-#ifndef WINDOWS
 	return ends_with_slow (e->d_name, extension);
-#else
-	char *mb_dname = utf16_to_utf8 (e->d_name);
-	int result = ends_with_slow (mb_dname, extension);
-	free (mb_dname);
-	return result;
-#endif
 }
 
 void

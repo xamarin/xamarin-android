@@ -9,12 +9,7 @@
 #include <strings.h>
 #include <cctype>
 #include <cerrno>
-#if !defined (__MINGW32__) || (defined (__MINGW32__) && __GNUC__ >= 10)
 #include <compare>
-#endif // ndef MINGW32 || def MINGW32 && GNUC >= 10
-#if defined (APPLE_OS_X)
-#include <dlfcn.h>
-#endif  // def APPLE_OX_X
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -34,13 +29,11 @@
 #include <mono/utils/mono-dl-fallback.h>
 #include <mono/utils/mono-logger.h>
 
-#if defined (NET)
 #include <mono/metadata/mono-private-unstable.h>
-#endif
 
 #include "mono_android_Runtime.h"
 
-#if defined (DEBUG) && !defined (WINDOWS)
+#if defined (DEBUG)
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -51,21 +44,8 @@
 #include <sys/syscall.h>
 #endif
 
-#if defined (APPLE_OS_X)
-#include <libgen.h>
-#endif  // defined(APPLE_OS_X)
-
-#ifndef WINDOWS
 #include <sys/mman.h>
 #include <sys/utsname.h>
-#else
-#include <windef.h>
-#include <winbase.h>
-#include <shlobj.h>
-#include <objbase.h>
-#include <knownfolders.h>
-#include <shlwapi.h>
-#endif
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -84,15 +64,12 @@
 #include "globals.hh"
 #include "xamarin-app.hh"
 #include "timing.hh"
-#include "xa-internal-api-impl.hh"
 #include "build-info.hh"
 #include "monovm-properties.hh"
 #include "startup-aware-lock.hh"
 #include "timing-internal.hh"
 
-#ifndef WINDOWS
 #include "xamarin_getifaddrs.h"
-#endif
 
 #include "cpp-util.hh"
 #include "strings.hh"
@@ -103,13 +80,6 @@ using namespace microsoft::java_interop;
 using namespace xamarin::android;
 using namespace xamarin::android::internal;
 
-#if !defined (NET)
-#include "config.include"
-#include "machine.config.include"
-
-std::mutex MonodroidRuntime::api_init_lock;
-void *MonodroidRuntime::api_dso_handle = nullptr;
-#else // ndef NET
 std::mutex MonodroidRuntime::pinvoke_map_write_lock;
 
 MonoCoreRuntimeProperties MonodroidRuntime::monovm_core_properties = {
@@ -119,67 +89,15 @@ MonoCoreRuntimeProperties MonodroidRuntime::monovm_core_properties = {
 	.pinvoke_override = &MonodroidRuntime::monodroid_pinvoke_override
 };
 
-#endif // def NET
-
 std::mutex MonodroidRuntime::dso_handle_write_lock;
 bool MonodroidRuntime::startup_in_progress = true;
-
-#ifdef WINDOWS
-static const char* get_xamarin_android_msbuild_path (void);
-const char *BasicAndroidSystem::SYSTEM_LIB_PATH = get_xamarin_android_msbuild_path();
-
-/* Set of Windows-specific utility/reimplementation of Unix functions */
-
-static char *msbuild_folder_path = nullptr;
-
-static const char*
-get_xamarin_android_msbuild_path (void)
-{
-	const char *suffix = "MSBuild\\Xamarin\\Android";
-	char *base_path = nullptr;
-	wchar_t *buffer = nullptr;
-
-	if (msbuild_folder_path != nullptr)
-		return msbuild_folder_path;
-
-	// Get the base path for 'Program Files' on Windows
-	if (!SUCCEEDED (SHGetKnownFolderPath (FOLDERID_ProgramFilesX86, 0, nullptr, &buffer))) {
-		if (buffer != nullptr)
-			CoTaskMemFree (buffer);
-		// returns current directory if a global one couldn't be found
-		return ".";
-	}
-
-	// Compute the final path
-	base_path = utils.utf16_to_utf8 (buffer);
-	if (base_path == nullptr) {
-		log_fatal (LOG_DEFAULT, "Failed to convert UTF-16 to UTF-8 in %s", __PRETTY_FUNCTION__);
-		Helpers::abort_application ();
-	}
-	CoTaskMemFree (buffer);
-	msbuild_folder_path = utils.path_combine (base_path, suffix);
-	free (base_path);
-
-	return msbuild_folder_path;
-}
-
-static int
-setenv(const char *name, const char *value, int overwrite)
-{
-	return androidSystem.setenv (name, value, overwrite);
-}
-#endif // def WINDOWS
 
 void
 MonodroidRuntime::thread_start ([[maybe_unused]] MonoProfiler *prof, [[maybe_unused]] uintptr_t tid)
 {
 	JNIEnv* env;
-	int r;
-#ifdef PLATFORM_ANDROID
-	r = osBridge.get_jvm ()->AttachCurrentThread (&env, nullptr);
-#else   // ndef PLATFORM_ANDROID
-	r = osBridge.get_jvm ()->AttachCurrentThread (reinterpret_cast<void**>(&env), nullptr);
-#endif  // ndef PLATFORM_ANDROID
+	int r = osBridge.get_jvm ()->AttachCurrentThread (&env, nullptr);
+
 	if (r != JNI_OK) {
 #if DEBUG
 		log_fatal (LOG_DEFAULT, "ERROR: Unable to attach current thread to the Java VM!");
@@ -241,21 +159,6 @@ MonoAssembly*
 MonodroidRuntime::open_from_update_dir (MonoAssemblyName *aname, [[maybe_unused]] char **assemblies_path, [[maybe_unused]] void *user_data)
 {
 	MonoAssembly *result = nullptr;
-
-#ifndef ANDROID
-	// First check if there are any in-memory assemblies
-	if (designerAssemblies.has_assemblies ()) {
-		MonoDomain *domain = mono_domain_get ();
-		result = designerAssemblies.try_load_assembly (domain, aname);
-		if (result != nullptr) {
-			log_debug (LOG_ASSEMBLY, "Loaded assembly %s from memory in domain %d", mono_assembly_name_get_name (aname), mono_domain_get_id (domain));
-			return result;
-		}
-		log_debug (LOG_ASSEMBLY, "No in-memory data found for assembly %s", mono_assembly_name_get_name (aname));
-	} else {
-		log_debug (LOG_ASSEMBLY, "No in-memory assemblies detected", mono_assembly_name_get_name (aname));
-	}
-#endif
 	const char *override_dir;
 	bool found = false;
 
@@ -352,7 +255,7 @@ MonodroidRuntime::should_register_file ([[maybe_unused]] const char *filename)
 inline void
 MonodroidRuntime::gather_bundled_assemblies (jstring_array_wrapper &runtimeApks, size_t *out_user_assemblies_count, bool have_split_apks)
 {
-#if defined(DEBUG) || !defined (ANDROID)
+#if defined(DEBUG)
 	if (application_config.instant_run_enabled) {
 		for (size_t i = 0; i < AndroidSystem::MAX_OVERRIDES; ++i) {
 			const char *p = androidSystem.get_override_dir (i);
@@ -399,7 +302,7 @@ MonodroidRuntime::gather_bundled_assemblies (jstring_array_wrapper &runtimeApks,
 	embeddedAssemblies.ensure_valid_assembly_stores ();
 }
 
-#if defined (DEBUG) && !defined (WINDOWS)
+#if defined (DEBUG)
 int
 MonodroidRuntime::monodroid_debug_connect (int sock, struct sockaddr_in addr)
 {
@@ -521,7 +424,7 @@ MonodroidRuntime::parse_gdb_options ()
 	}
 }
 
-#if defined (DEBUG) && !defined (WINDOWS)
+#if defined (DEBUG)
 bool
 MonodroidRuntime::parse_runtime_args (dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN> &runtime_args, RuntimeOptions *options)
 {
@@ -640,7 +543,7 @@ MonodroidRuntime::set_debug_options (void)
 void
 MonodroidRuntime::mono_runtime_init ([[maybe_unused]] dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN>& runtime_args)
 {
-#if defined (DEBUG) && !defined (WINDOWS)
+#if defined (DEBUG)
 	RuntimeOptions options{};
 	int64_t cur_time;
 
@@ -807,12 +710,11 @@ MonodroidRuntime::mono_runtime_init ([[maybe_unused]] dynamic_local_string<PROPE
 	mono_install_assembly_preload_hook (open_from_update_dir, nullptr);
 #endif
 
-#if defined (RELEASE) && defined (ANDROID) && defined (NET)
+#if defined (RELEASE)
 	xamarin_app_init (get_function_pointer_at_startup);
-#endif // def RELEASE && def ANDROID && def NET
+#endif // def RELEASE
 }
 
-#if defined (NET)
 void
 MonodroidRuntime::cleanup_runtime_config (MonovmRuntimeConfigArguments *args, [[maybe_unused]] void *user_data)
 {
@@ -820,20 +722,16 @@ MonodroidRuntime::cleanup_runtime_config (MonovmRuntimeConfigArguments *args, [[
 		return;
 	}
 
-#if !defined (WINDOWS)
 	munmap (static_cast<void*>(const_cast<char*>(args->runtimeconfig.data.data)), args->runtimeconfig.data.data_len);
-#endif // ndef WINDOWS
 }
-#endif // def NET
 
 MonoDomain*
-MonodroidRuntime::create_domain (JNIEnv *env, jstring_array_wrapper &runtimeApks, bool is_root_domain, bool have_split_apks)
+MonodroidRuntime::create_domain (jstring_array_wrapper &runtimeApks, bool have_split_apks) noexcept
 {
 	size_t user_assemblies_count   = 0;
 
 	gather_bundled_assemblies (runtimeApks, &user_assemblies_count, have_split_apks);
 
-#if defined (NET)
 	size_t blob_time_index;
 	if (XA_UNLIKELY (FastTiming::enabled ())) {
 		blob_time_index = internal_timing->start_event (TimingEventKind::RuntimeConfigBlob);
@@ -848,9 +746,8 @@ MonodroidRuntime::create_domain (JNIEnv *env, jstring_array_wrapper &runtimeApks
 	if (XA_UNLIKELY (FastTiming::enabled ())) {
 		internal_timing->end_event (blob_time_index);
 	}
-#endif // def NET
 
-	if (user_assemblies_count == 0 && androidSystem.count_override_assemblies () == 0 && !is_running_on_desktop) {
+	if (user_assemblies_count == 0 && androidSystem.count_override_assemblies () == 0) {
 #if defined (DEBUG)
 		log_fatal (LOG_DEFAULT, "No assemblies found in '%s' or '%s'. Assuming this is part of Fast Deployment. Exiting...",
 		           androidSystem.get_override_dir (0),
@@ -864,52 +761,7 @@ MonodroidRuntime::create_domain (JNIEnv *env, jstring_array_wrapper &runtimeApks
 		Helpers::abort_application ();
 	}
 
-	MonoDomain *domain;
-#if !defined (NET)
-	if (is_root_domain) {
-#endif // ndef NET
-		domain = mono_jit_init_version (const_cast<char*> ("RootDomain"), const_cast<char*> ("mobile"));
-#if !defined (NET)
-	} else {
-		MonoDomain* root_domain = mono_get_root_domain ();
-
-		constexpr char DOMAIN_NAME[] = "MonoAndroidDomain";
-		constexpr size_t DOMAIN_NAME_LENGTH = sizeof(DOMAIN_NAME) - 1;
-		constexpr size_t DOMAIN_NAME_TOTAL_SIZE = DOMAIN_NAME_LENGTH + SharedConstants::MAX_INTEGER_DIGIT_COUNT_BASE10;
-
-		static_local_string<DOMAIN_NAME_TOTAL_SIZE + 1> domain_name (DOMAIN_NAME_TOTAL_SIZE);
-		domain_name.append (DOMAIN_NAME);
-		domain_name.append (android_api_level);
-
-		domain = utils.monodroid_create_appdomain (root_domain, domain_name.get (), /*shadow_copy:*/ 1, /*shadow_directory:*/ androidSystem.get_override_dir (0));
-	}
-#endif // ndef NET
-
-	if constexpr (is_running_on_desktop) {
-		if (is_root_domain) {
-			c_unique_ptr<char> corlib_error_message_guard {const_cast<char*>(mono_check_corlib_version ())};
-			char *corlib_error_message = corlib_error_message_guard.get ();
-
-			if (corlib_error_message == nullptr) {
-				if (!androidSystem.monodroid_get_system_property ("xamarin.studio.fakefaultycorliberrormessage", &corlib_error_message)) {
-					corlib_error_message = nullptr;
-				}
-			}
-			if (corlib_error_message != nullptr) {
-				jclass ex_klass = env->FindClass ("mono/android/MonoRuntimeException");
-				env->ThrowNew (ex_klass, corlib_error_message);
-				return nullptr;
-			}
-
-			// Load a basic environment for the RootDomain if run on desktop so that we can unload
-			// and reload most assemblies including Mono.Android itself
-			MonoAssemblyName *aname = mono_assembly_name_new ("System");
-			mono_assembly_load_full (aname, nullptr, nullptr, 0);
-			mono_assembly_name_free (aname);
-		}
-	}
-
-	return domain;
+	return mono_jit_init_version (const_cast<char*> ("RootDomain"), const_cast<char*> ("mobile"));
 }
 
 inline int
@@ -947,7 +799,6 @@ MonodroidRuntime::lookup_bridge_info (MonoClass *klass, const OSBridge::MonoJava
 	}
 }
 
-#if defined (NET)
 force_inline void
 MonodroidRuntime::lookup_bridge_info (MonoImage *image, const OSBridge::MonoJavaGCBridgeType *type, OSBridge::MonoJavaGCBridgeInfo *info)
 {
@@ -957,37 +808,20 @@ MonodroidRuntime::lookup_bridge_info (MonoImage *image, const OSBridge::MonoJava
 		info
 	);
 }
-#else // def NET
-force_inline void
-MonodroidRuntime::lookup_bridge_info (MonoDomain *domain, MonoImage *image, const OSBridge::MonoJavaGCBridgeType *type, OSBridge::MonoJavaGCBridgeInfo *info)
-{
-	lookup_bridge_info (
-		utils.monodroid_get_class_from_image (domain, image, type->_namespace, type->_typename),
-		type,
-		info
-	);
-}
-#endif // ndef NET
 
-#if defined (NET)
 void
 MonodroidRuntime::monodroid_debugger_unhandled_exception (MonoException *ex)
 {
 	mono_debugger_agent_unhandled_exception (ex);
 }
-#endif
 
 void
-MonodroidRuntime::init_android_runtime (
-#if !defined (NET)
-	MonoDomain *domain,
-#endif // ndef NET
-	JNIEnv *env, jclass runtimeClass, jobject loader)
+MonodroidRuntime::init_android_runtime (JNIEnv *env, jclass runtimeClass, jobject loader)
 {
 	constexpr char icall_typemap_java_to_managed[] = "Java.Interop.TypeManager::monodroid_typemap_java_to_managed";
 	constexpr char icall_typemap_managed_to_java[] = "Android.Runtime.JNIEnv::monodroid_typemap_managed_to_java";
 
-#if defined (RELEASE) && defined (ANDROID)
+#if defined (RELEASE)
 	// The reason for these using is that otherwise the compiler will complain about not being
 	// able to cast overloaded methods to const void* pointers.
 	using j2mFn = MonoReflectionType* (*)(MonoString *java_type);
@@ -998,12 +832,10 @@ MonodroidRuntime::init_android_runtime (
 #else
 	mono_add_internal_call (icall_typemap_java_to_managed, reinterpret_cast<const void*>(typemap_java_to_managed));
 	mono_add_internal_call (icall_typemap_managed_to_java, reinterpret_cast<const void*>(typemap_managed_to_java));
-#endif // def RELEASE && def ANDROID
+#endif // def RELEASE
 
-#if defined (NET)
 	mono_add_internal_call ("Android.Runtime.RuntimeNativeMethods::monodroid_debugger_unhandled_exception", reinterpret_cast<const void*> (monodroid_debugger_unhandled_exception));
 	mono_add_internal_call ("Android.Runtime.RuntimeNativeMethods::monodroid_unhandled_exception", reinterpret_cast<const void*>(monodroid_unhandled_exception));
-#endif // def NET
 
 	struct JnienvInitializeArgs init = {};
 	init.javaVm                 = osBridge.get_jvm ();
@@ -1012,7 +844,7 @@ MonodroidRuntime::init_android_runtime (
 	init.version                = env->GetVersion ();
 	init.androidSdkVersion      = android_api_level;
 	init.localRefsAreIndirect   = LocalRefsAreIndirect (env, runtimeClass, init.androidSdkVersion);
-	init.isRunningOnDesktop     = is_running_on_desktop ? 1 : 0;
+	init.isRunningOnDesktop     = 0;
 	init.brokenExceptionTransitions = application_config.broken_exception_transitions ? 1 : 0;
 	init.packageNamingPolicy    = static_cast<int>(application_config.package_naming_policy);
 	init.boundExceptionType     = application_config.bound_exception_type;
@@ -1029,58 +861,28 @@ MonodroidRuntime::init_android_runtime (
 	Class_getName  = env->GetMethodID (init.grefClass, "getName", "()Ljava/lang/String;");
 	init.Class_forName = env->GetStaticMethodID (init.grefClass, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;");
 
-	MonoAssembly *mono_android_assembly;
-
-#if defined (NET)
-	mono_android_assembly = utils.monodroid_load_assembly (default_alc, SharedConstants::MONO_ANDROID_ASSEMBLY_NAME);
-#else // def NET
-	mono_android_assembly = utils.monodroid_load_assembly (domain, SharedConstants::MONO_ANDROID_ASSEMBLY_NAME);
-#endif // ndef NET
+	MonoAssembly *mono_android_assembly = utils.monodroid_load_assembly (default_alc, SharedConstants::MONO_ANDROID_ASSEMBLY_NAME);
 	MonoImage *mono_android_assembly_image = mono_assembly_get_image (mono_android_assembly);
 
 	uint32_t i = 0;
 	for ( ; i < OSBridge::NUM_XA_GC_BRIDGE_TYPES; ++i) {
 		lookup_bridge_info (
-#if !defined (NET)
-			domain,
-#endif // ndef NET
 			mono_android_assembly_image,
 			&osBridge.get_java_gc_bridge_type (i),
 			&osBridge.get_java_gc_bridge_info (i)
 		);
 	}
 
-	MonoClass *runtime;
-	MonoMethod *method;
-
-	if constexpr (is_running_on_desktop) {
-#if defined (NET)
-		runtime = mono_class_from_name (mono_android_assembly_image, SharedConstants::ANDROID_RUNTIME_NS_NAME, SharedConstants::JNIENVINIT_CLASS_NAME);
-#else
-		runtime = utils.monodroid_get_class_from_image (domain, mono_android_assembly_image, SharedConstants::ANDROID_RUNTIME_NS_NAME, SharedConstants::JNIENVINIT_CLASS_NAME);
-#endif // def NET
-		method = mono_class_get_method_from_name (runtime, "Initialize", 1);
-	} else {
-		runtime = mono_class_get (mono_android_assembly_image, application_config.android_runtime_jnienv_class_token);
-		method = mono_get_method (mono_android_assembly_image, application_config.jnienv_initialize_method_token, runtime);
-	}
+	MonoClass *runtime = mono_class_get (mono_android_assembly_image, application_config.android_runtime_jnienv_class_token);
+	MonoMethod *method = mono_get_method (mono_android_assembly_image, application_config.jnienv_initialize_method_token, runtime);;
 
 	abort_unless (runtime != nullptr, "INTERNAL ERROR: unable to find the Android.Runtime.JNIEnvInit class!");
 	abort_unless (method != nullptr, "INTERNAL ERROR: Unable to find the Android.Runtime.JNIEnvInit.Initialize method!");
 
-	MonoAssembly *ji_assm;
-#if defined (NET)
-	ji_assm = utils.monodroid_load_assembly (default_alc, SharedConstants::JAVA_INTEROP_ASSEMBLY_NAME);
-#else // def NET
-	ji_assm = utils.monodroid_load_assembly (domain, SharedConstants::JAVA_INTEROP_ASSEMBLY_NAME);
-#endif // ndef NET
-
-	MonoImage       *ji_image   = mono_assembly_get_image  (ji_assm);
+	MonoAssembly *ji_assm = utils.monodroid_load_assembly (default_alc, SharedConstants::JAVA_INTEROP_ASSEMBLY_NAME);
+	MonoImage    *ji_image   = mono_assembly_get_image  (ji_assm);
 	for ( ; i < OSBridge::NUM_XA_GC_BRIDGE_TYPES + OSBridge::NUM_JI_GC_BRIDGE_TYPES; ++i) {
 		lookup_bridge_info (
-#if !defined (NET)
-			domain,
-#endif // ndef NET
 			ji_image,
 			&osBridge.get_java_gc_bridge_type (i),
 			&osBridge.get_java_gc_bridge_info (i)
@@ -1091,15 +893,9 @@ MonodroidRuntime::init_android_runtime (
 	/* If running on desktop, we may be swapping in a new Mono.Android image when calling this
 	 * so always make sure we have the freshest handle to the method.
 	 */
-	if (registerType == nullptr || is_running_on_desktop) {
-		if constexpr (is_running_on_desktop) {
-			registerType = mono_class_get_method_from_name (runtime, "RegisterJniNatives", 5);
-		} else {
-			registerType = mono_get_method (mono_android_assembly_image, application_config.jnienv_registerjninatives_method_token, runtime);
-#if defined (NET) && defined (ANDROID)
-			jnienv_register_jni_natives = reinterpret_cast<jnienv_register_jni_natives_fn>(mono_method_get_unmanaged_callers_only_ftnptr (registerType, &error));
-#endif // def NET && def ANDROID
-		}
+	if (registerType == nullptr) {
+		registerType = mono_get_method (mono_android_assembly_image, application_config.jnienv_registerjninatives_method_token, runtime);
+		jnienv_register_jni_natives = reinterpret_cast<jnienv_register_jni_natives_fn>(mono_method_get_unmanaged_callers_only_ftnptr (registerType, &error));
 	}
 	abort_unless (registerType != nullptr, "INTERNAL ERROR: Unable to find Android.Runtime.JNIEnvInit.RegisterJniNatives! %s", mono_error_get_message (&error));
 
@@ -1119,7 +915,6 @@ MonodroidRuntime::init_android_runtime (
 		native_to_managed_index = internal_timing->start_event (TimingEventKind::NativeToManagedTransition);
 	}
 
-#if defined (NET) && defined (ANDROID)
 	auto initialize = reinterpret_cast<jnienv_initialize_fn> (mono_method_get_unmanaged_callers_only_ftnptr (method, &error));
 	if (initialize == nullptr) {
 		log_fatal (LOG_DEFAULT, "Failed to get pointer to Initialize. Mono error: %s", mono_error_get_message (&error));
@@ -1131,20 +926,12 @@ MonodroidRuntime::init_android_runtime (
 		mono_error_get_message (&error)
 	);
 	initialize (&init);
-#else // def NET && def ANDROID
-	void *args [] = {
-		&init,
-	};
-
-	utils.monodroid_runtime_invoke (domain, method, nullptr, args, nullptr);
-#endif // ndef NET && ndef ANDROID
 
 	if (XA_UNLIKELY (FastTiming::enabled ())) {
 		internal_timing->end_event (native_to_managed_index);
 	}
 }
 
-#if defined (NET)
 MonoClass*
 MonodroidRuntime::get_android_runtime_class ()
 {
@@ -1152,29 +939,11 @@ MonodroidRuntime::get_android_runtime_class ()
 	MonoImage *image   = mono_assembly_get_image (assm);
 	return mono_class_from_name (image, SharedConstants::ANDROID_RUNTIME_NS_NAME, SharedConstants::JNIENV_CLASS_NAME);
 }
-#else // def NET
-MonoClass*
-MonodroidRuntime::get_android_runtime_class (MonoDomain *domain)
-{
-	MonoAssembly *assm = utils.monodroid_load_assembly (domain, SharedConstants::MONO_ANDROID_ASSEMBLY_NAME);
-	MonoImage *image   = mono_assembly_get_image (assm);
-	return utils.monodroid_get_class_from_image (domain, image, SharedConstants::ANDROID_RUNTIME_NS_NAME, SharedConstants::JNIENV_CLASS_NAME);
-}
-#endif // ndef NET
 
 inline void
-MonodroidRuntime::propagate_uncaught_exception (
-#if !defined (NET)
-	MonoDomain *domain,
-#endif // ndef NET
-	JNIEnv *env, jobject javaThread, jthrowable javaException)
+MonodroidRuntime::propagate_uncaught_exception (JNIEnv *env, jobject javaThread, jthrowable javaException)
 {
-	MonoClass *runtime;
-#if defined (NET)
-	runtime = get_android_runtime_class ();
-#else
-	runtime = get_android_runtime_class (domain);
-#endif
+	MonoClass *runtime = get_android_runtime_class ();
 	MonoMethod *method = mono_class_get_method_from_name (runtime, "PropagateUncaughtException", 3);
 
 	void* args[] = {
@@ -1182,11 +951,7 @@ MonodroidRuntime::propagate_uncaught_exception (
 		&javaThread,
 		&javaException,
 	};
-#if defined (NET)
 	mono_runtime_invoke (method, nullptr, args, nullptr);
-#else // def NET
-	utils.monodroid_runtime_invoke (domain, method, nullptr, args, nullptr);
-#endif // ndef NET
 }
 
 #if DEBUG
@@ -1209,60 +974,9 @@ MonodroidRuntime::convert_dl_flags (int flags)
 	return lflags;
 }
 
-#if !defined (NET)
-force_inline void
-MonodroidRuntime::init_internal_api_dso (void *handle)
-{
-	if (handle == nullptr) {
-		log_fatal (LOG_DEFAULT, "Internal API library is required");
-		Helpers::abort_application ();
-	}
-
-	// There's a very, very small chance of a race condition here, but it should be acceptable and we can save some time
-	// by not acquiring the lock on Android systems which don't have the dlopen bug we worked around in
-	// https://github.com/xamarin/xamarin-android/pull/4914
-	//
-	// The race condition will exist only on systems with the above dynamic loader bug and would become a problem only
-	// if an application were loading managed assemblies with p/invokes very quickly from different threads. All in all,
-	// not a very likely scenario.
-	//
-	if (handle == api_dso_handle) {
-		log_debug (LOG_DEFAULT, "Internal API library already loaded, initialization not necessary");
-		return;
-	}
-
-	std::lock_guard<std::mutex> lock (api_init_lock);
-	if (api_dso_handle != nullptr) {
-		auto api_shutdown = reinterpret_cast<external_api_shutdown_fn> (java_interop_lib_symbol (api_dso_handle, MonoAndroidInternalCalls::SHUTDOWN_FUNCTION_NAME, nullptr));
-		if (api_shutdown == nullptr) {
-			// We COULD ignore this situation, but if the function is missing it means we messed something up and thus
-			// it *is* a fatal error.
-			log_fatal (LOG_DEFAULT, "Unable to properly close Internal API library, shutdown function '%s' not found in the module", MonoAndroidInternalCalls::SHUTDOWN_FUNCTION_NAME);
-			Helpers::abort_application ();
-		}
-		api_shutdown ();
-	}
-
-	api_dso_handle = handle;
-	auto api = new MonoAndroidInternalCalls_Impl ();
-	auto api_init = reinterpret_cast<external_api_init_fn>(java_interop_lib_symbol (handle, MonoAndroidInternalCalls::INIT_FUNCTION_NAME, nullptr));
-	if (api_init == nullptr) {
-		log_fatal (LOG_DEFAULT, "Unable to initialize Internal API library, init function '%s' not found in the module", MonoAndroidInternalCalls::INIT_FUNCTION_NAME);
-		Helpers::abort_application ();
-	}
-
-	log_debug (LOG_DEFAULT, "Initializing Internal API library %p", handle);
-	if (!api_init (api)) {
-		log_fatal (LOG_DEFAULT, "Failed to initialize Internal API library");
-		Helpers::abort_application ();
-	}
-}
-#endif // ndef NET
-
 force_inline DSOCacheEntry*
 MonodroidRuntime::find_dso_cache_entry ([[maybe_unused]] hash_t hash) noexcept
 {
-#if !defined (__MINGW32__) || (defined (__MINGW32__) && __GNUC__ >= 10)
 	hash_t entry_hash;
 	DSOCacheEntry *ret = nullptr;
 	size_t entry_count = application_config.number_of_dso_cache_entries;
@@ -1282,7 +996,6 @@ MonodroidRuntime::find_dso_cache_entry ([[maybe_unused]] hash_t hash) noexcept
 			return ret;
 		}
 	}
-#endif // ndef MINGW32 || def MINGW32 && GNUC >= 10
 	return nullptr;
 }
 
@@ -1297,19 +1010,12 @@ MonodroidRuntime::monodroid_dlopen_log_and_return (void *handle, char **err, con
 		delete[] full_name;
 	}
 
-#if !defined (NET)
-	if (!need_api_init)
-		return handle;
-	init_internal_api_dso (handle);
-#endif // ndef NET
-
 	return handle;
 }
 
 force_inline void*
 MonodroidRuntime::monodroid_dlopen_ignore_component_or_load ([[maybe_unused]] hash_t name_hash, const char *name, int flags, char **err) noexcept
 {
-#if defined (NET)
 	if (startup_in_progress) {
 		auto ignore_component = [&](const char *label, MonoComponent component) -> bool {
 			if ((application_config.mono_components_mask & component) != component) {
@@ -1340,7 +1046,7 @@ MonodroidRuntime::monodroid_dlopen_ignore_component_or_load ([[maybe_unused]] ha
 				break;
 		}
 	}
-#endif
+
 	unsigned int dl_flags = monodroidRuntime.convert_dl_flags (flags);
 	void * handle = androidSystem.load_dso_from_any_directories (name, dl_flags);
 	if (handle != nullptr) {
@@ -1386,117 +1092,12 @@ MonodroidRuntime::monodroid_dlopen (const char *name, int flags, char **err) noe
 void*
 MonodroidRuntime::monodroid_dlopen (const char *name, int flags, char **err, [[maybe_unused]] void *user_data) noexcept
 {
-	void *h = nullptr;
-
-#if defined (NET)
 	if (name == nullptr) {
 		log_warn (LOG_ASSEMBLY, "monodroid_dlopen got a null name. This is not supported in NET+");
 		return nullptr;
 	}
-#else // def NET
-	unsigned int dl_flags = monodroidRuntime.convert_dl_flags (flags);
 
-	bool libmonodroid_fallback = false;
-	bool name_is_full_path = false;
-	bool name_needs_free = false;
-	/* name is nullptr when we're P/Invoking __Internal, so remap to libxa-internal-api */
-	if (name == nullptr || strstr (name, "xa-internal-api") != nullptr) {
-#if defined (WINDOWS)
-		char *tmp_name = nullptr;
-
-		auto probe_dll_at = [&](const char *the_path) -> bool {
-			if (the_path == nullptr) {
-				return false;
-			}
-
-			const char *last_sep = strrchr (the_path, MONODROID_PATH_SEPARATOR_CHAR);
-			if (last_sep != nullptr) {
-				char *dir = utils.strdup_new (the_path, last_sep - the_path);
-				if (dir == nullptr) {
-					return false;
-				}
-
-				tmp_name = utils.string_concat (dir, MONODROID_PATH_SEPARATOR, API_DSO_NAME);
-				delete[] dir;
-				if (!utils.file_exists (tmp_name)) {
-					delete[] tmp_name;
-					tmp_name = nullptr;
-					return false;
-				}
-
-				return true;
-			}
-
-			return false;
-		};
-
-		//
-		// First try to see if it exists at the path pointed to by `name`. With p/invokes, currently (Sep 2020), we can't
-		// really trust the path since it consists of *some* directory path + p/invoke library name and it does not
-		// point to the location where the native library is. However, we still need to check the location first, should
-		// it point to the right place in the future.
-		//
-		// Context: https://github.com/mono/mono/issues/20295#issuecomment-679271621
-		//
-		bool found = probe_dll_at (name);
-		if (!found) {
-			// Next lets try the location of the XA runtime DLL, libxa-internal-api.dll should be next to it.
-			const char *path = get_my_location (false);
-			found = probe_dll_at (path); // lgtm [cpp/unguardednullreturndereference] probe_dll_at checks whether the passed pointer is nullptr
-			if (path != nullptr) {
-				free (reinterpret_cast<void*>(const_cast<char*>(path)));
-			}
-
-			if (!found) {
-				log_warn (LOG_DEFAULT, "Failed to locate %s, using file name without the path", API_DSO_NAME);
-				name = API_DSO_NAME;
-			} else {
-				name = tmp_name;
-				name_is_full_path = true;
-				name_needs_free = true;
-			}
-		}
-#else // ndef WINDOWS
-		name = API_DSO_NAME;
-#endif // WINDOWS
-		libmonodroid_fallback = true;
-	}
-
-	if (!name_is_full_path) {
-		// h = androidSystem.load_dso_from_any_directories (name, dl_flags);
-		h = monodroid_dlopen (name, flags, err);
-		if (h != nullptr) {
-			return h; // already logged by monodroid_dlopen
-		}
-	}
-
-	if (h != nullptr) {
-		return monodroid_dlopen_log_and_return (h, err, name, name_needs_free, libmonodroid_fallback);
-	}
-
-	if (libmonodroid_fallback) {
-		const char *full_name;
-		if (name_is_full_path) {
-			full_name = name;
-		} else {
-			if (name_needs_free) {
-				delete[] name;
-			}
-			full_name = utils.path_combine (AndroidSystem::SYSTEM_LIB_PATH, API_DSO_NAME);
-			name_needs_free = true;
-		}
-		h = androidSystem.load_dso (full_name, dl_flags, false);
-		return monodroid_dlopen_log_and_return (h, err, full_name, name_needs_free, true);
-	}
-#endif // ndef NET
-
-	h = monodroid_dlopen (name, flags, err);
-#if !defined (NET)
-	if (name_needs_free) {
-		delete[] name;
-	}
-#endif // ndef NET
-	return h;
+	return monodroid_dlopen (name, flags, err);
 }
 
 void*
@@ -1608,7 +1209,6 @@ MonodroidRuntime::set_trace_options (void)
 	mono_jit_set_trace_options (value.get ());
 }
 
-#if defined (NET)
 inline void
 MonodroidRuntime::set_profile_options ()
 {
@@ -1671,133 +1271,7 @@ MonodroidRuntime::set_profile_options ()
 	log_warn (LOG_DEFAULT, "Initializing profiler with options: %s", value.get ());
 	debug.monodroid_profiler_load (androidSystem.get_runtime_libdir (), value.get (), output_path.get ());
 }
-#else // def NET
-inline void
-MonodroidRuntime::set_profile_options ()
-{
-	// We want to avoid dynamic allocation, thus let’s create a buffer that can take both the property value and a
-	// path without allocation
-	dynamic_local_string<SENSIBLE_PATH_MAX + PROPERTY_VALUE_BUFFER_LEN> value;
-	{
-		dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN> prop_value;
-		if (androidSystem.monodroid_get_system_property (Debug::DEBUG_MONO_PROFILE_PROPERTY, prop_value) == 0)
-			return;
 
-		value.assign (prop_value.get (), prop_value.length ());
-	}
-
-	constexpr char OUTPUT_ARG[] = "output=";
-	constexpr size_t OUTPUT_ARG_LEN = sizeof(OUTPUT_ARG) - 1;
-
-	ssize_t colon_idx = value.index_of (':');
-	size_t start_index = colon_idx < 0 ? 0 : static_cast<size_t>(colon_idx + 1);
-	dynamic_local_string<SENSIBLE_PATH_MAX> output_path;
-	bool have_output_arg = false;
-	string_segment param;
-
-	while (value.next_token (start_index, ',', param)) {
-		dynamic_local_string<SENSIBLE_PATH_MAX> temp;
-		temp.assign (param.start (), param.length ());
-		if (!param.starts_with (OUTPUT_ARG) || param.length () == OUTPUT_ARG_LEN) {
-			continue;
-		}
-
-		output_path.assign (param.start () + OUTPUT_ARG_LEN, param.length () - OUTPUT_ARG_LEN);
-		have_output_arg = true;
-		break;
-	}
-
-	if (!have_output_arg) {
-		constexpr char   MLPD_EXT[] = "mlpd";
-		constexpr char   AOT_EXT[] = "aotprofile";
-		constexpr char   COV_EXT[] = "xml";
-		constexpr char   LOG_PREFIX[] = "log:";
-		constexpr size_t LOG_PREFIX_LENGTH = sizeof(LOG_PREFIX) - 1;
-		constexpr char   AOT_PREFIX[] = "aot:";
-		constexpr size_t AOT_PREFIX_LENGTH = sizeof(AOT_PREFIX) - 1;
-		constexpr char   DEFAULT_PREFIX[] = "default:";
-		constexpr size_t DEFAULT_PREFIX_LENGTH = sizeof(DEFAULT_PREFIX) - 1;
-		constexpr char   COVERAGE_PREFIX[] = "coverage:";
-		constexpr size_t COVERAGE_PREFIX_LENGTH = sizeof(COVERAGE_PREFIX) - 1;
-		constexpr char   PROFILE_FILE_NAME_PREFIX[] = "profile.";
-
-		size_t length_adjust = colon_idx >= 1 ? 0 : 1;
-
-		output_path
-			.assign_c (androidSystem.get_override_dir (0))
-			.append (MONODROID_PATH_SEPARATOR)
-			.append (PROFILE_FILE_NAME_PREFIX);
-
-		if (value.starts_with (LOG_PREFIX, LOG_PREFIX_LENGTH - length_adjust)) {
-			output_path.append (MLPD_EXT);
-		} else if (value.starts_with (AOT_PREFIX, AOT_PREFIX_LENGTH - length_adjust)) {
-			output_path.append (AOT_EXT);
-		} else if (value.starts_with (DEFAULT_PREFIX, DEFAULT_PREFIX_LENGTH - length_adjust)) {
-			output_path.append (MLPD_EXT);
-		} else if (value.starts_with (COVERAGE_PREFIX, COVERAGE_PREFIX_LENGTH - length_adjust)) {
-			output_path.append (COV_EXT);
-		} else {
-			size_t len = colon_idx < 0 ? value.length () : static_cast<size_t>(colon_idx + 1);
-			output_path.append (value.get (), len);
-		}
-
-		if (colon_idx < 0)
-			value.append (":");
-		else
-			value.append (",");
-		value
-			.append (OUTPUT_ARG)
-			.append (output_path.get (), output_path.length ());
-	}
-
-	/*
-	 * libmono-profiler-log.so profiler won't overwrite existing files.
-	 * Remove it For Great Justice^H^H^H to preserve my sanity!
-	 */
-	unlink (output_path.get ());
-
-	log_warn (LOG_DEFAULT, "Initializing profiler with options: %s", value.get ());
-	debug.monodroid_profiler_load (androidSystem.get_runtime_libdir (), value.get (), output_path.get ());
-}
-#endif // ndef NET
-
-/*
-Disable LLVM signal handlers.
-
-This happens when RenderScript needs to be compiled. See https://bugzilla.xamarin.com/show_bug.cgi?id=18016
-
-This happens only on first run of the app. LLVM is used to compiled the RenderScript scripts. LLVM, been
-a nice and smart library installs a ton of signal handlers and don't chain at all, completely breaking us.
-
-This is a hack to set llvm::DisablePrettyStackTrace to true and avoid this source of signal handlers.
-
-As of Android 5.0 (API 21) the symbol no longer exists in libLLVM.so and stack pretty printing is an opt-in
-instead of an opt-out feature. LLVM change which removed the symbol is at
-
-https://github.com/llvm/llvm-project/commit/c10ca903243f97cbc8014f20c64f1318a57a2936
-
-*/
-void
-MonodroidRuntime::disable_external_signal_handlers (void)
-{
-#if !defined (NET)
-	if (android_api_level >= 21) {
-		return;
-	}
-
-	void *llvm  = androidSystem.load_dso ("libLLVM.so", JAVA_INTEROP_LIB_LOAD_GLOBALLY, TRUE);
-	if (llvm) {
-		bool *disable_signals = reinterpret_cast<bool*> (java_interop_lib_symbol (llvm, "_ZN4llvm23DisablePrettyStackTraceE", nullptr));
-		if (disable_signals) {
-			*disable_signals = true;
-			log_info (LOG_DEFAULT, "Disabled LLVM signal trapping");
-		}
-		//MUST NOT dlclose to ensure we don't lose the hack
-	}
-#endif // ndef NET
-}
-
-#if defined (NET)
 inline void
 MonodroidRuntime::load_assembly (MonoAssemblyLoadContextGCHandle alc_handle, jstring_wrapper &assembly)
 {
@@ -1830,7 +1304,6 @@ MonodroidRuntime::load_assembly (MonoAssemblyLoadContextGCHandle alc_handle, jst
 		internal_timing->add_more_info (total_time_index, more_info);
 	}
 }
-#endif // NET
 
 inline void
 MonodroidRuntime::load_assembly (MonoDomain *domain, jstring_wrapper &assembly)
@@ -1847,21 +1320,13 @@ MonodroidRuntime::load_assembly (MonoDomain *domain, jstring_wrapper &assembly)
 	}
 
 	MonoAssemblyName *aname = mono_assembly_name_new (assm_name);
-
-#ifndef ANDROID
-	if (designerAssemblies.has_assemblies () && designerAssemblies.try_load_assembly (domain, aname) != nullptr) {
-		log_debug (LOG_ASSEMBLY, "Dynamically opened assembly %s", mono_assembly_name_get_name (aname));
-	} else
-#endif
-	{
-		MonoDomain *current = utils.get_current_domain ();
-		if (domain != current) {
-			mono_domain_set (domain, FALSE);
-			mono_assembly_load_full (aname, NULL, NULL, 0);
-			mono_domain_set (current, FALSE);
-		} else {
-			mono_assembly_load_full (aname, NULL, NULL, 0);
-		}
+	MonoDomain *current = utils.get_current_domain ();
+	if (domain != current) {
+		mono_domain_set (domain, FALSE);
+		mono_assembly_load_full (aname, NULL, NULL, 0);
+		mono_domain_set (current, FALSE);
+	} else {
+		mono_assembly_load_full (aname, NULL, NULL, 0);
 	}
 
 	mono_assembly_name_free (aname);
@@ -1913,57 +1378,34 @@ monodroid_Mono_UnhandledException_internal ([[maybe_unused]] MonoException *ex)
 MonoDomain*
 MonodroidRuntime::create_and_initialize_domain (JNIEnv* env, jclass runtimeClass, jstring_array_wrapper &runtimeApks,
                                                 jstring_array_wrapper &assemblies, [[maybe_unused]] jobjectArray assembliesBytes,
-                                                [[maybe_unused]] jstring_array_wrapper &assembliesPaths, jobject loader, bool is_root_domain,
-                                                bool force_preload_assemblies, bool have_split_apks)
+                                                [[maybe_unused]] jstring_array_wrapper &assembliesPaths, jobject loader,
+                                                bool have_split_apks) noexcept
 {
-	MonoDomain* domain = create_domain (env, runtimeApks, is_root_domain, have_split_apks);
-#if defined (ANDROID)
-	// Asserting this on desktop apparently breaks a Designer test
+	MonoDomain* domain = create_domain (runtimeApks, have_split_apks);
 	abort_unless (domain != nullptr, "Failed to create AppDomain");
-#endif
 
-	// When running on desktop, the root domain is only a dummy so don't initialize it
-	if constexpr (is_running_on_desktop) {
-		if (is_root_domain) {
-			return domain;
-		}
-	}
-
-#if defined (NET)
 	default_alc = mono_alc_get_default_gchandle ();
 	abort_unless (default_alc != nullptr, "Default AssemblyLoadContext not found");
 
 	embeddedAssemblies.install_preload_hooks_for_alc ();
 	log_debug (LOG_ASSEMBLY, "ALC hooks installed");
-#endif // def NET
 
-#ifndef ANDROID
-	if (assembliesBytes != nullptr && domain != nullptr)
-		designerAssemblies.add_or_update_from_java (domain, env, assemblies, assembliesBytes, assembliesPaths);
-#endif
-	bool preload = (androidSystem.is_assembly_preload_enabled () || (is_running_on_desktop && force_preload_assemblies));
+	bool preload = androidSystem.is_assembly_preload_enabled ();
 
-#if defined (NET)
 	load_assemblies (default_alc, preload, assemblies);
 	init_android_runtime (env, runtimeClass, loader);
-#else // def NET
-	load_assemblies (domain, preload, assemblies);
-	init_android_runtime (domain, env, runtimeClass, loader);
-#endif // ndef NET
 	osBridge.add_monodroid_domain (domain);
 
 	return domain;
 }
 
-#if defined (NET)
 void
 MonodroidRuntime::monodroid_unhandled_exception (MonoObject *java_exception)
 {
 	mono_unhandled_exception (java_exception);
 }
-#endif // def NET
 
-#if !defined (RELEASE) || !defined (ANDROID)
+#if !defined (RELEASE)
 MonoReflectionType*
 MonodroidRuntime::typemap_java_to_managed (MonoString *java_type_name) noexcept
 {
@@ -1975,50 +1417,8 @@ MonodroidRuntime::typemap_managed_to_java (MonoReflectionType *type, const uint8
 {
 	return embeddedAssemblies.typemap_managed_to_java (type, mvid);
 }
-#endif // !def RELEASE || !def ANDROID
+#endif // !def RELEASE
 
-#if defined (WINDOWS)
-const char*
-MonodroidRuntime::get_my_location (bool remove_file_name)
-{
-	HMODULE hm = NULL;
-
-	DWORD handle_flags = GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT;
-	if (GetModuleHandleExW (handle_flags, (LPCWSTR) &get_xamarin_android_msbuild_path, &hm) == 0) {
-		int ret = GetLastError ();
-		log_warn (LOG_DEFAULT, "Unable to get HANDLE to `libmono-android.debug.dll`; GetModuleHandleExW returned %d\n", ret);
-		return nullptr;
-	}
-
-	WCHAR path[MAX_PATH * 2];
-	if (GetModuleFileNameW (hm, path, sizeof(path)) == 0) {
-		int ret = GetLastError ();
-		log_warn (LOG_DEFAULT, "Unable to get filename to `libmono-android.debug.dll`; GetModuleFileNameW returned %d\n", ret);
-		return nullptr;
-	}
-
-	if (remove_file_name)
-		PathRemoveFileSpecW (path);
-
-	return utils.utf16_to_utf8 (path);
-}
-#elif defined (APPLE_OS_X)
-const char*
-MonodroidRuntime::get_my_location (bool remove_file_name)
-{
-	Dl_info info;
-	if (dladdr (reinterpret_cast<const void*>(&MonodroidRuntime::get_my_location), &info) == 0) {
-		log_warn (LOG_DEFAULT, "Could not lookup library containing `MonodroidRuntime::get_my_location()`; dladdr failed: %s", dlerror ());
-		return nullptr;
-	}
-
-	if (remove_file_name)
-		return utils.strdup_new (dirname (const_cast<char*>(info.dli_fname)));
-	return utils.strdup_new (info.dli_fname);
-}
-#endif  // defined(WINDOWS)
-
-#if defined (ANDROID)
 force_inline void
 MonodroidRuntime::setup_mono_tracing (std::unique_ptr<char[]> const& mono_log_mask, bool have_log_assembly, bool have_log_gc)
 {
@@ -2103,8 +1503,6 @@ MonodroidRuntime::install_logging_handlers ()
 	mono_trace_set_printerr_handler (mono_log_standard_streams_handler);
 }
 
-#endif // def ANDROID
-
 inline void
 MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass klass, jstring lang, jobjectArray runtimeApksJava,
                                                           jstring runtimeNativeLibDir, jobjectArray appDirs, jint localDateTimeOffset,
@@ -2131,7 +1529,6 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	jstring_array_wrapper applicationDirs (env, appDirs);
 	jstring_wrapper &home = applicationDirs[SharedConstants::APP_DIRS_FILES_DIR_INDEX];
 
-#if defined (NET)
 	mono_opt_aot_lazy_assembly_load = application_config.aot_lazy_load ? TRUE : FALSE;
 
 	{
@@ -2149,7 +1546,6 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 			const_cast<const char**>(monovm_props.property_values ())
 		);
 	}
-#endif // def NET
 
 	android_api_level = apiLevel;
 	androidSystem.detect_embedded_dso_mode (applicationDirs);
@@ -2169,8 +1565,6 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	create_xdg_directories_and_environment (home);
 	androidSystem.set_primary_override_dir (home);
 
-	disable_external_signal_handlers ();
-
 	jstring_array_wrapper runtimeApks (env, runtimeApksJava);
 	androidSystem.setup_app_library_directories (runtimeApks, applicationDirs, haveSplitApks);
 
@@ -2182,7 +1576,6 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	set_debug_env_vars ();
 #endif
 
-#if defined (ANDROID)
 	bool have_log_assembly = (log_categories & LOG_ASSEMBLY) != 0;
 	bool have_log_gc = (log_categories & LOG_GC) != 0;
 
@@ -2193,11 +1586,7 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	}
 
 	setup_mono_tracing (mono_log_mask, have_log_assembly, have_log_gc);
-
-#if defined (NET)
 	install_logging_handlers ();
-#endif // def NET
-#endif
 
 	if (runtimeNativeLibDir != nullptr) {
 		jstr = runtimeNativeLibDir;
@@ -2206,83 +1595,26 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	}
 
 	androidSystem.setup_process_args (runtimeApks);
-#if !defined (NET)
-	// JIT stats based on perf counters are disabled in dotnet/mono
-	if (XA_UNLIKELY (FastTiming::enabled () && !FastTiming::is_bare_mode ())) {
-		mono_counters_enable (static_cast<int>(XA_LOG_COUNTERS));
-
-		dynamic_local_string<SENSIBLE_PATH_MAX> counters_path;
-		utils.path_combine (counters_path, androidSystem.get_override_dir (0), "counters.txt");
-		log_info_nocheck (LOG_TIMING, "counters path: %s", counters_path.get ());
-		counters = utils.monodroid_fopen (counters_path.get (), "a");
-		utils.set_world_accessable (counters_path.get ());
-	}
-
-	void *dso_handle = nullptr;
-#if defined (WINDOWS) || defined (APPLE_OS_X)
-	const char *my_location = get_my_location ();
-	if (my_location != nullptr) {
-		std::unique_ptr<char[]> dso_path {utils.path_combine (my_location, API_DSO_NAME)};
-		log_info (LOG_DEFAULT, "Attempting to load %s", dso_path.get ());
-		dso_handle = java_interop_lib_load (dso_path.get (), JAVA_INTEROP_LIB_LOAD_GLOBALLY, nullptr);
-#if defined (APPLE_OS_X)
-		delete[] my_location;
-#else   // !defined(APPLE_OS_X)
-		free (static_cast<void*>(const_cast<char*>(my_location))); // JI allocates with `calloc`
-#endif  // defined(APPLE_OS_X)
-	}
-
-	if (dso_handle == nullptr) {
-		log_info (LOG_DEFAULT, "Attempting to load %s with \"bare\" dlopen", API_DSO_NAME);
-		dso_handle = java_interop_lib_load (API_DSO_NAME, JAVA_INTEROP_LIB_LOAD_GLOBALLY, nullptr);
-	}
-#endif  // defined(WINDOWS) || defined(APPLE_OS_X)
-	if (dso_handle == nullptr)
-		dso_handle = androidSystem.load_dso_from_any_directories (API_DSO_NAME, JAVA_INTEROP_LIB_LOAD_GLOBALLY);
-
-	init_internal_api_dso (dso_handle);
-#endif // ndef NET
 	mono_dl_fallback_register (monodroid_dlopen, monodroid_dlsym, nullptr, nullptr);
 
 	set_profile_options ();
 
 	set_trace_options ();
 
-#if defined (DEBUG) && !defined (WINDOWS)
+#if defined (DEBUG)
 	debug.start_debugging_and_profiling ();
 #endif
 
-#if !defined (NET)
-	mono_config_parse_memory (reinterpret_cast<const char*> (monodroid_config));
-	mono_register_machine_config (reinterpret_cast<const char*> (monodroid_machine_config));
-#endif // ndef NET
 	log_info (LOG_DEFAULT, "Probing for Mono AOT mode\n");
 
 	MonoAotMode mode = MonoAotMode::MONO_AOT_MODE_NONE;
 	if (androidSystem.is_mono_aot_enabled ()) {
 		mode = androidSystem.get_mono_aot_mode ();
-#if !defined (NET)
-		if (mode == MonoAotMode::MONO_AOT_MODE_LAST) {
-			// Hack. See comments in android-system.hh
-			if (!androidSystem.is_interpreter_enabled ()) {
-				mode = MonoAotMode::MONO_AOT_MODE_NONE;
-			}
-		}
-
-		if (mode != MonoAotMode::MONO_AOT_MODE_NONE) {
-			if (mode != MonoAotMode::MONO_AOT_MODE_LAST) {
-				log_info (LOG_DEFAULT, "Enabling AOT mode in Mono");
-			} else {
-				log_info (LOG_DEFAULT, "Enabling Mono Interpreter");
-			}
-		}
-#else   // defined (NET)
 		if (mode != MonoAotMode::MONO_AOT_MODE_INTERP_ONLY) {
 			log_info (LOG_DEFAULT, "Enabling AOT mode in Mono");
 		} else {
 			log_info (LOG_DEFAULT, "Enabling Mono Interpreter");
 		}
-#endif  // !defined (NET)
 	}
 	mono_jit_set_aot_mode (mode);
 
@@ -2317,18 +1649,7 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 	jstring_array_wrapper assemblies (env, assembliesJava);
 	jstring_array_wrapper assembliesPaths (env);
 	/* the first assembly is used to initialize the AppDomain name */
-	create_and_initialize_domain (env, klass, runtimeApks, assemblies, nullptr, assembliesPaths, loader, /*is_root_domain:*/ true, /*force_preload_assemblies:*/ false, haveSplitApks);
-
-#if defined (ANDROID) && !defined (NET)
-	// Mono from mono/mono has a bug which requires us to install the handlers after `mono_init_jit_version` is called
-	install_logging_handlers ();
-#endif // def ANDROID && ndef NET
-
-	// Install our dummy exception handler on Desktop
-	if constexpr (is_running_on_desktop) {
-		mono_add_internal_call ("System.Diagnostics.Debugger::Mono_UnhandledException_internal(System.Exception)",
-		                                 reinterpret_cast<const void*> (monodroid_Mono_UnhandledException_internal));
-	}
+	create_and_initialize_domain (env, klass, runtimeApks, assemblies, nullptr, assembliesPaths, loader, haveSplitApks);
 
 	if (XA_UNLIKELY (utils.should_log (LOG_DEFAULT))) {
 		log_info_nocheck (
@@ -2340,51 +1661,19 @@ MonodroidRuntime::Java_mono_android_Runtime_initInternal (JNIEnv *env, jclass kl
 			BuildInfo::date
 		);
 
-#if defined (ANDROID)
 		log_info_nocheck (LOG_DEFAULT, "NDK version: %s; API level: %s", BuildInfo::ndk_version, BuildInfo::ndk_api_level);
 		log_info_nocheck (LOG_DEFAULT, "MonoVM version: %s", mono_get_runtime_build_info ());
-#endif // def ANDROID
 	}
 
 	if (XA_UNLIKELY (FastTiming::enabled ())) {
 		internal_timing->end_event (total_time_index);
-#if !defined (NET)
-		dump_counters ("## Runtime.init: end");
-#endif // ndef NET
 	}
 
-#if defined (RELEASE) && defined (ANDROID) && defined (NET)
+#if defined (RELEASE)
 	xamarin_app_init (get_function_pointer_at_runtime);
-#endif // def RELEASE && def ANDROID && def NET
+#endif // def RELEASE
 	startup_in_progress = false;
 }
-
-#if !defined (NET)
-void
-MonodroidRuntime::dump_counters (const char *format, ...)
-{
-	if (counters == nullptr)
-		return;
-
-	va_list args;
-	va_start (args, format);
-	dump_counters_v (format, args);
-	va_end (args);
-}
-
-void
-MonodroidRuntime::dump_counters_v (const char *format, va_list args)
-{
-	if (counters == nullptr)
-		return;
-
-	fprintf (counters, "\n");
-	vfprintf (counters, format, args);
-	fprintf (counters, "\n");
-
-	mono_counters_dump (MonodroidRuntime::XA_LOG_COUNTERS, counters);
-}
-#endif // ndef NET
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad (JavaVM *vm, void *reserved)
@@ -2451,38 +1740,9 @@ MonodroidRuntime::Java_mono_android_Runtime_register (JNIEnv *env, jstring manag
 	int methods_len = env->GetStringLength (methods);
 	const jchar *methods_ptr = env->GetStringChars (methods, nullptr);
 
-#if !defined (NET) || !defined (ANDROID)
-	void *args[] = {
-		&managedType_ptr,
-		&managedType_len,
-		&nativeClass,
-		&methods_ptr,
-		&methods_len,
-	};
-	MonoMethod *register_jni_natives = registerType;
-#endif // ndef NET || ndef ANDROID
-
-#if !defined (NET)
-	MonoDomain *domain = utils.get_current_domain (/* attach_thread_if_needed */ false);
-	mono_jit_thread_attach (domain);
-	// Refresh current domain as it might have been modified by the above call
-	domain = mono_domain_get ();
-
-	if constexpr (is_running_on_desktop) {
-		MonoClass *runtime = utils.monodroid_get_class_from_name (domain, SharedConstants::MONO_ANDROID_ASSEMBLY_NAME, SharedConstants::ANDROID_RUNTIME_NS_NAME, SharedConstants::JNIENVINIT_CLASS_NAME);
-		register_jni_natives = mono_class_get_method_from_name (runtime, "RegisterJniNatives", 5);
-	}
-
-	utils.monodroid_runtime_invoke (domain, register_jni_natives, nullptr, args, nullptr);
-#else // ndef NET
 	mono_jit_thread_attach (nullptr); // There's just one domain in .net
-
-#if !defined (ANDROID)
-	mono_runtime_invoke (register_jni_natives, nullptr, args, nullptr);
-#else
 	jnienv_register_jni_natives (managedType_ptr, managedType_len, nativeClass, methods_ptr, methods_len);
-#endif // ndef ANDROID
-#endif // def NET
+
 
 	env->ReleaseStringChars (methods, methods_ptr);
 	env->ReleaseStringChars (managedType, managedType_ptr);
@@ -2496,9 +1756,6 @@ MonodroidRuntime::Java_mono_android_Runtime_register (JNIEnv *env, jstring manag
 		env->ReleaseStringUTFChars (managedType, mt_ptr);
 
 		internal_timing->add_more_info (total_time_index, type);
-#if !defined (NET)
-		dump_counters ("## Runtime.register: type=%s\n", type.get ());
-#endif
 	}
 }
 
@@ -2560,10 +1817,5 @@ get_jnienv (void)
 JNIEXPORT void
 JNICALL Java_mono_android_Runtime_propagateUncaughtException (JNIEnv *env, [[maybe_unused]] jclass klass, jobject javaThread, jthrowable javaException)
 {
-#if defined (NET)
 	monodroidRuntime.propagate_uncaught_exception (env, javaThread, javaException);
-#else // def NET
-	MonoDomain *domain = utils.get_current_domain ();
-	monodroidRuntime.propagate_uncaught_exception (domain, env, javaThread, javaException);
-#endif // ndef NET
 }

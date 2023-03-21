@@ -76,3 +76,4 @@ CannotAddAbstractMembers : Member 'public Java.Net.SocketAddress Java.Nio.Channe
 CannotAddAbstractMembers : Member 'public Java.Net.SocketAddress Java.Nio.Channels.ServerSocketChannel.LocalAddress.get()' is abstract in the implementation but is missing in the contract.
 CannotAddAbstractMembers : Member 'public Java.Net.SocketAddress Java.Nio.Channels.SocketChannel.LocalAddress' is abstract in the implementation but is missing in the contract.
 CannotAddAbstractMembers : Member 'public Java.Net.SocketAddress Java.Nio.Channels.SocketChannel.LocalAddress.get()' is abstract in the implementation but is missing in the contract.
+CannotRemoveAttribute : Attribute 'Android.Runtime.RegisterAttribute' exists on 'Java.Lang.JavaSystem.LoadLibrary(System.String)' in the contract but not the implementation.

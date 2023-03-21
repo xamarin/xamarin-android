@@ -19,8 +19,4 @@ extern xamarin::android::internal::EmbeddedAssemblies embeddedAssemblies;
 extern xamarin::android::internal::MonodroidRuntime monodroidRuntime;
 extern xamarin::android::Timing *timing;
 
-#ifndef ANDROID
-extern xamarin::android::internal::DesignerAssemblies designerAssemblies;
-#endif
-
 #endif // !__GLOBALS_H

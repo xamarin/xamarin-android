@@ -172,9 +172,9 @@ namespace Xamarin.Android.Prepare
 				{ "@NDK_VERSION_MAJOR@",         context.BuildInfo.NDKVersionMajor },
 				{ "@NDK_VERSION_MINOR@",         context.BuildInfo.NDKVersionMinor },
 				{ "@NDK_VERSION_MICRO@",         context.BuildInfo.NDKVersionMicro },
-				{ "@NDK_ARMEABI_V7_API@",        BuildAndroidPlatforms.NdkMinimumAPILegacy32.ToString () },
+				{ "@NDK_ARMEABI_V7_API@",        BuildAndroidPlatforms.NdkMinimumAPI.ToString () },
 				{ "@NDK_ARM64_V8A_API@",         BuildAndroidPlatforms.NdkMinimumAPI.ToString () },
-				{ "@NDK_X86_API@",               BuildAndroidPlatforms.NdkMinimumAPILegacy32.ToString ().ToString () },
+				{ "@NDK_X86_API@",               BuildAndroidPlatforms.NdkMinimumAPI.ToString ().ToString () },
 				{ "@NDK_X86_64_API@",            BuildAndroidPlatforms.NdkMinimumAPI.ToString ().ToString () },
 				{ "@XA_SUPPORTED_ABIS@",         context.Properties.GetRequiredValue (KnownProperties.AndroidSupportedTargetJitAbis).Replace (':', ';') },
 				{ "@ANDROID_DEFAULT_TARGET_DOTNET_API_LEVEL@", context.Properties.GetRequiredValue (KnownProperties.AndroidDefaultTargetDotnetApiLevel) },
@@ -198,13 +198,9 @@ namespace Xamarin.Android.Prepare
 
 			var replacements = new Dictionary<string, string> (StringComparer.Ordinal) {
 				{ "@NDK_RELEASE@",               BuildAndroidPlatforms.AndroidNdkVersion },
-				{ "@NDK_ARMEABI_V7_API@",        BuildAndroidPlatforms.NdkMinimumAPILegacy32.ToString () },
 				{ "@NDK_ARMEABI_V7_API_NET@",    BuildAndroidPlatforms.NdkMinimumAPI.ToString () },
-				{ "@NDK_ARM64_V8A_API@",         BuildAndroidPlatforms.NdkMinimumAPI.ToString ()  },
 				{ "@NDK_ARM64_V8A_API_NET@",     BuildAndroidPlatforms.NdkMinimumAPI.ToString () },
-				{ "@NDK_X86_API@",               BuildAndroidPlatforms.NdkMinimumAPILegacy32.ToString ()  },
 				{ "@NDK_X86_API_NET@",           BuildAndroidPlatforms.NdkMinimumAPI.ToString ()  },
-				{ "@NDK_X86_64_API@",            BuildAndroidPlatforms.NdkMinimumAPI.ToString ()  },
 				{ "@NDK_X86_64_API_NET@",        BuildAndroidPlatforms.NdkMinimumAPI.ToString ()  },
 			};
 

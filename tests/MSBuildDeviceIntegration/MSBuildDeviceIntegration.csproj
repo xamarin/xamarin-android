@@ -24,7 +24,11 @@
 
    <ItemGroup>
     <Compile Remove="Resources\**\*.cs" />
-    <Compile Include="..\..\tools\assembly-store-reader\AssemblyStore*.cs" />
+    <Compile Include="..\..\tools\xapp\Xamarin.Android.Application.AssemblyStore\AssemblyStore*.cs" />
+    <Compile Include="..\..\tools\xapp\Xamarin.Android.Application\Constants.cs" />
+    <Compile Include="..\..\tools\xapp\Xamarin.Android.Application.Utilities\ILogger.cs" />
+    <Compile Include="..\..\tools\xapp\Xamarin.Android.Application.Utilities\LogLevel.cs" />
+    <Compile Include="..\..\tools\xapp\Xamarin.Android.Application.Utilities\Util.cs" />
     <EmbeddedResource Include="Resources\LinkDescTest\*.*" />
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +44,7 @@
     <PackageReference Include="NodaTime" Version="2.4.5" />
     <PackageReference Include="MSBuild.StructuredLogger" Version="2.1.787" />
     <PackageReference Include="ICSharpCode.Decompiler" Version="7.2.1.6856" />
+    <PackageReference Include="Mono.Cecil" Version="$(MonoCecilVersion)" />
   </ItemGroup>
 
   <ItemGroup>

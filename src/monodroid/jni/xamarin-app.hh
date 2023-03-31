@@ -10,7 +10,9 @@
 #include "monodroid.h"
 #include "xxhash.hh"
 
-static constexpr uint64_t FORMAT_TAG = 0x015E6972616D58;
+// Each change to any exported structures must increase the format version number
+// Keep in sync with src/Xamarin.Android.Build.Tasks/Utilities/ApplicationConfigNativeAssemblyGenerator.cs
+static constexpr uint64_t FORMAT_TAG = 0x00026E69726D6158; // The leftmost two bytes denote format version
 static constexpr uint32_t COMPRESSED_DATA_MAGIC = 0x5A4C4158; // 'XALZ', little-endian
 static constexpr uint32_t ASSEMBLY_STORE_MAGIC = 0x41424158; // 'XABA', little-endian
 static constexpr uint32_t ASSEMBLY_STORE_FORMAT_VERSION = 1; // Increase whenever an incompatible change is made to the

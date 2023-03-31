@@ -2,6 +2,7 @@ using System;
 
 namespace Xamarin.Android.Tasks
 {
+#pragma warning disable 0649
 	// Declaration order of fields and their types must correspond *exactly* to that in
 	// src/monodroid/jni/xamarin-app.hh ApplicationConfig structure
 	//
@@ -50,4 +51,5 @@ namespace Xamarin.Android.Tasks
 		public uint   mono_components_mask;
 		public string android_package_name = String.Empty;
 	}
+#pragma warning restore 0649
 }

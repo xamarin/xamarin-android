@@ -37,8 +37,10 @@ endif()
 
 option(ENABLE_CLANG_ASAN "Enable the clang AddressSanitizer support" OFF)
 option(ENABLE_CLANG_UBSAN "Enable the clang UndefinedBehaviorSanitizer support" OFF)
+option(ENABLE_NET "Enable compilation for .NET 6+" OFF)
+option(ENABLE_TIMING "Build with timing support" OFF)
 
-if(ENABLE_CLANG_ASAN OR ENABLE_CLANG_UBSAN)
+if(ENABLE_CLANG_ASAN OR ENABLE_CLANG_UBSAN OR (ANDROID AND ENABLE_NET))
   set(STRIP_DEBUG_DEFAULT OFF)
   set(ANALYZERS_ENABLED ON)
 else()
@@ -46,8 +48,6 @@ else()
   set(ANALYZERS_ENABLED OFF)
 endif()
 
-option(ENABLE_NET "Enable compilation for .NET 6+" OFF)
-option(ENABLE_TIMING "Build with timing support" OFF)
 option(STRIP_DEBUG "Strip debugging information when linking" ${STRIP_DEBUG_DEFAULT})
 option(DISABLE_DEBUG "Disable the built-in debugging code" OFF)
 option(USE_CCACHE "Use ccache, if found, to speed up recompilation" ${CCACHE_OPTION_DEFAULT})
@@ -367,6 +367,18 @@ if(ANDROID)
       )
   endif()
 
+  # Always build with the most extensive debug info possible, we can strip it out later on and
+  # it may be really useful to have it even in release builds, should the user choose so.
+  list(APPEND LOCAL_COMMON_COMPILER_ARGS
+    -glldb # NDK uses lldb, makes sense to optimize for it
+    -gdwarf-5 # DWARF-4 is the current default, but DWARF-5 produces smaller debug sections (among other changes: https://dwarfstd.org/Dwarf5Std.php)
+  )
+
+  list(APPEND LOCAL_COMMON_LINKER_ARGS
+    -glldb
+    -gdwarf-5
+  )
+
   unset(SANITIZER_FLAGS)
   if (ENABLE_CLANG_ASAN)
     set(SANITIZER_FLAGS -fsanitize=address)
@@ -514,6 +526,12 @@ if(ANDROID)
     list(APPEND XAMARIN_MONODROID_SOURCES
       ${SOURCES_DIR}/xamarin-android-app-context.cc
       )
+  endif()
+
+  if(ENABLE_NET)
+    list(APPEND XAMARIN_MONODROID_SOURCES
+      ${SOURCES_DIR}/simpleperf.cc
+    )
   endif()
 
   if(NOT USES_LIBSTDCPP)

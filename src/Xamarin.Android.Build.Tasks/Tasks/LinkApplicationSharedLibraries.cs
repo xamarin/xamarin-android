@@ -38,7 +38,7 @@ namespace Xamarin.Android.Tasks
 		public ITaskItem[] ApplicationSharedLibraries { get; set; }
 
 		[Required]
-		public bool DebugBuild { get; set; }
+		public bool KeepDebugInfo { get; set; }
 
 		[Required]
 		public string AndroidBinUtilsDirectory { get; set; }
@@ -132,7 +132,7 @@ namespace Xamarin.Android.Tasks
 				"--warn-shared-textrel " +
 				"--fatal-warnings";
 
-			string stripSymbolsArg = DebugBuild ? String.Empty : " -s";
+			string stripSymbolsArg = KeepDebugInfo ? String.Empty : " -s";
 
 			string ld = Path.Combine (AndroidBinUtilsDirectory, MonoAndroidHelper.GetExecutablePath (AndroidBinUtilsDirectory, "ld"));
 			var targetLinkerArgs = new List<string> ();

@@ -51,6 +51,10 @@ core workload SDK packs imported by WorkloadManifest.targets.
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)class-parse.dll" PackagePath="tools" />
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)class-parse.pdb" PackagePath="tools" />
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)class-parse.runtimeconfig.json" PackagePath="tools" />
+      <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)debug-session-prep.deps.json" PackagePath="tools" />
+      <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)debug-session-prep.dll" PackagePath="tools" />
+      <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)debug-session-prep.pdb" PackagePath="tools" />
+      <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)debug-session-prep.runtimeconfig.json" PackagePath="tools" />
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)generator.dll" PackagePath="tools" />
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)generator.pdb" PackagePath="tools" />
       <_PackageFiles Include="$(MicrosoftAndroidSdkOutDir)generator.runtimeconfig.json" PackagePath="tools" />

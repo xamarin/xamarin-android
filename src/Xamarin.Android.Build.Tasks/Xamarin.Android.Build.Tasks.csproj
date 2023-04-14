@@ -409,6 +409,12 @@
     <EmbeddedResource Include="Resources\Resource.Designer.snk">
       <LogicalName>Resource.Designer.snk</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\debug-app.sh">
+      <LogicalName>debug-app.sh</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\debug-app.ps1">
+      <LogicalName>debug-app.ps1</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

@@ -95,6 +95,11 @@ namespace Xamarin.Android.Tasks {
 		public bool ForceDebuggable { get; set; }
 		public string VersionName { get; set; }
 
+		/// <summary>
+		/// Available on API 29 or newer
+		/// </summary>
+		public bool Profileable { get; set; }
+
 		string versionCode;
 
 		/// <summary>
@@ -420,6 +425,12 @@ namespace Xamarin.Android.Tasks {
 					app.Add (new XAttribute (androidNs + "debuggable", "true"));
 				else
 					debuggable.Value = "true";
+			}
+
+			if (Profileable) {
+				var profileable = new XElement ("profileable");
+				profileable.Add (new XAttribute (androidNs + "shell", "true"));
+				app.Add (profileable);
 			}
 
 			if (Debug || NeedsInternet)

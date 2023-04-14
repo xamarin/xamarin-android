@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Text;
 
 using ELFSharp;
 using ELFSharp.ELF;
@@ -15,6 +16,89 @@ namespace Xamarin.Android.Tasks
 {
 	static class ELFHelper
 	{
+		public static bool IsAOTLibrary (TaskLoggingHelper log, string path)
+		{
+			IELF? elf = ReadElfFile (log, path, "Unable to check if file is an AOT shared library.");
+			if (elf == null) {
+				return false;
+			}
+
+			return IsAOTLibrary (elf);
+		}
+
+		static bool IsAOTLibrary (IELF elf)
+		{
+			ISymbolTable? symtab = GetSymbolTable (elf, ".dynsym");
+			if (symtab == null) {
+				// We can't be sure what the DSO is, play safe
+				return false;
+			}
+
+			foreach (var entry in symtab.Entries) {
+				if (String.Compare ("mono_aot_file_info", entry.Name, StringComparison.Ordinal) == 0 && entry.Type == ELFSymbolType.Object) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public static bool HasDebugSymbols (TaskLoggingHelper log, string path)
+		{
+			return HasDebugSymbols (log, path, out bool _);
+		}
+
+		public static bool HasDebugSymbols (TaskLoggingHelper log, string path, out bool usesDebugLink)
+		{
+			usesDebugLink = false;
+			IELF? elf = ReadElfFile (log, path, "Skipping debug symbols presence check.");
+			if (elf == null) {
+				return false;
+			}
+
+			if (HasDebugSymbols (elf)) {
+				return true;
+			}
+
+			ISection? gnuDebugLink = GetSection (elf, ".gnu_debuglink");
+			if (gnuDebugLink == null) {
+				return false;
+			}
+			usesDebugLink = true;
+
+			byte[] contents = gnuDebugLink.GetContents ();
+			if (contents == null || contents.Length == 0) {
+				return false;
+			}
+
+			// .gnu_debuglink section format: https://sourceware.org/gdb/current/onlinedocs/gdb/Separate-Debug-Files.html#index-_002egnu_005fdebuglink-sections
+			int nameEnd = -1;
+			for (int i = 0; i < contents.Length; i++) {
+				if (contents[i] == 0) {
+					nameEnd = i;
+					break;
+				}
+			}
+
+			if (nameEnd < 2) {
+				// Name is terminated with a 0 byte, so we need at least 2 bytes
+				return false;
+			}
+
+			string debugInfoFileName = Encoding.UTF8.GetString (contents, 0, nameEnd);
+			if (String.IsNullOrEmpty (debugInfoFileName)) {
+				return false;
+			}
+
+			string debugFilePath = Path.Combine (Path.GetDirectoryName (path), debugInfoFileName);
+			return File.Exists (debugFilePath);
+		}
+
+		static bool HasDebugSymbols (IELF elf)
+		{
+			return GetSymbolTable (elf, ".symtab") != null;
+		}
+
 		public static bool IsEmptyAOTLibrary (TaskLoggingHelper log, string path)
 		{
 			if (String.IsNullOrEmpty (path) || !File.Exists (path)) {
@@ -73,26 +157,12 @@ namespace Xamarin.Android.Tasks
 
 		static bool IsEmptyAOTLibrary (TaskLoggingHelper log, string path, IELF elf)
 		{
-			ISymbolTable? symtab = GetSymbolTable (elf, ".dynsym");
-			if (symtab == null) {
-				// We can't be sure what the DSO is, play safe
+			if (!IsAOTLibrary (elf)) {
+				// Not a MonoVM AOT shared library
 				return false;
 			}
 
-			bool mono_aot_file_info_found = false;
-			foreach (var entry in symtab.Entries) {
-				if (String.Compare ("mono_aot_file_info", entry.Name, StringComparison.Ordinal) == 0 && entry.Type == ELFSymbolType.Object) {
-					mono_aot_file_info_found = true;
-					break;
-				}
-			}
-
-			if (!mono_aot_file_info_found) {
-				// Not a MonoVM AOT assembly
-				return false;
-			}
-
-			symtab = GetSymbolTable (elf, ".symtab");
+			ISymbolTable? symtab = GetSymbolTable (elf, ".symtab");
 			if (symtab == null) {
 				// The DSO is stripped, we can't tell if there are any functions defined (.text will be present anyway)
 				// We perhaps **can** take a look at the .text section size, but it's not a solid check...
@@ -160,6 +230,17 @@ namespace Xamarin.Android.Tasks
 			}
 
 			return section;
+		}
+
+		static IELF? ReadElfFile (TaskLoggingHelper log, string path, string customErrorMessage)
+		{
+			try {
+				return ELFReader.Load (path);
+			} catch (Exception ex) {
+				log.LogWarning ($"{path} may not be a valid ELF binary. ${customErrorMessage}");
+				log.LogWarningFromException (ex, showStackTrace: false);
+				return null;
+			}
 		}
 	}
 }

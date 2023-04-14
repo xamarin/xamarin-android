@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Configuration.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+    <OutputPath>$(MicrosoftAndroidSdkOutDir)</OutputPath>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>debug_session_prep</RootNamespace>
+    <Nullable>enable</Nullable>
+    <DefineConstants>NO_MSBUILD</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\AdbRunner.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\NdkHelper.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\ProcessRunner.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\ProcessStandardStreamWrapper.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\ToolRunner.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\xa_start_lldb_server.sh">
+      <LogicalName>xa_start_lldb_server.sh</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\lldb-debug-session.sh">
+      <LogicalName>lldb-debug-session.sh</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mono.Options" Version="$(MonoOptionsVersion)" />
+    <PackageReference Include="ELFSharp" Version="$(ELFSharpVersion)" />
+  </ItemGroup>
+</Project>

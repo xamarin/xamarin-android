@@ -95,6 +95,10 @@ namespace Xamarin.Android.Tasks
 
 		public bool UseAssemblyStore { get; set; }
 
+		public bool NativeCodeProfilingEnabled { get; set; }
+
+		public string DeviceSdkVersion { get; set; }
+
 		[Required]
 		public string ProjectFullPath { get; set; }
 
@@ -192,6 +196,7 @@ namespace Xamarin.Android.Tasks
 				}
 
 				AddRuntimeLibraries (apk, supportedAbis);
+				AddProfilingScripts (apk, supportedAbis);
 				apk.Flush();
 				AddNativeLibraries (files, supportedAbis);
 				AddAdditionalNativeLibraries (files, supportedAbis);
@@ -615,9 +620,11 @@ namespace Xamarin.Android.Tasks
 			return CompressionMethod.Default;
 		}
 
+		string GetArchiveAbiLibPath (string abi, string fileName) => $"lib/{abi}/{fileName}";
+
 		void AddNativeLibraryToArchive (ZipArchiveEx apk, string abi, string filesystemPath, string inArchiveFileName)
 		{
-			string archivePath = $"lib/{abi}/{inArchiveFileName}";
+			string archivePath = GetArchiveAbiLibPath (abi, inArchiveFileName);
 			existingEntries.Remove (archivePath);
 			CompressionMethod compressionMethod = GetCompressionMethod (archivePath);
 			if (apk.SkipExistingFile (filesystemPath, archivePath, compressionMethod)) {
@@ -626,6 +633,26 @@ namespace Xamarin.Android.Tasks
 			}
 			Log.LogDebugMessage ($"Adding native library: {filesystemPath} (APK path: {archivePath})");
 			apk.Archive.AddEntry (archivePath, File.OpenRead (filesystemPath), compressionMethod);
+		}
+
+		void AddProfilingScripts (ZipArchiveEx apk, string [] supportedAbis)
+		{
+			if (!NativeCodeProfilingEnabled || !Int32.TryParse (DeviceSdkVersion, out int sdkVersion) || sdkVersion < 26) {
+				// wrap.sh is available on Android O (API 26) or newer
+				return;
+			}
+
+			string wrapScript = "#!/system/bin/sh\n$@\n";
+			byte[] wrapScriptBytes = new UTF8Encoding (false).GetBytes (wrapScript);
+			EntryPermissions wrapScriptPermissions =
+				EntryPermissions.WorldRead | EntryPermissions.WorldExecute |
+				EntryPermissions.GroupRead | EntryPermissions.GroupExecute |
+				EntryPermissions.OwnerRead | EntryPermissions.OwnerWrite | EntryPermissions.OwnerExecute;
+
+			foreach (var abi in supportedAbis) {
+				string path = GetArchiveAbiLibPath (abi, "wrap.sh");
+				apk.Archive.AddEntry (wrapScriptBytes, path, wrapScriptPermissions, CompressionMethod.Default);
+			}
 		}
 
 		void AddRuntimeLibraries (ZipArchiveEx apk, string [] supportedAbis)
@@ -801,7 +828,7 @@ namespace Xamarin.Android.Tasks
 		void AddNativeLibrary (ArchiveFileList files, string path, string abi, string archiveFileName)
 		{
 			string fileName = string.IsNullOrEmpty (archiveFileName) ? Path.GetFileName (path) : archiveFileName;
-			var item = (filePath: path, archivePath: $"lib/{abi}/{fileName}");
+			var item = (filePath: path, archivePath: GetArchiveAbiLibPath (abi, fileName));
 			if (files.Any (x => x.archivePath == item.archivePath)) {
 				Log.LogCodedWarning ("XA4301", path, 0, Properties.Resources.XA4301, item.archivePath);
 				return;

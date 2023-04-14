@@ -333,6 +333,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 
 <PropertyGroup>
   <_AndroidAotStripLibraries Condition=" '$(_AndroidAotStripLibraries)' == '' And '$(AndroidIncludeDebugSymbols)' != 'true' ">True</_AndroidAotStripLibraries>
+  <_AndroidStripNativeLibraries Condition=" '$(_AndroidStripNativeLibraries)' == '' And '$(AndroidIncludeDebugSymbols)' != 'true' ">True</_AndroidStripNativeLibraries>
   <AndroidUseAssemblyStore Condition=" '$(AndroidUseAssemblyStore)' == '' and ('$(EmbedAssembliesIntoApk)' != 'true' or '$(AndroidIncludeDebugSymbols)' == 'true') ">false</AndroidUseAssemblyStore>
   <AndroidUseAssemblyStore Condition=" '$(AndroidUseAssemblyStore)' == '' ">true</AndroidUseAssemblyStore>
   <AndroidAotEnableLazyLoad Condition=" '$(AndroidAotEnableLazyLoad)' == '' And '$(AotAssemblies)' == 'true' And '$(AndroidIncludeDebugSymbols)' != 'true' ">True</AndroidAotEnableLazyLoad>
@@ -369,6 +370,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
           Imports
 *******************************************
 -->
+<Import Project="$(MSBuildThisFileDirectory)..\targets\Microsoft.Android.Sdk.NativeProfilingAndDebugging.targets" Condition=" '$(UsingAndroidNETSdk)' == 'true' " />
 <!-- As we split up/refactor this file, put new imports here -->
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.D8.targets" Condition=" '$(AndroidDexTool)' == 'd8' " />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Aapt.targets"  Condition=" '$(AndroidUseAapt2)' != 'true' and '$(UsingAndroidNETSdk)' != 'true' " />
@@ -1555,7 +1557,10 @@ because xbuild doesn't support framework reference assemblies.
       LinkingEnabled="$(_LinkingEnabled)"
       HaveMultipleRIDs="$(_HaveMultipleRIDs)"
       IntermediateOutputDirectory="$(IntermediateOutputPath)"
-      Environments="@(AndroidEnvironment);@(LibraryEnvironments)">
+      Environments="@(AndroidEnvironment);@(LibraryEnvironments)"
+      NativeDebuggingEnabled="$(_AndroidEnableNativeDebugging)"
+      NativeCodeProfilingEnabled="$(_AndroidEnableNativeCodeProfiling)"
+      DeviceSdkVersion="$(_AndroidDeviceSdkVersion)">
     <Output TaskParameter="GeneratedBinaryTypeMaps" ItemName="_AndroidTypeMapping" Condition=" '$(_InstantRunEnabled)' == 'True' " />
   </GenerateJavaStubs>
 
@@ -2070,10 +2075,15 @@ because xbuild doesn't support framework reference assemblies.
     DependsOnTargets="_CompileNativeAssemblySources;_PrepareApplicationSharedLibraryItems"
     Inputs="@(_NativeAssemblyTarget)"
     Outputs="@(_ApplicationSharedLibrary)">
+  <PropertyGroup>
+    <_KeepDebugInfo Condition=" '$(_AndroidStripNativeLibraries)' != 'true' ">True</_KeepDebugInfo>
+    <_KeepDebugInfo Condition=" '$(_AndroidStripNativeLibraries)' == 'true' ">False</_KeepDebugInfo>
+  </PropertyGroup>
+
   <LinkApplicationSharedLibraries
       ObjectFiles="@(_NativeAssemblyTarget)"
       ApplicationSharedLibraries="@(_ApplicationSharedLibrary)"
-      DebugBuild="$(AndroidIncludeDebugSymbols)"
+      KeepDebugInfo="$(_KeepDebugInfo)"
       AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
   />
   <ItemGroup>
@@ -2152,7 +2162,9 @@ because xbuild doesn't support framework reference assemblies.
     CheckedBuild="$(_AndroidCheckedBuild)"
     RuntimeConfigBinFilePath="$(_BinaryRuntimeConfigPath)"
     ExcludeFiles="@(AndroidPackagingOptionsExclude)"
-    UseAssemblyStore="$(AndroidUseAssemblyStore)">
+    UseAssemblyStore="$(AndroidUseAssemblyStore)"
+    NativeCodeProfilingEnabled="$(_AndroidEnableNativeCodeProfiling)"
+    DeviceSdkVersion="$(_AndroidDeviceSdkVersion)">
     <Output TaskParameter="OutputFiles" ItemName="ApkFiles" />
   </BuildApk>
   <BuildBaseAppBundle
@@ -2185,7 +2197,9 @@ because xbuild doesn't support framework reference assemblies.
       CheckedBuild="$(_AndroidCheckedBuild)"
       RuntimeConfigBinFilePath="$(_BinaryRuntimeConfigPath)"
       ExcludeFiles="@(AndroidPackagingOptionsExclude)"
-      UseAssemblyStore="$(AndroidUseAssemblyStore)">
+      UseAssemblyStore="$(AndroidUseAssemblyStore)"
+      NativeCodeProfilingEnabled="$(_AndroidEnableNativeCodeProfiling)"
+      DeviceSdkVersion="$(_AndroidDeviceSdkVersion)">
     <Output TaskParameter="OutputFiles" ItemName="BaseZipFile" />
   </BuildBaseAppBundle>
   <BuildAppBundle

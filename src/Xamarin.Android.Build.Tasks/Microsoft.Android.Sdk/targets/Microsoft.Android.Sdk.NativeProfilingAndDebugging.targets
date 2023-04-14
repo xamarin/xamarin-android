@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Xamarin.Android.Tasks.DebugNativeCode" AssemblyFile="$(_XamarinAndroidBuildTasksAssembly)" />
+  <UsingTask TaskName="Xamarin.Android.Tasks.GetAndroidActivityName" AssemblyFile="$(_XamarinAndroidBuildTasksAssembly)" />
+  <UsingTask TaskName="Xamarin.Android.Tasks.ProfileNativeCode" AssemblyFile="$(_XamarinAndroidBuildTasksAssembly)" />
+  <UsingTask TaskName="Xamarin.Android.Tasks.SetupNativeCodeProfiling" AssemblyFile="$(_XamarinAndroidBuildTasksAssembly)" />
+
+  <PropertyGroup>
+    <_AndroidEnableNativeCodeProfiling>False</_AndroidEnableNativeCodeProfiling>
+    <_AndroidEnableNativeDebugging>False</_AndroidEnableNativeDebugging>
+
+    <ProfileNativeCodeDependsOnTargets>
+      _ResolveMonoAndroidSdks;
+      _SetupNativeCodeProfiling;
+      Build;
+      Install;
+    </ProfileNativeCodeDependsOnTargets>
+
+    <DebugNativeCodeDependsOnTargets>
+      _ResolveMonoAndroidSdks;
+      _SetupNativeCodeDebugging;
+      Build;
+      Install;
+    </DebugNativeCodeDependsOnTargets>
+  </PropertyGroup>
+
+  <Target Name="_SetupNativeCodeProfiling">
+    <PropertyGroup>
+      <_AndroidEnableNativeCodeProfiling>True</_AndroidEnableNativeCodeProfiling>
+      <_AndroidAotStripLibraries>False</_AndroidAotStripLibraries>
+      <_AndroidStripNativeLibraries>False</_AndroidStripNativeLibraries>
+
+      <!-- TODO: for some reason this makes build produce an unsigned apk. Figure out why -->
+      <AndroidPackageFormat>apk</AndroidPackageFormat> <!-- using aab breaks installation of archives with wrap.sh -->
+    </PropertyGroup>
+
+    <SetupNativeCodeProfiling
+        TargetDeviceName="$(AdbTarget)"
+        AdbPath="$(AdbToolPath)adb"
+        AndroidNdkPath="$(_AndroidNdkDirectory)">
+      <Output TaskParameter="DeviceIsEmulator" PropertyName="_AndroidDeviceIsEmulator" />
+      <Output TaskParameter="DevicePrimaryABI" PropertyName="_AndroidDevicePrimaryABI" />
+      <Output TaskParameter="DeviceSdkVersion" PropertyName="_AndroidDeviceSdkVersion" />
+      <Output TaskParameter="DeviceSupportedAbis" PropertyName="_AndroidDeviceSupportedAbis" />
+      <Output TaskParameter="NdkPythonDirectory" PropertyName="_AndroidNdkPythonDirectory" />
+      <Output TaskParameter="SimplePerfDirectory" PropertyName="_AndroidSimplePerfDirectory" />
+    </SetupNativeCodeProfiling>
+  </Target>
+
+  <Target Name="ProfileNativeCode"
+          DependsOnTargets="$(ProfileNativeCodeDependsOnTargets)">
+    <ProfileNativeCode
+        DeviceSdkVersion="$(_AndroidDeviceSdkVersion)"
+        DeviceIsEmulator="$(_AndroidDeviceIsEmulator)"
+        DeviceSupportedAbis="$(_AndroidDeviceSupportedAbis)"
+        DevicePrimaryABI="$(_AndroidDevicePrimaryABI)"
+        SimplePerfDirectory="$(_AndroidSimplePerfDirectory)"
+        NdkPythonDirectory="$(_AndroidNdkPythonDirectory)" />
+  </Target>
+
+  <Target Name="_SetupNativeCodeDebugging">
+    <PropertyGroup>
+      <_AndroidEnableNativeDebugging>True</_AndroidEnableNativeDebugging>
+      <_AndroidAotStripLibraries>False</_AndroidAotStripLibraries>
+      <_AndroidStripNativeLibraries>False</_AndroidStripNativeLibraries>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="DebugNativeCode"
+          DependsOnTargets="$(DebugNativeCodeDependsOnTargets)">
+    <GetAndroidActivityName
+        Condition=" '$(AndroidLaunchActivity)' == '' "
+        ManifestFile="$(IntermediateOutputPath)android\AndroidManifest.xml">
+      <Output TaskParameter="ActivityName" PropertyName="AndroidLaunchActivity" />
+    </GetAndroidActivityName>
+
+    <DebugNativeCode
+        TargetDeviceName="$(AdbTarget)"
+        AdbPath="$(AdbToolPath)adb"
+        AndroidNdkPath="$(_AndroidNdkDirectory)"
+        PackageName="$(_AndroidPackage)"
+        SupportedAbis="@(_BuildTargetAbis)"
+        ActivityName="$(AndroidStartActivityName)"
+        MainActivityName="$(AndroidLaunchActivity)"
+        IntermediateOutputDir="$(IntermediateOutputPath)"
+        NativeLibraries="@(FrameworkNativeLibrary);@(_ApplicationSharedLibrary)"/>
+  </Target>
+</Project>

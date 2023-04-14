@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Configuration.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+    <Nullable>enable</Nullable>
+    <DefineConstants>NO_MSBUILD</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <Authors>Marek Habersack</Authors>
+    <Company>Microsoft Corporation</Company>
+    <Copyright>2022 © Microsoft Corporation</Copyright>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>xadebug</ToolCommandName>
+    <PackageOutputPath>nupkg</PackageOutputPath>
+    <PackageDescription>A tool to debug native code of Xamarin.Android applications</PackageDescription>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/xamarin/xamarin-android</RepositoryUrl>
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\AdbRunner.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\NdkHelper.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\ProcessRunner.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\ProcessStandardStreamWrapper.cs" />
+    <Compile Include="..\..\src\Xamarin.Android.Build.Tasks\Utilities\ToolRunner.cs" />
+
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\Crc64.cs">
+      <Link>Crc64.cs</Link>
+    </Compile>
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\Crc64Helper.cs">
+      <Link>Crc64Helper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\Crc64.Table.cs">
+      <Link>Crc64.Table.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\xa_start_lldb_server.sh">
+      <LogicalName>xa_start_lldb_server.sh</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mono.Options" Version="$(MonoOptionsVersion)" />
+    <PackageReference Include="ELFSharp" Version="$(ELFSharpVersion)" />
+    <PackageReference Include="Xamarin.LibZipSharp" Version="$(LibZipSharpVersion)" />
+    <PackageReference Include="MSBuild.StructuredLogger" Version="2.1.758" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

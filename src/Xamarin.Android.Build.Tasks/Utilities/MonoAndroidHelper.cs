@@ -534,5 +534,19 @@ namespace Xamarin.Android.Tasks
 			path = head.Length == path.Length ? path : path.Substring ((head.Length == 0 ? 0 : head.Length + 1) + assetsDirectory.Length).TrimStart (DirectorySeparators);
 			return path;
 		}
+
+		public static string? ReadManifestResource (TaskLoggingHelper log, string resourceName)
+		{
+			using (var from = System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream (resourceName)) {
+				if (from == null) {
+					log.LogCodedError ("XA0116", Properties.Resources.XA0116, resourceName);
+					return null;
+				}
+
+				using (var sr = new StreamReader (from)) {
+					return sr.ReadToEnd ();
+				}
+			}
+		}
 	}
 }

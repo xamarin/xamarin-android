@@ -1,5 +1,4 @@
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System;
 
@@ -18,11 +17,9 @@ namespace Xamarin.Android.Tasks
 		[Required]
 		public string OutputFilePath { get; set; }
 
-		static readonly Assembly ExecutingAssembly = Assembly.GetExecutingAssembly ();
-
 		public override bool RunTask ()
 		{
-			string? content = ReadResource (ResourceName);
+			string? content = MonoAndroidHelper.ReadManifestResource (Log, ResourceName);
 
 			if (String.IsNullOrEmpty (content)) {
 				return false;
@@ -60,20 +57,6 @@ namespace Xamarin.Android.Tasks
 			}
 
 			return !Log.HasLoggedErrors;
-		}
-
-		string? ReadResource (string resourceName)
-		{
-			using (var from = ExecutingAssembly.GetManifestResourceStream (resourceName)) {
-				if (from == null) {
-					Log.LogCodedError ("XA0116", Properties.Resources.XA0116, resourceName);
-					return null;
-				}
-
-				using (var sr = new StreamReader (from)) {
-					return sr.ReadToEnd ();
-				}
-			}
 		}
 	}
 }

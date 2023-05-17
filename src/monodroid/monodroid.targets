@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\external\Java.Interop\bin\Build$(Configuration)\JdkInfo.props" Condition="Exists('..\..\external\Java.Interop\bin\Build$(Configuration)\JdkInfo.props')"/>
+  <Import
+      Project="..\..\external\Java.Interop\bin\Build$(Configuration)\JdkInfo-11.props"
+      Condition="Exists('..\..\external\Java.Interop\bin\Build$(Configuration)\JdkInfo-11.props')"
+  />
   <Import Project="..\..\bin\Build$(Configuration)\cmake-config.props" Condition="Exists('..\..\bin\Build$(Configuration)\cmake-config.props')" />
   <Import Project="monodroid.projitems" />
   <UsingTask AssemblyFile="$(BootstrapTasksAssembly)" TaskName="Xamarin.Android.Tools.BootstrapTasks.GenerateMonoDroidIncludes" />

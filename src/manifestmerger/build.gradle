@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/com.android.tools.build/manifest-merger
-    compile group: 'com.android.tools.build', name: 'manifest-merger', version: '30.3.1'
+    implementation 'com.android.tools.build:manifest-merger:30.3.1'
 }
 
 sourceSets {
@@ -36,10 +36,10 @@ jar {
         attributes 'Main-Class': 'com.xamarin.manifestmerger.Main'
     }
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     } {
         // Exclude native jnidispatch content to simplify installer signing and notarization
         exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA', 'com/sun/jna/**/*jnidispatch*'
     }
-    archiveName 'manifestmerger.jar'
+    archiveFileName.set('manifestmerger.jar')
 }

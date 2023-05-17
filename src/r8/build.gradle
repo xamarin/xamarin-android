@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.android.tools', name: 'r8', version: '8.0.40'
+    implementation 'com.android.tools:r8:8.0.40'
 }
 
 jar {
@@ -24,7 +24,7 @@ jar {
         attributes 'Main-Class': 'com.android.tools.r8.R8'
     }
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    archiveName 'r8.jar'
+    archiveFileName.set('r8.jar')
 }

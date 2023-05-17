@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <XamarinAndroidToolsDirectory>$(MSBuildThisFileDirectory)xamarin-android-tools</XamarinAndroidToolsDirectory>
+    <Jdks11MaxVersion>17.99.0</Jdks11MaxVersion>
   </PropertyGroup>
 
 </Project>

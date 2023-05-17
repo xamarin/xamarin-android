@@ -10,8 +10,14 @@
     />
   </Target>
   <Target Name="PrepareJavaInterop">
+    <ItemGroup>
+      <_JIPrepArg Include="&quot;-p:Jdks8Root=$(Java8SdkDirectory)&quot;" />
+      <_JIPrepArg Include="&quot;-p:Jdks11Root=$(JavaSdkDirectory)&quot;" />
+      <_JIPrepArg Include="&quot;-p:DotnetToolPath=$(DotNetPreviewTool)&quot;" />
+      <_JIPrepArg Include="&quot;-bl:$(_BinlogPathPrefix)-prepare-java-interop.binlog&quot;" />
+    </ItemGroup>
     <Exec
-        Command="&quot;$(DotNetPreviewTool)&quot; build -t:Prepare Java.Interop.sln -c $(Configuration) -p:JdksRoot=$(JavaSdkDirectory) -p:DotnetToolPath=$(DotNetPreviewTool) -bl:$(_BinlogPathPrefix)-prepare-java-interop.binlog"
+        Command="&quot;$(DotNetPreviewTool)&quot; build -t:Prepare Java.Interop.sln -c $(Configuration) @(_JIPrepArg, ' ')"
         WorkingDirectory="$(_Root)external\Java.Interop"
     />
   </Target>

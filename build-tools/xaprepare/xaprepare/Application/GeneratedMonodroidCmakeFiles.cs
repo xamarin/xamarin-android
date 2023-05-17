@@ -84,12 +84,12 @@ namespace Xamarin.Android.Prepare
 			AddReplacements (commonReplacements, hostRuntimeReplacements);
 
 			string monodroidObjDir = Path.Combine (Configurables.Paths.MonodroidSourceDir, "obj", context.Configuration);
-			string jdkInfoPropsPath = Path.Combine (Configurables.Paths.ExternalJavaInteropDir, "bin", $"Build{context.Configuration}", "JdkInfo.props");
+			string jdkInfoPropsPath = Path.Combine (Configurables.Paths.ExternalJavaInteropDir, "bin", $"Build{context.Configuration}", "JdkInfo-11.props");
 
 			sw.WriteLine ("# This is a bash(1) script");
 			sw.WriteLine ();
 			sw.WriteLine ($"CMAKE=\"{context.Properties.GetRequiredValue(KnownProperties.CMakePath)}\"");
-			sw.WriteLine ($"JDK_INCLUDE_PATH=\"$(grep JdkIncludePath {jdkInfoPropsPath} | cut -d '\"' -f 2 | tr '\\n' ' ')\"");
+			sw.WriteLine ($"JDK_INCLUDE_PATH=\"$(grep Jdk11IncludePath {jdkInfoPropsPath} | cut -d '\"' -f 2 | tr '\\n' ' ')\"");
 			sw.WriteLine ($"MONO_SOURCE_PATH=\"{Configurables.Paths.MonoSourceFullPath}\"");
 			sw.WriteLine ($"MONODROID_OBJ_DIR=\"{monodroidObjDir}\"");
 			sw.WriteLine ($"MONODROID_SOURCE_DIR=\"{Configurables.Paths.MonodroidSourceDir}\"");
@@ -341,7 +341,7 @@ namespace Xamarin.Android.Prepare
 
 			var hostRuntimeReplacements = new Dictionary<string, string> (StringComparer.Ordinal) {
 				{ "@CmakeHostFlags@", "%(_HostRuntime.CmakeFlags)" },
-				{ "@JdkIncludePath@", "@(JdkIncludePath->'%(Identity)', ' ')" },
+				{ "@JdkIncludePath@", "@(Jdk11IncludePath->'%(Identity)', ' ')" },
 				{ "@OUTPUT_DIRECTORY@", "" },
 			};
 

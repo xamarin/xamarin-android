@@ -102,6 +102,7 @@ This file is used by all project types, including binding projects.
       <Output TaskParameter="NativeLibraries"   ItemName="ExtractedNativeLibraryImports" />
       <Output TaskParameter="NativeLibraries"   ItemName="AndroidNativeLibrary" />
       <Output TaskParameter="ManifestDocuments" ItemName="ExtractedManifestDocuments" />
+      <Output TaskParameter="LibraryMinSdk"     PropertyName="_LibraryMinSdk" />
     </ReadImportedLibrariesCache>
   </Target>
 

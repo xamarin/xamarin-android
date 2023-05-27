@@ -328,6 +328,16 @@ namespace Xamarin.ProjectTools
 				}
 			}
 		};
+		public static Package AndroidXSecurityCrypto = new Package {
+			Id = "Xamarin.AndroidX.Security.SecurityCrypto",
+			Version = "1.0.0.9",
+			TargetFramework = "MonoAndroid90",
+			References = {
+				new BuildItem.Reference("Xamarin.AndroidX.Security.SecurityCrypto") {
+					MetadataValues = "HintPath=..\\packages\\Xamarin.AndroidX.Security.SecurityCrypto.1.0.0.9\\lib\\MonoAndroid90\\Xamarin.AndroidX.Security.SecurityCrypto.dll"
+				}
+			}
+		};
 		public static Package XamarinGoogleAndroidMaterial = new Package {
 			Id = "Xamarin.Google.Android.Material",
 			Version = "1.0.0.1",

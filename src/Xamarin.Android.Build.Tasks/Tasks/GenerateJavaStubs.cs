@@ -90,6 +90,8 @@ namespace Xamarin.Android.Tasks
 
 		public string SupportedOSPlatformVersion { get; set; }
 
+		public string LibraryMinSdk { get; set; } = string.Empty;
+
 		public ITaskItem[] Environments { get; set; }
 
 		[Output]
@@ -345,6 +347,7 @@ namespace Xamarin.Android.Tasks
 				SdkDir = AndroidSdkDir,
 				TargetSdkVersion = AndroidSdkPlatform,
 				MinSdkVersion = minSdkVersion,
+				LibraryMinSdkVersion = LibraryMinSdk,
 				Debug = Debug,
 				MultiDex = MultiDex,
 				NeedsInternet = NeedsInternet,

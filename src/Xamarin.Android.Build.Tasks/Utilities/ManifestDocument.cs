@@ -87,6 +87,7 @@ namespace Xamarin.Android.Tasks {
 		public string SdkDir { get; set; }
 		public string TargetSdkVersion { get; set; }
 		public string MinSdkVersion { get; set; }
+		public string LibraryMinSdkVersion { get; set; } = string.Empty;
 		public bool Debug { get; set; }
 		public bool MultiDex { get; set; }
 		public bool NeedsInternet { get; set; }
@@ -119,13 +120,17 @@ namespace Xamarin.Android.Tasks {
 
 		public string GetMinimumSdk () {
 			int defaultMinSdkVersion = MonoAndroidHelper.SupportedVersions.MinStableVersion.ApiLevel;
+			Console.WriteLine ($"DEBUG GetMinimumSdk: {defaultMinSdkVersion}");
 			var minAttr = doc.Root.Element ("uses-sdk")?.Attribute (androidNs + "minSdkVersion");
 			if (minAttr == null) {
 				int minSdkVersion;
+				Console.WriteLine ($"DEBUG GetMinimumSdk: Parsing {MinSdkVersionName}");
 				if (!int.TryParse (MinSdkVersionName, out minSdkVersion))
 					minSdkVersion = defaultMinSdkVersion;
+				Console.WriteLine ($"DEBUG GetMinimumSdk: Using {Math.Min (minSdkVersion, defaultMinSdkVersion)}");
 				return Math.Min (minSdkVersion, defaultMinSdkVersion).ToString ();
 			}
+			Console.WriteLine ($"DEBUG GetMinimumSdk: Found {minAttr.Value}");
 			return minAttr.Value;
 		}
 
@@ -309,10 +314,15 @@ namespace Xamarin.Android.Tasks {
 
 			if (uses.Attribute (androidNs + "minSdkVersion") == null) {
 				int minSdkVersion;
-				if (!int.TryParse (MinSdkVersionName, out minSdkVersion))
+				if (!int.TryParse (MinSdkVersionName, out minSdkVersion)) {
 					minSdkVersion = XABuildConfig.NDKMinimumApiAvailable;
-				minSdkVersion = Math.Min (minSdkVersion, XABuildConfig.NDKMinimumApiAvailable);
-				uses.SetAttributeValue (androidNs + "minSdkVersion", minSdkVersion.ToString ());
+				}
+				if (!string.IsNullOrEmpty (LibraryMinSdkVersion) && int.TryParse (LibraryMinSdkVersion, out minSdkVersion)) {
+					uses.SetAttributeValue (androidNs + "minSdkVersion", minSdkVersion.ToString ());
+				} else {
+					minSdkVersion = Math.Min (minSdkVersion, XABuildConfig.NDKMinimumApiAvailable);
+					uses.SetAttributeValue (androidNs + "minSdkVersion", minSdkVersion.ToString ());
+				}
 			}
 
 			string targetSdkVersion;

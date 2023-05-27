@@ -1545,6 +1545,7 @@ because xbuild doesn't support framework reference assemblies.
       LinkingEnabled="$(_LinkingEnabled)"
       HaveMultipleRIDs="$(_HaveMultipleRIDs)"
       IntermediateOutputDirectory="$(IntermediateOutputPath)"
+      LibraryMinSdk="$(_LibraryMinSdk)"
       Environments="@(AndroidEnvironment);@(LibraryEnvironments)">
     <Output TaskParameter="GeneratedBinaryTypeMaps" ItemName="_AndroidTypeMapping" Condition=" '$(_InstantRunEnabled)' == 'True' " />
   </GenerateJavaStubs>

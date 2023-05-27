@@ -686,6 +686,33 @@ namespace Bug12935
 		}
 
 		[Test]
+		public void EmptyUsesSdkElementBuildsOK ([Values (false, true)] bool addReference)
+		{
+			var proj = new XamarinAndroidApplicationProject () {
+				IsRelease = true,
+			};
+			if (addReference)
+				proj.PackageReferences.Add (KnownPackages.AndroidXSecurityCrypto);
+			proj.AndroidManifest = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" xmlns:tools=""http://schemas.android.com/tools"" android:versionCode=""1"" android:versionName=""1.0"" package=""foo.foo"">
+	<uses-sdk />
+	<application android:label=""foo"">
+	</application>
+</manifest>";
+			using (var b = CreateApkBuilder ($"temp/{TestName}", cleanupAfterSuccessfulBuild: true, cleanupOnDispose: false)) {
+				Assert.IsTrue (b.Build (proj), "Build should have succeeded.");
+				var manifestFile = Path.Combine (Root, b.ProjectDirectory, proj.IntermediateOutputPath, "android", "AndroidManifest.xml");
+				var doc = XDocument.Load (manifestFile);
+				var ns = XNamespace.Get ("http://schemas.android.com/apk/res/android");
+				var usesSdk = doc.Element ("manifest")?.Element ("uses-sdk");
+				Assert.IsNotNull (usesSdk, "Should have found a uses-sdk element.");
+				var expected = addReference ? "23" : "19";
+				Assert.AreEqual (expected, usesSdk.Attribute (ns + "minSdkVersion")?.Value, $"minSdkVersion should have been '{expected}' but was '{usesSdk.Attribute ("minSdkVersion")?.Value}'");
+
+			}
+		}
+
+		[Test]
 		public void MergeLibraryManifest ()
 		{
 			byte [] classesJar;

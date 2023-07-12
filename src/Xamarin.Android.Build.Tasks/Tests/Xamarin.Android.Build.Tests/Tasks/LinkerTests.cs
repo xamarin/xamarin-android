@@ -1,9 +1,12 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Java.Interop.Tools.Cecil;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 using Mono.Linker;
+using Mono.Tuner;
 using MonoDroid.Tuner;
 using NUnit.Framework;
 using Xamarin.ProjectTools;
@@ -514,7 +517,7 @@ namespace UnnamedProject {
 		}
 
 		[Test]
-		public void DoNotErrorOnPerArchJavaTypeDuplicates ()
+		public void DoNotErrorOnPerArchJavaTypeDuplicates ([Values(true, false)] bool enableMarshalMethods)
 		{
 			if (!Builder.UseDotNet)
 				Assert.Ignore ("Test only valid on .NET");
@@ -525,13 +528,24 @@ namespace UnnamedProject {
 			lib.Sources.Add (new BuildItem.Source ("Library1.cs") {
 				TextContent = () => @"
 namespace Lib1;
-public class Library1 : Java.Lang.Object {
+public class Library1 : Com.Example.Androidlib.MyRunner {
 	private static bool Is64Bits = IntPtr.Size >= 8;
 
 	public static bool Is64 () {
 		return Is64Bits;
 	}
+
+	public override void Run () => Console.WriteLine (Is64Bits);
 }",
+			});
+			lib.Sources.Add (new BuildItem ("AndroidJavaSource", "MyRunner.java") {
+				Encoding = new UTF8Encoding (encoderShouldEmitUTF8Identifier: false),
+				TextContent = () => @"
+package com.example.androidlib;
+
+public abstract class MyRunner {
+	public abstract void run();
+}"
 			});
 			var proj = new XamarinAndroidApplicationProject { IsRelease = true, ProjectName = "App1" };
 			proj.References.Add(new BuildItem.ProjectReference (Path.Combine ("..", "Lib1", "Lib1.csproj"), "Lib1"));
@@ -539,12 +553,48 @@ public class Library1 : Java.Lang.Object {
 				"base.OnCreate (bundle);",
 				"base.OnCreate (bundle);\n" +
 				"if (Lib1.Library1.Is64 ()) Console.WriteLine (\"Hello World!\");");
+			proj.SetProperty ("AndroidEnableMarshalMethods", enableMarshalMethods.ToString ());
 
 
 			using var lb = CreateDllBuilder (Path.Combine (path, "Lib1"));
 			using var b = CreateApkBuilder (Path.Combine (path, "App1"));
 			Assert.IsTrue (lb.Build (lib), "build should have succeeded.");
 			Assert.IsTrue (b.Build (proj), "build should have succeeded.");
+
+			var intermediate = Path.Combine (Root, b.ProjectDirectory, proj.IntermediateOutputPath);
+			var dll = $"{lib.ProjectName}.dll";
+			Assert64Bit ("android-arm", expected64: false);
+			Assert64Bit ("android-arm64", expected64: true);
+			Assert64Bit ("android-x86", expected64: false);
+			Assert64Bit ("android-x64", expected64: true);
+
+			void Assert64Bit(string rid, bool expected64)
+			{
+				var assembly = AssemblyDefinition.ReadAssembly (Path.Combine (intermediate, rid, "linked", "shrunk", dll));
+				var type = assembly.MainModule.FindType ("Lib1.Library1");
+				Assert.NotNull (type, "Should find Lib1.Library1!");
+				var cctor = type.GetTypeConstructor ();
+				Assert.NotNull (type, "Should find Lib1.Library1.cctor!");
+				Assert.AreNotEqual (0, cctor.Body.Instructions.Count);
+
+				/*
+				 * IL snippet
+				 * .method private hidebysig specialname rtspecialname static 
+				 * void .cctor () cil managed 
+				 * {
+				 *   // Is64Bits = 4 >= 8;
+				 *   IL_0000: ldc.i4 4
+				 *   IL_0005: ldc.i4.8
+				 *   ...
+				 */
+				var instruction = cctor.Body.Instructions [0];
+				Assert.AreEqual (OpCodes.Ldc_I4, instruction.OpCode);
+				if (expected64) {
+					Assert.AreEqual (8, instruction.Operand, $"Expected 64-bit: {expected64}");
+				} else {
+					Assert.AreEqual (4, instruction.Operand, $"Expected 64-bit: {expected64}");
+				}
+			}
 		}
 	}
 }

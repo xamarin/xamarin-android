@@ -114,47 +114,37 @@ namespace Xamarin.Android.Tasks
 				}
 			}
 
-			var newAssemblyPaths = new List<string> ();
+			var newAssemblyPaths = new List<(string original, string temp)> ();
 			foreach (AssemblyDefinition asm in uniqueAssemblies) {
-				foreach (string path in GetAssemblyPaths (asm)) {
+				foreach (string original in GetAssemblyPaths (asm)) {
 					var writerParams = new WriterParameters {
-						WriteSymbols = File.Exists (Path.ChangeExtension (path, ".pdb")),
+						WriteSymbols = File.Exists (Path.ChangeExtension (original, ".pdb")),
 					};
 
-					string directory = Path.Combine (Path.GetDirectoryName (path), "new");
+					string directory = Path.Combine (Path.GetDirectoryName (original), "new");
 					Directory.CreateDirectory (directory);
-					string output = Path.Combine (directory, Path.GetFileName (path));
-					log.LogDebugMessage ($"Writing new version of assembly: {output}");
+					string temp = Path.Combine (directory, Path.GetFileName (original));
+					log.LogDebugMessage ($"Writing new version of assembly: {temp}");
 
 					// TODO: this should be used eventually, but it requires that all the types are reloaded from the assemblies before typemaps are generated
 					// since Cecil doesn't update the MVID in the already loaded types
 					//asm.MainModule.Mvid = Guid.NewGuid ();
-					asm.Write (output, writerParams);
-					newAssemblyPaths.Add (output);
+					asm.Write (temp, writerParams);
+					newAssemblyPaths.Add ((original, temp));
 				}
 			}
 
 			// Replace old versions of the assemblies only after we've finished rewriting without issues, otherwise leave the new
 			// versions around.
-			foreach (string path in newAssemblyPaths) {
-				string? pdb = null;
+			foreach ((string original, string temp) in newAssemblyPaths) {
+				CopyFile (temp, original);
+				RemoveFile (temp);
 
-				string source = Path.ChangeExtension (path, ".pdb");
-				if (File.Exists (source)) {
-					pdb = source;
+				var pdb = Path.ChangeExtension (temp, ".pdb");
+				if (File.Exists(pdb)) {
+					CopyFile (pdb, Path.ChangeExtension (original, ".pdb"));
+					RemoveFile (pdb);
 				}
-
-				foreach (string targetPath in targetAssemblyPaths) {
-					string target = Path.Combine (targetPath, Path.GetFileName (path));
-					CopyFile (path, target);
-
-					if (!String.IsNullOrEmpty (pdb)) {
-						CopyFile (pdb, Path.ChangeExtension (target, ".pdb"));
-					}
-				}
-
-				RemoveFile (path);
-				RemoveFile (pdb);
 			}
 
 			void CopyFile (string source, string target)

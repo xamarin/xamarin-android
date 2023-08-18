@@ -90,6 +90,7 @@ They run in a context of an inner build with a single $(RuntimeIdentifier).
         RuntimeIdentifier="$(RuntimeIdentifier)"
         EnableLLVM="$(EnableLLVM)"
         Profiles="@(AndroidAotProfile)"
+        MibcProfiles="@(AndroidMibcProfile)"
         StripLibraries="$(_AndroidAotStripLibraries)">
       <Output PropertyName="_Triple"     TaskParameter="Triple" />
       <Output PropertyName="_ToolPrefix" TaskParameter="ToolPrefix" />
@@ -102,6 +103,7 @@ They run in a context of an inner build with a single $(RuntimeIdentifier).
       <_MonoAOTAssemblies Update="@(_MonoAOTAssemblies)" ProcessArguments="$(AndroidExtraAotOptions)" />
     </ItemGroup>
     <PropertyGroup>
+      <_PgoBinaryPath Condition=" '$(_PgoBinaryPath)' == '' ">$(USERPROFILE)\.dotnet\tools\dotnet-pgo</_PgoBinaryPath>
       <_MonoAOTCompilerPath>@(MonoAotCrossCompiler->WithMetadataValue('RuntimeIdentifier', '$(RuntimeIdentifier)'))</_MonoAOTCompilerPath>
       <_LLVMPath Condition=" '$(EnableLLVM)' == 'true' ">$([System.IO.Path]::GetDirectoryName ('$(_MonoAOTCompilerPath)'))</_LLVMPath>
     </PropertyGroup>
@@ -123,6 +125,8 @@ They run in a context of an inner build with a single $(RuntimeIdentifier).
         LLVMPath="$(_LLVMPath)"
         LdName="$(_LdName)"
         LdFlags="$(_LdFlags)"
+        PgoBinaryPath="$(_PgoBinaryPath)"
+        NetTracePath="$(_NetTracePath)"
         WorkingDirectory="$(MSBuildProjectDirectory)"
         AotArguments="$(AndroidAotAdditionalArguments)">
       <Output TaskParameter="CompiledAssemblies" ItemName="_MonoAOTCompiledAssemblies" />

@@ -6,18 +6,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CommonMethods.cs" />
-    <AndroidAotProfile Include="custom.aprof" />
-    <PackageReference Include="Mono.AotProfiler.Android" Version="7.0.0-preview1" />
+    <!-- <AndroidAotProfile Include="custom.aprof" />
+    <PackageReference Include="Mono.AotProfiler.Android" Version="7.0.0-preview1" /> -->
   </ItemGroup>
   <PropertyGroup>
     <RecordDependsOn>
       Clean;
       _ClearSystemProperties;
-      BuildAndStartAotProfiling;
-      _Sleep;
-      FinishAotProfiling;
-      _StripAppMethods;
-      _SaveMethodNames;
+      Run;
     </RecordDependsOn>
   </PropertyGroup>
   <Target Name="Record" DependsOnTargets="$(RecordDependsOn)">

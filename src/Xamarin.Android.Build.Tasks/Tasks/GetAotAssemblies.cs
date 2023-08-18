@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Android.Build.Tasks;
+using Microsoft.Build.Framework;
 using Xamarin.Android.Tools;
 
 namespace Xamarin.Android.Tasks
@@ -12,6 +14,8 @@ namespace Xamarin.Android.Tasks
 	public class GetAotAssemblies : GetAotArguments
 	{
 		public override string TaskPrefix => "GAOT";
+
+		public ITaskItem [] MibcProfiles { get; set; } = Array.Empty<ITaskItem> ();
 
 		public override Task RunTaskAsync ()
 		{
@@ -51,9 +55,14 @@ namespace Xamarin.Android.Tasks
 			if (Profiles != null && Profiles.Length > 0) {
 				aotProfiles.Append (",profile-only");
 				foreach (var p in Profiles) {
-					var fp = Path.GetFullPath (p.ItemSpec);
 					aotProfiles.Append (",profile=");
-					aotProfiles.Append (fp);
+					aotProfiles.Append (Path.GetFullPath (p.ItemSpec));
+				}
+			} else if (MibcProfiles != null && MibcProfiles.Length > 0) {
+				aotProfiles.Append (",profile-only");
+				foreach (var p in MibcProfiles) {
+					aotProfiles.Append (",mibc-profile=");
+					aotProfiles.Append (Path.GetFullPath (p.ItemSpec));
 				}
 			}
 

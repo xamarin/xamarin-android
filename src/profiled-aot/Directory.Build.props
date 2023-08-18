@@ -2,7 +2,8 @@
   <PropertyGroup>
     <Configuration>Release</Configuration>
     <AndroidNeedsInternetPermission>true</AndroidNeedsInternetPermission>
-    <AndroidEnableAotProfiler>true</AndroidEnableAotProfiler>
+    <!-- <AndroidEnableAotProfiler>true</AndroidEnableAotProfiler> -->
+    <AndroidEnableProfiler>true</AndroidEnableProfiler>
     <RunAOTCompilation>false</RunAOTCompilation>
     <!-- We are using culture-aware/default overloads on purpose -->
     <NoWarn>$(NoWarn);CA1305</NoWarn>

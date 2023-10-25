@@ -587,6 +587,13 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
     <_AndroidVersionName>$(ApplicationDisplayVersion)</_AndroidVersionName>
     <_AndroidVersionCode>$(ApplicationVersion)</_AndroidVersionCode>
   </PropertyGroup>
+  <!-- Only supported in .NET 7+ -->
+  <PropertyGroup Condition=" '$(GenerateApplicationManifest)' == 'true' and '$(UsingAndroidNETSdk)' == 'true' ">
+    <_ApplicationIcon>$(ApplicationIcon)</_ApplicationIcon>
+    <!-- We have to clear this because it is passed to the <Csc/> task as Win32Icon! -->
+    <ApplicationIcon></ApplicationIcon>
+    <_ApplicationRoundIcon>$(ApplicationRoundIcon)</_ApplicationRoundIcon>
+  </PropertyGroup>
   <AndroidError Code="XA1018"
       ResourceName="XA1018"
       FormatArguments="$(_AndroidManifestAbs)"
@@ -1519,6 +1526,8 @@ because xbuild doesn't support framework reference assemblies.
       PackageName="$(_AndroidPackage)"
       VersionName="$(_AndroidVersionName)"
       VersionCode="$(_AndroidVersionCode)"
+      ApplicationIcon="$(_ApplicationIcon)"
+      ApplicationRoundIcon="$(_ApplicationRoundIcon)"
       ApplicationLabel="$(_ApplicationLabel)"
       ManifestPlaceholders="$(AndroidManifestPlaceholders)"
       OutputDirectory="$(IntermediateOutputPath)android"

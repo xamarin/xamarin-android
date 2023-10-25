@@ -1607,6 +1607,17 @@ string.
 
 Added in Xamarin.Android 7.2.
 
+## ApplicationIcon
+
+An MSBuild property that can be used as an alternative to
+`/application/@android:icon` in the [`AndroidManifest.xml`](~/android/platform/android-manifest.md)
+file.
+
+See the [Android documentation][application-element] for further details
+about the requirements for `/manifest/application/@android:icon`.
+
+Support for this property was added in .NET 7.
+
 ## ApplicationId
 
 An MSBuild property that can be used as an alternative to
@@ -1621,6 +1632,17 @@ about the requirements for `/manifest/@package`.
 [manifest-element]: https://developer.android.com/guide/topics/manifest/manifest-element
 
 Support for this property was added in Xamarin.Android 11.3.
+
+## ApplicationRoundIcon
+
+An MSBuild property that can be used as an alternative to
+`/application/@android:roundIcon` in the [`AndroidManifest.xml`](~/android/platform/android-manifest.md)
+file.
+
+See the [Android documentation][application-element] for further details
+about the requirements for `/manifest/application/@android:roundIcon`.
+
+Support for this property was added in .NET 7.
 
 ## ApplicationTitle
 

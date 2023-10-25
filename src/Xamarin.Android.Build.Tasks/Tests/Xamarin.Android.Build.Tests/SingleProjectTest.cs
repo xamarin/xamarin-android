@@ -40,6 +40,8 @@ namespace Xamarin.Android.Build.Tests
 		public void AndroidManifestProperties (string versionName, string versionCode, string errorMessage)
 		{
 			var packageName = "com.xamarin.singleproject";
+			var applicationIcon = "@drawable/icon";
+			var applicationRoundIcon = "@drawable/icon";
 			var applicationLabel = "My Sweet App";
 			var proj = new XamarinAndroidApplicationProject ();
 			proj.AndroidManifest = proj.AndroidManifest
@@ -47,7 +49,10 @@ namespace Xamarin.Android.Build.Tests
 				.Replace ("android:label=\"${PROJECT_NAME}\"", "")
 				.Replace ("android:versionName=\"1.0\"", "")
 				.Replace ("android:versionCode=\"1\"", "");
-			if (!Builder.UseDotNet) {
+			if (Builder.UseDotNet) {
+				proj.SetProperty ("ApplicationIcon", applicationIcon);
+				proj.SetProperty ("ApplicationRoundIcon", applicationRoundIcon);
+			} else {
 				proj.SetProperty ("GenerateApplicationManifest", "true");
 			}
 			proj.SetProperty ("ApplicationId", packageName);
@@ -72,7 +77,12 @@ namespace Xamarin.Android.Build.Tests
 					Assert.AreEqual (packageName, doc.Root.Attribute ("package")?.Value);
 					Assert.AreEqual (versionName, doc.Root.Attribute (AndroidAppManifest.AndroidXNamespace + "versionName")?.Value);
 					Assert.AreEqual (versionCode, doc.Root.Attribute (AndroidAppManifest.AndroidXNamespace + "versionCode")?.Value);
-					Assert.AreEqual (applicationLabel, doc.Root.Element("application").Attribute (AndroidAppManifest.AndroidXNamespace + "label")?.Value);
+					var application = doc.Root.Element ("application");
+					Assert.AreEqual (applicationLabel, application.Attribute (AndroidAppManifest.AndroidXNamespace + "label")?.Value);
+					if (Builder.UseDotNet) {
+						Assert.AreEqual (applicationIcon, application.Attribute (AndroidAppManifest.AndroidXNamespace + "icon")?.Value);
+						Assert.AreEqual (applicationRoundIcon, application.Attribute (AndroidAppManifest.AndroidXNamespace + "roundIcon")?.Value);
+					}
 				}
 
 				var apk = b.Output.GetIntermediaryPath ($"android/bin/{packageName}.apk");
@@ -112,16 +122,21 @@ namespace Xamarin.Android.Build.Tests
 		public void AndroidManifestValuesWin ()
 		{
 			var packageName = "com.xamarin.singleproject";
+			var applicationIcon = "@drawable/icon";
+			var applicationRoundIcon = "@drawable/icon";
 			var applicationLabel = "My Sweet App";
 			var versionName = "99.0";
 			var versionCode = "99";
 			var proj = new XamarinAndroidApplicationProject ();
 			proj.AndroidManifest = proj.AndroidManifest
 				.Replace ("package=\"${PACKAGENAME}\"", $"package=\"{packageName}\"")
-				.Replace ("android:label=\"${PROJECT_NAME}\"", $"android:label=\"{applicationLabel}\"")
+				.Replace ("android:label=\"${PROJECT_NAME}\"", $"android:label=\"{applicationLabel}\" android:icon=\"{applicationIcon}\" android:roundIcon=\"{applicationRoundIcon}\"")
 				.Replace ("android:versionName=\"1.0\"", $"android:versionName=\"{versionName}\"")
 				.Replace ("android:versionCode=\"1\"", $"android:versionCode=\"{versionCode}\"");
-			if (!Builder.UseDotNet) {
+			if (Builder.UseDotNet) {
+				proj.SetProperty ("ApplicationIcon", "@drawable/shouldnotbeused");
+				proj.SetProperty ("ApplicationRoundIcon", "@drawable/shouldnotbeused");
+			} else {
 				proj.SetProperty ("GenerateApplicationManifest", "true");
 			}
 			proj.SetProperty ("ApplicationId", "com.i.should.not.be.used");
@@ -139,7 +154,12 @@ namespace Xamarin.Android.Build.Tests
 			Assert.AreEqual (packageName, doc.Root.Attribute ("package")?.Value);
 			Assert.AreEqual (versionName, doc.Root.Attribute (AndroidAppManifest.AndroidXNamespace + "versionName")?.Value);
 			Assert.AreEqual (versionCode, doc.Root.Attribute (AndroidAppManifest.AndroidXNamespace + "versionCode")?.Value);
-			Assert.AreEqual (applicationLabel, doc.Root.Element ("application").Attribute (AndroidAppManifest.AndroidXNamespace + "label")?.Value);
+			var application = doc.Root.Element ("application");
+			Assert.AreEqual (applicationLabel, application.Attribute (AndroidAppManifest.AndroidXNamespace + "label")?.Value);
+			if (Builder.UseDotNet) {
+				Assert.AreEqual (applicationIcon, application.Attribute (AndroidAppManifest.AndroidXNamespace + "icon")?.Value);
+				Assert.AreEqual (applicationRoundIcon, application.Attribute (AndroidAppManifest.AndroidXNamespace + "roundIcon")?.Value);
+			}
 		}
 	}
 }

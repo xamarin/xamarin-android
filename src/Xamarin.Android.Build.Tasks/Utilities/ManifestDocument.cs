@@ -80,6 +80,8 @@ namespace Xamarin.Android.Tasks {
 		};
 
 		public string PackageName { get; set; }
+		public string ApplicationIcon { get; set; }
+		public string ApplicationRoundIcon { get; set; }
 		public string ApplicationLabel { get; set; }
 		public string [] Placeholders { get; set; }
 		public List<string> Assemblies { get; set; }
@@ -288,6 +290,12 @@ namespace Xamarin.Android.Tasks {
 			}
 
 			app = CreateApplicationElement (manifest, applicationClass, subclasses, cache);
+
+			if (app.Attribute (androidNs + "icon") == null && !string.IsNullOrEmpty (ApplicationIcon))
+				app.SetAttributeValue (androidNs + "icon", ApplicationIcon);
+
+			if (app.Attribute (androidNs + "roundIcon") == null && !string.IsNullOrEmpty (ApplicationRoundIcon))
+				app.SetAttributeValue (androidNs + "roundIcon", ApplicationRoundIcon);
 
 			if (app.Attribute (androidNs + "label") == null && !string.IsNullOrEmpty (ApplicationLabel))
 				app.SetAttributeValue (androidNs + "label", ApplicationLabel);

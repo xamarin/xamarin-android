@@ -29,6 +29,11 @@ Xamarin.Android and Xamarin.iOS/Mac SDKs:
 * `$(ApplicationTitle)` maps to `/application/@android:title` or
   `CFBundleDisplayName`
 
+Added in .NET 7:
+
+* `$(ApplicationIcon)` maps to `/application/@android:icon`
+* `$(ApplicationRoundIcon)` maps to `/application/@android:roundIcon`
+
 [CFBundleVersion]: https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364
 [CFBundleShortVersionString]: https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-111349
 
@@ -205,8 +210,6 @@ property pages in Visual Studio:
 * `$(AppleDeviceFamily)` - `iPhone`, `iPad`, `Universal`, `TV`, and
   potentially other variants for Catalyst, etc.
 * `$(AppleMainStoryboard)`
-* `$(ApplicationIcon)`
-* `$(ApplicationRoundIcon)` or `$(AndroidRoundIcon)`
 
 Some settings would make more sense as an item group:
 

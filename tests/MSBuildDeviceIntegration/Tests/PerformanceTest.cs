@@ -61,6 +61,38 @@ namespace Xamarin.Android.Build.Tests
 			}
 		}
 
+		void ProfileAverageOver (ProjectBuilder builder, Action<ProjectBuilder> action, int numberOfRuns = 10, Action<ProjectBuilder> beforeAction = null, Action<ProjectBuilder> afterAction = null, Action<double, double, double> report = null, [CallerMemberName] string caller = null)
+		{
+			if (!csv_values.TryGetValue (caller, out int expected)) {
+				Assert.Fail ($"No timeout value found for a key of {caller}");
+			}
+
+			if (Builder.UseDotNet) {
+				//TODO: there is currently a slight performance regression in .NET 6
+				expected += 500;
+			}
+
+			double average = 0d;
+			double min = double.MaxValue;
+			double max = 0d;
+			for (int run = 1; run <= numberOfRuns; run++) {
+				beforeAction?.Invoke (builder);
+				action (builder);
+				var actual = GetDurationFromBinLog (builder);
+				min = Math.Min (min, actual);
+				max = Math.Max (max, actual);
+				TestContext.Out.WriteLine($"run: {run} expected: {expected}ms, actual: {actual}ms");
+				average += actual;
+				afterAction?.Invoke (builder);
+			}
+			average = average / numberOfRuns;
+			report?.Invoke (min, max, average);
+			TestContext.Out.WriteLine($"expected: {expected}ms, average: {average}ms");
+			if (average > expected) {
+				Assert.Fail ($"Exceeded expected time of {expected}ms, average {average}ms");
+			}
+		}
+
 		double GetDurationFromBinLog (ProjectBuilder builder)
 		{
 			var binlog = Path.Combine (Root, builder.ProjectDirectory, $"{Path.GetFileNameWithoutExtension (builder.BuildLogFile)}.binlog");
@@ -390,6 +422,28 @@ namespace Xamarin.Android.Build.Tests
 				proj.MainActivity += $"{Environment.NewLine}//comment";
 				proj.Touch ("MainActivity.cs");
 				Profile (builder, b => b.Install (proj));
+			}
+		}
+
+		[Test]
+		[Category ("UsesDevice")]
+		public void Install_CSharp_FromClean ()
+		{
+			AssertCommercialBuild (); // This test will fail without Fast Deployment
+			AssertHasDevices ();
+
+			var proj = CreateApplicationProject ();
+			proj.PackageName = "com.xamarin.install_csharp_clean";
+			proj.MainActivity = proj.DefaultMainActivity;
+			using (var builder = CreateBuilderWithoutLogFile ()) {
+				builder.ThrowOnBuildFailure = false;
+				builder.Restore (proj);
+				builder.Uninstall (proj);
+				ProfileAverageOver (builder, b =>  {
+					b.Install (proj);
+				}, numberOfRuns: 10, beforeAction: b => {
+					b.Clean (proj);
+				});
 			}
 		}
 	}

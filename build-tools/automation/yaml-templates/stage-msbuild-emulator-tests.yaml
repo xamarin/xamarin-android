@@ -76,7 +76,7 @@ stages:
         condition: ${{ parameters.shouldFailOnIssue }}
 
   - job: wear_tests
-    displayName: macOS > Tests > WearOS 
+    displayName: macOS > Tests > WearOS
     timeoutInMinutes: 180
     cancelTimeoutInMinutes: 2
     strategy:

@@ -15,3 +15,4 @@ Build_XAML_Change,7400
 Build_XAML_Change_RefAssembly,4000
 Install_CSharp_Change,4500
 Install_XAML_Change,5000
+Install_CSharp_FromClean,30000

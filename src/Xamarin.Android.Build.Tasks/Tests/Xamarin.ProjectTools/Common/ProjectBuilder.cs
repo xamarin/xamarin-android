@@ -72,10 +72,10 @@ namespace Xamarin.ProjectTools
 			return result;
 		}
 
-		public bool Install (XamarinProject project, bool doNotCleanupOnUpdate = false, string [] parameters = null, bool saveProject = true)
+		public bool Install (XamarinProject project, bool doNotCleanupOnUpdate = false, string [] parameters = null, bool saveProject = true, Dictionary<string, string> environmentVariables = null)
 		{
 			//NOTE: since $(BuildingInsideVisualStudio) is set, Build will not happen by default
-			return RunTarget (project, "Build,Install", doNotCleanupOnUpdate, parameters, saveProject: saveProject);
+			return RunTarget (project, "Build,Install", doNotCleanupOnUpdate, parameters, saveProject: saveProject, environmentVariables: environmentVariables);
 		}
 
 		public bool Uninstall (XamarinProject project, bool doNotCleanupOnUpdate = false, bool saveProject = true)

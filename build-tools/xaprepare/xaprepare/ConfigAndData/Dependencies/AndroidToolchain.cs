@@ -97,6 +97,12 @@ namespace Xamarin.Android.Prepare
 					pkgRevision: "8",
 					dependencyType: AndroidToolchainComponentType.EmulatorDependency
 				),
+				new AndroidToolchainComponent (isArm64Apple ? $"{systemImageArch}-33_r02" : $"{systemImageArch}-33_r02",
+					destDir: Path.Combine ("system-images", "android-33", "google_atd", systemImageArch),
+					relativeUrl: new Uri ("sys-img/android/", UriKind.Relative),
+					pkgRevision: "2",
+					dependencyType: AndroidToolchainComponentType.EmulatorDependency
+				),
 				new AndroidToolchainComponent ($"android-ndk-r{AndroidNdkVersion}-{osTag}",
 					destDir: AndroidNdkDirectory,
 					pkgRevision: AndroidPkgRevision,

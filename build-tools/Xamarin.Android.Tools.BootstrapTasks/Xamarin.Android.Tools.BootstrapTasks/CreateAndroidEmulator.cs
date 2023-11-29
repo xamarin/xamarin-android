@@ -24,7 +24,7 @@ namespace Xamarin.Android.Tools.BootstrapTasks
 
 		public                  string          ImageName           {get; set;} = "XamarinAndroidTestRunner64";
 		public                  string          DeviceName          {get; set;} = "pixel_4";
-		public			string		ImageType	    {get; set;} = "default";
+		public			string		ImageType	    {get; set;} = "google_atd";
 
 		public                  string          DataPartitionSizeMB {get; set;} = "2048";
 		public                  string          RamSizeMB           {get; set;} = "2048";

@@ -112,7 +112,7 @@ stages:
         Android33-x86_64:
           avdApiLevel: 33
           avdAbi: x86_64
-          avdType: google_atd
+          avdType: default
     pool:
       vmImage: $(HostedMacImage)
     workspace:

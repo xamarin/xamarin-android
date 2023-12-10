@@ -181,7 +181,7 @@ namespace Xamarin.Android.Tasks
 			MethodDefinition callback = method.NativeCallback;
 			AssemblyImports imports = assemblyImports [callback.Module.Assembly];
 			string wrapperName = $"{callback.Name}_mm_wrapper";
-			TypeReference retType = MapToBlittableTypeIfNecessary (callback.ReturnType, out bool returnTypeMapped);
+			TypeReference retType = MapToBlittableTypeIfNecessary (callback, callback.ReturnType, out bool returnTypeMapped);
 			bool hasReturnValue = String.Compare ("System.Void", callback.ReturnType.FullName, StringComparison.Ordinal) != 0;
 			var wrapperMethod = new MethodDefinition (wrapperName, callback.Attributes, retType);
 
@@ -208,7 +208,7 @@ namespace Xamarin.Android.Tasks
 			Instruction? inst = null;
 			uint nparam = 0;
 			foreach (ParameterDefinition pdef in callback.Parameters) {
-				TypeReference newType = MapToBlittableTypeIfNecessary (pdef.ParameterType, out _);
+				TypeReference newType = MapToBlittableTypeIfNecessary (callback, pdef.ParameterType, out _);
 				wrapperMethod.Parameters.Add (new ParameterDefinition (pdef.Name, pdef.Attributes, newType));
 
 				inst = GetLoadArgInstruction (nparam++, pdef);
@@ -299,6 +299,11 @@ namespace Xamarin.Android.Tasks
 					return;
 				}
 
+				if (IsCharConversion (sourceType, targetType)) {
+					// There isn't any special code we need to generate.
+					return;
+				}
+
 				ThrowUnsupportedType (sourceType);
 			}
 
@@ -313,6 +318,11 @@ namespace Xamarin.Android.Tasks
 					body.Instructions.Add (Instruction.Create (OpCodes.Br_S, insConvert));
 					body.Instructions.Add (insLoadOne);
 					body.Instructions.Add (insConvert);
+					return;
+				}
+
+				if (IsCharConversion (sourceType, targetType)) {
+					// There isn't any special code we need to generate.
 					return;
 				}
 
@@ -332,9 +342,22 @@ namespace Xamarin.Android.Tasks
 				return false;
 			}
 
+			bool IsCharConversion (TypeReference sourceType, TypeReference targetType)
+			{
+				if (String.Compare ("System.Char", sourceType.FullName, StringComparison.Ordinal) == 0) {
+					if (String.Compare ("System.UInt16", targetType.FullName, StringComparison.Ordinal) != 0) {
+						throw new InvalidOperationException ($"Unexpected conversion from '{sourceType.FullName}' to '{targetType.FullName}'");
+					}
+
+					return true;
+				}
+
+				return false;
+			}
+
 			void ThrowUnsupportedType (TypeReference type)
 			{
-				throw new InvalidOperationException ($"Unsupported non-blittable type '{type.FullName}'");
+				throw new InvalidOperationException ($"Unsupported non-blittable type '{type.FullName}' in method '{callback.FullName}'");
 			}
 		}
 
@@ -423,7 +446,7 @@ namespace Xamarin.Android.Tasks
 			return Instruction.Create (ldargOp, pdef);
 		}
 
-		TypeReference MapToBlittableTypeIfNecessary (TypeReference type, out bool typeMapped)
+		TypeReference MapToBlittableTypeIfNecessary (MethodDefinition method, TypeReference type, out bool typeMapped)
 		{
 			if (type.IsBlittable () || String.Compare ("System.Void", type.FullName, StringComparison.Ordinal) == 0) {
 				typeMapped = false;
@@ -436,7 +459,13 @@ namespace Xamarin.Android.Tasks
 				return ReturnValid (typeof(byte));
 			}
 
-			throw new NotSupportedException ($"Cannot map unsupported blittable type '{type.FullName}'");
+			if (String.Compare ("System.Char", type.FullName, StringComparison.Ordinal) == 0) {
+				// `char` is 16-bytes both in Java and in .NET
+				typeMapped = true;
+				return ReturnValid (typeof(ushort));
+			}
+
+			throw new NotSupportedException ($"Cannot map unsupported blittable type '{type.FullName}' in method '{method.FullName}'");
 
 			TypeReference ReturnValid (Type typeToLookUp)
 			{

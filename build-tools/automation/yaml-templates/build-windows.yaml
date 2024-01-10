@@ -17,9 +17,9 @@ stages:
   displayName: Test Container
   jobs:
   - job: Test
-    pool:
-      vmImage: 'ubuntu-latest'
-    container: ubuntu:20.04
+    pool: ${{ parameters.buildPool }}
+    container:
+      image: ubuntu:18.04
     steps:
     - script: printenv
     - script: >

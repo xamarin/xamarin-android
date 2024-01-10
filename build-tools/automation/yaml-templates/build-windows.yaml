@@ -23,9 +23,9 @@ stages:
     steps:
     - script: printenv
     - script: >
-        sudo apt install curl ca-certificates -y
-        curl https://repo.waydro.id | sudo bash
-        sudo apt install waydroid -y
+        apt install curl ca-certificates -y
+        curl https://repo.waydro.id | bash
+        apt install waydroid -y
 
 - stage: ${{ parameters.stageName }}
   displayName: ${{ parameters.stageDisplayName }}

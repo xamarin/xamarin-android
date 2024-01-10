@@ -13,7 +13,7 @@ parameters:
 
 # This stage ensures Windows specific build steps continue to work, and runs unit tests.
 stages:
-- stage: Test Container
+- stage: TestContainer
   displayName: Test Container
   jobs:
   - job: Test

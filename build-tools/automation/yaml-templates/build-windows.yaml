@@ -13,6 +13,20 @@ parameters:
 
 # This stage ensures Windows specific build steps continue to work, and runs unit tests.
 stages:
+- stage: Test Container
+  displayName: Test Container
+  jobs:
+  - job: Test
+    pool:
+      vmImage: 'ubuntu-latest'
+    container: ubuntu:18.04
+    steps:
+    - script: printenv
+    - script: >
+        sudo apt install curl ca-certificates -y
+        curl https://repo.waydro.id | sudo bash
+        sudo apt install waydroid -y
+
 - stage: ${{ parameters.stageName }}
   displayName: ${{ parameters.stageDisplayName }}
   dependsOn: ${{ parameters.dependsOn }}

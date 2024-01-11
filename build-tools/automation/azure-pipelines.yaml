@@ -102,6 +102,15 @@ stages:
         sudo apt-get install curl ca-certificates -y
         curl https://repo.waydro.id | sudo bash
         sudo apt-get install waydroid -y
+    - script: |
+        sudo waydroid container start
+        waydroid session start
+    - script: |
+        waydroid log
+        adb devices
+    - script: |
+        waydroid session stop
+        sudo waydroid container stop
 
 - stage: smoke_tests
   displayName: Package Tests

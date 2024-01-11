@@ -113,6 +113,10 @@ stages:
         apt install waydroid -y
       target:
         container: emulator
+    - script: |
+        apt install curl ca-certificates -y
+        curl https://repo.waydro.id | bash
+        apt install waydroid -y
     - task: Docker@2
       inputs:
         command: stop

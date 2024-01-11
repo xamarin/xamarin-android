@@ -23,7 +23,8 @@ stages:
     - task: Docker@2
       inputs:
         command: start
-        container: emulator
+        Dockerfile: build-tools/scripts/DockerFile
+        container: emulator 
     - script: |
         echo "I can run inside the container (it starts by default)"
         printenv

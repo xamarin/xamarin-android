@@ -38,6 +38,7 @@ resources:
   containers:
   - container: emulator
     image: ubuntu:20.04
+    options: --user root
 
 parameters:
 - name: pushXAPackagesToMaestro
@@ -116,7 +117,6 @@ extends:
         - task: Docker@2
           inputs:
             command: start
-            Dockerfile: build-tools/scripts/DockerFile
             container: emulator 
         - script: |
             echo "I can run inside the container (it starts by default)"
@@ -125,15 +125,16 @@ extends:
           target:
             container: emulator
         - script: |
-            sudo apt install curl ca-certificates -y
-            curl https://repo.waydro.id | sudo bash
-            sudo apt install waydroid -y
+            apt install curl ca-certificates -y
+            curl https://repo.waydro.id | bash
+            apt install waydroid -y
           target:
             container: emulator
         - task: Docker@2
           inputs:
             command: stop
             container: emulator
+
     - stage: smoke_tests
       displayName: Package Tests
       dependsOn: mac_build

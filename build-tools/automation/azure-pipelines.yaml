@@ -105,6 +105,7 @@ stages:
     - script: |
         sudo waydroid init -f
         sudo waydroid init
+        waydroid log
     - script: |
         sudo waydroid container start
         waydroid session start

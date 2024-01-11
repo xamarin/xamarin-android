@@ -106,6 +106,34 @@ extends:
 
     - template: /build-tools/automation/yaml-templates/build-linux.yaml@self
 
+    - stage: TestContainer
+      displayName: Test Container
+      jobs:
+      - job: Test
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+        - task: Docker@2
+          inputs:
+            command: start
+            Dockerfile: build-tools/scripts/DockerFile
+            container: emulator 
+        - script: |
+            echo "I can run inside the container (it starts by default)"
+            printenv
+            whoami
+          target:
+            container: emulator
+        - script: |
+            sudo apt install curl ca-certificates -y
+            curl https://repo.waydro.id | sudo bash
+            sudo apt install waydroid -y
+          target:
+            container: emulator
+        - task: Docker@2
+          inputs:
+            command: stop
+            container: emulator
     - stage: smoke_tests
       displayName: Package Tests
       dependsOn: mac_build

@@ -13,35 +13,6 @@ parameters:
 
 # This stage ensures Windows specific build steps continue to work, and runs unit tests.
 stages:
-- stage: TestContainer
-  displayName: Test Container
-  jobs:
-  - job: Test
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      inputs:
-        command: start
-        Dockerfile: build-tools/scripts/DockerFile
-        container: emulator 
-    - script: |
-        echo "I can run inside the container (it starts by default)"
-        printenv
-        whoami
-      target:
-        container: emulator
-    - script: |
-        sudo apt install curl ca-certificates -y
-        curl https://repo.waydro.id | sudo bash
-        sudo apt install waydroid -y
-      target:
-        container: emulator
-    - task: Docker@2
-      inputs:
-        command: stop
-        container: emulator
-
 - stage: ${{ parameters.stageName }}
   displayName: ${{ parameters.stageDisplayName }}
   dependsOn: ${{ parameters.dependsOn }}

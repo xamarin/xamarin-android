@@ -35,10 +35,6 @@ resources:
     name: dotnet/maui
     ref: refs/heads/net9.0
     endpoint: xamarin
-  containers:
-  - container: emulator
-    image: ubuntu:20.04
-    options: --user root
 
 parameters:
 - name: macTestAgentsUseCleanImages   # Test agents we do not need to clean up when finished because they are not reused
@@ -97,32 +93,15 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: Docker@2
-      inputs:
-        command: start
-        container: emulator 
     - script: |
-        echo "I can run inside the container (it starts by default)"
         printenv
         whoami
         curl -h
         sudo -h
-      target:
-        container: emulator
     - script: |
         apt install curl ca-certificates -y
         curl https://repo.waydro.id | bash
         apt install waydroid -y
-      target:
-        container: emulator
-    - script: |
-        apt install curl ca-certificates -y
-        curl https://repo.waydro.id | bash
-        apt install waydroid -y
-    - task: Docker@2
-      inputs:
-        command: stop
-        container: emulator
 
 - stage: smoke_tests
   displayName: Package Tests

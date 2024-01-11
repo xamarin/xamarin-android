@@ -11,11 +11,6 @@ parameters:
   stageName: win_build_test
   stageDisplayName: Windows
 
-resources:
-  containers:
-  - container: c1
-    image: ubuntu:20.04
-
 # This stage ensures Windows specific build steps continue to work, and runs unit tests.
 stages:
 - stage: TestContainer

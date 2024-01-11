@@ -35,6 +35,9 @@ resources:
     name: dotnet/maui
     ref: refs/heads/net9.0
     endpoint: xamarin
+  containers:
+  - container: c1
+    image: ubuntu:20.04
 
 parameters:
 - name: pushXAPackagesToMaestro

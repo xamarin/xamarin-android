@@ -19,11 +19,11 @@ stages:
   - job: Test
     pool:
       vmImage: 'ubuntu-latest'
-    resources:
-      containers:
-      - container: emulator
-        image: ubuntu:20.04
     steps:
+    - task: Docker@2
+      inputs:
+        command: start
+        container: emulator
     - script: |
         echo "I can run inside the container (it starts by default)"
         printenv

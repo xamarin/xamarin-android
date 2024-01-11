@@ -103,6 +103,9 @@ stages:
         curl https://repo.waydro.id | sudo bash
         sudo apt-get install waydroid -y
     - script: |
+        sudo waydroid init -f
+        sudo waydroid init
+    - script: |
         sudo waydroid container start
         waydroid session start
     - script: |

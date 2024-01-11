@@ -17,15 +17,16 @@ stages:
   displayName: Test Container
   jobs:
   - job: Test
-    pool: ${{ parameters.buildPool }}
+    pool:
+      vmImage: 'ubuntu-latest'
     container:
-      image: ubuntu:18.04
+      image: ubuntu:20.04
     steps:
     - script: printenv
-    - script: >
-        sudo apt install curl ca-certificates -y &&
-        curl https://repo.waydro.id | sudo bash &&
-        sudo apt install waydroid -y
+    - script: |
+        apt install curl ca-certificates -y
+        curl https://repo.waydro.id | bash
+        apt install waydroid -y
 
 - stage: ${{ parameters.stageName }}
   displayName: ${{ parameters.stageDisplayName }}

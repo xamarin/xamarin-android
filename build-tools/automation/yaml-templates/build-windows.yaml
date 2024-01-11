@@ -19,15 +19,25 @@ stages:
   - job: Test
     pool:
       vmImage: 'ubuntu-latest'
-    container: c1
+    resources:
+      containers:
+      - container: emulator
+        image: ubuntu:20.04
     steps:
-    - script: printenv
-      target: c1
     - script: |
-        sudo apt-get install curl ca-certificates -y
-        curl https://repo.waydro.id | sudo bash
-        sudo apt-get install waydroid -y
-      target: c1
+        echo "I can run inside the container (it starts by default)"
+        printenv
+        whoami
+      target:
+        container: emulator
+    - task: Docker@2
+      inputs:
+        command: stop
+        container: emulator
+    # - script: |
+    #     sudo apt-get install curl ca-certificates -y
+    #     curl https://repo.waydro.id | sudo bash
+    #     sudo apt-get install waydroid -y
 
 - stage: ${{ parameters.stageName }}
   displayName: ${{ parameters.stageDisplayName }}

@@ -1,0 +1,10 @@
+{
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb",
+    "storage": "64gb"
+  },
+  "features": {
+    "ghcr.io/meaningful-ooo/devcontainer-features/homebrew:2": {}
+  }
+}

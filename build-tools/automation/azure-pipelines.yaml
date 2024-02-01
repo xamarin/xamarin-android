@@ -117,7 +117,6 @@ stages:
         sudo waydroid init
       displayName: waydroid init
     - script: |
-        sudo waydroid container start
         waydroid session start
       displayName: Start WayDroid
     - script: |

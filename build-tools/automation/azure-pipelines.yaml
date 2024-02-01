@@ -110,26 +110,44 @@ extends:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-        - task: Docker@2
-          inputs:
-            command: start
-            container: emulator 
         - script: |
-            echo "I can run inside the container (it starts by default)"
             printenv
             whoami
-          target:
-            container: emulator
+            curl -h
+            sudo -h
+          displayName: Display Environment
         - script: |
-            apt install curl ca-certificates -y
-            curl https://repo.waydro.id | bash
-            apt install waydroid -y
-          target:
-            container: emulator
-        - task: Docker@2
-          inputs:
-            command: stop
-            container: emulator
+            sudo apt-get install curl ca-certificates -y
+            curl https://repo.waydro.id | sudo bash
+            sudo apt-get install waydroid -y
+          displayName: Install WayDroid
+        - script: |
+            sudo apt install linux-generic -y 
+            sudo apt install --reinstall linux-image-$(uname -r) -y
+            sudo apt install --reinstall linux-modules-$(uname -r) -y
+            sudo apt install --reinstall linux-modules-extra-$(uname -r) -y
+          displayName: Install Kernel Stuff
+        - script: |
+            sudo waydroid init -f
+          displayName: waydroid init -f
+        - script: |
+            sudo waydroid init
+          displayName: waydroid init
+        - script: |
+            waydroid log
+          displayName: waydroid log
+        - script: |
+            sudo waydroid container start
+            waydroid session start
+          displayName: Start WayDroid
+        - script: |
+            waydroid log
+            adb devices
+          displayName: Logging
+        - script: |
+            waydroid session stop
+            sudo waydroid container stop
+          displayName: Stop WayDroid
 
     - stage: smoke_tests
       displayName: Package Tests

@@ -112,9 +112,13 @@ stages:
       displayName: Install Kernel Stuff
     - script: |
         sudo waydroid init -f
+      displayName: waydroid init -f
+    - script: |
         sudo waydroid init
+      displayName: waydroid init
+    - script: |
         waydroid log
-      displayName: Setup WayDroid
+      displayName: waydroid log
     - script: |
         sudo waydroid container start
         waydroid session start

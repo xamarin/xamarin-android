@@ -134,14 +134,10 @@ extends:
             sudo waydroid init
           displayName: waydroid init
         - script: |
-            waydroid log
-          displayName: waydroid log
-        - script: |
             sudo waydroid container start
             waydroid session start
           displayName: Start WayDroid
         - script: |
-            waydroid log
             adb devices
           displayName: Logging
         - script: |

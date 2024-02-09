@@ -23,7 +23,7 @@ namespace Xamarin.Android.AssemblyStore
 		public AssemblyStoreManifestEntry (string[] fields)
 		{
 			if (fields.Length != NumberOfFields) {
-				throw new ArgumentOutOfRangeException (nameof (fields), "Invalid number of fields");
+				throw new ArgumentOutOfRangeException (nameof (fields), $"Invalid number of fields. Expected {NumberOfFields} found {fields.Length}");
 			}
 
 			Hash32 = GetUInt32 (fields[Hash32FieldIndex]);

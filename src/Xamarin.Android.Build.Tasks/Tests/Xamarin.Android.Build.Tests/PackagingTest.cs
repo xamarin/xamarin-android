@@ -100,6 +100,28 @@ Console.WriteLine ($""{DateTime.UtcNow.AddHours(-30).Humanize(culture:c)}"");
 		}
 
 		[Test]
+		[Category ("SmokeTests")]
+		[TestCase ("Test Me")]
+		// testing characters as per https://www.compart.com/en/unicode/category/Zs
+		[TestCase ("TestUnicodeSpace0020\u0020Me")]
+		// TODO these break with AOT error on windows
+		//[TestCase ("TestUnicodeSpace2000\u2000Me")]
+		//[TestCase ("TestUnicodeSpace2009\u2009Me")]
+		//[TestCase ("TestUnicodeSpace2002\u2002Me")]
+		//[TestCase ("TestUnicodeSpace2007\u2007Me")]
+		public void CheckProjectWithSpaceInNameWorks (string projectName)
+		{
+			var proj = new XamarinAndroidApplicationProject () {
+				IsRelease = true,
+				ProjectName = projectName,
+				RootNamespace = "Test.Me",
+			};
+			using (var b = CreateApkBuilder ()) {
+				Assert.IsTrue (b.Build (proj), "build failed");
+			}
+		}
+
+		[Test]
 		public void CheckClassesDexIsIncluded ()
 		{
 			var proj = new XamarinAndroidApplicationProject () {

@@ -7,7 +7,7 @@ namespace Xamarin.Android.AssemblyStore
 {
 	class AssemblyStoreManifestReader
 	{
-		static readonly char[] fieldSplit = new char[] { ' ' };
+		static readonly char[] fieldSplit = new char[] { '\t' };
 
 		public List<AssemblyStoreManifestEntry> Entries                      { get; } = new List<AssemblyStoreManifestEntry> ();
 		public Dictionary<uint, AssemblyStoreManifestEntry> EntriesByHash32  { get; } = new Dictionary<uint, AssemblyStoreManifestEntry> ();

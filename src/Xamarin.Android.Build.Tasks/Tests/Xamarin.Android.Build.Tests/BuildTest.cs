@@ -30,6 +30,8 @@ namespace Xamarin.Android.Build.Tests
 		{
 			var proj = new XamarinAndroidApplicationProject {
 				IsRelease = isRelease,
+				ProjectName = "Test Me",
+				RootNamespace = "Test.Me",
 				EnableDefaultItems = true,
 				ExtraNuGetConfigSources = {
 					// Microsoft.AspNetCore.Components.WebView is not in dotnet-public

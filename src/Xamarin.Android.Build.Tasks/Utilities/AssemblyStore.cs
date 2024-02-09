@@ -110,7 +110,7 @@ namespace Xamarin.Android.Tasks
 			uint localEntryCount = 0;
 			var localAssemblies = new List<AssemblyStoreIndexEntry> ();
 
-			manifestWriter.WriteLine ("Hash 32     Hash 64             Blob ID  Blob idx  Name");
+			manifestWriter.WriteLine ("Hash 32\tHash 64\tBlob ID\tBlob idx\tName");
 
 			var seenHashes32 = new HashSet<ulong> ();
 			var seenHashes64 = new HashSet<ulong> ();
@@ -126,7 +126,7 @@ namespace Xamarin.Android.Tasks
 					haveDuplicates = true;
 				}
 
-				manifestWriter.WriteLine ($"0x{assembly.NameHash32:x08}  0x{assembly.NameHash64:x016}  {assembly.StoreID:d03}      {assembly.LocalBlobIndex:d04}      {assembly.Name}");
+				manifestWriter.WriteLine ($"0x{assembly.NameHash32:x08}\t0x{assembly.NameHash64:x016}\t{assembly.StoreID:d03}\t{assembly.LocalBlobIndex:d04}\t{assembly.Name}");
 			}
 
 			if (haveDuplicates) {
@@ -243,7 +243,6 @@ namespace Xamarin.Android.Tasks
 						assemblyName = $"{archivePath}/{assemblyName}";
 					}
 				}
-
 				AssemblyStoreIndexEntry entry = WriteAssembly (writer, assembly, assemblyName, (uint)localAssemblies.Count);
 				if (addToGlobalIndex) {
 					globalIndex.Add (entry);

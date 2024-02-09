@@ -179,7 +179,7 @@ namespace Xamarin.Android.Tasks
 				if (!string.IsNullOrEmpty (EnumMetadataDirectory))
 					WriteLine (sw, $"--enummetadata=\"{EnumMetadataDirectory}\"");
 				if (!string.IsNullOrEmpty (AssemblyName))
-					WriteLine (sw, $"--assembly={AssemblyName}");
+					WriteLine (sw, $"--assembly=\"{AssemblyName}\"");
 
 				if (!NoStdlib) {
 					string fxpath = MonoAndroidFrameworkDirectories.Split (';').First (p => new DirectoryInfo (p).GetFiles ("mscorlib.dll").Any ());

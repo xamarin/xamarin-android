@@ -7,14 +7,19 @@
       BeforeTargets="Build"
       Inputs="$(MSBuildThisFile);build.gradle"
       Outputs="$(_Destination)">
+    <!-- Remove when $(JavacSourceVersion/JavacTargetVersion) is 11 for entire repo -->
+    <PropertyGroup>
+      <JavacSourceVersion Condition="'$(JavacSourceVersion)' &lt; 11">11</JavacSourceVersion>
+      <JavacTargetVersion Condition="'$(JavacTargetVersion)' &lt; 11">11</JavacTargetVersion>
+    </PropertyGroup>
     <Exec
         Command="&quot;$(GradleWPath)&quot; build $(GradleArgs) -PjavaSourceVer=$(JavacSourceVersion) -PjavaTargetVer=$(JavacTargetVersion)"
-        EnvironmentVariables="JAVA_HOME=$(Java8SdkDirectory);APP_HOME=$(GradleHome)"
+        EnvironmentVariables="JAVA_HOME=$(JavaSdkDirectory);APP_HOME=$(GradleHome)"
         WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <Exec
         Command="&quot;$(GradleWPath)&quot; jar $(GradleArgs)"
-        EnvironmentVariables="JAVA_HOME=$(Java8SdkDirectory);APP_HOME=$(GradleHome)"
+        EnvironmentVariables="JAVA_HOME=$(JavaSdkDirectory);APP_HOME=$(GradleHome)"
         WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <Copy
@@ -28,7 +33,7 @@
     <Delete Files="$(_Destination)" />
     <Exec
         Command="&quot;$(GradleWPath)&quot; clean $(GradleArgs)"
-        EnvironmentVariables="JAVA_HOME=$(Java8SdkDirectory);APP_HOME=$(GradleHome)"
+        EnvironmentVariables="JAVA_HOME=$(JavaSdkDirectory);APP_HOME=$(GradleHome)"
         WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
   </Target>

@@ -348,7 +348,7 @@ namespace Xamarin.Android.Build.Tests
 			};
 			string adb = Path.Combine (task.AdbToolPath, task.AdbToolExe);
 			string cmd = task.GetCommandLineBuilder ().ToString ();
-			Assert.AreEqual ($"install-apks --apks foo.apks --adb \"{adb}\" --device-id emulator-5554 --allow-downgrade --modules _ALL_", cmd);
+			Assert.AreEqual ($"install-apks --apks foo.apks --adb \"{adb}\" --device-id emulator-5554 --allow-downgrade", cmd);
 		}
 	}
 }

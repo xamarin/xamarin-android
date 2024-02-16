@@ -28,6 +28,8 @@ namespace Xamarin.Android.Tasks {
 		[Required]
 		public string JavaPlatformJarPath { get; set; }
 
+		public ITaskItem [] AdditionalApksToLink { get; set; }
+
 		public string PackageName { get; set; }
 
 		public ITaskItem [] AdditionalResourceArchives { get; set; }
@@ -56,6 +58,8 @@ namespace Xamarin.Android.Tasks {
 
 		public string OutputFile { get; set; }
 
+		public bool OutputToDirectory { get; set; } = false;
+
 		public string JavaDesignerOutputDirectory { get; set; }
 
 		public string UncompressedFileExtensions { get; set; }
@@ -76,7 +80,11 @@ namespace Xamarin.Android.Tasks {
 
 		public bool ProtobufFormat { get; set; }
 
+		public bool StaticLibrary { get; set; } = false;
+
 		public string ProguardRuleOutput { get; set; }
+
+		public string PackageId { get; set; }
 
 		AssemblyIdentityMap assemblyMap = new AssemblyIdentityMap ();
 		List<string> tempFiles = new List<string> ();
@@ -116,9 +124,11 @@ namespace Xamarin.Android.Tasks {
 							File.Delete (tmpfile);
 						}
 						// Delete the archive on failure
-						if (!aaptResult && File.Exists (currentResourceOutputFile)) {
-							LogDebugMessage ($"Link did not succeed. Deleting {currentResourceOutputFile}");
-							File.Delete (currentResourceOutputFile);
+						if (!aaptResult) {
+							if (File.Exists (currentResourceOutputFile)) {
+								LogDebugMessage ($"Link did not succeed. Deleting {currentResourceOutputFile}");
+								File.Delete (currentResourceOutputFile);
+							}
 						}
 					}
 				}
@@ -256,6 +266,15 @@ namespace Xamarin.Android.Tasks {
 			cmd.Add ("-I");
 			cmd.Add (GetFullPath (JavaPlatformJarPath));
 
+			if (AdditionalApksToLink != null) {
+				foreach (ITaskItem link in AdditionalApksToLink) {
+					if (!File.Exists (link.ItemSpec))
+						continue;
+					cmd.Add ("-I");
+					cmd.Add (link.ItemSpec);
+				}
+			}
+
 			if (!string.IsNullOrEmpty (ResourceSymbolsTextFile)) {
 				cmd.Add ("--output-text-symbols");
 				cmd.Add (GetFullPath (resourceSymbolsTextFileTemp));
@@ -263,6 +282,15 @@ namespace Xamarin.Android.Tasks {
 
 			if (ProtobufFormat)
 				cmd.Add ("--proto-format");
+
+			if (StaticLibrary)
+				cmd.Add ("--static-lib");
+
+			if (!string.IsNullOrEmpty (PackageId)) {
+				cmd.Add ("--allow-reserved-package-id");
+				cmd.Add ("--package-id");
+				cmd.Add (PackageId);
+			}
 
 			if (!string.IsNullOrWhiteSpace (ExtraArgs)) {
 				foreach (Match match in exraArgSplitRegEx.Matches (ExtraArgs)) {
@@ -302,6 +330,8 @@ namespace Xamarin.Android.Tasks {
 				cmd.Add ("--proguard");
 				cmd.Add (GetFullPath (GetManifestRulesFile (manifestDir)));
 			}
+			if (OutputToDirectory)
+				cmd.Add ("--output-to-dir");
 			cmd.Add ("-o");
 			cmd.Add (GetFullPath (currentResourceOutputFile));
 
@@ -310,8 +340,15 @@ namespace Xamarin.Android.Tasks {
 
 		bool ExecuteForAbi (string [] cmd, string currentResourceOutputFile)
 		{
+			string outputFile = currentResourceOutputFile;
+			if (OutputToDirectory) {
+				if (ProtobufFormat)
+					outputFile = Path.Combine (currentResourceOutputFile, "manifest", "AndroidManifest.xml");
+				else
+					outputFile = Path.Combine (currentResourceOutputFile, "AndroidManifest.xml");
+			}
 			lock (apks)
-				apks.Add (currentResourceOutputFile, RunAapt (cmd, currentResourceOutputFile));
+				apks.Add (outputFile, RunAapt (cmd, outputFile));
 			return true;
 		}
 

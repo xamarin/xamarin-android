@@ -1,0 +1,145 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+<UsingTask TaskName="Xamarin.Android.Tasks.CalculatePackageIdsForFeatures" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<!-- Andorid Feature Build System-->
+<PropertyGroup>
+  <_BuildDynamicFeaturesInParallel>False</_BuildDynamicFeaturesInParallel>
+  <DynamicFeatureResDirIntermediate>$(IntermediateOutputPath)assetpacks\g</DynamicFeatureResDirIntermediate>
+  <DynamicFeatureResDirIntermediateStampFile>$(DynamicFeatureResDirIntermediate)\assetpacks.stamp</DynamicFeatureResDirIntermediateStampFile>
+  <_DynamicFeatureResourceFile>$(DynamicFeatureResDirIntermediate)\res\values\ms_asset_pack_strings.xml</_DynamicFeatureResourceFile>
+</PropertyGroup>
+<Target Name="_CheckIsDynamicFeature"
+      Returns="@(_DynamicFeaetureProjectMetadata)" Condition=" '$(FeatureSplitName)' != '' Or '$(FeatureType)' != '' ">
+    <ItemGroup>
+      <_DynamicFeaetureProjectMetadata Include="$(MSBuildProjectFullPath)">
+        <IsDynamicFeature>true</IsDynamicFeature>
+        <FeaturePackage>$(MSBuildProjectDirectory)\$(_FeaturePackage)</FeaturePackage>
+        <FeatureType>$(FeatureType)</FeatureType>
+        <_BaseZipIntermediate>$(IntermediateOutputPath)\$(MSBuildProjectName).zip</_BaseZipIntermediate>
+      </_DynamicFeaetureProjectMetadata>
+    </ItemGroup>
+</Target>
+<Target Name="_ResolveAndroidDynamicFeatureProjects" BeforeTargets="AssignProjectConfiguration" Condition=" '$(AndroidApplication)' == 'true' ">
+    <MSBuild
+      Projects="@(ProjectReference)"
+      Targets="_CheckIsDynamicFeature"
+      BuildInParallel="$(_BuildDynamicFeaturesInParallel)"
+      SkipNonexistentTargets="true"
+      RebaseOutputs="true"
+    >
+      <Output TaskParameter="TargetOutputs" ItemName="_AndroidDynamicFeatureProjects" />
+    </MSBuild>
+    <ItemGroup>
+      <ProjectReference Remove="%(_AndroidDynamicFeatureProjects.OriginalItemSpec)" />
+    </ItemGroup>
+  </Target>
+<Target Name="_GetDynamicFeatureOutputs" DependsOnTargets="_ResolveAndroidDynamicFeatureProjects">
+    <CalculatePackageIdsForFeatures
+      FeatureProjects="@(_AndroidDynamicFeatureProjects)"
+    >
+        <Output TaskParameter="Output" ItemName="_AndroidDynamicFeature" />
+    </CalculatePackageIdsForFeatures>
+</Target>
+<Target Name="_BuildDynamicFeatures"
+      AfterTargets="_CreateBaseApk"
+      DependsOnTargets="_GetDynamicFeatureOutputs;_ConvertAppPackageForFeatureCompilation"
+      Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidApplication)' == 'true' "
+      Inputs="@(_AndroidDynamicFeature)"
+      Outputs="@(_AndroidDynamicFeatureProjects->'%(FeaturePackage)')">
+    <PropertyGroup>
+      <_BuildArguments>
+      Configuration=$(Configuration);
+      BuildingFeature=True;
+      PackageName=$(_AndroidPackage);
+      AndroidPackageFormat=aab;
+      JavaPlatformJarPath=$(JavaPlatformJarPath);
+      Aapt2ToolPath=$(Aapt2ToolPath);Aapt2ToolExe=$(Aapt2ToolExe);
+      _TargetSdkVersion=$(_TargetSdkVersion);
+      _MinSdkVersion=$(_MinSdkVersion);
+      _AndroidIncludeRuntime=False;
+      _AppPackagedResources=$(MSBuildProjectDirectory)\$(_PackagedResources).ap_;
+      _AppAssemblyDirectory=$(MSBuildProjectDirectory)\$(MonoAndroidIntermediateAssemblyDir);
+      </_BuildArguments>
+    </PropertyGroup>
+    <MSBuild Projects="@(_AndroidDynamicFeature)" BuildInParallel="$(_BuildDynamicFeaturesInParallel)" Targets="Restore;BuildDynamicFeature" RebaseOutputs="true"
+      Properties="$(_BuildArguments)">
+        <Output TaskParameter="TargetOutputs" ItemName="_FeatureAssemblies" />
+    </MSBuild>
+    <ItemGroup>
+        <AndroidAppBundleModules Include="%(_AndroidDynamicFeatureProjects.FeaturePackage)" />
+    </ItemGroup>
+</Target>
+
+<Target Name="_CleanDynamicFeatures"
+      Condition="'@(_AndroidDynamicFeatureProjects.Count())' != '0' "
+      DependsOnTargets="_CollectDynamicFeatures">
+    <MSBuild Projects="@(_AndroidDynamicFeatureProjects)" BuildInParallel="$(_BuildDynamicFeaturesInParallel)" Targets="Clean" RebaseOutputs="true" Properties="Configuration=$(Configuration)" />
+</Target>
+
+<Target Name="_CreateAssetPackTitleResources"
+    Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidApplication)' == 'true' ">
+  <!--
+    Create the values.xml entires for the asset packs.
+    This needs to be done BEFORE we call aapt2 compile and aapt2 link so that the values are
+    in the main package.
+  -->
+  <MakeDir Directories="$(DynamicFeatureResDirIntermediate)\res\values" />
+  <CreateAssetPackTitleResources
+    Assets="@(_AndroidDynamicFeature)"
+    OutputFile="$(_DynamicFeatureResourceFile)"
+  />
+  <Touch Files="$(DynamicFeatureResDirIntermediateStampFile)" AlwaysCreate="True" />
+  <ItemGroup>
+    <LibraryResourceDirectories Include="$(DynamicFeatureResDirIntermediate)\res">
+      <StampFile>$(DynamicFeatureResDirIntermediateStampFile)</StampFile>
+    </LibraryResourceDirectories>
+    <FileWrites Include="$(_DynamicFeatureResourceFile)" />
+  </ItemGroup>
+</Target>
+<!-- Feature Specific Targets. -->
+
+<PropertyGroup>
+    <_FeaturePackage>$(OutputPath)$(MSBuildProjectName).zip</_FeaturePackage>
+    <_FeaturePackageTemp>$(IntermediateOutputPath)$(MSBuildProjectName).zip</_FeaturePackageTemp>
+</PropertyGroup>
+
+<Target Name="_SetupFeature">
+  <PropertyGroup>
+    <FeaturePackageName Condition=" '$(FeaturePackageName)' == '' " >$(_AndroidPackage).$(MSBuildProjectName)</FeaturePackageName>
+  </PropertyGroup>
+  <ItemGroup>
+    <_AdditionalApksToLink Include="$(_AppPackagedResources)" />
+    <Reference Include="$(_AppAssemblyDirectory)*.dll" AndroidSkipResourceExtraction="True" AndroidSkipAddToPackage="True" />
+    <_AppAssemblies Include="$(_AppAssemblyDirectory)*.dll" />
+    <ResolvedAssemblies Include="%(_AppAssemblies.Identity)" AndroidSkipResourceExtraction="True" AndroidSkipAddToPackage="True">
+      <DestinationSubPath>%(_AppAssemblies.Filename)</DestinationSubPath>
+    </ResolvedAssemblies>
+  </ItemGroup>
+</Target>
+<PropertyGroup>
+  <BeforeBuildDynamicFeatureDependsOnTargets>
+    _SetupFeature;
+    _SetupDesignTimeBuildForBuild;
+    _GenerateDynamicFeatureManifest;
+  </BeforeBuildDynamicFeatureDependsOnTargets>
+  <AfterBuildDynamicFeatureDependsOnTargets>
+    ;_ConvertFeaturePackage
+  </AfterBuildDynamicFeatureDependsOnTargets>
+  <CleanDependsOn>
+      $(CleanDependsOn);
+      _CleanDynamicFeatures;
+  </CleanDependsOn>
+</PropertyGroup>
+<Target Name="BuildDynamicFeature"
+        Inputs="$(_AndroidManifestAbs);@(AndroidAsset);$(_AppPackagedResources)"
+        Outputs="$(_FeaturePackage)">
+
+        <PropertyGroup>
+          <_FeatureTargets>$(BeforeBuildDynamicFeatureDependsOnTargets)</_FeatureTargets>
+          <_FeatureTargets Condition="'$(FeatureType)' == 'Feature' And '@(Compile.Count())' != '0'" >$(_FeatureTargets);PackageForAndroid</_FeatureTargets>
+          <_FeatureTargets Condition="'$(FeatureType)' == 'AssetPack' " >$(_FeatureTargets);_CreateFeaturePackageWithAapt2</_FeatureTargets>
+          <_FeatureTargets>$(_FeatureTargets);$(AfterBuildDynamicFeatureDependsOnTargets)</_FeatureTargets>
+        </PropertyGroup>
+        <CallTarget Targets="$(_FeatureTargets)" />
+</Target>
+</Project>

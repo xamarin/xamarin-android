@@ -35,9 +35,7 @@ namespace Xamarin.Android.Tasks
 			// --modules: List of modules to be installed, or "_ALL_" for all modules.
 			// Defaults to modules installed during first install, i.e. not on-demand.
 			// Xamarin.Android won't support on-demand modules yet.
-			if (Modules == null)
-				cmd.AppendSwitchIfNotNull ("--modules ", "_ALL_");
-			else
+			if (Modules != null)
 				cmd.AppendSwitchIfNotNull ("--modules ", $"\"{string.Join ("\",\"", Modules)}\"");
 
 			return cmd;

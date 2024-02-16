@@ -19,6 +19,9 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 
 <UsingTask TaskName="Xamarin.Android.Tasks.Aapt2Compile" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 <UsingTask TaskName="Xamarin.Android.Tasks.Aapt2Link" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.Aapt2LinkAssetPack" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.Aapt2Convert" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.CreateDynamicFeatureManifest" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
 
 <PropertyGroup>
   <Aapt2DaemonMaxInstanceCount Condition=" '$(Aapt2DaemonMaxInstanceCount)' == '' " >0</Aapt2DaemonMaxInstanceCount>
@@ -163,6 +166,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       OutputImportDirectory="$(_AndroidLibrayProjectIntermediatePath)"
       OutputFile="$(ResgenTemporaryDirectory)\resources.apk"
       PackageName="$(_AndroidPackage)"
+      PackageId="$(FeaturePackageId)"
       JavaPlatformJarPath="$(JavaPlatformJarPath)"
       JavaDesignerOutputDirectory="$(ResgenTemporaryDirectory)"
       CompiledResourceFlatFiles="@(_CompiledFlatFiles)"
@@ -224,7 +228,9 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
       AdditionalAndroidResourcePaths="@(_LibraryResourceDirectories)"
       YieldDuringToolExecution="$(YieldDuringToolExecution)"
       PackageName="$(_AndroidPackage)"
+      PackageId="$(FeaturePackageId)"
       JavaPlatformJarPath="$(JavaPlatformJarPath)"
+      AdditionalApksToLink="@(_AdditionalApksToLink)"
       VersionCodePattern="$(AndroidVersionCodePattern)"
       VersionCodeProperties="$(AndroidVersionCodeProperties)"
       SupportedAbis="@(_BuildTargetAbis)"
@@ -247,4 +253,90 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
     <FileWrites Include="$(IntermediateOutputPath)android\*\aapt_rules.txt" />
   </ItemGroup>
 </Target>
+
+<!-- Dynamic Feature Section -->
+
+<Target Name="_GenerateDynamicFeatureManifest"
+    Inputs="$(MSBuildProjectFile)"
+    Outputs="$(IntermediateOutputPath)AndroidManifest.xml">
+  <PropertyGroup>
+    <AndroidManifest Condition=" '$(AndroidManifest)' == '' ">$(IntermediateOutputPath)AndroidManifest.xml</AndroidManifest>
+    <FeatureSplitName Condition=" '$(FeatureSplitName)' == '' " >$(ProjectName)</FeatureSplitName>
+    <!-- FeatureDeliveryType : Valid Values are InstallTime, OnDemand -->
+    <FeatureDeliveryType Condition=" '$(FeatureDeliveryType)' == '' " >InstallTime</FeatureDeliveryType>
+    <IsFeatureSplit Condition=" '$(IsFeatureSplit)' == '' " >True</IsFeatureSplit>
+    <!-- FeatureType : Valid Values are Feature, AssetPack -->
+    <FeatureType Condition=" '$(FeatureType)' == '' ">Feature</FeatureType>
+  </PropertyGroup>
+  <MakeDir Directories="$(IntermediateOutputPath)android\bin" Condition="!Exists('$(IntermediateOutputPath)android\bin')" />
+  <CreateDynamicFeatureManifest
+    FeatureSplitName="$(FeatureSplitName)"
+    FeatureDeliveryType="$(FeatureDeliveryType)"
+    IsFeatureSplit="$(IsFeatureSplit)"
+    FeatureTitleResource="$(FeatureTitleResource)"
+    FeatureType="$(FeatureType)"
+    PackageName="$(PackageName)"
+    OutputFile="$(AndroidManifest)"
+    MinSdkVersion="$(_MinSdkVersion)"
+    TargetSdkVersion="$(_TargetSdkVersion)"
+  />
+  <ItemGroup>
+    <FileWrites Include="$(AndroidManifest)" />
+  </ItemGroup>
+</Target>
+
+<Target Name="_ConvertAppPackageForFeatureCompilation"
+    Condition=" '@(_AndroidDynamicFeature->Count())' != '0' "
+    Inputs="$(_PackagedResources)"
+    Outputs="$(_PackagedResources).ap_">
+  <Aapt2Convert
+    DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
+    DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
+    OutputArchive="$(_PackagedResources).ap_"
+    Files="$(_PackagedResources)"
+    OutputFormat="binary"
+    ToolPath="$(Aapt2ToolPath)"
+    ToolExe="$(Aapt2ToolExe)"
+  />
+  <ItemGroup>
+    <FileWrites Include="$(_PackagedResources).ap_" />
+  </ItemGroup>
+</Target>
+
+<Target Name="_ConvertFeaturePackage" Condition=" '$(FeatureType)' != 'AssetPack' ">
+  <Aapt2Convert
+      DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
+      DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
+      OutputArchive="$(_FeaturePackage)"
+      Files="$(_PackagedResources)"
+      OutputFormat="proto"
+      ToolPath="$(Aapt2ToolPath)"
+      ToolExe="$(Aapt2ToolExe)"
+  />
+  <ItemGroup>
+    <FileWrites Include="$(_FeaturePackage)" />
+  </ItemGroup>
+</Target>
+
+<Target Name="_CreateFeaturePackageWithAapt2"
+    DependsOnTargets="UpdateAndroidAssets"
+    Condition=" '$(FeatureType)' == 'AssetPack' "
+    Inputs="$(AndroidManifest);@(AndroidAsset);$(_AppPackagedResources)"
+    Outputs="$(_FeaturePackage)"
+  >
+  <Aapt2LinkAssetPack
+      DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
+      DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
+      OutputArchive="$(_FeaturePackage)"
+      AssetDirectory="$(MonoAndroidAssetsDirIntermediate)"
+      Manifest="$(AndroidManifest)"
+      PackageName="$(FeaturePackageName)"
+      ToolPath="$(Aapt2ToolPath)"
+      ToolExe="$(Aapt2ToolExe)"
+  />  
+  <ItemGroup>
+    <FileWrites Include="$(_FeaturePackage)" />
+  </ItemGroup>
+</Target>
+
 </Project>

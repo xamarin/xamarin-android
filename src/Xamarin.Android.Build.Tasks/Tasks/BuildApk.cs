@@ -91,6 +91,8 @@ namespace Xamarin.Android.Tasks
 
 		public bool IncludeWrapSh { get; set; }
 
+		public bool IncludeRuntime { get; set; } = true;
+
 		public string CheckedBuild { get; set; }
 
 		public string RuntimeConfigBinFilePath { get; set; }
@@ -205,7 +207,8 @@ namespace Xamarin.Android.Tasks
 					apk.Flush ();
 				}
 
-				AddRuntimeLibraries (apk, supportedAbis);
+				if (IncludeRuntime)
+					AddRuntimeLibraries (apk, supportedAbis);
 				apk.Flush();
 				AddNativeLibraries (files, supportedAbis);
 				AddAdditionalNativeLibraries (files, supportedAbis);
@@ -689,14 +692,16 @@ namespace Xamarin.Android.Tasks
 
 		private void AddNativeLibraries (ArchiveFileList files, string [] supportedAbis)
 		{
-			var frameworkLibs = FrameworkNativeLibraries.Select (v => new LibInfo {
-				Path = v.ItemSpec,
-				Link = v.GetMetadata ("Link"),
-				Abi = GetNativeLibraryAbi (v),
-				ArchiveFileName = GetArchiveFileName (v)
-			});
+			if (IncludeRuntime) {
+				var frameworkLibs = FrameworkNativeLibraries.Select (v => new LibInfo {
+					Path = v.ItemSpec,
+					Link = v.GetMetadata ("Link"),
+					Abi = GetNativeLibraryAbi (v),
+					ArchiveFileName = GetArchiveFileName (v)
+				});
 
-			AddNativeLibraries (files, supportedAbis, frameworkLibs);
+				AddNativeLibraries (files, supportedAbis, frameworkLibs);
+			}
 
 			var libs = NativeLibraries.Concat (BundleNativeLibraries ?? Enumerable.Empty<ITaskItem> ())
 				.Where (v => IncludeNativeLibrary (v))

@@ -45,6 +45,8 @@ namespace Xamarin.Android.Tasks
 		[Required]
 		public string IntermediateDir { get; set; }
 
+		public string AssetPackIntermediateDir { get; set; }
+
 		public string Prefixes { get; set; }
 
 		public bool LowercaseFilenames { get; set; }
@@ -83,6 +85,7 @@ namespace Xamarin.Android.Tasks
 					continue;
 				//compute the target path
 				string rel;
+				var pack = item.GetMetadata ("AssetPack");
 				var logicalName = item.GetMetadata ("LogicalName").Replace ('\\', Path.DirectorySeparatorChar);
 				if (item.GetMetadata ("IsWearApplicationResource") == "True") {
 					rel = item.ItemSpec.Substring (IntermediateDir.Length);
@@ -126,6 +129,11 @@ namespace Xamarin.Android.Tasks
 				}
 				string dest = Path.GetFullPath (Path.Combine (IntermediateDir, baseFileName));
 				string intermediateDirFullPath = Path.GetFullPath (IntermediateDir);
+				if (!string.IsNullOrEmpty (pack) && !string.IsNullOrEmpty (AssetPackIntermediateDir)) {
+					dest = Path.GetFullPath (Path.Combine (AssetPackIntermediateDir, pack, "assets", baseFileName));
+					intermediateDirFullPath = Path.GetFullPath (AssetPackIntermediateDir);
+				}
+				
 				// if the path ends up "outside" of our target intermediate directory, just use the filename
 				if (String.Compare (intermediateDirFullPath, 0, dest, 0, intermediateDirFullPath.Length, StringComparison.OrdinalIgnoreCase) != 0) {
 					dest = Path.GetFullPath (Path.Combine (IntermediateDir, Path.GetFileName (baseFileName)));

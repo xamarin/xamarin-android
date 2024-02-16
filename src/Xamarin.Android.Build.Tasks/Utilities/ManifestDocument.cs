@@ -31,11 +31,13 @@ namespace Xamarin.Android.Tasks {
 	{
 		public static XNamespace AndroidXmlNamespace = "http://schemas.android.com/apk/res/android";
 		public static XNamespace AndroidXmlToolsNamespace = "http://schemas.android.com/tools";
+		public static XNamespace AndroidXmlDistNamespace = "http://schemas.android.com/apk/distribution";
 
 		const int maxVersionCode = 2100000000;
 
 		static XNamespace androidNs = AndroidXmlNamespace;
 		static XNamespace androidToolsNs = AndroidXmlToolsNamespace;
+		static XNamespace androidDistNs = AndroidXmlDistNamespace;
 		static readonly XName versionCodeAttributeName = androidNs + "versionCode";
 
 		XDocument doc;
@@ -111,7 +113,8 @@ namespace Xamarin.Android.Tasks {
 				return "1";
 			}
 			set {
-				doc.Root.SetAttributeValue (versionCodeAttributeName, versionCode = value);
+				if (!IsAssetPack())
+					doc.Root.SetAttributeValue (versionCodeAttributeName, versionCode = value);
 			}
 		}
 
@@ -141,6 +144,12 @@ namespace Xamarin.Android.Tasks {
 				return TargetSdkVersionName;
 			}
 			return targetAttr.Value;
+		}
+
+		public bool IsAssetPack ()
+		{
+			var type = doc.Root.Element (androidDistNs + "module")?.Attribute (androidDistNs + "type");
+			return type?.Value == "asset-pack";
 		}
 
 		public ManifestDocument (string templateFilename) : base ()
@@ -1047,6 +1056,8 @@ namespace Xamarin.Android.Tasks {
 
 		public void SetAbi (string abi)
 		{
+			if (IsAssetPack())
+				return;
 			int code = 1;
 			if (!string.IsNullOrEmpty (VersionCode)) {
 				code = Convert.ToInt32 (VersionCode);
@@ -1061,6 +1072,9 @@ namespace Xamarin.Android.Tasks {
 		{
 			int code;
 			error = errorCode = string.Empty;
+			if (IsAssetPack()) {
+				return true;
+			}
 			if (!int.TryParse (VersionCode, out code)) {
 				error = string.Format (Properties.Resources.XA0003, VersionCode);
 				errorCode = "XA0003";
@@ -1076,6 +1090,8 @@ namespace Xamarin.Android.Tasks {
 
 		public void CalculateVersionCode (string currentAbi, string versionCodePattern, string versionCodeProperties)
 		{
+			if (IsAssetPack())
+				return;
 			var regex = new Regex ("\\{(?<key>([A-Za-z]+)):?[D0-9]*[\\}]");
 			var kvp = new Dictionary<string, int> ();
 			foreach (var item in versionCodeProperties?.Split (new char [] { ';', ':' }) ?? Array.Empty<string> ()) {

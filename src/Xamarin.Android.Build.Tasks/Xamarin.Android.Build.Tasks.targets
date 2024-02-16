@@ -93,6 +93,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>Xamarin.Android.Resource.Designer.targets</Link>
     </None>
+    <None Include="MSBuild\Xamarin\Android\Xamarin.Android.Assets.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Xamarin.Android.Assets.targets</Link>
+    </None>
     <None Include="MSBuild\Xamarin\Android\Xamarin.Android.Aapt2.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>Xamarin.Android.Aapt2.targets</Link>
@@ -113,6 +117,10 @@
     <None Include="Xamarin.Android.Common.props">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="MSBuild\Xamarin\Android\Xamarin.Android.DynamicFeature.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Xamarin.Android.DynamicFeature.targets</Link>
     </None>
     <None Include="Xamarin.Android.BuildInfo.txt">
       <SubType>Designer</SubType>

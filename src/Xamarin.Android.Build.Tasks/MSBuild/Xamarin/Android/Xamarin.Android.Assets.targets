@@ -1,0 +1,120 @@
+<!--
+***********************************************************************************************
+Xamarin.Android.Assets.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+  created a backup copy.  Incorrect changes to this file will make it
+  impossible to load or build your projects from the command-line or the IDE.
+
+This file imports the version- and platform-specific targets for the project importing
+this file. This file also defines targets to produce an error if the specified targets
+file does not exist, but the project is built anyway (command-line or IDE build).
+
+Copyright (C) 2010-2011 Novell. All rights reserved.
+Copyright (C) 2011-2012 Xamarin. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+<UsingTask TaskName="Xamarin.Android.Tasks.AndroidComputeResPaths" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.Aapt2LinkAssetPack" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.GetAssetPacks" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.RemoveUnknownFiles" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+<UsingTask TaskName="Xamarin.Android.Tasks.CreateDynamicFeatureManifest" AssemblyFile="Xamarin.Android.Build.Tasks.dll" />
+
+<!-- Assets build properties -->
+<PropertyGroup>
+    <MonoAndroidAssetsDirIntermediate>$(IntermediateOutputPath)assets\</MonoAndroidAssetsDirIntermediate>
+    <MonoAndroidAssetPacksDirIntermediate>$(IntermediateOutputPath)assetpacks\packs</MonoAndroidAssetPacksDirIntermediate>
+    <MonoAndroidAssetsPrefix Condition="'$(MonoAndroidAssetsPrefix)' == ''">Assets</MonoAndroidAssetsPrefix>
+</PropertyGroup>
+
+<!-- Assets Build -->
+
+<Target Name="UpdateAndroidAssets"
+	DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir" />
+
+<Target Name="_ComputeAndroidAssetsPaths">
+	<AndroidComputeResPaths
+            ResourceFiles="@(AndroidAsset)"
+            IntermediateDir="$(MonoAndroidAssetsDirIntermediate)"
+            AssetPackIntermediateDir="$(MonoAndroidAssetPacksDirIntermediate)"
+            Prefixes="$(MonoAndroidAssetsPrefix)"
+            ProjectDir="$(ProjectDir)"
+        >
+		<Output ItemName="_AndroidAssetsDest" TaskParameter="IntermediateFiles" />
+		<Output ItemName="_AndroidResolvedAssets" TaskParameter="ResolvedResourceFiles" />
+	</AndroidComputeResPaths>
+</Target>
+
+<Target Name="_GenerateAndroidAssetsDir"
+	Inputs="@(_AndroidMSBuildAllProjects);@(_AndroidResolvedAssets)"
+	Outputs="@(_AndroidAssetsDest)">
+	<MakeDir Directories="$(MonoAndroidAssetsDirIntermediate);$(MonoAndroidAssetPacksDirIntermediate)" />
+	<Copy SourceFiles="@(_AndroidResolvedAssets)" DestinationFiles="@(_AndroidAssetsDest)" SkipUnchangedFiles="true" />
+	<RemoveUnknownFiles Files="@(_AndroidAssetsDest)" Directory="$(MonoAndroidAssetsDirIntermediate)" RemoveDirectories="true" />
+	<Touch Files="@(_AndroidAssetsDest)" />
+  <ItemGroup>
+    <FileWrites Include="@(_AndroidAssetsDest)" />
+  </ItemGroup>
+</Target>
+
+<Target Name="_CalculateAssetPacks"
+    Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidApplication)' == 'true' "
+  >
+  <!-- Enumerate the assetpacks directory and build a pack per top level directory -->
+  <GetAssetPacks Assets="@(AndroidAsset)">
+    <Output ItemName="_AndroidAsset" TaskParameter="AssetPacks" />
+  </GetAssetPacks>
+  <ItemGroup>
+    <_AssetPacks Include="@(_AndroidAsset)">
+      <AssetPackOutput>$(MonoAndroidAssetPacksDirIntermediate)\%(_AndroidAsset.AssetPack).zip</AssetPackOutput>
+      <ManifestFile>$(MonoAndroidAssetPacksDirIntermediate)\%(_AndroidAsset.AssetPack)\AndroidManifest.xml</ManifestFile>
+      <DeliveryType Condition=" '%(_AndroidAsset.DeliveryType)' == '' ">InstallTime</DeliveryType>
+    </_AssetPacks>
+  </ItemGroup>
+</Target>
+
+<Target Name="_CreateAssetPackManifests"
+    Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidApplication)' == 'true' "
+    DependsOnTargets="UpdateAndroidAssets;_CalculateAssetPacks"
+    Inputs="@(_AssetPacks)"
+    Outputs="@(_AssetPacks->'%(ManifestFile)')">
+
+    <CreateDynamicFeatureManifest
+      FeatureSplitName="%(_AssetPacks.AssetPack)"
+      FeatureDeliveryType="%(_AssetPacks.DeliveryType)"
+      FeatureType="AssetPack"
+      PackageName="$(_AndroidPackage).%(_AssetPacks.AssetPack)"
+      OutputFile="%(_AssetPacks.ManifestFile)"
+    />
+  <ItemGroup>
+    <FileWrites Include="%(_AssetPacks.ManifestFile)" />
+  </ItemGroup>
+</Target>
+
+<Target Name="_BuildAssetPacks"
+      AfterTargets="_CreateBaseApk"
+      DependsOnTargets="_CreateAssetPackManifests"
+      Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(AndroidApplication)' == 'true' "
+      Inputs="@(_AssetPacks)"
+      Outputs="@(_AssetPacks->'%(AssetPackOutput)')">
+
+  <Aapt2LinkAssetPack
+      DaemonMaxInstanceCount="$(Aapt2DaemonMaxInstanceCount)"
+      DaemonKeepInDomain="$(_Aapt2DaemonKeepInDomain)"
+      OutputArchive="%(_AssetPacks.AssetPackOutput)"
+      AssetDirectory="$(MonoAndroidAssetPacksDirIntermediate)\%(_AssetPacks.AssetPack)\assets"
+      Manifest="%(_AssetPacks.ManifestFile)"
+      PackageName="$(_AndroidPackage).%(_AssetPacks.AssetPack)"
+      ToolPath="$(Aapt2ToolPath)"
+      ToolExe="$(Aapt2ToolExe)"
+  />    
+  <ItemGroup>
+    <AndroidAppBundleModules Include="%(_AssetPacks.AssetPackOutput)" />
+    <FileWrites Include="$%(_AssetPacks.AssetPackOutput)" />
+  </ItemGroup>
+</Target>
+
+</Project>

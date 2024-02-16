@@ -124,6 +124,22 @@ namespace Xamarin.Android.Tasks
 				zip.DeleteEntry ((ulong)index);
 		}
 
+		public bool MoveEntry (string from, string to)
+		{
+			if (!zip.ContainsEntry (from)) {
+				return false;
+			}
+			var entry = zip.ReadEntry (from);
+			using (var stream = new MemoryStream ()) {
+				entry.Extract (stream);
+				stream.Position = 0;
+				zip.AddEntry (to, stream);
+				zip.DeleteEntry (entry);
+				Flush ();
+			}
+			return true;
+		}
+
 		public void AddDirectory (string folder, string folderInArchive, CompressionMethod method = CompressionMethod.Default)
 		{
 			if (!string.IsNullOrEmpty (folder)) {

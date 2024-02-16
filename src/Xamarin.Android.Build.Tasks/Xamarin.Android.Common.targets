@@ -293,6 +293,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 	<AndroidGenerateJniMarshalMethods Condition=" '$(AndroidGenerateJniMarshalMethods)' == '' ">False</AndroidGenerateJniMarshalMethods>
 	<AndroidMakeBundleKeepTemporaryFiles Condition=" '$(AndroidMakeBundleKeepTemporaryFiles)' == '' ">False</AndroidMakeBundleKeepTemporaryFiles>
 
+	<_AndroidIncludeRuntime Condition=" '$(_AndroidIncludeRuntime)' == '' ">True</_AndroidIncludeRuntime>
 	<!-- If true it will cause all the assemblies in the apk to be preloaded on startup time -->
 	<_AndroidEnablePreloadAssembliesDefault>False</_AndroidEnablePreloadAssembliesDefault>
 	<AndroidEnablePreloadAssemblies Condition=" '$(AndroidEnablePreloadAssemblies)' == '' ">$(_AndroidEnablePreloadAssembliesDefault)</AndroidEnablePreloadAssemblies>
@@ -351,12 +352,6 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 	</AllowedReferenceRelatedFileExtensions>
 </PropertyGroup>
 
-<!-- Assets build properties -->
-<PropertyGroup>
-	<MonoAndroidAssetsDirIntermediate>$(IntermediateOutputPath)assets\</MonoAndroidAssetsDirIntermediate>
-	<MonoAndroidAssetsPrefix Condition="'$(MonoAndroidAssetsPrefix)' == ''">Assets</MonoAndroidAssetsPrefix>
-</PropertyGroup>
-
 <!--
 *******************************************
           Imports
@@ -364,7 +359,9 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 -->
 <!-- As we split up/refactor this file, put new imports here -->
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.D8.targets" Condition=" '$(AndroidDexTool)' == 'd8' " />
+<Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Assets.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Aapt2.targets" />
+<Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.DynamicFeature.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.DesignTime.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.EmbeddedResource.targets" />
 <Import Project="$(MSBuildThisFileDirectory)Xamarin.Android.Javac.targets" />
@@ -593,8 +590,8 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 <Target Name="_ValidateAndroidPackageProperties"
     DependsOnTargets="_GetAndroidPackageName;_GetJavaPlatformJar">
 	<PropertyGroup>
-		<ApkFileIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage).apk</ApkFileIntermediate>
-		<_BaseZipIntermediate>$(IntermediateOutputPath)android\bin\base.zip</_BaseZipIntermediate>
+		<ApkFileIntermediate Condition=" '$(ApkFileIntermediate)' == ''">$(IntermediateOutputPath)android\bin\$(_AndroidPackage).apk</ApkFileIntermediate>
+		<_BaseZipIntermediate Condition=" '$(_BaseZipIntermediate)' == '' ">$(IntermediateOutputPath)android\bin\base.zip</_BaseZipIntermediate>
 		<_AppBundleIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage).aab</_AppBundleIntermediate>
 		<_ApkSetIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage).apks</_ApkSetIntermediate>
 		<_UniversalApkSetIntermediate>$(IntermediateOutputPath)android\bin\$(_AndroidPackage)-Universal.apks</_UniversalApkSetIntermediate>
@@ -868,27 +865,6 @@ because xbuild doesn't support framework reference assemblies.
 		ToolExe="$(LintToolExe)"
 		JavaSdkPath="$(_JavaSdkDirectory)"
 	/>
-</Target>
-
-<!-- Assets Build -->
-
-<Target Name="UpdateAndroidAssets"
-	DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir" />
-
-<Target Name="_ComputeAndroidAssetsPaths">
-	<AndroidComputeResPaths ResourceFiles="@(AndroidAsset)" IntermediateDir="$(MonoAndroidAssetsDirIntermediate)" Prefixes="$(MonoAndroidAssetsPrefix)" ProjectDir="$(ProjectDir)">
-		<Output ItemName="_AndroidAssetsDest" TaskParameter="IntermediateFiles" />
-		<Output ItemName="_AndroidResolvedAssets" TaskParameter="ResolvedResourceFiles" />
-	</AndroidComputeResPaths>
-</Target>
-
-<Target Name="_GenerateAndroidAssetsDir"
-	Inputs="@(_AndroidMSBuildAllProjects);@(_AndroidResolvedAssets)"
-	Outputs="@(_AndroidAssetsDest)">
-	<MakeDir Directories="$(MonoAndroidAssetsDirIntermediate)" />
-	<Copy SourceFiles="@(_AndroidResolvedAssets)" DestinationFiles="@(_AndroidAssetsDest)" SkipUnchangedFiles="true" />
-	<RemoveUnknownFiles Files="@(_AndroidAssetsDest)" Directory="$(MonoAndroidAssetsDirIntermediate)" RemoveDirectories="true" />
-	<Touch Files="@(_AndroidAssetsDest)" />
 </Target>
 
 <!-- Resource build properties -->
@@ -1587,6 +1563,8 @@ because xbuild doesn't support framework reference assemblies.
     <Output TaskParameter="UsesLibraries"       ItemName="AndroidExternalJavaLibrary" />
     <Output TaskParameter="UseEmbeddedDex"      PropertyName="_UseEmbeddedDex" />
     <Output TaskParameter="IsTestOnly"          PropertyName="_AndroidIsTestOnlyPackage" />
+    <Output TaskParameter="MinSdkVersion"       PropertyName="_MinSdkVersion" />
+    <Output TaskParameter="TargetSdkVersion"    PropertyName="_TargetSdkVersion" />
   </ReadAndroidManifest>
   <PropertyGroup>
     <AndroidStoreUncompressedFileExtensions Condition=" '$(_EmbeddedDSOsEnabled)' == 'True' ">.so;$(AndroidStoreUncompressedFileExtensions)</AndroidStoreUncompressedFileExtensions>
@@ -1796,15 +1774,6 @@ because xbuild doesn't support framework reference assemblies.
       LibraryProjectImportsDirectoryName="$(_LibraryProjectImportsDirectoryName)">
     <Output TaskParameter="ExtraPackages" PropertyName="AaptExtraPackages" />
   </GetExtraPackages>
-
-  <!--
-  For aapt copy the assets into one folder.
-  For aapt2 we will consule the library assets in place.
-  -->
-  <CollectLibraryAssets
-      Condition=" '$(AndroidUseAapt2)' != 'true' "
-      AdditionalAssetDirectories="@(LibraryAssetDirectories)"
-      AssetDirectory="$(MonoAndroidAssetsDirIntermediate)" />
 </Target>
 
 <PropertyGroup>
@@ -2120,7 +2089,8 @@ because xbuild doesn't support framework reference assemblies.
     IncludeFiles="@(AndroidPackagingOptionsInclude)"
     ZipFlushFilesLimit="$(_ZipFlushFilesLimit)"
     ZipFlushSizeLimit="$(_ZipFlushSizeLimit)"
-    UseAssemblyStore="$(AndroidUseAssemblyStore)">
+    UseAssemblyStore="$(AndroidUseAssemblyStore)"
+    IncludeRuntime="$(_AndroidIncludeRuntime)">
     <Output TaskParameter="OutputFiles" ItemName="ApkFiles" />
   </BuildApk>
   <BuildBaseAppBundle
@@ -2156,11 +2126,12 @@ because xbuild doesn't support framework reference assemblies.
       IncludeFiles="@(AndroidPackagingOptionsInclude)"
       ZipFlushFilesLimit="$(_ZipFlushFilesLimit)"
       ZipFlushSizeLimit="$(_ZipFlushSizeLimit)"
-      UseAssemblyStore="$(AndroidUseAssemblyStore)">
+      UseAssemblyStore="$(AndroidUseAssemblyStore)"
+      IncludeRuntime="$(_AndroidIncludeRuntime)">
     <Output TaskParameter="OutputFiles" ItemName="BaseZipFile" />
   </BuildBaseAppBundle>
   <BuildAppBundle
-      Condition=" '$(AndroidPackageFormat)' == 'aab' "
+      Condition=" '$(AndroidPackageFormat)' == 'aab' And '$(BuildingFeature)' != 'True' "
       ToolPath="$(JavaToolPath)"
       JavaMaximumHeapSize="$(JavaMaximumHeapSize)"
       JavaOptions="$(JavaOptions)"

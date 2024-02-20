@@ -88,7 +88,6 @@ stages:
       avdAbi: x86
       avdType: android-wear
       deviceName: wear_square
-      androidSdkPlatforms: 34
     pool:
       name: Azure Pipelines
       vmImage: $(HostedMacImage)

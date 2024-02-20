@@ -1884,6 +1884,15 @@
   <!-- These methods are hand-bound in HardwareBuffer.cs because they have a long enum type, which generator doesn't support. -->
   <remove-node api-since="26" path="/api/package[@name='android.hardware']/class[@name='HardwareBuffer']/method[@name='create' and count(parameter)=5 and parameter[1][@type='int'] and parameter[2][@type='int'] and parameter[3][@type='int'] and parameter[4][@type='int'] and parameter[5][@type='long']]" />
   <remove-node api-since="26" path="/api/package[@name='android.hardware']/class[@name='HardwareBuffer']/method[@name='getUsage' and count(parameter)=0]" />
+	
+  <!-- These are new abstract methods in existing classes, so they must be converted to virtual compatible method for back-compat. -->
+  <attr api-since="35" path="/api/package[@name='java.nio']/class[@name='MappedByteBuffer']/method[@name='compact' and count(parameter)=0]" name="managedOverride">override</attr>
+  <attr api-since="35" path="/api/package[@name='java.nio']/class[@name='MappedByteBuffer']/method[@name='compact' and count(parameter)=0]" name="compatVirtualMethod">true</attr>
+
+  <!-- Rename Namespaces -->
+  <attr api-since="35" path="/api/package[@name='android.adservices.ondevicepersonalization']" name="managedName">Android.AdServices.OnDevicePersonalization</attr>
+  <attr api-since="35" path="/api/package[@name='android.adservices.signals']" name="managedName">Android.AdServices.Signals</attr>
+  <attr api-since="35" path="/api/package[@name='java.util.random']" name="managedName">Java.Util.RandomGenerators</attr>
 
   <!--
     ***********************************************************************
@@ -1905,6 +1914,10 @@
   <attr api-since="33" path="/api/package/interface[contains(@merge.SourceFile,'api-Tiramisu.xml.in')]" name="no-alternatives">true</attr>
   <attr api-since="34" path="/api/package/interface[contains(@merge.SourceFile,'api-34.xml.in')]" name="no-alternatives">true</attr>
   <attr api-since="34" path="/api/package/interface[contains(@merge.SourceFile,'api-UpsideDownCake.xml.in')]" name="no-alternatives">true</attr>
+  <attr api-since="35" path="/api/package/interface[contains(@merge.SourceFile,'api-35.xml.in')]" name="no-alternatives">true</attr>
+  <attr api-since="35" path="/api/package/interface[contains(@merge.SourceFile,'api-VanillaIceCream.xml.in')]" name="no-alternatives">true</attr>
+  <attr api-since="35" path="/api/package[contains(@merge.SourceFile,'api-35.xml.in')]/interface" name="no-alternatives">true</attr>
+  <attr api-since="35" path="/api/package[contains(@merge.SourceFile,'api-VanillaIceCream.xml.in')]/interface" name="no-alternatives">true</attr>
 
   <!-- Set ApiSince based on merge sourcefile. -->
   <attr api-since="22" path="/api//*[contains(@merge.SourceFile,'api-22.xml.in')]" name="api-since">22</attr>
@@ -1925,6 +1938,8 @@
   <attr api-since="33" path="/api//*[contains(@merge.SourceFile,'api-Tiramisu.xml.in')]" name="api-since">33</attr>
   <attr api-since="34" path="/api//*[contains(@merge.SourceFile,'api-34.xml.in')]" name="api-since">34</attr>
   <attr api-since="34" path="/api//*[contains(@merge.SourceFile,'api-UpsideDownCake.xml.in')]" name="api-since">34</attr>
+  <attr api-since="35" path="/api//*[contains(@merge.SourceFile,'api-35.xml.in')]" name="api-since">35</attr>
+  <attr api-since="35" path="/api//*[contains(@merge.SourceFile,'api-VanillaIceCream.xml.in')]" name="api-since">35</attr>
 
   <!-- Erase some 'api-since' attributes (This has to be done after they are set above) -->
 

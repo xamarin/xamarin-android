@@ -1,0 +1,1137 @@
+﻿#nullable enable
+abstract Android.AdServices.OnDevicePersonalization.IsolatedService.OnRequest(Android.AdServices.OnDevicePersonalization.RequestToken! requestToken) -> Android.AdServices.OnDevicePersonalization.IIsolatedWorker!
+abstract Android.Media.Midi.MidiUmpDeviceService.OnGetInputPortReceivers() -> System.Collections.Generic.IList<Android.Media.Midi.MidiReceiver!>!
+Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest
+Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.AddAdSelectionFromOutcomesOverrideRequest(Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig! adSelectionFromOutcomesConfig, string! outcomeSelectionLogicJs, Android.AdServices.Common.AdSelectionSignals! outcomeSelectionTrustedSignals) -> void
+Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.AddAdSelectionFromOutcomesOverrideRequest(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.AdSelection.AddAdSelectionOverrideRequest.AddAdSelectionOverrideRequest(Android.AdServices.AdSelection.AdSelectionConfig! adSelectionConfig, string! decisionLogicJs, Android.AdServices.Common.AdSelectionSignals! trustedScoringSignals, Android.AdServices.AdSelection.BuyersDecisionLogic! buyersDecisionLogic) -> void
+Android.AdServices.AdSelection.AdSelectionConfig.Builder.SetBuyerSignedContextualAds(System.Collections.Generic.IDictionary<Android.AdServices.Common.AdTechIdentifier!, Android.AdServices.AdSelection.SignedContextualAds!>! buyerSignedContextualAds) -> Android.AdServices.AdSelection.AdSelectionConfig.Builder!
+Android.AdServices.AdSelection.AdSelectionConfig.BuyerSignedContextualAds.get -> System.Collections.Generic.IDictionary<Android.AdServices.Common.AdTechIdentifier!, Android.AdServices.AdSelection.SignedContextualAds!>!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.AdSelectionIds.get -> System.Collections.Generic.IList<Java.Lang.Long!>!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder.Build() -> Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder.Builder() -> void
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder.SetAdSelectionIds(System.Collections.Generic.IList<Java.Lang.Long!>! adSelectionIds) -> Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder.SetSelectionLogicUri(Android.Net.Uri! selectionLogicUri) -> Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder.SetSelectionSignals(Android.AdServices.Common.AdSelectionSignals! selectionSignals) -> Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder.SetSeller(Android.AdServices.Common.AdTechIdentifier! seller) -> Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.DescribeContents() -> int
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.InterfaceConsts
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.SelectionLogicUri.get -> Android.Net.Uri!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.SelectionSignals.get -> Android.AdServices.Common.AdSelectionSignals!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Seller.get -> Android.AdServices.Common.AdTechIdentifier!
+Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.AdSelection.AdWithBid
+Android.AdServices.AdSelection.AdWithBid.AdData.get -> Android.AdServices.Common.AdData!
+Android.AdServices.AdSelection.AdWithBid.AdWithBid(Android.AdServices.Common.AdData! adData, double bid) -> void
+Android.AdServices.AdSelection.AdWithBid.Bid.get -> double
+Android.AdServices.AdSelection.AdWithBid.DescribeContents() -> int
+Android.AdServices.AdSelection.AdWithBid.InterfaceConsts
+Android.AdServices.AdSelection.AdWithBid.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.AdSelection.BuyersDecisionLogic
+Android.AdServices.AdSelection.BuyersDecisionLogic.BuyersDecisionLogic(System.Collections.Generic.IDictionary<Android.AdServices.Common.AdTechIdentifier!, Android.AdServices.AdSelection.DecisionLogic!>! perBuyerLogicMap) -> void
+Android.AdServices.AdSelection.BuyersDecisionLogic.DescribeContents() -> int
+Android.AdServices.AdSelection.BuyersDecisionLogic.InterfaceConsts
+Android.AdServices.AdSelection.BuyersDecisionLogic.PerBuyerLogicMap.get -> System.Collections.Generic.IDictionary<Android.AdServices.Common.AdTechIdentifier!, Android.AdServices.AdSelection.DecisionLogic!>!
+Android.AdServices.AdSelection.BuyersDecisionLogic.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.AdSelection.DecisionLogic
+Android.AdServices.AdSelection.DecisionLogic.DecisionLogic(string! buyerDecisionLogic) -> void
+Android.AdServices.AdSelection.DecisionLogic.DescribeContents() -> int
+Android.AdServices.AdSelection.DecisionLogic.InterfaceConsts
+Android.AdServices.AdSelection.DecisionLogic.Logic.get -> string!
+Android.AdServices.AdSelection.DecisionLogic.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.AdSelection.GetAdSelectionDataOutcome
+Android.AdServices.AdSelection.GetAdSelectionDataOutcome.AdSelectionId.get -> long
+Android.AdServices.AdSelection.GetAdSelectionDataOutcome.GetAdSelectionData() -> byte[]?
+Android.AdServices.AdSelection.GetAdSelectionDataRequest
+Android.AdServices.AdSelection.GetAdSelectionDataRequest.Builder
+Android.AdServices.AdSelection.GetAdSelectionDataRequest.Builder.Build() -> Android.AdServices.AdSelection.GetAdSelectionDataRequest!
+Android.AdServices.AdSelection.GetAdSelectionDataRequest.Builder.Builder() -> void
+Android.AdServices.AdSelection.GetAdSelectionDataRequest.Builder.SetSeller(Android.AdServices.Common.AdTechIdentifier? seller) -> Android.AdServices.AdSelection.GetAdSelectionDataRequest.Builder!
+Android.AdServices.AdSelection.GetAdSelectionDataRequest.Seller.get -> Android.AdServices.Common.AdTechIdentifier?
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.AdSelectionId.get -> long
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder.Build() -> Android.AdServices.AdSelection.PersistAdSelectionResultRequest!
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder.Builder() -> void
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder.SetAdSelectionId(long adSelectionId) -> Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder!
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder.SetAdSelectionResult(byte[]? adSelectionResult) -> Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder!
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder.SetSeller(Android.AdServices.Common.AdTechIdentifier? seller) -> Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder!
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.GetAdSelectionResult() -> byte[]?
+Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Seller.get -> Android.AdServices.Common.AdTechIdentifier?
+Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest
+Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest.RemoveAdSelectionFromOutcomesOverrideRequest(Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig! config) -> void
+Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest.RemoveAdSelectionFromOutcomesOverrideRequest(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.AdSelection.ReportEventRequest
+Android.AdServices.AdSelection.ReportEventRequest.Builder
+Android.AdServices.AdSelection.ReportEventRequest.Builder.Build() -> Android.AdServices.AdSelection.ReportEventRequest!
+Android.AdServices.AdSelection.ReportEventRequest.Builder.Builder(long adSelectionId, string! eventKey, string! eventData, int reportingDestinations) -> void
+Android.AdServices.AdSelection.ReportEventRequest.Builder.SetAdSelectionId(long adSelectionId) -> Android.AdServices.AdSelection.ReportEventRequest.Builder!
+Android.AdServices.AdSelection.ReportEventRequest.Builder.SetData(string! eventData) -> Android.AdServices.AdSelection.ReportEventRequest.Builder!
+Android.AdServices.AdSelection.ReportEventRequest.Builder.SetInputEvent(Android.Views.InputEvent? inputEvent) -> Android.AdServices.AdSelection.ReportEventRequest.Builder!
+Android.AdServices.AdSelection.ReportEventRequest.Builder.SetKey(string! eventKey) -> Android.AdServices.AdSelection.ReportEventRequest.Builder!
+Android.AdServices.AdSelection.ReportEventRequest.Builder.SetReportingDestinations(int reportingDestinations) -> Android.AdServices.AdSelection.ReportEventRequest.Builder!
+Android.AdServices.AdSelection.ReportEventRequest.ReportEventRequest(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.AdSelection.ReportImpressionRequest.ReportImpressionRequest(long adSelectionId) -> void
+Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest
+Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest.SetAppInstallAdvertisersRequest(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest.SetAppInstallAdvertisersRequest(System.Collections.Generic.ICollection<Android.AdServices.Common.AdTechIdentifier!>! advertisers) -> void
+Android.AdServices.AdSelection.SignedContextualAds
+Android.AdServices.AdSelection.SignedContextualAds.AdsWithBid.get -> System.Collections.Generic.IList<Android.AdServices.AdSelection.AdWithBid!>!
+Android.AdServices.AdSelection.SignedContextualAds.Builder
+Android.AdServices.AdSelection.SignedContextualAds.Builder.Build() -> Android.AdServices.AdSelection.SignedContextualAds!
+Android.AdServices.AdSelection.SignedContextualAds.Builder.Builder() -> void
+Android.AdServices.AdSelection.SignedContextualAds.Builder.SetAdsWithBid(System.Collections.Generic.IList<Android.AdServices.AdSelection.AdWithBid!>! adsWithBid) -> Android.AdServices.AdSelection.SignedContextualAds.Builder!
+Android.AdServices.AdSelection.SignedContextualAds.Builder.SetBuyer(Android.AdServices.Common.AdTechIdentifier! buyer) -> Android.AdServices.AdSelection.SignedContextualAds.Builder!
+Android.AdServices.AdSelection.SignedContextualAds.Builder.SetDecisionLogicUri(Android.Net.Uri! decisionLogicUri) -> Android.AdServices.AdSelection.SignedContextualAds.Builder!
+Android.AdServices.AdSelection.SignedContextualAds.Builder.SetSignature(byte[]! signature) -> Android.AdServices.AdSelection.SignedContextualAds.Builder!
+Android.AdServices.AdSelection.SignedContextualAds.Buyer.get -> Android.AdServices.Common.AdTechIdentifier!
+Android.AdServices.AdSelection.SignedContextualAds.CloneToBuilder() -> Android.AdServices.AdSelection.SignedContextualAds.Builder!
+Android.AdServices.AdSelection.SignedContextualAds.DecisionLogicUri.get -> Android.Net.Uri!
+Android.AdServices.AdSelection.SignedContextualAds.DescribeContents() -> int
+Android.AdServices.AdSelection.SignedContextualAds.GetSignature() -> byte[]!
+Android.AdServices.AdSelection.SignedContextualAds.InterfaceConsts
+Android.AdServices.AdSelection.SignedContextualAds.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder.Build() -> Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest!
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder.Builder(long adSelectionId, int adEventType, Android.AdServices.Common.AdTechIdentifier! callerAdTech) -> void
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder.SetAdEventType(int adEventType) -> Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder!
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder.SetAdSelectionId(long adSelectionId) -> Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder!
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder.SetCallerAdTech(Android.AdServices.Common.AdTechIdentifier! callerAdTech) -> Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder!
+Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.UpdateAdCounterHistogramRequest(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.Common.AdData.AdCounterKeys.get -> System.Collections.Generic.ICollection<Java.Lang.Integer!>!
+Android.AdServices.Common.AdData.AdFilters.get -> Android.AdServices.Common.AdFilters?
+Android.AdServices.Common.AdData.AdRenderId.get -> string?
+Android.AdServices.Common.AdData.Builder.SetAdCounterKeys(System.Collections.Generic.ICollection<Java.Lang.Integer!>! adCounterKeys) -> Android.AdServices.Common.AdData.Builder!
+Android.AdServices.Common.AdData.Builder.SetAdFilters(Android.AdServices.Common.AdFilters? adFilters) -> Android.AdServices.Common.AdData.Builder!
+Android.AdServices.Common.AdData.Builder.SetAdRenderId(string? adRenderId) -> Android.AdServices.Common.AdData.Builder!
+Android.AdServices.Common.AdFilters
+Android.AdServices.Common.AdFilters.AppInstallFilters.get -> Android.AdServices.Common.AppInstallFilters?
+Android.AdServices.Common.AdFilters.Builder
+Android.AdServices.Common.AdFilters.Builder.Build() -> Android.AdServices.Common.AdFilters!
+Android.AdServices.Common.AdFilters.Builder.Builder() -> void
+Android.AdServices.Common.AdFilters.Builder.SetAppInstallFilters(Android.AdServices.Common.AppInstallFilters? appInstallFilters) -> Android.AdServices.Common.AdFilters.Builder!
+Android.AdServices.Common.AdFilters.Builder.SetFrequencyCapFilters(Android.AdServices.Common.FrequencyCapFilters? frequencyCapFilters) -> Android.AdServices.Common.AdFilters.Builder!
+Android.AdServices.Common.AdFilters.DescribeContents() -> int
+Android.AdServices.Common.AdFilters.FrequencyCapFilters.get -> Android.AdServices.Common.FrequencyCapFilters?
+Android.AdServices.Common.AdFilters.InterfaceConsts
+Android.AdServices.Common.AdFilters.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.Common.AppInstallFilters
+Android.AdServices.Common.AppInstallFilters.Builder
+Android.AdServices.Common.AppInstallFilters.Builder.Build() -> Android.AdServices.Common.AppInstallFilters!
+Android.AdServices.Common.AppInstallFilters.Builder.Builder() -> void
+Android.AdServices.Common.AppInstallFilters.Builder.SetPackageNames(System.Collections.Generic.ICollection<string!>! packageNames) -> Android.AdServices.Common.AppInstallFilters.Builder!
+Android.AdServices.Common.AppInstallFilters.DescribeContents() -> int
+Android.AdServices.Common.AppInstallFilters.InterfaceConsts
+Android.AdServices.Common.AppInstallFilters.PackageNames.get -> System.Collections.Generic.ICollection<string!>!
+Android.AdServices.Common.AppInstallFilters.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.Common.FrequencyCapFilters
+Android.AdServices.Common.FrequencyCapFilters.Builder
+Android.AdServices.Common.FrequencyCapFilters.Builder.Build() -> Android.AdServices.Common.FrequencyCapFilters!
+Android.AdServices.Common.FrequencyCapFilters.Builder.Builder() -> void
+Android.AdServices.Common.FrequencyCapFilters.Builder.SetKeyedFrequencyCapsForClickEvents(System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>! keyedFrequencyCapsForClickEvents) -> Android.AdServices.Common.FrequencyCapFilters.Builder!
+Android.AdServices.Common.FrequencyCapFilters.Builder.SetKeyedFrequencyCapsForImpressionEvents(System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>! keyedFrequencyCapsForImpressionEvents) -> Android.AdServices.Common.FrequencyCapFilters.Builder!
+Android.AdServices.Common.FrequencyCapFilters.Builder.SetKeyedFrequencyCapsForViewEvents(System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>! keyedFrequencyCapsForViewEvents) -> Android.AdServices.Common.FrequencyCapFilters.Builder!
+Android.AdServices.Common.FrequencyCapFilters.Builder.SetKeyedFrequencyCapsForWinEvents(System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>! keyedFrequencyCapsForWinEvents) -> Android.AdServices.Common.FrequencyCapFilters.Builder!
+Android.AdServices.Common.FrequencyCapFilters.DescribeContents() -> int
+Android.AdServices.Common.FrequencyCapFilters.InterfaceConsts
+Android.AdServices.Common.FrequencyCapFilters.KeyedFrequencyCapsForClickEvents.get -> System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>!
+Android.AdServices.Common.FrequencyCapFilters.KeyedFrequencyCapsForImpressionEvents.get -> System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>!
+Android.AdServices.Common.FrequencyCapFilters.KeyedFrequencyCapsForViewEvents.get -> System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>!
+Android.AdServices.Common.FrequencyCapFilters.KeyedFrequencyCapsForWinEvents.get -> System.Collections.Generic.IList<Android.AdServices.Common.KeyedFrequencyCap!>!
+Android.AdServices.Common.FrequencyCapFilters.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.Common.IAdServicesOutcomeReceiver
+Android.AdServices.Common.IAdServicesOutcomeReceiver.OnError(Java.Lang.Object! error) -> void
+Android.AdServices.Common.IAdServicesOutcomeReceiver.OnResult(Java.Lang.Object? result) -> void
+Android.AdServices.Common.KeyedFrequencyCap
+Android.AdServices.Common.KeyedFrequencyCap.AdCounterKey.get -> int
+Android.AdServices.Common.KeyedFrequencyCap.Builder
+Android.AdServices.Common.KeyedFrequencyCap.Builder.Build() -> Android.AdServices.Common.KeyedFrequencyCap!
+Android.AdServices.Common.KeyedFrequencyCap.Builder.Builder(int adCounterKey, int maxCount, Java.Time.Duration! interval) -> void
+Android.AdServices.Common.KeyedFrequencyCap.Builder.SetAdCounterKey(int adCounterKey) -> Android.AdServices.Common.KeyedFrequencyCap.Builder!
+Android.AdServices.Common.KeyedFrequencyCap.Builder.SetInterval(Java.Time.Duration! interval) -> Android.AdServices.Common.KeyedFrequencyCap.Builder!
+Android.AdServices.Common.KeyedFrequencyCap.Builder.SetMaxCount(int maxCount) -> Android.AdServices.Common.KeyedFrequencyCap.Builder!
+Android.AdServices.Common.KeyedFrequencyCap.DescribeContents() -> int
+Android.AdServices.Common.KeyedFrequencyCap.InterfaceConsts
+Android.AdServices.Common.KeyedFrequencyCap.Interval.get -> Java.Time.Duration!
+Android.AdServices.Common.KeyedFrequencyCap.MaxCount.get -> int
+Android.AdServices.Common.KeyedFrequencyCap.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.CustomAudiences.AddCustomAudienceOverrideRequest.Builder.SetBiddingLogicJsVersion(long biddingLogicJsVersion) -> Android.AdServices.CustomAudiences.AddCustomAudienceOverrideRequest.Builder!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.ActivationTime.get -> Java.Time.Instant?
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.Build() -> Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.Builder(Android.Net.Uri! fetchUri) -> void
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.SetActivationTime(Java.Time.Instant? activationTime) -> Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.SetExpirationTime(Java.Time.Instant? expirationTime) -> Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.SetFetchUri(Android.Net.Uri! fetchUri) -> Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.SetName(string? name) -> Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.SetUserBiddingSignals(Android.AdServices.Common.AdSelectionSignals? userBiddingSignals) -> Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.ExpirationTime.get -> Java.Time.Instant?
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.FetchUri.get -> Android.Net.Uri!
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Name.get -> string?
+Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.UserBiddingSignals.get -> Android.AdServices.Common.AdSelectionSignals?
+Android.AdServices.Measurement.SourceRegistrationRequest
+Android.AdServices.Measurement.SourceRegistrationRequest.Builder
+Android.AdServices.Measurement.SourceRegistrationRequest.Builder.Build() -> Android.AdServices.Measurement.SourceRegistrationRequest!
+Android.AdServices.Measurement.SourceRegistrationRequest.Builder.Builder(System.Collections.Generic.IList<Android.Net.Uri!>! registrationUris) -> void
+Android.AdServices.Measurement.SourceRegistrationRequest.Builder.SetInputEvent(Android.Views.InputEvent? inputEvent) -> Android.AdServices.Measurement.SourceRegistrationRequest.Builder!
+Android.AdServices.Measurement.SourceRegistrationRequest.DescribeContents() -> int
+Android.AdServices.Measurement.SourceRegistrationRequest.InputEvent.get -> Android.Views.InputEvent?
+Android.AdServices.Measurement.SourceRegistrationRequest.InterfaceConsts
+Android.AdServices.Measurement.SourceRegistrationRequest.RegistrationUris.get -> System.Collections.Generic.IList<Android.Net.Uri!>!
+Android.AdServices.Measurement.SourceRegistrationRequest.WriteToParcel(Android.OS.Parcel! out, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.OnDevicePersonalization.AppInfo
+Android.AdServices.OnDevicePersonalization.AppInfo.DescribeContents() -> int
+Android.AdServices.OnDevicePersonalization.AppInfo.InterfaceConsts
+Android.AdServices.OnDevicePersonalization.AppInfo.IsInstalled.get -> bool
+Android.AdServices.OnDevicePersonalization.AppInfo.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.OnDevicePersonalization.DownloadCompletedInput
+Android.AdServices.OnDevicePersonalization.DownloadCompletedInput.Data.get -> System.Collections.Generic.IDictionary<string!, byte[]!>!
+Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput
+Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder
+Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder.AddRetainedKey(string! value) -> Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder!
+Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder.Build() -> Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput!
+Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder.SetRetainedKeys(System.Collections.Generic.IList<string!>! value) -> Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder!
+Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.RetainedKeys.get -> System.Collections.Generic.IList<string!>!
+Android.AdServices.OnDevicePersonalization.EventInput
+Android.AdServices.OnDevicePersonalization.EventInput.Parameters.get -> Android.OS.PersistableBundle!
+Android.AdServices.OnDevicePersonalization.EventInput.RequestLogRecord.get -> Android.AdServices.OnDevicePersonalization.RequestLogRecord?
+Android.AdServices.OnDevicePersonalization.EventLogRecord
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder.Build() -> Android.AdServices.OnDevicePersonalization.EventLogRecord!
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder.SetData(Android.Content.ContentValues! value) -> Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder!
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder.SetRequestLogRecord(Android.AdServices.OnDevicePersonalization.RequestLogRecord! value) -> Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder!
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder.SetRowIndex(int value) -> Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder!
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder.SetType(int value) -> Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder!
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Data.get -> Android.Content.ContentValues?
+Android.AdServices.OnDevicePersonalization.EventLogRecord.DescribeContents() -> int
+Android.AdServices.OnDevicePersonalization.EventLogRecord.InterfaceConsts
+Android.AdServices.OnDevicePersonalization.EventLogRecord.RequestLogRecord.get -> Android.AdServices.OnDevicePersonalization.RequestLogRecord?
+Android.AdServices.OnDevicePersonalization.EventLogRecord.RowIndex.get -> int
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Time.get -> Java.Time.Instant!
+Android.AdServices.OnDevicePersonalization.EventLogRecord.Type.get -> int
+Android.AdServices.OnDevicePersonalization.EventLogRecord.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.OnDevicePersonalization.EventOutput
+Android.AdServices.OnDevicePersonalization.EventOutput.Builder
+Android.AdServices.OnDevicePersonalization.EventOutput.Builder.Build() -> Android.AdServices.OnDevicePersonalization.EventOutput!
+Android.AdServices.OnDevicePersonalization.EventOutput.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.EventOutput.Builder.SetEventLogRecord(Android.AdServices.OnDevicePersonalization.EventLogRecord! value) -> Android.AdServices.OnDevicePersonalization.EventOutput.Builder!
+Android.AdServices.OnDevicePersonalization.EventOutput.EventLogRecord.get -> Android.AdServices.OnDevicePersonalization.EventLogRecord?
+Android.AdServices.OnDevicePersonalization.EventUrlProvider
+Android.AdServices.OnDevicePersonalization.EventUrlProvider.EventUrlProvider(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.ExecuteInput
+Android.AdServices.OnDevicePersonalization.ExecuteInput.AppPackageName.get -> string!
+Android.AdServices.OnDevicePersonalization.ExecuteInput.AppParams.get -> Android.OS.PersistableBundle!
+Android.AdServices.OnDevicePersonalization.ExecuteOutput
+Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder
+Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder.Build() -> Android.AdServices.OnDevicePersonalization.ExecuteOutput!
+Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder.SetRenderingConfig(Android.AdServices.OnDevicePersonalization.RenderingConfig! value) -> Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder!
+Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder.SetRequestLogRecord(Android.AdServices.OnDevicePersonalization.RequestLogRecord! value) -> Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder!
+Android.AdServices.OnDevicePersonalization.ExecuteOutput.RenderingConfig.get -> Android.AdServices.OnDevicePersonalization.RenderingConfig?
+Android.AdServices.OnDevicePersonalization.ExecuteOutput.RequestLogRecord.get -> Android.AdServices.OnDevicePersonalization.RequestLogRecord?
+Android.AdServices.OnDevicePersonalization.FederatedComputeInput
+Android.AdServices.OnDevicePersonalization.FederatedComputeInput.Builder
+Android.AdServices.OnDevicePersonalization.FederatedComputeInput.Builder.Build() -> Android.AdServices.OnDevicePersonalization.FederatedComputeInput!
+Android.AdServices.OnDevicePersonalization.FederatedComputeInput.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.FederatedComputeInput.Builder.SetPopulationName(string! value) -> Android.AdServices.OnDevicePersonalization.FederatedComputeInput.Builder!
+Android.AdServices.OnDevicePersonalization.FederatedComputeInput.PopulationName.get -> string!
+Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler
+Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.FederatedComputeScheduler(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params
+Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params.Params(Android.AdServices.OnDevicePersonalization.TrainingInterval! trainingInterval) -> void
+Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params.Params(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.IIsolatedWorker
+Android.AdServices.OnDevicePersonalization.IIsolatedWorker.OnDownloadCompleted(Android.AdServices.OnDevicePersonalization.DownloadCompletedInput! input, Java.Util.Functions.IConsumer! consumer) -> void
+Android.AdServices.OnDevicePersonalization.IIsolatedWorker.OnEvent(Android.AdServices.OnDevicePersonalization.EventInput! input, Java.Util.Functions.IConsumer! consumer) -> void
+Android.AdServices.OnDevicePersonalization.IIsolatedWorker.OnExecute(Android.AdServices.OnDevicePersonalization.ExecuteInput! input, Java.Util.Functions.IConsumer! consumer) -> void
+Android.AdServices.OnDevicePersonalization.IIsolatedWorker.OnRender(Android.AdServices.OnDevicePersonalization.RenderInput! input, Java.Util.Functions.IConsumer! consumer) -> void
+Android.AdServices.OnDevicePersonalization.IIsolatedWorker.OnTrainingExamples(Android.AdServices.OnDevicePersonalization.TrainingExamplesInput! input, Java.Util.Functions.IConsumer! consumer) -> void
+Android.AdServices.OnDevicePersonalization.IKeyValueStore
+Android.AdServices.OnDevicePersonalization.IKeyValueStore.Get(string! key) -> byte[]?
+Android.AdServices.OnDevicePersonalization.IKeyValueStore.KeySet() -> System.Collections.Generic.ICollection<string!>!
+Android.AdServices.OnDevicePersonalization.IMutableKeyValueStore
+Android.AdServices.OnDevicePersonalization.IMutableKeyValueStore.Put(string! key, byte[]! value) -> byte[]?
+Android.AdServices.OnDevicePersonalization.IMutableKeyValueStore.Remove(string! key) -> byte[]?
+Android.AdServices.OnDevicePersonalization.IsolatedService
+Android.AdServices.OnDevicePersonalization.IsolatedService.GetEventUrlProvider(Android.AdServices.OnDevicePersonalization.RequestToken! requestToken) -> Android.AdServices.OnDevicePersonalization.EventUrlProvider!
+Android.AdServices.OnDevicePersonalization.IsolatedService.GetFederatedComputeScheduler(Android.AdServices.OnDevicePersonalization.RequestToken! requestToken) -> Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler!
+Android.AdServices.OnDevicePersonalization.IsolatedService.GetLocalData(Android.AdServices.OnDevicePersonalization.RequestToken! requestToken) -> Android.AdServices.OnDevicePersonalization.IMutableKeyValueStore!
+Android.AdServices.OnDevicePersonalization.IsolatedService.GetLogReader(Android.AdServices.OnDevicePersonalization.RequestToken! requestToken) -> Android.AdServices.OnDevicePersonalization.LogReader!
+Android.AdServices.OnDevicePersonalization.IsolatedService.GetRemoteData(Android.AdServices.OnDevicePersonalization.RequestToken! requestToken) -> Android.AdServices.OnDevicePersonalization.IKeyValueStore!
+Android.AdServices.OnDevicePersonalization.IsolatedService.GetUserData(Android.AdServices.OnDevicePersonalization.RequestToken! requestToken) -> Android.AdServices.OnDevicePersonalization.UserData?
+Android.AdServices.OnDevicePersonalization.IsolatedService.IsolatedService() -> void
+Android.AdServices.OnDevicePersonalization.IsolatedService.IsolatedService(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.LogReader
+Android.AdServices.OnDevicePersonalization.LogReader.LogReader(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationException
+Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationException.OnDevicePersonalizationException(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationManager
+Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationManager.OnDevicePersonalizationManager(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.RenderingConfig
+Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder
+Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder.AddKey(string! value) -> Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder!
+Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder.Build() -> Android.AdServices.OnDevicePersonalization.RenderingConfig!
+Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder.SetKeys(System.Collections.Generic.IList<string!>! value) -> Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder!
+Android.AdServices.OnDevicePersonalization.RenderingConfig.DescribeContents() -> int
+Android.AdServices.OnDevicePersonalization.RenderingConfig.InterfaceConsts
+Android.AdServices.OnDevicePersonalization.RenderingConfig.Keys.get -> System.Collections.Generic.IList<string!>!
+Android.AdServices.OnDevicePersonalization.RenderingConfig.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.OnDevicePersonalization.RenderInput
+Android.AdServices.OnDevicePersonalization.RenderInput.Height.get -> int
+Android.AdServices.OnDevicePersonalization.RenderInput.RenderingConfig.get -> Android.AdServices.OnDevicePersonalization.RenderingConfig?
+Android.AdServices.OnDevicePersonalization.RenderInput.Width.get -> int
+Android.AdServices.OnDevicePersonalization.RenderOutput
+Android.AdServices.OnDevicePersonalization.RenderOutput.Builder
+Android.AdServices.OnDevicePersonalization.RenderOutput.Builder.Build() -> Android.AdServices.OnDevicePersonalization.RenderOutput!
+Android.AdServices.OnDevicePersonalization.RenderOutput.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.RenderOutput.Builder.SetContent(string! value) -> Android.AdServices.OnDevicePersonalization.RenderOutput.Builder!
+Android.AdServices.OnDevicePersonalization.RenderOutput.Builder.SetTemplateId(string! value) -> Android.AdServices.OnDevicePersonalization.RenderOutput.Builder!
+Android.AdServices.OnDevicePersonalization.RenderOutput.Builder.SetTemplateParams(Android.OS.PersistableBundle! value) -> Android.AdServices.OnDevicePersonalization.RenderOutput.Builder!
+Android.AdServices.OnDevicePersonalization.RenderOutput.Content.get -> string?
+Android.AdServices.OnDevicePersonalization.RenderOutput.TemplateId.get -> string?
+Android.AdServices.OnDevicePersonalization.RenderOutput.TemplateParams.get -> Android.OS.PersistableBundle!
+Android.AdServices.OnDevicePersonalization.RequestLogRecord
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder.AddRow(Android.Content.ContentValues! value) -> Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder!
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder.Build() -> Android.AdServices.OnDevicePersonalization.RequestLogRecord!
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder.SetRows(System.Collections.Generic.IList<Android.Content.ContentValues!>! value) -> Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder!
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.DescribeContents() -> int
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.InterfaceConsts
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.Rows.get -> System.Collections.Generic.IList<Android.Content.ContentValues!>!
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.Time.get -> Java.Time.Instant!
+Android.AdServices.OnDevicePersonalization.RequestLogRecord.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.OnDevicePersonalization.RequestToken
+Android.AdServices.OnDevicePersonalization.RequestToken.RequestToken(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.SurfacePackageToken
+Android.AdServices.OnDevicePersonalization.SurfacePackageToken.SurfacePackageToken(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.OnDevicePersonalization.TrainingExamplesInput
+Android.AdServices.OnDevicePersonalization.TrainingExamplesInput.GetResumptionToken() -> byte[]?
+Android.AdServices.OnDevicePersonalization.TrainingExamplesInput.PopulationName.get -> string!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesInput.TaskName.get -> string!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder.AddResumptionToken(byte[]! value) -> Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder.AddTrainingExample(byte[]! value) -> Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder.Build() -> Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder.SetResumptionTokens(System.Collections.Generic.IList<byte[]!>! value) -> Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder.SetTrainingExamples(System.Collections.Generic.IList<byte[]!>! value) -> Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.ResumptionTokens.get -> System.Collections.Generic.IList<byte[]!>!
+Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.TrainingExamples.get -> System.Collections.Generic.IList<byte[]!>!
+Android.AdServices.OnDevicePersonalization.TrainingInterval
+Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder
+Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder.Build() -> Android.AdServices.OnDevicePersonalization.TrainingInterval!
+Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder.Builder() -> void
+Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder.SetMinimumInterval(Java.Time.Duration! value) -> Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder!
+Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder.SetSchedulingMode(int value) -> Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder!
+Android.AdServices.OnDevicePersonalization.TrainingInterval.MinimumInterval.get -> Java.Time.Duration!
+Android.AdServices.OnDevicePersonalization.TrainingInterval.SchedulingMode.get -> int
+Android.AdServices.OnDevicePersonalization.UserData
+Android.AdServices.OnDevicePersonalization.UserData.AppInfos.get -> System.Collections.Generic.IDictionary<string!, Android.AdServices.OnDevicePersonalization.AppInfo!>!
+Android.AdServices.OnDevicePersonalization.UserData.AvailableStorageBytes.get -> long
+Android.AdServices.OnDevicePersonalization.UserData.BatteryPercentage.get -> int
+Android.AdServices.OnDevicePersonalization.UserData.Carrier.get -> string!
+Android.AdServices.OnDevicePersonalization.UserData.DescribeContents() -> int
+Android.AdServices.OnDevicePersonalization.UserData.InterfaceConsts
+Android.AdServices.OnDevicePersonalization.UserData.Orientation.get -> int
+Android.AdServices.OnDevicePersonalization.UserData.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.AdServices.Signals.ProtectedSignalsManager
+Android.AdServices.Signals.ProtectedSignalsManager.ProtectedSignalsManager(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.AdServices.Signals.UpdateSignalsRequest
+Android.AdServices.Signals.UpdateSignalsRequest.Builder
+Android.AdServices.Signals.UpdateSignalsRequest.Builder.Build() -> Android.AdServices.Signals.UpdateSignalsRequest!
+Android.AdServices.Signals.UpdateSignalsRequest.Builder.Builder(Android.Net.Uri! updateUri) -> void
+Android.AdServices.Signals.UpdateSignalsRequest.Builder.SetUpdateUri(Android.Net.Uri! updateUri) -> Android.AdServices.Signals.UpdateSignalsRequest.Builder!
+Android.AdServices.Signals.UpdateSignalsRequest.UpdateUri.get -> Android.Net.Uri!
+Android.AdServices.Topics.EncryptedTopic
+Android.AdServices.Topics.EncryptedTopic.EncryptedTopic(byte[]! encryptedTopic, string! keyIdentifier, byte[]! encapsulatedKey) -> void
+Android.AdServices.Topics.EncryptedTopic.GetEncapsulatedKey() -> byte[]!
+Android.AdServices.Topics.EncryptedTopic.GetEncryptedTopic() -> byte[]!
+Android.AdServices.Topics.EncryptedTopic.KeyIdentifier.get -> string!
+Android.AdServices.Topics.GetTopicsResponse.Builder.Builder(System.Collections.Generic.IList<Android.AdServices.Topics.Topic!>! topics, System.Collections.Generic.IList<Android.AdServices.Topics.EncryptedTopic!>! encryptedTopics) -> void
+Android.AdServices.Topics.GetTopicsResponse.EncryptedTopics.get -> System.Collections.Generic.IList<Android.AdServices.Topics.EncryptedTopic!>!
+Android.App.AppSearch.AppSearchSchema.Builder.AddParentType(string! parentSchemaType) -> Android.App.AppSearch.AppSearchSchema.Builder!
+Android.App.AppSearch.AppSearchSchema.DescribeContents() -> int
+Android.App.AppSearch.AppSearchSchema.DocumentPropertyConfig.Builder.AddIndexableNestedProperties(System.Collections.Generic.ICollection<string!>! indexableNestedProperties) -> Android.App.AppSearch.AppSearchSchema.DocumentPropertyConfig.Builder!
+Android.App.AppSearch.AppSearchSchema.InterfaceConsts
+Android.App.AppSearch.AppSearchSchema.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.GenericDocument.Builder.Builder(Android.App.AppSearch.GenericDocument! document) -> void
+Android.App.AppSearch.GetSchemaResponse.DescribeContents() -> int
+Android.App.AppSearch.GetSchemaResponse.InterfaceConsts
+Android.App.AppSearch.GetSchemaResponse.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.JoinSpec.DescribeContents() -> int
+Android.App.AppSearch.JoinSpec.InterfaceConsts
+Android.App.AppSearch.JoinSpec.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.Observers.ObserverSpec.DescribeContents() -> int
+Android.App.AppSearch.Observers.ObserverSpec.InterfaceConsts
+Android.App.AppSearch.Observers.ObserverSpec.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.PutDocumentsRequest.Builder.AddTakenActionGenericDocuments(params Android.App.AppSearch.GenericDocument![]! takenActionGenericDocuments) -> Android.App.AppSearch.PutDocumentsRequest.Builder!
+Android.App.AppSearch.PutDocumentsRequest.Builder.AddTakenActionGenericDocuments(System.Collections.Generic.ICollection<Android.App.AppSearch.GenericDocument!>! takenActionGenericDocuments) -> Android.App.AppSearch.PutDocumentsRequest.Builder!
+Android.App.AppSearch.PutDocumentsRequest.TakenActionGenericDocuments.get -> System.Collections.Generic.IList<Android.App.AppSearch.GenericDocument!>!
+Android.App.AppSearch.SearchResult.DescribeContents() -> int
+Android.App.AppSearch.SearchResult.InterfaceConsts
+Android.App.AppSearch.SearchResult.MatchInfo.DescribeContents() -> int
+Android.App.AppSearch.SearchResult.MatchInfo.InterfaceConsts
+Android.App.AppSearch.SearchResult.MatchInfo.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.SearchResult.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.SearchSpec.Builder.AddFilterProperties(string! schema, System.Collections.Generic.ICollection<string!>! propertyPaths) -> Android.App.AppSearch.SearchSpec.Builder!
+Android.App.AppSearch.SearchSpec.Builder.AddFilterPropertyPaths(string! schema, System.Collections.Generic.ICollection<Android.App.AppSearch.PropertyPath!>! propertyPaths) -> Android.App.AppSearch.SearchSpec.Builder!
+Android.App.AppSearch.SearchSpec.Builder.SetListFilterHasPropertyFunctionEnabled(bool enabled) -> Android.App.AppSearch.SearchSpec.Builder!
+Android.App.AppSearch.SearchSpec.Builder.SetSearchSourceLogTag(string! searchSourceLogTag) -> Android.App.AppSearch.SearchSpec.Builder!
+Android.App.AppSearch.SearchSpec.DescribeContents() -> int
+Android.App.AppSearch.SearchSpec.FilterProperties.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string!>!>!
+Android.App.AppSearch.SearchSpec.InterfaceConsts
+Android.App.AppSearch.SearchSpec.IsListFilterHasPropertyFunctionEnabled.get -> bool
+Android.App.AppSearch.SearchSpec.SearchSourceLogTag.get -> string?
+Android.App.AppSearch.SearchSpec.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.SearchSuggestionResult.DescribeContents() -> int
+Android.App.AppSearch.SearchSuggestionResult.InterfaceConsts
+Android.App.AppSearch.SearchSuggestionResult.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.SearchSuggestionSpec.Builder.AddFilterProperties(string! schema, System.Collections.Generic.ICollection<string!>! propertyPaths) -> Android.App.AppSearch.SearchSuggestionSpec.Builder!
+Android.App.AppSearch.SearchSuggestionSpec.Builder.AddFilterPropertyPaths(string! schema, System.Collections.Generic.ICollection<Android.App.AppSearch.PropertyPath!>! propertyPaths) -> Android.App.AppSearch.SearchSuggestionSpec.Builder!
+Android.App.AppSearch.SearchSuggestionSpec.DescribeContents() -> int
+Android.App.AppSearch.SearchSuggestionSpec.FilterProperties.get -> System.Collections.Generic.IDictionary<string!, System.Collections.Generic.IList<string!>!>!
+Android.App.AppSearch.SearchSuggestionSpec.InterfaceConsts
+Android.App.AppSearch.SearchSuggestionSpec.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.AppSearch.SetSchemaResponse.DescribeContents() -> int
+Android.App.AppSearch.SetSchemaResponse.InterfaceConsts
+Android.App.AppSearch.SetSchemaResponse.MigrationFailure.DescribeContents() -> int
+Android.App.AppSearch.SetSchemaResponse.MigrationFailure.InterfaceConsts
+Android.App.AppSearch.StorageInfo.DescribeContents() -> int
+Android.App.AppSearch.StorageInfo.InterfaceConsts
+Android.App.Job.JobInfo.Builder.AddDebugTag(string! tag) -> Android.App.Job.JobInfo.Builder!
+Android.App.Job.JobInfo.Builder.RemoveDebugTag(string! tag) -> Android.App.Job.JobInfo.Builder!
+Android.App.Job.JobInfo.Builder.SetTraceTag(string? traceTag) -> Android.App.Job.JobInfo.Builder!
+Android.App.Notification.TvExtender
+Android.App.Notification.TvExtender.ChannelId.get -> string?
+Android.App.Notification.TvExtender.ContentIntent.get -> Android.App.PendingIntent?
+Android.App.Notification.TvExtender.DeleteIntent.get -> Android.App.PendingIntent?
+Android.App.Notification.TvExtender.Extend(Android.App.Notification.Builder! builder) -> Android.App.Notification.Builder!
+Android.App.Notification.TvExtender.IsAvailableOnTv.get -> bool
+Android.App.Notification.TvExtender.IsSuppressShowOverApps.get -> bool
+Android.App.Notification.TvExtender.SetChannelId(string? channelId) -> Android.App.Notification.TvExtender!
+Android.App.Notification.TvExtender.SetContentIntent(Android.App.PendingIntent? intent) -> Android.App.Notification.TvExtender!
+Android.App.Notification.TvExtender.SetDeleteIntent(Android.App.PendingIntent? intent) -> Android.App.Notification.TvExtender!
+Android.App.Notification.TvExtender.SetSuppressShowOverApps(bool suppress) -> Android.App.Notification.TvExtender!
+Android.App.Notification.TvExtender.TvExtender() -> void
+Android.App.Notification.TvExtender.TvExtender(Android.App.Notification! notif) -> void
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.AppOwnedSdkSandboxInterface(string! name, long version, Android.OS.IBinder! binder) -> void
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.DescribeContents() -> int
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.Interface.get -> Android.OS.IBinder!
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.InterfaceConsts
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.Name.get -> string!
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.Version.get -> long
+Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.SdkSandbox.SdkSandboxManager.AppOwnedSdkSandboxInterfaces.get -> System.Collections.Generic.IList<Android.App.SdkSandbox.AppOwnedSdkSandboxInterface!>!
+Android.App.SdkSandbox.SdkSandboxManager.RegisterAppOwnedSdkSandboxInterface(Android.App.SdkSandbox.AppOwnedSdkSandboxInterface! appOwnedSdkSandboxInterface) -> void
+Android.App.SdkSandbox.SdkSandboxManager.UnregisterAppOwnedSdkSandboxInterface(string! name) -> void
+Android.App.Usage.UsageEvents.Event.Extras.get -> Android.OS.PersistableBundle!
+Android.App.Usage.UsageEventsQuery
+Android.App.Usage.UsageEventsQuery.BeginTimeMillis.get -> long
+Android.App.Usage.UsageEventsQuery.Builder
+Android.App.Usage.UsageEventsQuery.Builder.Build() -> Android.App.Usage.UsageEventsQuery!
+Android.App.Usage.UsageEventsQuery.Builder.Builder(long beginTimeMillis, long endTimeMillis) -> void
+Android.App.Usage.UsageEventsQuery.Builder.SetEventTypes(params int[]! eventTypes) -> Android.App.Usage.UsageEventsQuery.Builder!
+Android.App.Usage.UsageEventsQuery.DescribeContents() -> int
+Android.App.Usage.UsageEventsQuery.EndTimeMillis.get -> long
+Android.App.Usage.UsageEventsQuery.GetEventTypes() -> int[]!
+Android.App.Usage.UsageEventsQuery.InterfaceConsts
+Android.App.Usage.UsageEventsQuery.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.App.Usage.UsageStatsManager.QueryEvents(Android.App.Usage.UsageEventsQuery! query) -> Android.App.Usage.UsageEvents?
+Android.Companion.AssociationInfo.IsSelfManaged.get -> bool
+Android.Companion.Virtual.VirtualDevice.DisplayName.get -> string?
+Android.Companion.Virtual.VirtualDevice.DisplayNameFormatted.get -> Java.Lang.ICharSequence?
+Android.Companion.Virtual.VirtualDevice.GetDisplayIds() -> int[]!
+Android.Companion.Virtual.VirtualDevice.HasCustomSensorSupport.get -> bool
+Android.Companion.Virtual.VirtualDevice.PersistentDeviceId.get -> string?
+Android.Companion.Virtual.VirtualDeviceManager.GetVirtualDevice(int deviceId) -> Android.Companion.Virtual.VirtualDevice?
+Android.Companion.Virtual.VirtualDeviceManager.IVirtualDeviceListener
+Android.Companion.Virtual.VirtualDeviceManager.IVirtualDeviceListener.OnVirtualDeviceClosed(int deviceId) -> void
+Android.Companion.Virtual.VirtualDeviceManager.IVirtualDeviceListener.OnVirtualDeviceCreated(int deviceId) -> void
+Android.Companion.Virtual.VirtualDeviceManager.RegisterVirtualDeviceListener(Java.Util.Concurrent.IExecutor! executor, Android.Companion.Virtual.VirtualDeviceManager.IVirtualDeviceListener! listener) -> void
+Android.Companion.Virtual.VirtualDeviceManager.UnregisterVirtualDeviceListener(Android.Companion.Virtual.VirtualDeviceManager.IVirtualDeviceListener! listener) -> void
+Android.Companion.Virtual.VirtualDeviceManager.VirtualDeviceClosedEventArgs
+Android.Companion.Virtual.VirtualDeviceManager.VirtualDeviceClosedEventArgs.DeviceId.get -> int
+Android.Companion.Virtual.VirtualDeviceManager.VirtualDeviceClosedEventArgs.VirtualDeviceClosedEventArgs(int deviceId) -> void
+Android.Companion.Virtual.VirtualDeviceManager.VirtualDeviceCreatedEventArgs
+Android.Companion.Virtual.VirtualDeviceManager.VirtualDeviceCreatedEventArgs.DeviceId.get -> int
+Android.Companion.Virtual.VirtualDeviceManager.VirtualDeviceCreatedEventArgs.VirtualDeviceCreatedEventArgs(int deviceId) -> void
+Android.Content.PM.SharedLibraryInfo.OptionalDependentPackages.get -> System.Collections.Generic.IList<Android.Content.PM.VersionedPackage!>!
+Android.Content.Res.IFontScaleConverter
+Android.Content.Res.IFontScaleConverter.ConvertDpToSp(float dp) -> float
+Android.Content.Res.IFontScaleConverter.ConvertSpToDp(float sp) -> float
+Android.Content.Res.IFontScaleConverter.ForScale(float fontScale) -> Android.Content.Res.IFontScaleConverter?
+Android.Content.Res.IFontScaleConverter.IsNonLinearFontScalingActive(float fontScale) -> bool
+Android.Graphics.Fonts.FontFamily.Builder.BuildVariableFamily() -> Android.Graphics.Fonts.FontFamily?
+Android.Graphics.Gainmap.Gainmap(Android.Graphics.Gainmap! gainmap, Android.Graphics.Bitmap! gainmapContents) -> void
+Android.Graphics.Text.LineBreakConfig.DescribeContents() -> int
+Android.Graphics.Text.LineBreakConfig.InterfaceConsts
+Android.Graphics.Text.LineBreakConfig.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.Graphics.Text.PositionedGlyphs.GetFakeBold(int index) -> bool
+Android.Graphics.Text.PositionedGlyphs.GetFakeItalic(int index) -> bool
+Android.Graphics.Text.PositionedGlyphs.GetItalicOverride(int index) -> float
+Android.Graphics.Text.PositionedGlyphs.GetWeightOverride(int index) -> float
+Android.Hardware.Camera2.CameraCharacteristics.AvailableSessionCharacteristicsKeys.get -> System.Collections.Generic.IList<Android.Hardware.Camera2.CameraCharacteristics.Key!>!
+Android.Hardware.Camera2.CameraManager.CreateCaptureRequest(string! cameraId, int templateType) -> Android.Hardware.Camera2.CaptureRequest.Builder!
+Android.Hardware.Camera2.CameraManager.IsSessionConfigurationWithParametersSupported(string! cameraId, Android.Hardware.Camera2.Params.SessionConfiguration! sessionConfig) -> bool
+Android.Hardware.OverlayProperties
+Android.Hardware.OverlayProperties.DescribeContents() -> int
+Android.Hardware.OverlayProperties.InterfaceConsts
+Android.Hardware.OverlayProperties.IsMixedColorSpacesSupported.get -> bool
+Android.Hardware.OverlayProperties.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.Health.Connect.AggregateRecordsGroupedByDurationResponse.GetDataOrigins(Android.Health.Connect.DataTypes.AggregationType! aggregationType) -> System.Collections.Generic.ICollection<Android.Health.Connect.DataTypes.DataOrigin!>!
+Android.Health.Connect.AggregateRecordsGroupedByPeriodResponse.GetDataOrigins(Android.Health.Connect.DataTypes.AggregationType! aggregationType) -> System.Collections.Generic.ICollection<Android.Health.Connect.DataTypes.DataOrigin!>!
+Android.Media.MediaRouter2.RegisterRouteListingPreferenceUpdatedCallback(Java.Util.Concurrent.IExecutor! executor, Java.Util.Functions.IConsumer! routeListingPreferenceCallback) -> void
+Android.Media.MediaRouter2.RouteListingPreference.get -> Android.Media.RouteListingPreference?
+Android.Media.MediaRouter2.UnregisterRouteListingPreferenceUpdatedCallback(Java.Util.Functions.IConsumer! callback) -> void
+Android.Media.Midi.MidiUmpDeviceService
+Android.Media.Midi.MidiUmpDeviceService.DeviceInfo.get -> Android.Media.Midi.MidiDeviceInfo?
+Android.Media.Midi.MidiUmpDeviceService.MidiUmpDeviceService() -> void
+Android.Media.Midi.MidiUmpDeviceService.MidiUmpDeviceService(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Android.Media.Midi.MidiUmpDeviceService.OutputPortReceivers.get -> System.Collections.Generic.IList<Android.Media.Midi.MidiReceiver!>!
+Android.Net.Vcn.VcnGatewayConnectionConfig.Builder.SetSafeModeEnabled(bool enabled) -> Android.Net.Vcn.VcnGatewayConnectionConfig.Builder!
+Android.Net.Vcn.VcnGatewayConnectionConfig.IsSafeModeEnabled.get -> bool
+Android.Net.Wifi.Rtt.RangingResult.GetLci() -> byte[]!
+Android.Net.Wifi.Rtt.RangingResult.GetLcr() -> byte[]!
+Android.OS.WorkDuration
+Android.OS.WorkDuration.ActualCpuDurationNanos.get -> long
+Android.OS.WorkDuration.ActualCpuDurationNanos.set -> void
+Android.OS.WorkDuration.ActualGpuDurationNanos.get -> long
+Android.OS.WorkDuration.ActualGpuDurationNanos.set -> void
+Android.OS.WorkDuration.ActualTotalDurationNanos.get -> long
+Android.OS.WorkDuration.ActualTotalDurationNanos.set -> void
+Android.OS.WorkDuration.DescribeContents() -> int
+Android.OS.WorkDuration.InterfaceConsts
+Android.OS.WorkDuration.WorkDuration() -> void
+Android.OS.WorkDuration.WorkPeriodStartTimestampNanos.get -> long
+Android.OS.WorkDuration.WorkPeriodStartTimestampNanos.set -> void
+Android.OS.WorkDuration.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+Android.Security.FileIntegrityManager.GetFsVerityDigest(Java.IO.File! file) -> byte[]?
+Android.Security.FileIntegrityManager.SetupFsVerity(Java.IO.File! file) -> void
+Android.Telephony.PreciseDataConnectionState.NetworkValidationStatus.get -> int
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.Build() -> Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo!
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.Builder() -> void
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.SetColumnCount(int columnCount) -> Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder!
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.SetHierarchical(bool hierarchical) -> Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder!
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.SetImportantForAccessibilityItemCount(int importantForAccessibilityItemCount) -> Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder!
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.SetItemCount(int itemCount) -> Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder!
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.SetRowCount(int rowCount) -> Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder!
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.SetSelectionMode(int selectionMode) -> Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder!
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.ImportantForAccessibilityItemCount.get -> int
+Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.ItemCount.get -> int
+Android.Views.IAttachedSurfaceControl.HostToken.get -> Android.OS.IBinder?
+Android.Views.IAttachedSurfaceControl.TransferHostTouchGestureToEmbedded(Android.Views.SurfaceControlViewHost.SurfacePackage! surfacePackage) -> bool
+Android.Views.MotionEvent.PointerCoords.IsResampled.get -> bool
+const Android.AccessibilityServices.AccessibilityService.OverlayResultInternalError = 1 -> int
+const Android.AccessibilityServices.AccessibilityService.OverlayResultInvalid = 2 -> int
+const Android.AccessibilityServices.AccessibilityService.OverlayResultSuccess = 0 -> int
+const Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.AdSelection.AdWithBid.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.AdSelection.AdWithBid.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.AdSelection.BuyersDecisionLogic.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.AdSelection.BuyersDecisionLogic.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.AdSelection.DecisionLogic.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.AdSelection.DecisionLogic.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.AdSelection.ReportEventRequest.FlagReportingDestinationBuyer = 2 -> int
+const Android.AdServices.AdSelection.ReportEventRequest.FlagReportingDestinationSeller = 1 -> int
+const Android.AdServices.AdSelection.SignedContextualAds.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.AdSelection.SignedContextualAds.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.Common.AdFilters.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.Common.AdFilters.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.Common.AppInstallFilters.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.Common.AppInstallFilters.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.Common.FrequencyCapFilters.AdEventTypeClick = 3 -> int
+const Android.AdServices.Common.FrequencyCapFilters.AdEventTypeImpression = 1 -> int
+const Android.AdServices.Common.FrequencyCapFilters.AdEventTypeView = 2 -> int
+const Android.AdServices.Common.FrequencyCapFilters.AdEventTypeWin = 0 -> int
+const Android.AdServices.Common.FrequencyCapFilters.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.Common.FrequencyCapFilters.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.Common.KeyedFrequencyCap.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.Common.KeyedFrequencyCap.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.Measurement.SourceRegistrationRequest.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.Measurement.SourceRegistrationRequest.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.OnDevicePersonalization.AppInfo.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.OnDevicePersonalization.AppInfo.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.OnDevicePersonalization.EventLogRecord.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.OnDevicePersonalization.EventLogRecord.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationException.ErrorIsolatedServiceFailed = 1 -> int
+const Android.AdServices.OnDevicePersonalization.RenderingConfig.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.OnDevicePersonalization.RenderingConfig.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.OnDevicePersonalization.RequestLogRecord.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.OnDevicePersonalization.RequestLogRecord.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.AdServices.OnDevicePersonalization.TrainingInterval.SchedulingModeOneTime = 1 -> int
+const Android.AdServices.OnDevicePersonalization.TrainingInterval.SchedulingModeRecurrent = 2 -> int
+const Android.AdServices.OnDevicePersonalization.UserData.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.AdServices.OnDevicePersonalization.UserData.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.AppSearchSchema.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.AppSearchSchema.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.GetSchemaResponse.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.GetSchemaResponse.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.JoinSpec.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.JoinSpec.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.Observers.ObserverSpec.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.Observers.ObserverSpec.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.SearchResult.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.SearchResult.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.SearchResult.MatchInfo.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.SearchResult.MatchInfo.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.SearchSpec.GroupingTypePerSchema = 4 -> int
+const Android.App.AppSearch.SearchSpec.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.SearchSpec.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.SearchSpec.SchemaTypeWildcard = "*" -> string!
+const Android.App.AppSearch.SearchSuggestionResult.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.SearchSuggestionResult.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.SearchSuggestionSpec.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.SearchSuggestionSpec.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.SetSchemaResponse.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.SetSchemaResponse.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.SetSchemaResponse.MigrationFailure.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.SetSchemaResponse.MigrationFailure.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.AppSearch.StorageInfo.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.AppSearch.StorageInfo.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.Usage.UsageEventsQuery.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.App.Usage.UsageEventsQuery.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.App.Usage.UsageStatsManager.ExtraEventAction = "android.app.usage.extra.EVENT_ACTION" -> string!
+const Android.App.Usage.UsageStatsManager.ExtraEventCategory = "android.app.usage.extra.EVENT_CATEGORY" -> string!
+const Android.Companion.CompanionDeviceService.DeviceEventBleAppeared = 0 -> int
+const Android.Companion.CompanionDeviceService.DeviceEventBleDisappeared = 1 -> int
+const Android.Companion.CompanionDeviceService.DeviceEventBtConnected = 2 -> int
+const Android.Companion.CompanionDeviceService.DeviceEventBtDisconnected = 3 -> int
+const Android.Companion.CompanionDeviceService.DeviceEventSelfManagedAppeared = 4 -> int
+const Android.Companion.CompanionDeviceService.DeviceEventSelfManagedDisappeared = 5 -> int
+const Android.Graphics.Text.LineBreakConfig.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.Graphics.Text.LineBreakConfig.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.Graphics.Text.PositionedGlyphs.NoOverride = 1E-45 -> float
+const Android.Hardware.Biometrics.BiometricPrompt.BiometricNoAuthentication = -1 -> long
+const Android.Hardware.Camera2.CameraMetadata.ControlAeModeOnLowLightBoostBrightnessPriority = 6 -> int
+const Android.Hardware.Camera2.CameraMetadata.ControlLowLightBoostStateActive = 1 -> int
+const Android.Hardware.Camera2.CameraMetadata.ControlLowLightBoostStateInactive = 0 -> int
+const Android.Hardware.HardwareBuffer.R16Uint = 57 -> int
+const Android.Hardware.HardwareBuffer.R8 = 56 -> int
+const Android.Hardware.HardwareBuffer.Rg1616Uint = 58 -> int
+const Android.Hardware.HardwareBuffer.Rgba10101010 = 59 -> int
+const Android.Hardware.OverlayProperties.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.Hardware.OverlayProperties.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.Icu.Lang.UCharacter.ILineBreak.Aksara = 43 -> int
+const Android.Icu.Lang.UCharacter.ILineBreak.AksaraPrebase = 44 -> int
+const Android.Icu.Lang.UCharacter.ILineBreak.AksaraStart = 45 -> int
+const Android.Icu.Lang.UCharacter.ILineBreak.Virama = 47 -> int
+const Android.Icu.Lang.UCharacter.ILineBreak.ViramaFinal = 46 -> int
+const Android.Icu.Lang.UCharacter.LineBreak.Aksara = 43 -> int
+const Android.Icu.Lang.UCharacter.LineBreak.AksaraPrebase = 44 -> int
+const Android.Icu.Lang.UCharacter.LineBreak.AksaraStart = 45 -> int
+const Android.Icu.Lang.UCharacter.LineBreak.Virama = 47 -> int
+const Android.Icu.Lang.UCharacter.LineBreak.ViramaFinal = 46 -> int
+const Android.Media.MediaRoute2Info.TypeRemoteCar = 1008 -> int
+const Android.Media.MediaRoute2Info.TypeRemoteComputer = 1006 -> int
+const Android.Media.MediaRoute2Info.TypeRemoteGameConsole = 1007 -> int
+const Android.Media.MediaRoute2Info.TypeRemoteSmartphone = 1010 -> int
+const Android.Media.MediaRoute2Info.TypeRemoteSmartwatch = 1009 -> int
+const Android.Media.MediaRoute2Info.TypeRemoteTablet = 1004 -> int
+const Android.Media.MediaRoute2Info.TypeRemoteTabletDocked = 1005 -> int
+const Android.Media.Midi.MidiUmpDeviceService.ServiceInterface = "android.media.midi.MidiUmpDeviceService" -> string!
+const Android.OS.WorkDuration.InterfaceConsts.ContentsFileDescriptor = 1 -> int
+const Android.OS.WorkDuration.InterfaceConsts.ParcelableWriteReturnValue = Android.OS.ParcelableWriteFlags.ReturnValue -> Android.OS.ParcelableWriteFlags
+const Android.Provider.CloudMediaProviderContract.ExtraPageSize = "android.provider.extra.PAGE_SIZE" -> string!
+const Android.Provider.Settings.ActionCredentialProvider = "android.settings.CREDENTIAL_PROVIDER" -> string!
+const Android.Provider.Telephony.Carriers.AlwaysOn = "always_on" -> string!
+const Android.Provider.Telephony.Carriers.MtuV4 = "mtu_v4" -> string!
+const Android.Provider.Telephony.Carriers.MtuV6 = "mtu_v6" -> string!
+const Android.Provider.Telephony.Carriers.UserEditable = "user_editable" -> string!
+const Android.Provider.Telephony.Carriers.UserVisible = "user_visible" -> string!
+const Android.Telecom.Call.Details.PropertyIsTransactional = 32768 -> int
+const Android.Telecom.TelecomManager.ExtraCallLogUri = "android.telecom.extra.CALL_LOG_URI" -> string!
+const Android.Telephony.CarrierConfigManager.Iwlan.KeyChildSessionAesGcmKeySizeIntArray = "iwlan.child_session_aes_gcm_key_size_int_array" -> string!
+const Android.Telephony.CarrierConfigManager.Iwlan.KeyIkeSessionAesGcmKeySizeIntArray = "iwlan.ike_session_encryption_aes_gcm_key_size_int_array" -> string!
+const Android.Telephony.CarrierConfigManager.Iwlan.KeySupportedChildSessionAeadAlgorithmsIntArray = "iwlan.supported_child_session_aead_algorithms_int_array" -> string!
+const Android.Telephony.CarrierConfigManager.Iwlan.KeySupportedIkeSessionAeadAlgorithmsIntArray = "iwlan.supported_ike_session_aead_algorithms_int_array" -> string!
+const Android.Telephony.CarrierConfigManager.Iwlan.KeySupportsChildSessionMultipleSaProposalsBool = "iwlan.supports_child_session_multiple_sa_proposals_bool" -> string!
+const Android.Telephony.CarrierConfigManager.Iwlan.KeySupportsIkeSessionMultipleSaProposalsBool = "iwlan.supports_ike_session_multiple_sa_proposals_bool" -> string!
+const Android.Telephony.CarrierConfigManager.KeyShowRoamingIndicatorBool = "show_roaming_indicator_bool" -> string!
+const Android.Telephony.PreciseDataConnectionState.NetworkValidationFailure = 4 -> int
+const Android.Telephony.PreciseDataConnectionState.NetworkValidationInProgress = 2 -> int
+const Android.Telephony.PreciseDataConnectionState.NetworkValidationNotRequested = 1 -> int
+const Android.Telephony.PreciseDataConnectionState.NetworkValidationSuccess = 3 -> int
+const Android.Telephony.PreciseDataConnectionState.NetworkValidationUnsupported = 0 -> int
+const Android.Telephony.TelephonyManager.PurchasePremiumCapabilityResultUserDisabled = 16 -> int
+const Android.Util.DisplayMetrics.Density390 = 390 -> int
+const Android.Views.Accessibility.AccessibilityNodeInfo.ActionArgumentScrollAmountFloat = "android.view.accessibility.action.ARGUMENT_SCROLL_AMOUNT_FLOAT" -> string!
+const Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Undefined = -1 -> int
+const Android.Views.IWindowManager.PropertyCompatAllowIgnoringOrientationRequestWhenLoopDetected = "android.window.PROPERTY_COMPAT_ALLOW_IGNORING_ORIENTATION_REQUEST_WHEN_LOOP_DETECTED" -> string!
+const Android.Views.IWindowManager.PropertyCompatAllowMinAspectRatioOverride = "android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE" -> string!
+const Android.Views.IWindowManager.PropertyCompatAllowResizeableActivityOverrides = "android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES" -> string!
+const Android.Views.IWindowManager.PropertyCompatAllowUserAspectRatioFullscreenOverride = "android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_FULLSCREEN_OVERRIDE" -> string!
+const Android.Views.IWindowManager.PropertyCompatAllowUserAspectRatioOverride = "android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_OVERRIDE" -> string!
+const Android.Views.IWindowManager.PropertySupportsMultiInstanceSystemUi = "android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI" -> string!
+const Android.Views.TextClassifiers.ITextClassifier.TypeOtpCode = "otp_code" -> string!
+const Android.Views.TextClassifiers.TextClassifier.TypeOtpCode = "otp_code" -> string!
+const Android.Views.WindowManager.PropertyCompatAllowIgnoringOrientationRequestWhenLoopDetected = "android.window.PROPERTY_COMPAT_ALLOW_IGNORING_ORIENTATION_REQUEST_WHEN_LOOP_DETECTED" -> string!
+const Android.Views.WindowManager.PropertyCompatAllowMinAspectRatioOverride = "android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE" -> string!
+const Android.Views.WindowManager.PropertyCompatAllowResizeableActivityOverrides = "android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES" -> string!
+const Android.Views.WindowManager.PropertyCompatAllowUserAspectRatioFullscreenOverride = "android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_FULLSCREEN_OVERRIDE" -> string!
+const Android.Views.WindowManager.PropertyCompatAllowUserAspectRatioOverride = "android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_OVERRIDE" -> string!
+const Android.Views.WindowManager.PropertySupportsMultiInstanceSystemUi = "android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI" -> string!
+Java.Lang.ICharSequence.IsEmpty.get -> bool
+Java.Nio.MappedByteBuffer.Force(int index, int length) -> Java.Nio.MappedByteBuffer?
+Java.Nio.MappedByteBuffer.ForceAsync(int index, int length) -> System.Threading.Tasks.Task<Java.Nio.MappedByteBuffer?>!
+Java.Security.DrbgParameters
+Java.Security.DrbgParameters.Capability
+Java.Security.DrbgParameters.Capability.SupportsPredictionResistance() -> bool
+Java.Security.DrbgParameters.Capability.SupportsReseeding() -> bool
+Java.Security.DrbgParameters.DrbgParameters(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Java.Security.DrbgParameters.Instantiation
+Java.Security.DrbgParameters.Instantiation.Capability.get -> Java.Security.DrbgParameters.Capability?
+Java.Security.DrbgParameters.Instantiation.GetPersonalizationString() -> byte[]?
+Java.Security.DrbgParameters.Instantiation.Strength.get -> int
+Java.Security.DrbgParameters.NextBytes
+Java.Security.DrbgParameters.NextBytes.GetAdditionalInput() -> byte[]?
+Java.Security.DrbgParameters.NextBytes.PredictionResistance.get -> bool
+Java.Security.DrbgParameters.NextBytes.Strength.get -> int
+Java.Security.DrbgParameters.Reseed
+Java.Security.DrbgParameters.Reseed.GetAdditionalInput() -> byte[]?
+Java.Security.DrbgParameters.Reseed.PredictionResistance.get -> bool
+Java.Security.Interfaces.IRSAKey.Params.get -> Java.Security.Spec.IAlgorithmParameterSpec?
+Java.Security.ISecureRandomParameters
+Java.Security.SecureRandomSpi.SecureRandomSpi(Java.Security.ISecureRandomParameters? params) -> void
+Java.Security.Spec.DSAGenParameterSpec
+Java.Security.Spec.DSAGenParameterSpec.DSAGenParameterSpec(int primePLen, int subprimeQLen) -> void
+Java.Security.Spec.DSAGenParameterSpec.DSAGenParameterSpec(int primePLen, int subprimeQLen, int seedLen) -> void
+Java.Security.Spec.DSAGenParameterSpec.PrimePLength.get -> int
+Java.Security.Spec.DSAGenParameterSpec.SeedLength.get -> int
+Java.Security.Spec.DSAGenParameterSpec.SubprimeQLength.get -> int
+Java.Security.Spec.EdDSAParameterSpec
+Java.Security.Spec.EdDSAParameterSpec.EdDSAParameterSpec(bool prehash) -> void
+Java.Security.Spec.EdDSAParameterSpec.EdDSAParameterSpec(bool prehash, byte[]? context) -> void
+Java.Security.Spec.EdDSAParameterSpec.EdDSAParameterSpec(nint javaReference, Android.Runtime.JniHandleOwnership transfer) -> void
+Java.Util.IMapEntry.CopyOf(Java.Util.IMapEntry! e) -> Java.Util.IMapEntry!
+Java.Util.Properties.Properties(int initialCapacity) -> void
+Java.Util.RandomGenerators.IRandomGenerator
+Java.Util.RandomGenerators.IRandomGenerator.Default.get -> Java.Util.RandomGenerators.IRandomGenerator?
+Java.Util.RandomGenerators.IRandomGenerator.IsDeprecated.get -> bool
+Java.Util.RandomGenerators.IRandomGenerator.NextBoolean() -> bool
+Java.Util.RandomGenerators.IRandomGenerator.NextBytes(byte[]? bytes) -> void
+Java.Util.RandomGenerators.IRandomGenerator.NextDouble() -> double
+Java.Util.RandomGenerators.IRandomGenerator.NextDouble(double bound) -> double
+Java.Util.RandomGenerators.IRandomGenerator.NextDouble(double origin, double bound) -> double
+Java.Util.RandomGenerators.IRandomGenerator.NextExponential() -> double
+Java.Util.RandomGenerators.IRandomGenerator.NextFloat() -> float
+Java.Util.RandomGenerators.IRandomGenerator.NextFloat(float bound) -> float
+Java.Util.RandomGenerators.IRandomGenerator.NextFloat(float origin, float bound) -> float
+Java.Util.RandomGenerators.IRandomGenerator.NextGaussian() -> double
+Java.Util.RandomGenerators.IRandomGenerator.NextGaussian(double mean, double stddev) -> double
+Java.Util.RandomGenerators.IRandomGenerator.NextInt() -> int
+Java.Util.RandomGenerators.IRandomGenerator.NextInt(int bound) -> int
+Java.Util.RandomGenerators.IRandomGenerator.NextInt(int origin, int bound) -> int
+Java.Util.RandomGenerators.IRandomGenerator.NextLong() -> long
+Java.Util.RandomGenerators.IRandomGenerator.NextLong(long bound) -> long
+Java.Util.RandomGenerators.IRandomGenerator.NextLong(long origin, long bound) -> long
+Java.Util.RandomGenerators.IRandomGenerator.Of(string? name) -> Java.Util.RandomGenerators.IRandomGenerator?
+Java.Util.RandomGenerators.RandomGeneratorFactory
+Java.Util.RandomGenerators.RandomGeneratorFactory.Create() -> Java.Lang.Object?
+Java.Util.RandomGenerators.RandomGeneratorFactory.Create(byte[]? seed) -> Java.Lang.Object?
+Java.Util.RandomGenerators.RandomGeneratorFactory.Create(long seed) -> Java.Lang.Object?
+Java.Util.RandomGenerators.RandomGeneratorFactory.Equidistribution() -> int
+Java.Util.RandomGenerators.RandomGeneratorFactory.Group() -> string?
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsArbitrarilyJumpable.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsDeprecated.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsHardware.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsJumpable.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsLeapable.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsSplittable.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsStatistical.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsStochastic.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.IsStreamable.get -> bool
+Java.Util.RandomGenerators.RandomGeneratorFactory.Name() -> string?
+Java.Util.RandomGenerators.RandomGeneratorFactory.Period() -> Java.Math.BigInteger?
+Java.Util.RandomGenerators.RandomGeneratorFactory.StateBits() -> int
+Java.Util.ServiceLoader.IProvider
+Java.Util.ServiceLoader.IProvider.Get() -> Java.Lang.Object?
+Java.Util.ServiceLoader.IProvider.Type() -> Java.Lang.Class?
+Javax.Crypto.Spec.ChaCha20ParameterSpec
+Javax.Crypto.Spec.ChaCha20ParameterSpec.ChaCha20ParameterSpec(byte[]? nonce, int counter) -> void
+Javax.Crypto.Spec.ChaCha20ParameterSpec.Counter.get -> int
+Javax.Crypto.Spec.ChaCha20ParameterSpec.GetNonce() -> byte[]?
+Javax.Security.Auth.X500.X500PrivateCredential
+Javax.Security.Auth.X500.X500PrivateCredential.Alias.get -> string?
+Javax.Security.Auth.X500.X500PrivateCredential.Certificate.get -> Java.Security.Cert.X509Certificate?
+Javax.Security.Auth.X500.X500PrivateCredential.Destroy() -> void
+Javax.Security.Auth.X500.X500PrivateCredential.IsDestroyed.get -> bool
+Javax.Security.Auth.X500.X500PrivateCredential.PrivateKey.get -> Java.Security.IPrivateKey?
+Javax.Security.Auth.X500.X500PrivateCredential.X500PrivateCredential(Java.Security.Cert.X509Certificate? cert, Java.Security.IPrivateKey? key) -> void
+Javax.Security.Auth.X500.X500PrivateCredential.X500PrivateCredential(Java.Security.Cert.X509Certificate? cert, Java.Security.IPrivateKey? key, string? alias) -> void
+override Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.ThresholdClass.get -> nint
+override Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.ThresholdType.get -> System.Type!
+override Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.AdWithBid.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.BuyersDecisionLogic.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.DecisionLogic.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.GetAdSelectionDataOutcome.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.GetAdSelectionDataRequest.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.GetAdSelectionDataRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.PersistAdSelectionResultRequest.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.PersistAdSelectionResultRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest.ThresholdClass.get -> nint
+override Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest.ThresholdType.get -> System.Type!
+override Android.AdServices.AdSelection.ReportEventRequest.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.ReportEventRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.ReportEventRequest.ThresholdClass.get -> nint
+override Android.AdServices.AdSelection.ReportEventRequest.ThresholdType.get -> System.Type!
+override Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest.ThresholdClass.get -> nint
+override Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest.ThresholdType.get -> System.Type!
+override Android.AdServices.AdSelection.SignedContextualAds.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.SignedContextualAds.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.ThresholdClass.get -> nint
+override Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.ThresholdType.get -> System.Type!
+override Android.AdServices.Common.AdFilters.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Common.AdFilters.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Common.AppInstallFilters.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Common.AppInstallFilters.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Common.FrequencyCapFilters.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Common.FrequencyCapFilters.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Common.KeyedFrequencyCap.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Common.KeyedFrequencyCap.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Measurement.SourceRegistrationRequest.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Measurement.SourceRegistrationRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.AppInfo.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.DownloadCompletedInput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.DownloadCompletedOutput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.EventInput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.EventLogRecord.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.EventLogRecord.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.EventOutput.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.EventOutput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.EventUrlProvider.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.EventUrlProvider.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.EventUrlProvider.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.ExecuteInput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.ExecuteOutput.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.ExecuteOutput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.FederatedComputeInput.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.FederatedComputeInput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.IsolatedService.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.IsolatedService.OnBind(Android.Content.Intent! intent) -> Android.OS.IBinder?
+override Android.AdServices.OnDevicePersonalization.IsolatedService.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.IsolatedService.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.LogReader.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.LogReader.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.LogReader.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationException.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationException.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationException.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationManager.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationManager.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationManager.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.RenderingConfig.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RenderingConfig.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RenderInput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RenderOutput.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RenderOutput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RequestLogRecord.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RequestLogRecord.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RequestToken.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.RequestToken.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.RequestToken.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.SurfacePackageToken.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.SurfacePackageToken.ThresholdClass.get -> nint
+override Android.AdServices.OnDevicePersonalization.SurfacePackageToken.ThresholdType.get -> System.Type!
+override Android.AdServices.OnDevicePersonalization.TrainingExamplesInput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.TrainingExamplesOutput.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.TrainingInterval.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.TrainingInterval.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.OnDevicePersonalization.UserData.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Signals.ProtectedSignalsManager.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Signals.ProtectedSignalsManager.ThresholdClass.get -> nint
+override Android.AdServices.Signals.ProtectedSignalsManager.ThresholdType.get -> System.Type!
+override Android.AdServices.Signals.UpdateSignalsRequest.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Signals.UpdateSignalsRequest.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.AdServices.Topics.EncryptedTopic.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.App.Notification.TvExtender.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.App.Usage.UsageEventsQuery.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.App.Usage.UsageEventsQuery.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.Hardware.OverlayProperties.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.Media.Midi.MidiUmpDeviceService.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.Media.Midi.MidiUmpDeviceService.OnBind(Android.Content.Intent! intent) -> Android.OS.IBinder?
+override Android.Media.Midi.MidiUmpDeviceService.ThresholdClass.get -> nint
+override Android.Media.Midi.MidiUmpDeviceService.ThresholdType.get -> System.Type!
+override Android.OS.WorkDuration.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Android.Views.Accessibility.AccessibilityNodeInfo.CollectionInfo.Builder.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Nio.MappedByteBuffer.Compact() -> Java.Nio.ByteBuffer?
+override Java.Security.DrbgParameters.Capability.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Security.DrbgParameters.Instantiation.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Security.DrbgParameters.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Security.DrbgParameters.NextBytes.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Security.DrbgParameters.Reseed.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Security.DrbgParameters.ThresholdClass.get -> nint
+override Java.Security.DrbgParameters.ThresholdType.get -> System.Type!
+override Java.Security.Spec.DSAGenParameterSpec.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Security.Spec.EdDSAParameterSpec.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Java.Security.Spec.EdDSAParameterSpec.ThresholdClass.get -> nint
+override Java.Security.Spec.EdDSAParameterSpec.ThresholdType.get -> System.Type!
+override Java.Util.RandomGenerators.RandomGeneratorFactory.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Javax.Crypto.Spec.ChaCha20ParameterSpec.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override Javax.Security.Auth.X500.X500PrivateCredential.JniPeerMembers.get -> Java.Interop.JniPeerMembers!
+override sealed Java.Lang.Invoke.VarHandle.ToString() -> string?
+override sealed Java.Nio.MappedByteBuffer.Clear() -> Java.Nio.Buffer?
+override sealed Java.Nio.MappedByteBuffer.Flip() -> Java.Nio.Buffer?
+override sealed Java.Nio.MappedByteBuffer.Limit(int newLimit) -> Java.Nio.Buffer?
+override sealed Java.Nio.MappedByteBuffer.Mark() -> Java.Nio.Buffer?
+override sealed Java.Nio.MappedByteBuffer.Position(int newPosition) -> Java.Nio.Buffer?
+override sealed Java.Nio.MappedByteBuffer.Reset() -> Java.Nio.Buffer?
+override sealed Java.Nio.MappedByteBuffer.Rewind() -> Java.Nio.Buffer?
+static Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.AdSelection.AdSelectionOutcome.NoOutcome.get -> Android.AdServices.AdSelection.AdSelectionOutcome!
+static Android.AdServices.AdSelection.AdWithBid.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.AdSelection.BuyersDecisionLogic.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.AdSelection.BuyersDecisionLogic.Empty.get -> Android.AdServices.AdSelection.BuyersDecisionLogic!
+static Android.AdServices.AdSelection.DecisionLogic.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.AdSelection.SignedContextualAds.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.Common.AdFilters.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.Common.AppInstallFilters.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.Common.FrequencyCapFilters.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.Common.KeyedFrequencyCap.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.Measurement.SourceRegistrationRequest.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.OnDevicePersonalization.AppInfo.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.OnDevicePersonalization.EventLogRecord.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.OnDevicePersonalization.RenderingConfig.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.OnDevicePersonalization.RequestLogRecord.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.OnDevicePersonalization.UserData.Creator.get -> Android.OS.IParcelableCreator!
+static Android.AdServices.Signals.ProtectedSignalsManager.Get(Android.Content.Context! context) -> Android.AdServices.Signals.ProtectedSignalsManager!
+static Android.App.AppSearch.AppSearchSchema.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.GetSchemaResponse.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.JoinSpec.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.Observers.ObserverSpec.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.SearchResult.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.SearchResult.MatchInfo.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.SearchSpec.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.SearchSuggestionResult.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.SearchSuggestionSpec.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.SetSchemaResponse.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.SetSchemaResponse.MigrationFailure.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.AppSearch.StorageInfo.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.SdkSandbox.AppOwnedSdkSandboxInterface.Creator.get -> Android.OS.IParcelableCreator!
+static Android.App.Usage.UsageEventsQuery.Creator.get -> Android.OS.IParcelableCreator!
+static Android.Hardware.Camera2.CameraCharacteristics.ControlLowLightBoostInfoLuminanceRange.get -> Android.Hardware.Camera2.CameraCharacteristics.Key!
+static Android.Hardware.Camera2.CameraCharacteristics.FlashSingleStrengthDefaultLevel.get -> Android.Hardware.Camera2.CameraCharacteristics.Key!
+static Android.Hardware.Camera2.CameraCharacteristics.FlashSingleStrengthMaxLevel.get -> Android.Hardware.Camera2.CameraCharacteristics.Key!
+static Android.Hardware.Camera2.CameraCharacteristics.FlashTorchStrengthDefaultLevel.get -> Android.Hardware.Camera2.CameraCharacteristics.Key!
+static Android.Hardware.Camera2.CameraCharacteristics.FlashTorchStrengthMaxLevel.get -> Android.Hardware.Camera2.CameraCharacteristics.Key!
+static Android.Hardware.Camera2.CameraCharacteristics.InfoSessionConfigurationQueryVersion.get -> Android.Hardware.Camera2.CameraCharacteristics.Key!
+static Android.Hardware.Camera2.CaptureRequest.FlashStrengthLevel.get -> Android.Hardware.Camera2.CaptureRequest.Key!
+static Android.Hardware.Camera2.CaptureResult.ControlLowLightBoostState.get -> Android.Hardware.Camera2.CaptureResult.Key!
+static Android.Hardware.Camera2.CaptureResult.FlashStrengthLevel.get -> Android.Hardware.Camera2.CaptureResult.Key!
+static Android.Hardware.OverlayProperties.Creator.get -> Android.OS.IParcelableCreator!
+static Android.Health.Connect.DataTypes.BloodPressureRecord.DiastolicAvg.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.BloodPressureRecord.DiastolicMax.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.BloodPressureRecord.DiastolicMin.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.BloodPressureRecord.SystolicAvg.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.BloodPressureRecord.SystolicMax.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.BloodPressureRecord.SystolicMin.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.CyclingPedalingCadenceRecord.RpmAvg.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.CyclingPedalingCadenceRecord.RpmMax.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.CyclingPedalingCadenceRecord.RpmMin.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.NutritionRecord.TransFatTotal.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.SpeedRecord.SpeedAvg.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.SpeedRecord.SpeedMax.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.SpeedRecord.SpeedMin.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.StepsCadenceRecord.StepsCadenceRateAvg.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.StepsCadenceRecord.StepsCadenceRateMax.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.Health.Connect.DataTypes.StepsCadenceRecord.StepsCadenceRateMin.get -> Android.Health.Connect.DataTypes.AggregationType!
+static Android.OS.Process.GetAppUidForSdkSandboxUid(int uid) -> int
+static Android.OS.Process.IsSdkSandboxUid(int uid) -> bool
+static Android.OS.SystemClock.UptimeNanos() -> long
+static Android.OS.WorkDuration.Creator.get -> Android.OS.IParcelableCreator!
+static Android.Resource.Attribute.DefaultLocale.get -> int
+static Android.Resource.Attribute.Optional.get -> int
+static Android.Systems.OsConstants.IpprotoEsp.get -> int
+static Android.Systems.OsConstants.Ipv6Pktinfo.get -> int
+static Android.Systems.OsConstants.NetlinkXfrm.get -> int
+static Android.Systems.OsConstants.PacketIgnoreOutgoing.get -> int
+static Android.Systems.OsConstants.SolPacket.get -> int
+static Java.Lang.Character.CodePointOf(string! name) -> int
+static Java.Lang.Character.ToString(int codePoint) -> string!
+static Java.Security.DrbgParameters.Capability.None.get -> Java.Security.DrbgParameters.Capability?
+static Java.Security.DrbgParameters.Capability.PrAndReseed.get -> Java.Security.DrbgParameters.Capability?
+static Java.Security.DrbgParameters.Capability.ReseedOnly.get -> Java.Security.DrbgParameters.Capability?
+static Java.Security.DrbgParameters.Capability.ValueOf(string? name) -> Java.Security.DrbgParameters.Capability?
+static Java.Security.DrbgParameters.Capability.Values() -> Java.Security.DrbgParameters.Capability![]?
+static Java.Security.DrbgParameters.InvokeInstantiation(int strength, Java.Security.DrbgParameters.Capability? capability, byte[]? personalizationString) -> Java.Security.DrbgParameters.Instantiation?
+static Java.Security.DrbgParameters.InvokeNextBytes(int strength, bool predictionResistance, byte[]? additionalInput) -> Java.Security.DrbgParameters.NextBytes?
+static Java.Security.DrbgParameters.InvokeReseed(bool predictionResistance, byte[]? additionalInput) -> Java.Security.DrbgParameters.Reseed?
+static Java.Security.SecureRandom.GetInstance(string? algorithm, Java.Security.ISecureRandomParameters? params) -> Java.Security.SecureRandom?
+static Java.Security.SecureRandom.GetInstance(string? algorithm, Java.Security.ISecureRandomParameters? params, Java.Security.Provider? provider) -> Java.Security.SecureRandom?
+static Java.Security.SecureRandom.GetInstance(string? algorithm, Java.Security.ISecureRandomParameters? params, string? provider) -> Java.Security.SecureRandom?
+static Java.Util.MapEntry.CopyOf(Java.Util.IMapEntry! e) -> Java.Util.IMapEntry!
+static Java.Util.RandomGenerators.RandomGeneratorFactory.Default.get -> Java.Util.RandomGenerators.RandomGeneratorFactory?
+static Java.Util.RandomGenerators.RandomGeneratorFactory.Of(string? name) -> Java.Util.RandomGenerators.RandomGeneratorFactory?
+static Java.Util.Streams.Collectors.Teeing(Java.Util.Streams.ICollector? downstream1, Java.Util.Streams.ICollector? downstream2, Java.Util.Functions.IBiFunction? merger) -> Java.Util.Streams.ICollector?
+virtual Android.AccessibilityServices.AccessibilityService.AttachAccessibilityOverlayToDisplay(int displayId, Android.Views.SurfaceControl! sc, Java.Util.Concurrent.IExecutor! executor, Java.Util.Functions.IIntConsumer! callback) -> void
+virtual Android.AccessibilityServices.AccessibilityService.AttachAccessibilityOverlayToWindow(int accessibilityWindowId, Android.Views.SurfaceControl! sc, Java.Util.Concurrent.IExecutor! executor, Java.Util.Functions.IIntConsumer! callback) -> void
+virtual Android.AdServices.AdIds.AdIdManager.GetAdId(Java.Util.Concurrent.IExecutor! executor, Android.AdServices.Common.IAdServicesOutcomeReceiver! callback) -> void
+virtual Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.AdSelectionFromOutcomesConfig.get -> Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig!
+virtual Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.OutcomeSelectionLogicJs.get -> string!
+virtual Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest.OutcomeSelectionTrustedSignals.get -> Android.AdServices.Common.AdSelectionSignals!
+virtual Android.AdServices.AdSelection.AddAdSelectionOverrideRequest.BuyersDecisionLogic.get -> Android.AdServices.AdSelection.BuyersDecisionLogic!
+virtual Android.AdServices.AdSelection.AdSelectionManager.GetAdSelectionData(Android.AdServices.AdSelection.GetAdSelectionDataRequest! request, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.AdSelectionManager.PersistAdSelectionResult(Android.AdServices.AdSelection.PersistAdSelectionResultRequest! request, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.AdSelectionManager.ReportEvent(Android.AdServices.AdSelection.ReportEventRequest! request, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.AdSelectionManager.SelectAds(Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig! adSelectionFromOutcomesConfig, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.AdSelectionManager.SetAppInstallAdvertisers(Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest! request, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.AdSelectionManager.UpdateAdCounterHistogram(Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest! updateAdCounterHistogramRequest, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! outcomeReceiver) -> void
+virtual Android.AdServices.AdSelection.AdSelectionOutcome.HasOutcome.get -> bool
+virtual Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest.AdSelectionFromOutcomesConfig.get -> Android.AdServices.AdSelection.AdSelectionFromOutcomesConfig!
+virtual Android.AdServices.AdSelection.ReportEventRequest.AdSelectionId.get -> long
+virtual Android.AdServices.AdSelection.ReportEventRequest.Data.get -> string!
+virtual Android.AdServices.AdSelection.ReportEventRequest.InputEvent.get -> Android.Views.InputEvent?
+virtual Android.AdServices.AdSelection.ReportEventRequest.Key.get -> string!
+virtual Android.AdServices.AdSelection.ReportEventRequest.ReportingDestinations.get -> int
+virtual Android.AdServices.AdSelection.SetAppInstallAdvertisersRequest.Advertisers.get -> System.Collections.Generic.ICollection<Android.AdServices.Common.AdTechIdentifier!>!
+virtual Android.AdServices.AdSelection.TestAdSelectionManager.OverrideAdSelectionFromOutcomesConfigRemoteInfo(Android.AdServices.AdSelection.AddAdSelectionFromOutcomesOverrideRequest! request, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.TestAdSelectionManager.RemoveAdSelectionFromOutcomesConfigRemoteInfoOverride(Android.AdServices.AdSelection.RemoveAdSelectionFromOutcomesOverrideRequest! request, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.TestAdSelectionManager.ResetAllAdSelectionFromOutcomesConfigRemoteOverrides(Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.AdEventType.get -> int
+virtual Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.AdSelectionId.get -> long
+virtual Android.AdServices.AdSelection.UpdateAdCounterHistogramRequest.CallerAdTech.get -> Android.AdServices.Common.AdTechIdentifier!
+virtual Android.AdServices.CustomAudiences.AddCustomAudienceOverrideRequest.BiddingLogicJsVersion.get -> long
+virtual Android.AdServices.CustomAudiences.CustomAudienceManager.FetchAndJoinCustomAudience(Android.AdServices.CustomAudiences.FetchAndJoinCustomAudienceRequest! fetchAndJoinCustomAudienceRequest, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.DeleteRegistrations(Android.AdServices.Measurement.DeletionRequest! deletionRequest, Java.Util.Concurrent.IExecutor! executor, Android.AdServices.Common.IAdServicesOutcomeReceiver! callback) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.GetMeasurementApiStatus(Java.Util.Concurrent.IExecutor! executor, Android.AdServices.Common.IAdServicesOutcomeReceiver! callback) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.RegisterSource(Android.AdServices.Measurement.SourceRegistrationRequest! request, Java.Util.Concurrent.IExecutor? executor, Android.AdServices.Common.IAdServicesOutcomeReceiver? callback) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.RegisterSource(Android.AdServices.Measurement.SourceRegistrationRequest! request, Java.Util.Concurrent.IExecutor? executor, Android.OS.IOutcomeReceiver? callback) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.RegisterSource(Android.Net.Uri! attributionSource, Android.Views.InputEvent? inputEvent, Java.Util.Concurrent.IExecutor? executor, Android.AdServices.Common.IAdServicesOutcomeReceiver? callback) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.RegisterTrigger(Android.Net.Uri! trigger, Java.Util.Concurrent.IExecutor? executor, Android.AdServices.Common.IAdServicesOutcomeReceiver? callback) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.RegisterWebSource(Android.AdServices.Measurement.WebSourceRegistrationRequest! request, Java.Util.Concurrent.IExecutor? executor, Android.AdServices.Common.IAdServicesOutcomeReceiver? callback) -> void
+virtual Android.AdServices.Measurement.MeasurementManager.RegisterWebTrigger(Android.AdServices.Measurement.WebTriggerRegistrationRequest! request, Java.Util.Concurrent.IExecutor? executor, Android.AdServices.Common.IAdServicesOutcomeReceiver? callback) -> void
+virtual Android.AdServices.OnDevicePersonalization.EventUrlProvider.CreateEventTrackingUrlWithRedirect(Android.OS.PersistableBundle! eventParams, Android.Net.Uri? destinationUrl) -> Android.Net.Uri!
+virtual Android.AdServices.OnDevicePersonalization.EventUrlProvider.CreateEventTrackingUrlWithResponse(Android.OS.PersistableBundle! eventParams, byte[]? responseData, string? mimeType) -> Android.Net.Uri!
+virtual Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Cancel(string! populationName) -> void
+virtual Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params.TrainingInterval.get -> Android.AdServices.OnDevicePersonalization.TrainingInterval!
+virtual Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Schedule(Android.AdServices.OnDevicePersonalization.FederatedComputeScheduler.Params! params, Android.AdServices.OnDevicePersonalization.FederatedComputeInput! input) -> void
+virtual Android.AdServices.OnDevicePersonalization.LogReader.GetJoinedEvents(Java.Time.Instant! startTime, Java.Time.Instant! endTime) -> System.Collections.Generic.IList<Android.AdServices.OnDevicePersonalization.EventLogRecord!>!
+virtual Android.AdServices.OnDevicePersonalization.LogReader.GetRequests(Java.Time.Instant! startTime, Java.Time.Instant! endTime) -> System.Collections.Generic.IList<Android.AdServices.OnDevicePersonalization.RequestLogRecord!>!
+virtual Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationException.ErrorCode.get -> int
+virtual Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationManager.Execute(Android.Content.ComponentName! handler, Android.OS.PersistableBundle! params, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.OnDevicePersonalization.OnDevicePersonalizationManager.RequestSurfacePackage(Android.AdServices.OnDevicePersonalization.SurfacePackageToken! surfacePackageToken, Android.OS.IBinder! surfaceViewHostToken, int displayId, int width, int height, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.AdServices.Signals.ProtectedSignalsManager.UpdateSignals(Android.AdServices.Signals.UpdateSignalsRequest! updateSignalsRequest, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.App.AppSearch.SetSchemaResponse.MigrationFailure.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+virtual Android.App.AppSearch.SetSchemaResponse.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+virtual Android.App.AppSearch.StorageInfo.WriteToParcel(Android.OS.Parcel! dest, Android.OS.ParcelableWriteFlags flags) -> void
+virtual Android.App.Job.JobInfo.DebugTags.get -> System.Collections.Generic.ICollection<string!>!
+virtual Android.App.Job.JobInfo.TraceTag.get -> string?
+virtual Android.App.LocaleConfig.DefaultLocale.get -> Java.Util.Locale?
+virtual Android.App.SdkSandbox.SdkProvider.SdkSandboxController.AppOwnedSdkSandboxInterfaces.get -> System.Collections.Generic.IList<Android.App.SdkSandbox.AppOwnedSdkSandboxInterface!>!
+virtual Android.App.SdkSandbox.SdkProvider.SdkSandboxController.ClientPackageName.get -> string!
+virtual Android.App.SdkSandbox.SdkProvider.SdkSandboxController.LoadSdk(string! sdkName, Android.OS.Bundle! params, Java.Util.Concurrent.IExecutor! executor, Android.OS.IOutcomeReceiver! receiver) -> void
+virtual Android.Companion.CompanionDeviceService.OnDeviceEvent(Android.Companion.AssociationInfo! associationInfo, int e) -> void
+virtual Android.Content.PM.PackageManager.ParseAndroidManifest(Java.IO.File! apkFile, Java.Util.Functions.IFunction! parserFunction) -> Java.Lang.Object?
+virtual Android.Graphics.BitmapShader.SetOverrideGainmap(Android.Graphics.Gainmap? overrideGainmap) -> void
+virtual Android.Hardware.Camera2.CameraDevice.GetSessionCharacteristics(Android.Hardware.Camera2.Params.SessionConfiguration! sessionConfig) -> Android.Hardware.Camera2.CameraCharacteristics!
+virtual Android.Media.Midi.MidiUmpDeviceService.OnClose() -> void
+virtual Android.Media.Midi.MidiUmpDeviceService.OnDeviceStatusChanged(Android.Media.Midi.MidiDeviceStatus! status) -> void
+virtual Android.OS.PerformanceHintManager.Session.ReportActualWorkDuration(Android.OS.WorkDuration! workDuration) -> void
+virtual Android.OS.PerformanceHintManager.Session.SetPreferPowerEfficiency(bool enabled) -> void
+virtual Android.OS.PowerManager.ThermalHeadroomThresholds.get -> System.Collections.Generic.IDictionary<Java.Lang.Integer!, Java.Lang.Float!>!
+virtual Android.Telephony.Data.ApnSetting.Builder.SetAlwaysOn(bool alwaysOn) -> Android.Telephony.Data.ApnSetting.Builder!
+virtual Android.Telephony.Data.ApnSetting.IsAlwaysOn.get -> bool
+virtual Android.Views.Accessibility.AccessibilityNodeInfo.GranularScrollingSupported.get -> bool
+virtual Android.Views.Accessibility.AccessibilityNodeInfo.GranularScrollingSupported.set -> void
+virtual Android.Views.Display.OverlaySupport.get -> Android.Hardware.OverlayProperties!
+virtual Android.Views.Window.DesiredHdrHeadroom.get -> float
+virtual Android.Views.Window.DesiredHdrHeadroom.set -> void
+virtual Android.Views.WindowManagerLayoutParams.DesiredHdrHeadroom.get -> float
+virtual Android.Views.WindowManagerLayoutParams.DesiredHdrHeadroom.set -> void
+virtual Java.Nio.ByteBuffer.Get(int index, byte[]! dst) -> Java.Nio.ByteBuffer!
+virtual Java.Nio.ByteBuffer.Get(int index, byte[]! dst, int offset, int length) -> Java.Nio.ByteBuffer!
+virtual Java.Nio.ByteBuffer.Put(int index, byte[]! src) -> Java.Nio.ByteBuffer!
+virtual Java.Nio.ByteBuffer.Put(int index, byte[]! src, int offset, int length) -> Java.Nio.ByteBuffer!
+virtual Java.Nio.ByteBuffer.Put(int index, Java.Nio.ByteBuffer! src, int offset, int length) -> Java.Nio.ByteBuffer!
+virtual Java.Nio.CharBuffer.Get(int index, char[]? dst) -> Java.Nio.CharBuffer?
+virtual Java.Nio.CharBuffer.Get(int index, char[]? dst, int offset, int length) -> Java.Nio.CharBuffer?
+virtual Java.Nio.CharBuffer.Put(int index, char[]? src) -> Java.Nio.CharBuffer?
+virtual Java.Nio.CharBuffer.Put(int index, char[]? src, int offset, int length) -> Java.Nio.CharBuffer?
+virtual Java.Nio.CharBuffer.Put(int index, Java.Nio.CharBuffer? src, int offset, int length) -> Java.Nio.CharBuffer?
+virtual Java.Nio.DoubleBuffer.Get(int index, double[]? dst) -> Java.Nio.DoubleBuffer?
+virtual Java.Nio.DoubleBuffer.Get(int index, double[]? dst, int offset, int length) -> Java.Nio.DoubleBuffer?
+virtual Java.Nio.DoubleBuffer.Put(int index, double[]? src) -> Java.Nio.DoubleBuffer?
+virtual Java.Nio.DoubleBuffer.Put(int index, double[]? src, int offset, int length) -> Java.Nio.DoubleBuffer?
+virtual Java.Nio.DoubleBuffer.Put(int index, Java.Nio.DoubleBuffer? src, int offset, int length) -> Java.Nio.DoubleBuffer?
+virtual Java.Nio.FloatBuffer.Get(int index, float[]? dst) -> Java.Nio.FloatBuffer?
+virtual Java.Nio.FloatBuffer.Get(int index, float[]? dst, int offset, int length) -> Java.Nio.FloatBuffer?
+virtual Java.Nio.FloatBuffer.Put(int index, float[]? src) -> Java.Nio.FloatBuffer?
+virtual Java.Nio.FloatBuffer.Put(int index, float[]? src, int offset, int length) -> Java.Nio.FloatBuffer?
+virtual Java.Nio.FloatBuffer.Put(int index, Java.Nio.FloatBuffer? src, int offset, int length) -> Java.Nio.FloatBuffer?
+virtual Java.Nio.IntBuffer.Get(int index, int[]? dst) -> Java.Nio.IntBuffer?
+virtual Java.Nio.IntBuffer.Get(int index, int[]? dst, int offset, int length) -> Java.Nio.IntBuffer?
+virtual Java.Nio.IntBuffer.Put(int index, int[]? src) -> Java.Nio.IntBuffer?
+virtual Java.Nio.IntBuffer.Put(int index, int[]? src, int offset, int length) -> Java.Nio.IntBuffer?
+virtual Java.Nio.IntBuffer.Put(int index, Java.Nio.IntBuffer? src, int offset, int length) -> Java.Nio.IntBuffer?
+virtual Java.Nio.LongBuffer.Get(int index, long[]? dst) -> Java.Nio.LongBuffer?
+virtual Java.Nio.LongBuffer.Get(int index, long[]? dst, int offset, int length) -> Java.Nio.LongBuffer?
+virtual Java.Nio.LongBuffer.Put(int index, Java.Nio.LongBuffer? src, int offset, int length) -> Java.Nio.LongBuffer?
+virtual Java.Nio.LongBuffer.Put(int index, long[]? src) -> Java.Nio.LongBuffer?
+virtual Java.Nio.LongBuffer.Put(int index, long[]? src, int offset, int length) -> Java.Nio.LongBuffer?
+virtual Java.Nio.ShortBuffer.Get(int index, short[]? dst) -> Java.Nio.ShortBuffer?
+virtual Java.Nio.ShortBuffer.Get(int index, short[]? dst, int offset, int length) -> Java.Nio.ShortBuffer?
+virtual Java.Nio.ShortBuffer.Put(int index, Java.Nio.ShortBuffer? src, int offset, int length) -> Java.Nio.ShortBuffer?
+virtual Java.Nio.ShortBuffer.Put(int index, short[]? src) -> Java.Nio.ShortBuffer?
+virtual Java.Nio.ShortBuffer.Put(int index, short[]? src, int offset, int length) -> Java.Nio.ShortBuffer?
+virtual Java.Security.SecureRandom.NextBytes(byte[]? bytes, Java.Security.ISecureRandomParameters? params) -> void
+virtual Java.Security.SecureRandom.Parameters.get -> Java.Security.ISecureRandomParameters?
+virtual Java.Security.SecureRandom.Reseed() -> void
+virtual Java.Security.SecureRandom.Reseed(Java.Security.ISecureRandomParameters? params) -> void
+virtual Java.Security.SecureRandomSpi.EngineGetParameters() -> Java.Security.ISecureRandomParameters?
+virtual Java.Security.SecureRandomSpi.EngineNextBytes(byte[]? bytes, Java.Security.ISecureRandomParameters? params) -> void
+virtual Java.Security.SecureRandomSpi.EngineReseed(Java.Security.ISecureRandomParameters? params) -> void
+virtual Java.Security.Spec.EdDSAParameterSpec.Context.get -> Java.Util.Optional?
+virtual Java.Security.Spec.EdDSAParameterSpec.IsPrehash.get -> bool
+virtual Java.Util.Concurrent.ThreadLocalRandom.NextFloat(float bound) -> float
+virtual Java.Util.Concurrent.ThreadLocalRandom.NextFloat(float origin, float bound) -> float
+virtual Java.Util.Properties.Compute(Java.Lang.Object? key, Java.Util.Functions.IBiFunction? remappingFunction) -> Java.Lang.Object?
+virtual Java.Util.Properties.ComputeIfAbsent(Java.Lang.Object? key, Java.Util.Functions.IFunction? mappingFunction) -> Java.Lang.Object?
+virtual Java.Util.Properties.ComputeIfPresent(Java.Lang.Object? key, Java.Util.Functions.IBiFunction? remappingFunction) -> Java.Lang.Object?
+virtual Java.Util.Properties.ForEach(Java.Util.Functions.IBiConsumer? action) -> void
+virtual Java.Util.Properties.GetOrDefault(Java.Lang.Object? key, Java.Lang.Object? defaultValue) -> Java.Lang.Object?
+virtual Java.Util.Properties.Merge(Java.Lang.Object? key, Java.Lang.Object? value, Java.Util.Functions.IBiFunction? remappingFunction) -> Java.Lang.Object?
+virtual Java.Util.Properties.Put(Java.Lang.Object? key, Java.Lang.Object? value) -> Java.Lang.Object?
+virtual Java.Util.Properties.PutAll(System.Collections.Generic.IDictionary<object!, object!>? t) -> void
+virtual Java.Util.Properties.PutIfAbsent(Java.Lang.Object? key, Java.Lang.Object? value) -> Java.Lang.Object?
+virtual Java.Util.Properties.Replace(Java.Lang.Object? key, Java.Lang.Object? oldValue, Java.Lang.Object? newValue) -> bool
+virtual Java.Util.Properties.Replace(Java.Lang.Object? key, Java.Lang.Object? value) -> Java.Lang.Object?
+virtual Java.Util.Properties.ReplaceAll(Java.Util.Functions.IBiFunction? function) -> void
+virtual Java.Util.Properties.StoreToXML(System.IO.Stream? os, string? comment, Java.Nio.Charset.Charset? charset) -> void
+virtual Java.Util.TreeMap.Compute(Java.Lang.Object? key, Java.Util.Functions.IBiFunction! remappingFunction) -> Java.Lang.Object?
+virtual Java.Util.TreeMap.ComputeIfAbsent(Java.Lang.Object? key, Java.Util.Functions.IFunction! mappingFunction) -> Java.Lang.Object?
+virtual Java.Util.TreeMap.ComputeIfPresent(Java.Lang.Object? key, Java.Util.Functions.IBiFunction! remappingFunction) -> Java.Lang.Object?
+virtual Java.Util.TreeMap.Merge(Java.Lang.Object? key, Java.Lang.Object! value, Java.Util.Functions.IBiFunction! remappingFunction) -> Java.Lang.Object?
+virtual Java.Util.TreeMap.PutIfAbsent(Java.Lang.Object? key, Java.Lang.Object? value) -> Java.Lang.Object?
+virtual Java.Util.Zip.ZipEntry.TimeLocal.get -> Java.Time.LocalDateTime?
+virtual Java.Util.Zip.ZipEntry.TimeLocal.set -> void

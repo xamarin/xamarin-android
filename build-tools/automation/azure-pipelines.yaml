@@ -86,6 +86,47 @@ stages:
 # Check - "Xamarin.Android (Linux > Build)"
 - template: yaml-templates/build-linux.yaml
 
+- stage: TestContainer
+  displayName: Test Container
+  jobs:
+  - job: Test
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        printenv
+        whoami
+        curl -h
+        sudo -h
+      displayName: Display Environment
+    - script: |
+        sudo apt-get install curl ca-certificates -y
+        curl https://repo.waydro.id | sudo bash
+        sudo apt-get install waydroid -y
+      displayName: Install WayDroid
+    - script: |
+        sudo apt install linux-generic -y 
+        sudo apt install --reinstall linux-image-$(uname -r) -y
+        sudo apt install --reinstall linux-modules-$(uname -r) -y
+        sudo apt install --reinstall linux-modules-extra-$(uname -r) -y
+      displayName: Install Kernel Stuff
+    - script: |
+        sudo waydroid init -f
+      displayName: waydroid init -f
+    - script: |
+        sudo waydroid init
+      displayName: waydroid init
+    - script: |
+        waydroid session start
+      displayName: Start WayDroid
+    - script: |
+        adb devices
+      displayName: Logging
+    - script: |
+        waydroid session stop
+        sudo waydroid container stop
+      displayName: Stop WayDroid
+
 - stage: smoke_tests
   displayName: Package Tests
   dependsOn: mac_build

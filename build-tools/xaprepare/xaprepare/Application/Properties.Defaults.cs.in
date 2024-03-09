@@ -15,6 +15,8 @@ namespace Xamarin.Android.Prepare
 			properties.Add (KnownProperties.AndroidLatestUnstableApiLevel,       StripQuotes ("@AndroidLatestUnstableApiLevel@"));
 			properties.Add (KnownProperties.AndroidLatestStableFrameworkVersion, StripQuotes ("@AndroidLatestStableFrameworkVersion@"));
 			properties.Add (KnownProperties.AndroidNdkDirectory,                 StripQuotes (@"@AndroidNdkDirectory@"));
+			properties.Add (KnownProperties.AndroidPackVersion,                  StripQuotes (@"@AndroidPackVersion@"));
+			properties.Add (KnownProperties.AndroidPackVersionSuffix,            StripQuotes (@"@AndroidPackVersionSuffix@"));
 			properties.Add (KnownProperties.AndroidSdkDirectory,                 StripQuotes (@"@AndroidSdkDirectory@"));
 			properties.Add (KnownProperties.AndroidSupportedTargetAotAbis,       StripQuotes ("@AndroidSupportedTargetAotAbis@"));
 			properties.Add (KnownProperties.AndroidSupportedTargetJitAbis,       StripQuotes ("@AndroidSupportedTargetJitAbis@"));

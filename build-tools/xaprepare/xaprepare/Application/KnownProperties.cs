@@ -11,6 +11,8 @@ namespace Xamarin.Android.Prepare
 		public const string AndroidLatestUnstableApiLevel       = "AndroidLatestUnstableApiLevel";
 		public const string AndroidLatestStableFrameworkVersion = "AndroidLatestStableFrameworkVersion";
 		public const string AndroidNdkDirectory                 = "AndroidNdkDirectory";
+		public const string AndroidPackVersion                  = "AndroidPackVersion";
+		public const string AndroidPackVersionSuffix            = "AndroidPackVersionSuffix";
 		public const string AndroidSdkDirectory                 = "AndroidSdkDirectory";
 		public const string AndroidSupportedTargetAotAbis       = "AndroidSupportedTargetAotAbis";
 		public const string AndroidSupportedTargetJitAbis       = "AndroidSupportedTargetJitAbis";

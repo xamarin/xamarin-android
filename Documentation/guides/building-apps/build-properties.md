@@ -16,6 +16,11 @@ MSBuild properties control the behavior of the
 They're specified within the project file, for example **MyApp.csproj**, within
 an [MSBuild PropertyGroup](/visualstudio/msbuild/propertygroup-element-msbuild).
 
+## AndroidSkipBuildApk
+
+By default, building an Android project has a different behavior between IDE and command-line build. When building in VS, building an APK (as well as some aapt2 and Java-related targets) are skipped.
+On command-line, they are not skipped. The property `AndroidSkipBuildApk` can be used in command-line builds to get a behavior similar to the one found in the IDE. For more information, see [dotnet build & publish docs](https://github.com/xamarin/xamarin-android/blob/main/Documentation/guides/OneDotNet.md#dotnet-build--publish).
+
 ## AdbTarget
 
 The `$(AdbTarget)` property specifies the Android target device the

@@ -34,7 +34,7 @@ properties that determine build ordering.
       Outside IDEs: we need to produce an .apk/.aab and sign
       Inside IDEs: the Install target produces .apk/.aab files & signs
     -->
-    <BuildDependsOn Condition=" '$(BuildingInsideVisualStudio)' != 'true' ">
+    <BuildDependsOn Condition=" '$(BuildingInsideVisualStudio)' != 'true' AND '$(AndroidSkipBuildApk)' != 'true'">
       $(BuildDependsOn);
       _CopyPackage;
       _Sign;

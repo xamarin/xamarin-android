@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Mono.Cecil;
 using Mono.Linker;
 using Mono.Linker.Steps;
 using Mono.Tuner;
 using Xamarin.Android.Tasks;
+
+using Java.Interop.Tools.Cecil;
 
 namespace MonoDroid.Tuner {
 
@@ -136,18 +139,28 @@ namespace MonoDroid.Tuner {
 			Annotations.AddPreservedMethod (type, method);
 		}
 
-		string TypeNameWithoutKey (string name)
+		// Given an Assembly Qualified name, return a *Partial* Assembly Qualified Name.
+		// Just `Full.Type.Name, Assembly.Name`.  No version, public key token, etc.
+		string TypeNameWithoutKey (string assemblyQualifiedName)
 		{
-			var idx = name.IndexOf (", PublicKeyToken=", StringComparison.Ordinal);
-			if (idx > 0)
-				name = name.Substring (0, idx);
-
-			return name;
+			var c   = assemblyQualifiedName.IndexOf (',');
+			if (c < 0) {
+				return assemblyQualifiedName;
+			}
+			var t   = assemblyQualifiedName.Substring (0, c);
+			var n   = new AssemblyName (assemblyQualifiedName.Substring (c+1));
+			return $"{t}, {n.Name}";
 		}
 
 		bool CheckInvokerType (TypeDefinition type, string name)
 		{
-			return TypeNameWithoutKey (name) == TypeNameWithoutKey ($"{ type.FullName}, { type.Module.Assembly.FullName}");
+			return
+#if ILLINK
+				type.GetPartialAssemblyQualifiedName (base.Context)
+#else   // ILLINK
+				type.GetPartialAssemblyQualifiedName ()
+#endif  // ILLINK
+				== TypeNameWithoutKey (name);
 		}
 
 		void PreserveInterfaceMethods (TypeDefinition type, TypeDefinition invoker)

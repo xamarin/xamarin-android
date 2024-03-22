@@ -1,6 +1,7 @@
 // These attributes should be excluded from api-compat check reference assemblies.
 
 T:Android.Runtime.PreserveAttribute
+T:Android.Runtime.RegisterAttribute
 T:Android.Runtime.StringDefAttribute
 T:Android.Runtime.IntDefAttribute
 

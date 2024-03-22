@@ -25,22 +25,21 @@
     <!-- The min API level supported by Microsoft.Android.Sdk -->
     <AndroidMinimumDotNetApiLevel Condition="'$(AndroidMinimumDotNetApiLevel)' == ''">21</AndroidMinimumDotNetApiLevel>
     <!-- *Latest* *stable* API level binding that we support; used when building src/Xamarin.Android.Build.Tasks -->
-    <AndroidLatestStableApiLevel Condition="'$(AndroidLatestStableApiLevel)' == ''">35</AndroidLatestStableApiLevel>
-    <AndroidLatestStablePlatformId Condition="'$(AndroidLatestStablePlatformId)' == ''">VanillaIceCream</AndroidLatestStablePlatformId>
-    <AndroidLatestStableFrameworkVersion Condition="'$(AndroidLatestStableFrameworkVersion)'==''">v15.0</AndroidLatestStableFrameworkVersion>
+    <AndroidLatestStableApiLevel Condition="'$(AndroidLatestStableApiLevel)' == ''">34</AndroidLatestStableApiLevel>
+    <AndroidLatestStablePlatformId Condition="'$(AndroidLatestStablePlatformId)' == ''">$(AndroidLatestStableApiLevel)</AndroidLatestStablePlatformId>
+    <AndroidLatestStableFrameworkVersion Condition="'$(AndroidLatestStableFrameworkVersion)'==''">v14.0</AndroidLatestStableFrameworkVersion>
     <!-- *Latest* *unstable* API level binding that we support; this can be the same as *stable* -->
-    <AndroidLatestUnstableApiLevel Condition="'$(AndroidLatestUnstableApiLevel)' == ''">$(AndroidLatestStableApiLevel)</AndroidLatestUnstableApiLevel>
-    <AndroidLatestUnstablePlatformId Condition="'$(AndroidLatestUnstablePlatformId)' == ''">$(AndroidLatestStableApiLevel)</AndroidLatestUnstablePlatformId>
-    <AndroidLatestUnstableFrameworkVersion Condition="'$(AndroidLatestUnstableFrameworkVersion)'==''">$(AndroidLatestStableFrameworkVersion)</AndroidLatestUnstableFrameworkVersion>
+    <AndroidLatestUnstableApiLevel Condition="'$(AndroidLatestUnstableApiLevel)' == ''">35</AndroidLatestUnstableApiLevel>
+    <AndroidLatestUnstablePlatformId Condition="'$(AndroidLatestUnstablePlatformId)' == ''">VanillaIceCream</AndroidLatestUnstablePlatformId>
+    <AndroidLatestUnstableFrameworkVersion Condition="'$(AndroidLatestUnstableFrameworkVersion)'==''">v14.0.99</AndroidLatestUnstableFrameworkVersion>
     <!-- The default API level used for $(TargetPlatformVersion) -->
     <AndroidDefaultTargetDotnetApiLevel Condition=" '$(AndroidDefaultTargetDotnetApiLevel)' == '' ">$(AndroidLatestStableApiLevel)</AndroidDefaultTargetDotnetApiLevel>
-    <AndroidDefaultTargetDotnetPlatformId Condition=" '$(AndroidDefaultTargetDotnetPlatformId)' == '' ">$(AndroidLatestStablePlatformId)</AndroidDefaultTargetDotnetPlatformId>
     <!-- The API level and TargetFrameworkVersion for the default Mono.Android.dll build -->
     <AndroidApiLevel Condition=" '$(AndroidApiLevel)' == '' ">$(AndroidLatestStableApiLevel)</AndroidApiLevel>
     <AndroidPlatformId Condition=" '$(AndroidPlatformId)' == '' ">$(AndroidLatestStablePlatformId)</AndroidPlatformId>
     <AndroidFrameworkVersion Condition=" '$(AndroidFrameworkVersion)' == '' ">$(AndroidLatestStableFrameworkVersion)</AndroidFrameworkVersion>
     <AndroidUseLatestPlatformSdk Condition=" '$(AndroidFrameworkVersion)' == '' ">True</AndroidUseLatestPlatformSdk>
-    <AndroidJavaRuntimeApiLevel Condition="'$(AndroidJavaRuntimeApiLevel)' == ''">$(AndroidLatestStablePlatformId)</AndroidJavaRuntimeApiLevel>
+    <AndroidJavaRuntimeApiLevel Condition="'$(AndroidJavaRuntimeApiLevel)' == ''">$(AndroidLatestStableApiLevel)</AndroidJavaRuntimeApiLevel>
     <DebugType Condition=" '$(DebugType)' == '' ">portable</DebugType>
     <Deterministic Condition=" '$(Deterministic)' == '' ">True</Deterministic>
     <LangVersion Condition=" '$(LangVersion)' == '' ">latest</LangVersion>

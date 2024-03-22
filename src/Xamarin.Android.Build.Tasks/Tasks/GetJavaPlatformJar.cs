@@ -117,7 +117,7 @@ namespace Xamarin.Android.Tasks
 			string targetSdkVersion       = MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (target);
 
 			if (!int.TryParse (targetFrameworkVersion, out int frameworkSdk)) {
-/*				// AndroidSdkPlatform is likely a *preview* API level; use it.
+				// AndroidSdkPlatform is likely a *preview* API level; use it.
 				Log.LogWarningForXmlNode (
 						code:             "XA4211",
 						file:             AndroidManifest,
@@ -128,7 +128,7 @@ namespace Xamarin.Android.Tasks
 							MonoAndroidHelper.SupportedVersions.GetIdFromFrameworkVersion (targetFrameworkVersion),
 							MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (targetFrameworkVersion),
 						}
-				);*/
+				);
 				return targetFrameworkVersion;
 			}
 			if (int.TryParse (targetSdkVersion, out int targetSdk) &&

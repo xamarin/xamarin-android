@@ -1894,6 +1894,34 @@
   <attr api-since="35" path="/api/package[@name='android.adservices.signals']" name="managedName">Android.AdServices.Signals</attr>
   <attr api-since="35" path="/api/package[@name='java.util.random']" name="managedName">Java.Util.RandomGenerators</attr>
 
+  <!-- API-35 adds new java.util.Sequenced[Collection|Map] interfaces that existing interfaces/classes now implement. -->
+  <!-- Fix covariant return types for new 'reversed ()' method. -->	
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='List']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedCollection</attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='Deque']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedCollection</attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='NavigableSet']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedCollection</attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='SortedSet']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedCollection</attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='NavigableMap']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedMap</attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='SortedMap']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedMap</attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/class[@name='LinkedHashSet']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedCollection</attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/class[@name='LinkedList']/method[@name='reversed' and count(parameter)=0]" name="managedReturn">Java.Util.ISequencedCollection</attr>
+
+  <!-- Removed because it simply narrows the method return type, which we cannot change anyways. (SequencedCollection -> SequencedSet) -->
+  <remove-node api-since="35" path="/api/package[@name='java.util']/interface[@name='SequencedSet']/method[@name='reversed' and count(parameter)=0]" />
+
+  <!-- Manually bound because they get generated incorrectly -->
+  <remove-node api-since="35" path="/api/package[@name='java.util']/interface[@name='List']/method[@name='reversed' and count(parameter)=0]" />
+  <remove-node api-since="35" path="/api/package[@name='java.util']/interface[@name='SortedMap']/method[@name='reversed' and count(parameter)=0]" />
+
+  <!-- New getFirst/getLast methods cannot be made into properties, or they conflict with existing First/Last methods. -->
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='SortedSet']/method[@name='getFirst' and count(parameter)=0]" name="propertyName"></attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='SortedSet']/method[@name='getLast' and count(parameter)=0]" name="propertyName"></attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='SequencedCollection']/method[@name='getFirst' and count(parameter)=0]" name="propertyName"></attr>
+  <attr api-since="35" path="/api/package[@name='java.util']/interface[@name='SequencedCollection']/method[@name='getLast' and count(parameter)=0]" name="propertyName"></attr>
+
+  <!-- In API-34 only the setter existed so we didn't make it a property. Now it also has a getter but we cannot make it a property due to back-compat. -->
+  <attr api-since="35" path="/api/package[@name='android.media']/class[@name='MediaRouter2']/method[@name='getRouteListingPreference' and count(parameter)=0]" name="propertyName"></attr>
+  <attr api-since="35" path="/api/package[@name='android.media']/class[@name='MediaRouter2']/method[@name='setRouteListingPreference' and count(parameter)=1 and parameter[1][@type='android.media.RouteListingPreference']]" name="propertyName"></attr>
+
   <!--
     ***********************************************************************
     THE FOLLOWING LINES MUST BE CREATED FOR ANY NEW PLATFORM THAT IS ADDED.

@@ -97,6 +97,8 @@
     <Compile Include="Java.Time\ZonedDateTime.cs" />
     <Compile Include="Java.Time\LocalDateTime.cs" />
     <Compile Include="Java.Time\LocalDate.cs" />
+    <Compile Include="Java.Util\ISortedMap.cs" />
+    <Compile Include="Java.Util\IList.cs" />
   </ItemGroup>
 
   <Import Project="..\Xamarin.Android.NamingCustomAttributes\Xamarin.Android.NamingCustomAttributes.projitems" Label="Shared" Condition="Exists('..\Xamarin.Android.NamingCustomAttributes\Xamarin.Android.NamingCustomAttributes.projitems')" />

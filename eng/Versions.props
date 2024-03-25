@@ -3,10 +3,10 @@
   <PropertyGroup>
     <MicrosoftDotnetSdkInternalPackageVersion>7.0.403-servicing.23513.22</MicrosoftDotnetSdkInternalPackageVersion>
     <MicrosoftNETILLinkTasksPackageVersion>7.0.100-1.23401.1</MicrosoftNETILLinkTasksPackageVersion>
-    <MicrosoftNETCoreAppRefPackageVersion>7.0.13</MicrosoftNETCoreAppRefPackageVersion>
+    <MicrosoftNETCoreAppRefPackageVersion>7.0.18</MicrosoftNETCoreAppRefPackageVersion>
     <MicrosoftDotNetApiCompatPackageVersion>7.0.0-beta.22103.1</MicrosoftDotNetApiCompatPackageVersion>
     <MicrosoftDotNetBuildTasksFeedPackageVersion>7.0.0-beta.22103.1</MicrosoftDotNetBuildTasksFeedPackageVersion>
-    <MicrosoftNETWorkloadEmscriptennet7Manifest70100Version>7.0.13</MicrosoftNETWorkloadEmscriptennet7Manifest70100Version>
+    <MicrosoftNETWorkloadEmscriptennet7Manifest70100Version>7.0.18</MicrosoftNETWorkloadEmscriptennet7Manifest70100Version>
     <MicrosoftNETWorkloadEmscriptenPackageVersion>$(MicrosoftNETWorkloadEmscriptennet7Manifest70100Version)</MicrosoftNETWorkloadEmscriptenPackageVersion>
     <MicrosoftTemplateEngineTasksPackageVersion>7.0.100-rc.1.22410.7</MicrosoftTemplateEngineTasksPackageVersion>
   </PropertyGroup>

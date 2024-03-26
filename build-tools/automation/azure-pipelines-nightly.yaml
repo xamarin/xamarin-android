@@ -294,6 +294,11 @@ stages:
     timeoutInMinutes: 480
     workspace:
       clean: all
+    variables:
+    - name: ApiScanSoftwareName
+      value: VS
+    - name: ApiScanSoftwareVersion
+      value: 17.10
     steps:
     - template: /build-tools/automation/yaml-templates/setup-test-environment.yaml
       parameters:
@@ -317,21 +322,21 @@ stages:
         Contents: |
           $(System.DefaultWorkingDirectory)\bin\$(XA.Build.Configuration)\dotnet\packs\Microsoft.Android*\**\?(*.dll|*.exe|*.pdb)
           $(System.DefaultWorkingDirectory)\binutils-pdb\*.pdb
-        TargetFolder: $(Build.StagingDirectory)\apiscan
+        TargetFolder: $(Agent.TempDirectory)\T
         OverWrite: true
         flattenFolders: true
 
-    - pwsh: Get-ChildItem -Path "$(Build.StagingDirectory)\apiscan" -Recurse
+    - pwsh: Get-ChildItem -Path "$(Agent.TempDirectory)\T" -Recurse
       displayName: List Files for APIScan
 
     ### Run latest version of APIScan listed at https://www.1eswiki.com/wiki/APIScan_Build_Task
     - task: APIScan@2
       displayName: Run APIScan
       inputs:
-        softwareFolder: $(Build.StagingDirectory)\apiscan
-        symbolsFolder: 'SRV*http://symweb;$(Build.StagingDirectory)\apiscan'
-        softwareName: $(ApiScanName)
-        softwareVersionNum: $(Build.SourceBranchName)-$(Build.SourceVersion)$(System.JobAttempt)
+        softwareFolder: $(Agent.TempDirectory)\T
+        symbolsFolder: 'SRV*http://symweb;$(Agent.TempDirectory)\T'
+        softwareName: $(ApiScanSoftwareName)
+        softwareVersionNum: $(ApiScanSoftwareVersion)
         isLargeApp: true
         toolVersion: Latest
       env:

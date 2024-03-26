@@ -122,6 +122,11 @@ namespace Xamarin.Android.Prepare
 					Utilities.CopyFile (toolSourcePath, toolDestinationPath);
 					Utilities.CopyFile (toolSourcePdbPath, toolDestinationPdbPath);
 				}
+				// Copy PDB files for tools that have been renamed
+				if (isWindows) {
+					Utilities.CopyFile (Path.Combine (sourcePath, "lld.pdb"), Path.Combine (symbolArchiveDir, "lld.pdb"));
+					Utilities.CopyFile (Path.Combine (sourcePath, "llvm-objcopy.pdb"), Path.Combine (symbolArchiveDir, "llvm-objcopy.pdb"));
+				}
 			}
 		}
 

@@ -75,6 +75,14 @@ namespace Xamarin.Android.Build.Tests
 			libC.OtherBuildItems.Add (new AndroidItem.AndroidAsset ("Assets\\bar\\bar.txt") {
 				BinaryContent = () => Array.Empty<byte> (),
 			});
+			libC.OtherBuildItems.Add (new BuildItem ("None", "AndroidManifest.xml") {
+				TextContent = () => @"<?xml version='1.0' encoding='utf-8'?>
+<manifest xmlns:android='http://schemas.android.com/apk/res/android'>
+  <queries>
+    <package android:name='com.companyname.someappid' />
+  </queries>
+</manifest>",
+			});
 			libC.SetProperty ("AndroidUseDesignerAssembly", useDesignerAssembly.ToString ());
 			var activity = libC.Sources.FirstOrDefault (s => s.Include () == "MainActivity.cs");
 			if (activity != null)
@@ -87,6 +95,7 @@ namespace Xamarin.Android.Build.Tests
 			using (var aar = ZipHelper.OpenZip (aarPath)) {
 				aar.AssertContainsEntry (aarPath, "assets/bar/bar.txt");
 				aar.AssertEntryEquals (aarPath, "proguard.txt", "# LibraryC");
+				aar.AssertContainsEntry (aarPath, "AndroidManifest.xml");
 			}
 
 			var libB = new XamarinAndroidLibraryProject {

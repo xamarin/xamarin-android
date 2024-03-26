@@ -72,6 +72,10 @@ namespace Xamarin.Android.Tasks
 
 				var manifest = AndroidAppManifest.Load (Path.GetFullPath (manifestFile), MonoAndroidHelper.SupportedVersions);
 				var packageName = manifest.PackageName;
+				if (string.IsNullOrEmpty (packageName)) {
+					LogDebugMessage ($"Skipping, AndroidManifest.xml does not have a packageName: {manifestFile}");
+					continue;
+				}
 				if (!libraries.TryGetValue (packageName, out Package library)) {
 					libraries.Add (packageName, library = new Package {
 						Name = packageName,

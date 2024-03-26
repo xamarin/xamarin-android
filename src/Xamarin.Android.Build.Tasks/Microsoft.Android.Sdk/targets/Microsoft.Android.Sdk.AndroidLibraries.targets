@@ -47,6 +47,7 @@ projects.
       <_CreateAarInputs Include="@(_AndroidResourceDest)" />
       <_CreateAarInputs Include="@(AndroidEnvironment)" />
       <_CreateAarInputs Include="@(AndroidJavaLibrary)" />
+      <_CreateAarInputs Include="$(AndroidManifest)" />
       <_CreateAarInputs Include="@(EmbeddedJar)" />
       <_CreateAarInputs Include="@(EmbeddedNativeLibrary)" />
       <_CreateAarInputs Include="@(ProguardConfiguration)" />
@@ -79,6 +80,7 @@ projects.
         AndroidAssets="@(AndroidAsset)"
         AndroidResources="@(_AndroidResourceDest)"
         AndroidEnvironment="@(AndroidEnvironment)"
+        AndroidManifest="$(AndroidManifest)"
         JarFiles="@(AndroidJavaLibrary);@(EmbeddedJar)"
         NativeLibraries="@(EmbeddedNativeLibrary)"
         ProguardConfigurationFiles="@(ProguardConfiguration)"

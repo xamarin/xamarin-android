@@ -12,25 +12,6 @@ namespace Android.Content {
 
 	partial class GrantUriPermissionAttribute {
 
-		static ManifestDocumentElement<GrantUriPermissionAttribute> mapping = new ManifestDocumentElement<GrantUriPermissionAttribute> ("grant-uri-permission") {
-			{
-			  "Path",
-			  "path",
-			  self          => self.Path,
-			  (self, value) => self.Path  = (string) value
-			}, {
-			  "PathPattern",
-			  "pathPattern",
-			  self          => self.PathPattern,
-			  (self, value) => self.PathPattern = (string) value
-			}, {
-			  "PathPrefix",
-			  "pathPrefix",
-			  self          => self.PathPrefix,
-			  (self, value) => self.PathPrefix  = (string) value
-			},
-		};
-
 		ICollection<string> specified;
 
 		public static IEnumerable<GrantUriPermissionAttribute> FromTypeDefinition (TypeDefinition type, TypeDefinitionCache cache)

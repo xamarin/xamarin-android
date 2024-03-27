@@ -12,20 +12,6 @@ namespace Android.App {
 
 	partial class UsesLibraryAttribute {
 
-		static ManifestDocumentElement<UsesLibraryAttribute> mapping = new ManifestDocumentElement<UsesLibraryAttribute> ("uses-library") {
-			{
-			  "Name",
-			  "name",
-			  self          => self.Name,
-			  (self, value) => self.Name  = (string) value
-			}, {
-			  "Required",
-			  "required",
-			  self          => self.Required,
-			  (self, value) => self.Required  = (bool) value
-			},
-		};
-
 		ICollection<string> specified;
 
 		public static IEnumerable<UsesLibraryAttribute> FromCustomAttributeProvider (ICustomAttributeProvider provider, TypeDefinitionCache cache)

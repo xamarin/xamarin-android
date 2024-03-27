@@ -17,35 +17,6 @@ namespace Android.App
 
 	partial class LayoutAttribute
 	{
-		static ManifestDocumentElement<LayoutAttribute> mapping = new ManifestDocumentElement<LayoutAttribute> ("layout") {
-			{
-			  "DefaultWidth",
-			  "defaultWidth",
-			  self          => self.DefaultWidth,
-			  (self, value) => self.DefaultWidth  = (string) value
-			}, {
-			  "DefaultHeight",
-			  "defaultHeight",
-			  self          => self.DefaultHeight,
-			  (self, value) => self.DefaultHeight  = (string) value
-			}, {
-			  "Gravity",
-			  "gravity",
-			  self          => self.Gravity,
-			  (self, value) => self.Gravity = (string) value
-			}, {
-			  "MinHeight",
-			  "minHeight",
-			  self          => self.MinHeight,
-			  (self, value) => self.MinHeight = (string) value
-			}, {
-			  "MinWidth",
-			  "minWidth",
-			  self          => self.MinWidth,
-			  (self, value) => self.MinWidth  = (string) value
-			},
-		};
-
 		TypeDefinition type;
 		ICollection<string> specified;
 

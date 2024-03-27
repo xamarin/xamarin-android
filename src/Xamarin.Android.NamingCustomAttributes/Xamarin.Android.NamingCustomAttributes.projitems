@@ -11,12 +11,14 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Android.Content\BroadcastReceiverAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Android.Content\ContentProviderAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Android.Content\ContentProviderAttribute.Partial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Android.Runtime\RegisterAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Java.Interop\ExportAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Java.Interop\ExportFieldAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Java.Interop\ExportParameterAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Java.Interop\ExportParameterKind.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Android.App\ActivityAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Android.App\ActivityAttribute.Partial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Android.App\ApplicationAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Android.App\ServiceAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Android.App\InstrumentationAttribute.cs" />

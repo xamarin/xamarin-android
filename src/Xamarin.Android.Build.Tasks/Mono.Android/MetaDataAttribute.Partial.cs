@@ -12,25 +12,6 @@ namespace Android.App {
 
 	partial class MetaDataAttribute {
 
-		static ManifestDocumentElement<MetaDataAttribute> mapping = new ManifestDocumentElement<MetaDataAttribute> ("meta-data") {
-			{
-			  "Name",
-			  "name",
-			  self          => self.Name,
-			  null
-			}, {
-			  "Resource",
-			  "resource",
-			  self          => self.Resource,
-			  (self, value) => self.Resource  = (string) value
-			}, {
-			  "Value",
-			  "value",
-			  self          => self.Value,
-			  (self, value) => self.Value = (string) value
-			},
-		};
-
 		ICollection<string> specified;
 
 		public static IEnumerable<MetaDataAttribute> FromCustomAttributeProvider (ICustomAttributeProvider type, TypeDefinitionCache cache)

@@ -17,37 +17,6 @@ namespace Android.App {
 
 	partial class PermissionGroupAttribute {
 		
-		string _RoundIcon;
-
-		static ManifestDocumentElement<PermissionGroupAttribute> mapping = new ManifestDocumentElement<PermissionGroupAttribute> ("permission") {
-			{
-				"Description",
-				"description",
-				self          => self.Description,
-				(self, value) => self.Description  = (string) value
-			}, {
-				"Icon",
-				"icon",
-				self          => self.Icon,
-				(self, value) => self.Icon  = (string) value
-			}, {
-				"Label",
-				"label",
-				self          => self.Label,
-				(self, value) => self.Label  = (string) value
-			}, {
-				"Name",
-				"name",
-				self          => self.Name,
-				(self, value) => self.Name  = (string) value
-			}, {
-			  "RoundIcon",
-			  "roundIcon",
-			  self          => self._RoundIcon,
-			  (self, value) => self._RoundIcon  = (string) value
-			},
-		};
-
 		ICollection<string> specified;
 
 		public static IEnumerable<PermissionGroupAttribute> FromCustomAttributeProvider (ICustomAttributeProvider provider, TypeDefinitionCache cache)

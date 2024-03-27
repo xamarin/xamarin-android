@@ -79,6 +79,11 @@
     <Compile Include="..\..\external\Java.Interop\src\Java.Interop.Tools.JavaCallableWrappers\Java.Interop.Tools.JavaCallableWrappers\Crc64.Table.cs">
       <Link>Crc64.Table.cs</Link>
     </Compile>
+    <Compile Include="Android.App\IntentFilterAttribute.Partial.cs" />
+    <Compile Include="Android.App\MetaDataAttribute.Partial.cs" />
+    <Compile Include="Android.App\UsesFeatureAttribute.Partial.cs" />
+    <Compile Include="Android.App\UsesLibraryAttribute.Partial.cs" />
+    <Compile Include="Android.App\UsesPermissionAttribute.Partial.cs" />
     <Compile Include="Android.Content.PM\PackageManager.cs" />
     <Compile Include="Android.Graphics\PathIterator.cs" />
     <Compile Include="Android.Hardware\HardwareBuffer.cs" />

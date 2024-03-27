@@ -11,32 +11,15 @@ namespace Android.App {
 
 	partial class UsesFeatureAttribute	{
 
-		bool _Required;
-		int _Version;
-
-		static ManifestDocumentElement<UsesFeatureAttribute> mapping = new ManifestDocumentElement<UsesFeatureAttribute> ("uses-feature") {
-			{
-			  "Name",
-			  "name",
-			  self          => self.Name,
-			  (self, value) => self.Name  = (string) value
-			}, {
-			  "Required",
-			  "required",
-			  self          => self._Required,
-			  (self, value) => self._Required  = (bool) value
-			}, {
-			  "GLESVersion",
-			  "glEsVersion",
-			  self          => self.GLESVesionAsString(),
-			  (self, value) => self.GLESVersion  = (int) value
-			}, {
-			  "Version",
-			  "version",
-			  self          => self._Version,
-			  (self, value) => self._Version = (int) value
-			}
-		};
+		static partial void AddManualMapping ()
+		{
+			mapping.Add (
+				member: "GLESVersion",
+				attributeName: "glEsVersion",
+				getter: self => self.GLESVesionAsString (),
+				setter: (self, value) => self.GLESVersion = (int) value
+			);
+		}
 
 		internal string GLESVesionAsString ()
 		{

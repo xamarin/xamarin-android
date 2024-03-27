@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>$(DotNetStableTargetFramework)</TargetFramework>
+    <RootNamespace>manifest_attribute_codegen</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputPath>..\..\bin\Build$(Configuration)</OutputPath>
+    <AppendTargetFrameworkToOutputPath >false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  
+  <Import Project="..\..\Configuration.props" />
+  
+  <ItemGroup>
+    <PackageReference Include="Mono.Options" Version="$(MonoOptionsVersion)" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\external\Java.Interop\src\Xamarin.SourceWriter\Xamarin.SourceWriter.csproj" />
+  </ItemGroup>
+
+  <!-- Generates manifest attributes from Android SDK -->
+  <Target Name="GenerateManifestAttributes"
+      DependsOnTargets="Build">
+
+    <PropertyGroup>
+      <_ManifestAttributeCodeGen>..\..\bin\Build$(Configuration)\manifest-attribute-codegen.dll</_ManifestAttributeCodeGen>
+      <_ConfigurationFile>$(MSBuildThisFileDirectory)metadata.xml</_ConfigurationFile>
+      <_RepositoryBaseDirectory>..\..\</_RepositoryBaseDirectory>
+    </PropertyGroup>
+
+    <Exec
+        Command="&quot;$(DotNetPreviewTool)&quot; &quot;$(_ManifestAttributeCodeGen)&quot; -sdk-path=&quot;$(AndroidSdkFullPath)&quot; -base-dir=$(_RepositoryBaseDirectory) -metadata-file=&quot;$(_ConfigurationFile)&quot;" />
+
+  </Target>
+
+</Project>

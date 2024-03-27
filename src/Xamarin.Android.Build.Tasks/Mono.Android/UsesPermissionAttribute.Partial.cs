@@ -12,22 +12,6 @@ namespace Android.App {
 
 	partial class UsesPermissionAttribute {
 
-		int   _MaxSdkVersion;
-
-		static ManifestDocumentElement<UsesPermissionAttribute> mapping = new ManifestDocumentElement<UsesPermissionAttribute> ("uses-permission") {
-			{
-			  "Name",
-			  "name",
-			  self          => self.Name,
-			  (self, value) => self.Name  = (string) value
-			}, {
-			  "MaxSdkVersion",
-			  "maxSdkVersion",
-			  self          => self._MaxSdkVersion,
-			  (self, value) => self._MaxSdkVersion  = (int) value
-			},
-		};
-
 		ICollection<string> specified;
 
 		public static IEnumerable<UsesPermissionAttribute> FromCustomAttributeProvider (ICustomAttributeProvider provider, TypeDefinitionCache cache)

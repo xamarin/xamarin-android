@@ -1,0 +1,42 @@
+﻿#nullable enable
+abstract Android.Net.Wifi.WifiManager.WpsCallback.OnFailed(Android.Net.Wifi.WpsFailureReason reason) -> void
+Android.Graphics.ImageDecoder.Allocator.get -> Android.Graphics.ImageDecoderAllocator
+Android.Graphics.ImageDecoder.Allocator.set -> void
+Android.Hardware.HardwareBuffer.Usage.get -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.None = 0 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageComposerOverlay = 2048 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageCpuReadOften = 3 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageCpuReadRarely = 2 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageCpuWriteOften = 48 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageCpuWriteRarely = 32 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageFrontBuffer = 4294967296 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageGpuColorOutput = 512 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageGpuCubeMap = 33554432 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageGpuDataBuffer = 16777216 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageGpuMipmapComplete = 67108864 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageGpuSampledImage = 256 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageProtectedContent = 16384 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageSensorDirectData = 8388608 -> Android.Hardware.HardwareBufferUsage
+Android.Hardware.HardwareBufferUsage.UsageVideoEncode = 65536 -> Android.Hardware.HardwareBufferUsage
+Android.Telephony.Mbms.DownloadStatus
+Android.Telephony.Mbms.DownloadStatus.ActivelyDownloading = 1 -> Android.Telephony.Mbms.DownloadStatus
+Android.Telephony.Mbms.DownloadStatus.PendingDownload = 2 -> Android.Telephony.Mbms.DownloadStatus
+Android.Telephony.Mbms.DownloadStatus.PendingDownloadWindow = 4 -> Android.Telephony.Mbms.DownloadStatus
+Android.Telephony.Mbms.DownloadStatus.PendingRepair = 3 -> Android.Telephony.Mbms.DownloadStatus
+Android.Telephony.Mbms.DownloadStatus.Unknown = 0 -> Android.Telephony.Mbms.DownloadStatus
+Android.Telephony.StreamingState
+Android.Telephony.StreamingState.Stalled = 3 -> Android.Telephony.StreamingState
+Android.Telephony.StreamingState.Started = 2 -> Android.Telephony.StreamingState
+Android.Telephony.StreamingState.Stopped = 1 -> Android.Telephony.StreamingState
+static Android.Hardware.HardwareBuffer.Create(int width, int height, Android.Hardware.HardwareBufferFormat format, int layers, Android.Hardware.HardwareBufferUsage usage) -> Android.Hardware.HardwareBuffer!
+static Android.Hardware.HardwareBuffer.IsSupported(int width, int height, Android.Hardware.HardwareBufferFormat format, int layers, long usage) -> bool
+static Android.Icu.Text.Collator.GetEquivalentReorderCodes(int reorderCode) -> int[]?
+virtual Android.Content.Context.BindIsolatedService(Android.Content.Intent! service, Android.Content.Context.BindServiceFlags! flags, string! instanceName, Java.Util.Concurrent.IExecutor! executor, Android.Content.IServiceConnection! conn) -> bool
+virtual Android.Content.Context.BindIsolatedService(Android.Content.Intent! service, int flags, string! instanceName, Java.Util.Concurrent.IExecutor! executor, Android.Content.IServiceConnection! conn) -> bool
+virtual Android.Icu.Text.Collator.GetReorderCodes() -> int[]?
+virtual Android.Icu.Text.Collator.SetReorderCodes(params int[]? order) -> void
+virtual Android.OS.HardwarePropertiesManager.GetDeviceTemperatures(Android.OS.DeviceTemperatureType type, Android.OS.TemperatureSource source) -> float[]!
+virtual Android.Telephony.Mbms.DownloadStatusListener.OnStatusUpdated(Android.Telephony.Mbms.DownloadRequest? request, Android.Telephony.Mbms.FileInfo? fileInfo, Android.Telephony.Mbms.DownloadStatus status) -> void
+virtual Android.Telephony.Mbms.StreamingServiceCallback.OnStreamMethodUpdated(Android.Telephony.Mbms.StreamingMethod methodType) -> void
+virtual Android.Telephony.Mbms.StreamingServiceCallback.OnStreamStateUpdated(Android.Telephony.StreamingState state, Android.Telephony.Mbms.StreamingStateChangedReason reason) -> void

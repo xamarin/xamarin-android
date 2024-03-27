@@ -88,6 +88,26 @@ BasicUtilities::set_world_accessable ([[maybe_unused]] const char *path)
 	}
 }
 
+bool
+BasicUtilities::set_world_accessible (int fd) noexcept
+{
+	if (fd < 0) {
+		return false;
+	}
+
+	int r;
+	do {
+		r = fchmod (fd, 0664);
+	} while (r == -1 && errno == EINTR);
+
+	if (r == -1) {
+		log_error (LOG_DEFAULT, "fchmod(%d, 0664) failed: %s", fd, strerror (errno));
+		return false;
+	}
+
+	return true;
+}
+
 void
 BasicUtilities::set_user_executable ([[maybe_unused]] const char *path)
 {

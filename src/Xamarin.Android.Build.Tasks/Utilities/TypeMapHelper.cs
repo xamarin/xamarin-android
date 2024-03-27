@@ -23,7 +23,7 @@ static class TypeMapHelper
 	static ulong HashBytes (byte[] bytes, bool is64Bit)
 	{
 		if (is64Bit) {
-			return XxHash64.HashToUInt64 (bytes);
+			return XxHash3.HashToUInt64 (bytes);
 		}
 
 		return (ulong)XxHash32.HashToUInt32 (bytes);

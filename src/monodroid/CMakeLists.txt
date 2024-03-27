@@ -142,6 +142,8 @@ set(LZ4_INCLUDE_DIR ${LZ4_SRC_DIR})
 set(XA_BIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../bin/${XA_BUILD_CONFIGURATION}")
 set(XA_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../bin/Build${XA_BUILD_CONFIGURATION}")
 set(ROBIN_MAP_DIR "${EXTERNAL_DIR}/robin-map")
+set(XXHASH_DIR "${EXTERNAL_DIR}/xxHash")
+set(CONSTEXPR_XXH3_DIR "${EXTERNAL_DIR}/constexpr-xxh3")
 
 include("${XA_BUILD_DIR}/xa_build_configuration.cmake")
 
@@ -163,9 +165,11 @@ set(LZ4_SOURCES
 
 # Include directories
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include/ ${CMAKE_SOURCE_DIR}/include)
+include_directories(${EXTERNAL_DIR})
 
 # The SYSTEM which will make clang skip warnings for the headers there. Since we can't do
 # much about them, we can just as well avoid cluttered build output.
+include_directories(SYSTEM ${CONSTEXPR_XXH3_DIR})
 include_directories(SYSTEM ${ROBIN_MAP_DIR}/include)
 include_directories(SYSTEM ${CMAKE_SYSROOT}/usr/include/c++/v1/)
 include_directories(SYSTEM ${LZ4_INCLUDE_DIR})

@@ -8,6 +8,7 @@ GENERATOR_BINARY="${MONODROID_SOURCE_DIR}/generate-pinvoke-tables"
 TARGET_FILE="${MONODROID_SOURCE_DIR}/pinvoke-tables.include"
 GENERATED_FILE="${TARGET_FILE}.generated"
 DIFF_FILE="${TARGET_FILE}.diff"
+EXTERNAL_DIR="${MY_DIR}/../../external/"
 
 function die()
 {
@@ -62,7 +63,7 @@ case ${HOST} in
 	*) die Unsupported OS ;;
 esac
 
-${COMPILER} -O2 -std=c++20 "${GENERATOR_SOURCE}" -o "${GENERATOR_BINARY}"
+${COMPILER} -O2 -std=c++20 -I${EXTERNAL_DIR} -I${EXTERNAL_DIR}/constexpr-xxh3 "${GENERATOR_SOURCE}" -o "${GENERATOR_BINARY}"
 "${GENERATOR_BINARY}" "${GENERATED_FILE}"
 
 FILES_DIFFER="no"

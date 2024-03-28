@@ -43,6 +43,12 @@ namespace Xamarin.Android.Prepare
 				return false;
 			}
 
+			// HACK START: replace distribution as.{exe,pdb} with the "bundled" one. To be removed before PR can be merged
+			string asDestDir = Path.Combine (tempDir, "windows", "bin");
+			File.Copy (Path.Combine (Configurables.Paths.BootstrapResourcesDir, "as.exe"), Path.Combine (asDestDir, "as.exe"), true);
+			File.Copy (Path.Combine (Configurables.Paths.BootstrapResourcesDir, "as.pdb"), Path.Combine (asDestDir, "as.pdb"), true);
+			// HACK END
+
 			if (!hostHaveAll) {
 				CopyToDestination (context, "Host", tempDir, hostDestinationDirectory, executableExtensions: ExecutableExtensions);
 			}

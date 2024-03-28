@@ -42,13 +42,15 @@ class JCWGenerator
 {
 	readonly TaskLoggingHelper log;
 	readonly JCWGeneratorContext context;
+	readonly string intermediateOutputDirectory;
 
 	public MarshalMethodsClassifier? Classifier { get; private set; }
 
-	public JCWGenerator (TaskLoggingHelper log, JCWGeneratorContext context)
+	public JCWGenerator (TaskLoggingHelper log, JCWGeneratorContext context, string intermediateOutputDirectory)
 	{
 		this.log = log;
 		this.context = context;
+		this.intermediateOutputDirectory = intermediateOutputDirectory;
 	}
 
 	/// <summary>
@@ -88,7 +90,7 @@ class JCWGenerator
 		);
 	}
 
-	MarshalMethodsClassifier MakeClassifier () => new MarshalMethodsClassifier (context.Arch, context.TypeDefinitionCache, context.Resolver, log);
+	MarshalMethodsClassifier MakeClassifier () => new MarshalMethodsClassifier (context.Arch, context.TypeDefinitionCache, context.Resolver, intermediateOutputDirectory, log);
 
 	bool ProcessTypes (bool generateCode, string androidSdkPlatform, MarshalMethodsClassifier? classifier, string? outputPath, string? applicationJavaClass)
 	{

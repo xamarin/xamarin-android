@@ -42,6 +42,7 @@ static PinvokeEntry internal_pinvokes[] = {
 	{0x99280385171e42f7, "_monodroid_weak_gref_new", reinterpret_cast<void*>(&_monodroid_weak_gref_new)},
 	{0x99650880ac9e14a3, "send_uninterrupted", reinterpret_cast<void*>(&send_uninterrupted)},
 	{0x9c8899c01b365588, "_monodroid_lref_log_new", reinterpret_cast<void*>(&_monodroid_lref_log_new)},
+	{0x9dd1797d09aee43f, "monodroid_log_traces", reinterpret_cast<void*>(&monodroid_log_traces)},
 	{0xa2b311d0ace698ff, "monodroid_clear_gdb_wait", reinterpret_cast<void*>(&monodroid_clear_gdb_wait)},
 	{0xab5d72a27d67b248, "monodroid_embedded_assemblies_set_assemblies_prefix", reinterpret_cast<void*>(&monodroid_embedded_assemblies_set_assemblies_prefix)},
 	{0xb8b6638548d5aa08, "monodroid_strsplit", reinterpret_cast<void*>(&monodroid_strsplit)},
@@ -189,6 +190,7 @@ static PinvokeEntry dotnet_pinvokes[] = {
 	{0x534a064c11a1da14, "SystemNative_Sync", nullptr},
 	{0x536599a0b4941c95, "SystemNative_InterfaceNameToIndex", nullptr},
 	{0x53cb0f96f17cff42, "AndroidCryptoNative_SSLStreamGetProtocol", nullptr},
+	{0x53e595a8ecfa62da, "_kBrotliContextLookupTable", nullptr},
 	{0x54524b9f89e55d3d, "BrotliDecoderTakeOutput", nullptr},
 	{0x5648a01a8d57fdf3, "AndroidCryptoNative_X509DecodeCollection", nullptr},
 	{0x5823d482b63b2860, "SystemNative_GetIcmpv4GlobalStatistics", nullptr},
@@ -243,6 +245,7 @@ static PinvokeEntry dotnet_pinvokes[] = {
 	{0x6fcf389a08fab67e, "BrotliDecoderGetErrorCode", nullptr},
 	{0x701cf6776d74a875, "SystemNative_Read", nullptr},
 	{0x70677741626a2e15, "AndroidCryptoNative_SSLStreamCreateWithCertificates", nullptr},
+	{0x70a8c39859645567, "Java_net_dot_android_crypto_DotnetProxyTrustManager_verifyRemoteCertificate", nullptr},
 	{0x71218925a8d060b1, "SystemNative_GetNetworkInterfaces", nullptr},
 	{0x7301d7267cea8ff8, "AndroidCryptoNative_Aes128Cbc", nullptr},
 	{0x734d29a9e11cade9, "AndroidCryptoNative_SetRsaParameters", nullptr},
@@ -276,6 +279,7 @@ static PinvokeEntry dotnet_pinvokes[] = {
 	{0x86178ff6f2ff90f4, "SystemNative_PlatformSupportsDualModeIPv4PacketInfo", nullptr},
 	{0x866d289872995b56, "AndroidCryptoNative_X509StoreEnumerateCertificates", nullptr},
 	{0x86b09bf921350f8c, "SystemNative_Log", nullptr},
+	{0x8755aae823b5825d, "_kBrotliPrefixCodeRanges", nullptr},
 	{0x87c7d4815a4fd057, "CryptoNative_EvpSha1", nullptr},
 	{0x885b44a0a26bd2b1, "SystemNative_iOSSupportVersion", nullptr},
 	{0x88609da0c505eef2, "SystemNative_GetSockName", nullptr},
@@ -334,6 +338,7 @@ static PinvokeEntry dotnet_pinvokes[] = {
 	{0xa23f5e3f758fc4c0, "SystemNative_GetPid", nullptr},
 	{0xa2cd91a41d9cfa7c, "AndroidCryptoNative_Aes256Cbc", nullptr},
 	{0xa482e9592d7fc872, "SystemNative_CloseSocketEventPort", nullptr},
+	{0xa5c28f6810917d53, "SystemNative_GetTimeZoneData", nullptr},
 	{0xa60707ebce568092, "SystemNative_GetPeerID", nullptr},
 	{0xa78db9df16110d0e, "SystemNative_LowLevelMonitor_Destroy", nullptr},
 	{0xa7cafc1044da3306, "AndroidCryptoNative_SSLStreamGetPeerCertificate", nullptr},
@@ -540,6 +545,7 @@ static PinvokeEntry internal_pinvokes[] = {
 	{0xd78c749d, "monodroid_get_log_categories", reinterpret_cast<void*>(&monodroid_get_log_categories)},
 	{0xd91f3619, "create_public_directory", reinterpret_cast<void*>(&create_public_directory)},
 	{0xe215a17c, "_monodroid_weak_gref_delete", reinterpret_cast<void*>(&_monodroid_weak_gref_delete)},
+	{0xe4c3ee19, "monodroid_log_traces", reinterpret_cast<void*>(&monodroid_log_traces)},
 	{0xe7e77ca5, "_monodroid_gref_log", reinterpret_cast<void*>(&_monodroid_gref_log)},
 	{0xea2184e3, "_monodroid_gc_wait_for_bridge_processing", reinterpret_cast<void*>(&_monodroid_gc_wait_for_bridge_processing)},
 	{0xf4079b4a, "monodroid_dylib_mono_new", reinterpret_cast<void*>(&monodroid_dylib_mono_new)},
@@ -596,6 +602,7 @@ static PinvokeEntry dotnet_pinvokes[] = {
 	{0x1bf277c4, "SystemNative_WaitForSocketEvents", nullptr},
 	{0x1c4778bf, "SystemNative_AlignedFree", nullptr},
 	{0x1cb466df, "AndroidCryptoNative_RsaGenerateKeyEx", nullptr},
+	{0x1cc522bb, "_kBrotliContextLookupTable", nullptr},
 	{0x1cf7b52c, "SystemNative_MAdvise", nullptr},
 	{0x1eb6eaaa, "CryptoNative_GetRandomBytes", nullptr},
 	{0x1ebc63c1, "AndroidCryptoNative_X509ChainDestroyContext", nullptr},
@@ -747,12 +754,15 @@ static PinvokeEntry dotnet_pinvokes[] = {
 	{0x70e91ddd, "SystemNative_FChMod", nullptr},
 	{0x71698a7f, "SystemNative_GetDomainSocketSizes", nullptr},
 	{0x7243c4b4, "AndroidCryptoNative_Des3Cfb8", nullptr},
+	{0x74ebdcdf, "_kBrotliPrefixCodeRanges", nullptr},
+	{0x758dd6aa, "SystemNative_GetTimeZoneData", nullptr},
 	{0x759f5b1e, "AndroidCryptoNative_Aes256Cfb8", nullptr},
 	{0x75b11f61, "BrotliDecoderGetErrorCode", nullptr},
 	{0x76e97b2e, "SystemNative_Rename", nullptr},
 	{0x77cb373b, "SystemNative_GetIPSocketAddressSizes", nullptr},
 	{0x78c1eb52, "AndroidCryptoNative_Des3Ecb", nullptr},
 	{0x7a0529c1, "SystemNative_InitializeTerminalAndSignalHandling", nullptr},
+	{0x7aa30494, "Java_net_dot_android_crypto_DotnetProxyTrustManager_verifyRemoteCertificate", nullptr},
 	{0x7ad3b820, "AndroidCryptoNative_Aes192Cfb128", nullptr},
 	{0x7cb19137, "SystemNative_GetIcmpv6GlobalStatistics", nullptr},
 	{0x7d0c477d, "CryptoNative_ErrPeekLastError", nullptr},
@@ -989,5 +999,5 @@ constexpr hash_t system_io_compression_native_library_hash = 0xafe3142c;
 constexpr hash_t system_security_cryptography_native_android_library_hash = 0x93625cd;
 #endif
 
-constexpr size_t internal_pinvokes_count = 49;
-constexpr size_t dotnet_pinvokes_count = 428;
+constexpr size_t internal_pinvokes_count = 50;
+constexpr size_t dotnet_pinvokes_count = 432;

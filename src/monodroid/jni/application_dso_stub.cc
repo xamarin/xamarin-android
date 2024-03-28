@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -22,13 +23,75 @@ const TypeMap type_map = {
 	managed_to_java
 };
 #else
-const uint32_t map_module_count = 0;
+const uint32_t map_module_count = 2;
 const uint32_t java_type_count = 0;
-const char* const java_type_names[] = {};
+const char* const java_type_names[] = {
+	"java/lang/String",
+	"java/lang/Exception",
+};
 
-TypeMapModule map_modules[] = {};
-const TypeMapJava map_java[] = {};
-const xamarin::android::hash_t map_java_hashes[] = {};
+static TypeMapModuleEntry module1[] = {
+	{
+		.type_token_id = 1111,
+		.java_map_index = 0
+	}
+};
+
+static uint8_t module1_java_map[] = { 1, 2 };
+
+static TypeMapModuleEntry module2[] = {
+	{
+		.type_token_id = 2222,
+		.java_map_index = 0
+	}
+};
+
+static uint8_t module2_java_map[] = { 3, 4 };
+
+TypeMapModule map_modules[] = {
+	{
+		.module_uuid = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 },
+		.entry_count = 1,
+		.duplicate_count = 0,
+		.map = module1,
+		.duplicate_map = nullptr,
+		.assembly_name = "Mono.Android",
+		.image = nullptr,
+		.java_name_width = 111,
+		.java_map = module1_java_map,
+	},
+
+	{
+		.module_uuid = {17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 },
+		.entry_count = 1,
+		.duplicate_count = 0,
+		.map = module2,
+		.duplicate_map = nullptr,
+		.assembly_name = "System",
+		.image = nullptr,
+		.java_name_width = 222,
+		.java_map = module2_java_map,
+	},
+};
+
+const TypeMapJava map_java[] = {
+	{
+		.module_index = 0,
+		.type_token_id = 1,
+		.java_name_index = 1,
+	},
+
+	{
+		.module_index = 1,
+		.type_token_id = 2,
+		.java_name_index = 2,
+	},
+};
+
+const xamarin::android::hash_t map_java_hashes[] = {
+	0x1,
+	0x2,
+};
 #endif
 
 CompressedAssemblies compressed_assemblies = {
@@ -68,7 +131,9 @@ const ApplicationConfig application_config = {
 };
 
 const char* const mono_aot_mode_name = "normal";
-const char* const app_environment_variables[] = {};
+const char* const app_environment_variables[] = {
+	"name", "value",
+};
 const char* const app_system_properties[] = {};
 
 static constexpr size_t AssemblyNameWidth = 128;

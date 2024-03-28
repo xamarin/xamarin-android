@@ -1,0 +1,54 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\build-tools\scripts\cmake-android.props"/>
+
+  <UsingTask AssemblyFile="$(BootstrapTasksAssembly)" TaskName="Xamarin.Android.Tools.BootstrapTasks.RunParallelCmds" />
+
+  <PropertyGroup>
+    <_LibUnwindBaseLibName>unwind_xamarin</_LibUnwindBaseLibName>
+    <_LibUnwindLibName>lib$(_LibUnwindBaseLibName).a</_LibUnwindLibName>
+    <_LibUnwindHeadersOutputDir>$(LibUnwindGeneratedHeadersFullPath)</_LibUnwindHeadersOutputDir>
+  </PropertyGroup>
+
+  <Target Name="_BuildLibUnwind" BeforeTargets="Build" DependsOnTargets="_ConfigureLibUnwind;_BuildAndroidLibUnwind" />
+
+  <Target Name="_PrepareConfigureLibUnwind">
+    <MakeDir Directories="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-$(Configuration)" />
+    <ItemGroup>
+      <_ConfigureLibUnwindCommands
+          Include="@(AndroidSupportedTargetJitAbi)">
+        <Command>$(CmakePath)</Command>
+        <Arguments>$(_CmakeAndroidFlags) -DANDROID_NATIVE_API_LEVEL=%(AndroidSupportedTargetJitAbi.ApiLevelNET) -DANDROID_PLATFORM=android-%(AndroidSupportedTargetJitAbi.ApiLevelNET) -DANDROID_ABI=%(AndroidSupportedTargetJitAbi.Identity) -DANDROID_RID=%(AndroidSupportedTargetJitAbi.AndroidRID) -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY="$(OutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)" -DCMAKE_LIBRARY_OUTPUT_DIRECTORY="$(OutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)" -DCMAKE_BUILD_TYPE=$(Configuration) -DLIBUNWIND_SOURCE_DIR="$(LibUnwindSourceFullPath)" -DLIBUNWIND_LIBRARY_NAME="$(_LibUnwindBaseLibName)" -DLIBUNWIND_OUTPUT_DIR="@(AndroidSupportedTargetJitAbi->'$(OutputPath)/%(AndroidRID)')" -DLIBUNWIND_HEADERS_OUTPUT_DIR="$(_LibUnwindHeadersOutputDir)" $(MSBuildThisFileDirectory)</Arguments>
+        <WorkingDirectory>$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-$(Configuration)</WorkingDirectory>
+      </_ConfigureLibUnwindCommands>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_ConfigureLibUnwind"
+	        DependsOnTargets="_PrepareConfigureLibUnwind"
+	        Inputs="CMakeLists.txt;..\..\build-tools\scripts\Ndk.targets"
+	        Outputs="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(Identity)-$(Configuration)\build.ninja')">
+    <RunParallelCmds Commands="@(_ConfigureLibUnwindCommands)" />
+  </Target>
+
+  <Target Name="_PrepareBuildAndroidLibUnwind">
+    <ItemGroup>
+      <_BuildLibUnwindCommands
+          Include="@(AndroidSupportedTargetJitAbi)">
+        <Command>$(NinjaPath)</Command>
+        <Arguments>-v</Arguments>
+        <WorkingDirectory>$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.Identity)-$(Configuration)</WorkingDirectory>
+      </_BuildLibUnwindCommands>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_BuildAndroidLibUnwind"
+	        DependsOnTargets="_PrepareBuildAndroidLibUnwind"
+	        Inputs="$(LibUnwindSourceFullPath)\src\**\*.c;@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(Identity)-$(Configuration)\build.ninja');;..\..\build-tools\scripts\Ndk.targets"
+	        Outputs="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(Identity)\$(_LibUnwindLibName)')">
+    <RunParallelCmds Commands="@(_BuildLibUnwindCommands)" />
+  </Target>
+
+  <Target Name="CoreCompile"
+          DependsOnTargets="_BuildLibUnwind">
+  </Target>
+</Project>

@@ -6,7 +6,7 @@
     <OutputType>Exe</OutputType>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-  
+
   <Import Project="..\..\Configuration.props" />
 
   <PropertyGroup>
@@ -14,8 +14,9 @@
   </PropertyGroup>
 
   <Import Project="monodroid.targets" />
-  
+
   <ItemGroup>
     <ProjectReference Include="..\java-runtime\java-runtime.csproj" ReferenceOutputAssembly="False" />
+    <ProjectReference Include="..\libunwind-xamarin\libunwind-xamarin.csproj" ReferenceOutputAssembly="False" />
   </ItemGroup>
 </Project>

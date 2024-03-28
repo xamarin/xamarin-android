@@ -45,6 +45,18 @@
 
     <!-- Mono components -->
     <AndroidEnableProfiler Condition=" '$(AndroidEnableProfiler)' == ''">false</AndroidEnableProfiler>
+
+    <!-- Native stack traces -->
+    <!-- Accepted values are:
+         none - disable tracing completely (the default)
+         basic - log marshal method function enter/leave messages
+         full - like 'basic' but also include stack traces at the entry to a marshal method
+    -->
+    <_AndroidMarshalMethodsTracingMode Condition=" '$(_AndroidMarshalMethodsTracingMode)' == '' ">none</_AndroidMarshalMethodsTracingMode>
+    <_AndroidUseNativeStackTraces Condition=" '$(_AndroidUseNativeStackTraces)' == '' And '$(_AndroidMarshalMethodsTracingMode)' == 'none' ">false</_AndroidUseNativeStackTraces>
+    <_AndroidUseNativeStackTraces Condition=" '$(_AndroidUseNativeStackTraces)' == '' And '$(_AndroidMarshalMethodsTracingMode)' != 'none' ">true</_AndroidUseNativeStackTraces>
+    <_UseNativeStackTraces Condition=" '$(_AndroidUseNativeStackTraces)' == 'true' Or '$(_AndroidMarshalMethodsTracingMode)' != 'none' ">true</_UseNativeStackTraces>
+
   </PropertyGroup>
 
   <!--  User-facing configuration-specific defaults -->

@@ -41,7 +41,15 @@ namespace Java.Lang {
 				Dispose ();
 			}
 
-			static Dictionary<Action, RunnableImplementor> instances = new Dictionary<Action, RunnableImplementor> ();
+			static Dictionary<Action, RunnableImplementor> instances;// = new Dictionary<Action, RunnableImplementor> ();
+
+			static RunnableImplementor ()
+			{
+				Console.WriteLine ("RunnableImplementor.cctor (): begin");
+				Console.WriteLine (new System.Diagnostics.StackTrace(true));
+				instances = new ();
+				Console.WriteLine ("RunnableImplementor.cctor (): end");
+			}
 
 			public static RunnableImplementor Remove (Action handler)
 			{
@@ -65,4 +73,3 @@ namespace Java.Lang {
 		public Thread (ThreadGroup group, Action runHandler, string threadName, long stackSize) : this (group, new RunnableImplementor (runHandler), threadName, stackSize) {}
 	}
 }
-

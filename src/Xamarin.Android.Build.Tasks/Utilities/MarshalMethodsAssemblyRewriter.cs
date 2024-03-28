@@ -300,6 +300,12 @@ namespace Xamarin.Android.Tasks
 					return;
 				}
 
+				if (IsCharConversion (sourceType, targetType)) {
+					// No need to generate any code. Java's `char` is unsigned 16-bit type, the same as
+					// .NET's
+					return;
+				}
+
 				ThrowUnsupportedType (sourceType);
 			}
 
@@ -325,6 +331,19 @@ namespace Xamarin.Android.Tasks
 				if (String.Compare ("System.Boolean", sourceType.FullName, StringComparison.Ordinal) == 0) {
 					if (String.Compare ("System.Byte", targetType.FullName, StringComparison.Ordinal) != 0) {
 						throw new InvalidOperationException ($"[{targetArch}] Unexpected conversion from '{sourceType.FullName}' to '{targetType.FullName}'");
+					}
+
+					return true;
+				}
+
+				return false;
+			}
+
+			bool IsCharConversion (TypeReference sourceType, TypeReference targetType)
+			{
+				if (String.Compare ("System.Char", sourceType.FullName, StringComparison.Ordinal) == 0) {
+					if (String.Compare ("System.UInt16", targetType.FullName, StringComparison.Ordinal) != 0) {
+						throw new InvalidOperationException ($"Unexpected conversion from '{sourceType.FullName}' to '{targetType.FullName}'");
 					}
 
 					return true;
@@ -435,6 +454,12 @@ namespace Xamarin.Android.Tasks
 				// Maps to Java JNI's jboolean which is an unsigned 8-bit type
 				typeMapped = true;
 				return ReturnValid (typeof(byte));
+			}
+
+			if (String.Compare ("System.Char", type.FullName, StringComparison.Ordinal) == 0) {
+				// Maps to Java JNI's jchar which is an unsigned 16-bit type
+				typeMapped = true;
+				return ReturnValid (typeof(ushort));
 			}
 
 			throw new NotSupportedException ($"[{targetArch}] Cannot map unsupported blittable type '{type.FullName}'");

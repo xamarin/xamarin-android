@@ -43,9 +43,19 @@ namespace xamarin::android
 	template <typename T>
 	struct CDeleter final
 	{
+		using UnderlyingType = std::remove_cv_t<T>;
+
 		void operator() (T* p)
 		{
-			std::free (p);
+			UnderlyingType *ptr;
+
+			if constexpr (std::is_const_v<T>) {
+				ptr = const_cast<std::remove_const_t<T>*> (p);
+			} else {
+				ptr = p;
+			}
+
+			std::free (reinterpret_cast<void*>(ptr));
 		}
 	};
 

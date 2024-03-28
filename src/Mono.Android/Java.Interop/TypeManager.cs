@@ -224,8 +224,10 @@ namespace Java.Interop {
 
 			if (!JNIEnvInit.IsRunningOnDesktop) {
 				// Miss message is logged in the native runtime
-				if (JNIEnvInit.LogAssemblyCategory)
+				if (JNIEnvInit.LogAssemblyCategory) {
 					JNIEnv.LogTypemapTrace (new System.Diagnostics.StackTrace (true));
+					RuntimeNativeMethods.monodroid_log (LogLevel.Warn, LogCategories.Assembly, CreateJavaLocationException ().ToString ());
+				}
 				return null;
 			}
 

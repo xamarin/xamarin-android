@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.Build.NoTargets">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <Import Project="..\..\Configuration.props" />
+
+  <PropertyGroup>
+    <OutputPath>$(MicrosoftAndroidSdkOutDir)lib</OutputPath>
+  </PropertyGroup>
+
+  <Import Project="libunwind-xamarin.targets" />
+</Project>

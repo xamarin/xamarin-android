@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Java.Interop.Tools.Cecil;
@@ -241,6 +242,7 @@ namespace Xamarin.Android.Tasks
 		HashSet<TypeDefinition> typesWithDynamicallyRegisteredMethods;
 		ulong rejectedMethodCount = 0;
 		ulong wrappedMethodCount = 0;
+		StreamWriter ignoredMethodsLog;
 		readonly AndroidTargetArch targetArch;
 
 		public IDictionary<string, IList<MarshalMethodEntry>> MarshalMethods => marshalMethods;
@@ -249,7 +251,7 @@ namespace Xamarin.Android.Tasks
 		public ulong WrappedMethodCount => wrappedMethodCount;
 		public TypeDefinitionCache TypeDefinitionCache => tdCache;
 
-		public MarshalMethodsClassifier (AndroidTargetArch targetArch, TypeDefinitionCache tdCache, IAssemblyResolver res, TaskLoggingHelper log)
+		public MarshalMethodsClassifier (AndroidTargetArch targetArch, TypeDefinitionCache tdCache, IAssemblyResolver res, string intermediateOutputDirectory, TaskLoggingHelper log)
 		{
 			this.targetArch = targetArch;
 			this.log = log ?? throw new ArgumentNullException (nameof (log));
@@ -258,9 +260,12 @@ namespace Xamarin.Android.Tasks
 			marshalMethods = new Dictionary<string, IList<MarshalMethodEntry>> (StringComparer.Ordinal);
 			assemblies = new HashSet<AssemblyDefinition> ();
 			typesWithDynamicallyRegisteredMethods = new HashSet<TypeDefinition> ();
+
+			var fs = File.Open (Path.Combine (intermediateOutputDirectory, $"{targetArch}-marshal-methods-ignored.txt"), FileMode.Create);
+			ignoredMethodsLog = new StreamWriter (fs, Files.UTF8withoutBOM);
 		}
 
-		public MarshalMethodsClassifier (TypeDefinitionCache tdCache, IAssemblyResolver res, TaskLoggingHelper log)
+		public MarshalMethodsClassifier (TypeDefinitionCache tdCache, IAssemblyResolver res, string intermediateOutputDirectory, TaskLoggingHelper log)
 		{
 			this.log = log ?? throw new ArgumentNullException (nameof (log));
 			this.tdCache = tdCache ?? throw new ArgumentNullException (nameof (tdCache));
@@ -268,6 +273,17 @@ namespace Xamarin.Android.Tasks
 			marshalMethods = new Dictionary<string, IList<MarshalMethodEntry>> (StringComparer.Ordinal);
 			assemblies = new HashSet<AssemblyDefinition> ();
 			typesWithDynamicallyRegisteredMethods = new HashSet<TypeDefinition> ();
+
+			var fs = File.Open (Path.Combine (intermediateOutputDirectory, "marshal-methods-ignored.txt"), FileMode.Create);
+			ignoredMethodsLog = new StreamWriter (fs, Files.UTF8withoutBOM);
+		}
+
+		public void FlushAndCloseOutputs ()
+		{
+			ignoredMethodsLog.WriteLine ();
+			ignoredMethodsLog.WriteLine ($"Marshal methods count: {MarshalMethods.Count}; Rejected methods count: {RejectedMethodCount}");
+			ignoredMethodsLog.Flush ();
+			ignoredMethodsLog.Close ();
 		}
 
 		public override bool ShouldBeDynamicallyRegistered (TypeDefinition topType, MethodDefinition registeredMethod, MethodDefinition implementedMethod, CustomAttribute? registerAttribute)
@@ -461,6 +477,15 @@ namespace Xamarin.Android.Tasks
 			return true;
 		}
 
+		void LogIgnored (TypeDefinition type, MethodDefinition method, string message, bool logWarning = true)
+		{
+			if (logWarning) {
+				log.LogWarning (message);
+			}
+
+			ignoredMethodsLog.WriteLine ($"{type.FullName}\t{method.FullName}\t{message}");
+		}
+
 		bool IsStandardHandler (TypeDefinition topType, ConnectorInfo connector, MethodDefinition registeredMethod, MethodDefinition implementedMethod, string jniName, string jniSignature)
 		{
 			const string HandlerNameStart = "Get";
@@ -485,23 +510,23 @@ namespace Xamarin.Android.Tasks
 
 			MethodDefinition connectorMethod = FindMethod (connectorDeclaringType, connectorName);
 			if (connectorMethod == null) {
-				log.LogWarning ($"Connector method '{connectorName}' not found in type '{connectorDeclaringType.FullName}' {GetAssemblyPathInfo (connectorDeclaringType)}");
+				LogIgnored (topType, registeredMethod, $"Connector method '{connectorName}' not found in type '{connectorDeclaringType.FullName}' {GetAssemblyPathInfo (connectorDeclaringType)}");
 				return false;
 			}
 
 			if (String.Compare ("System.Delegate", connectorMethod.ReturnType.FullName, StringComparison.Ordinal) != 0) {
-				log.LogWarning ($"Connector '{connectorName}' in type '{connectorDeclaringType.FullName}' has invalid return type, expected 'System.Delegate', found '{connectorMethod.ReturnType.FullName}' {GetAssemblyPathInfo (connectorDeclaringType)}");
+				LogIgnored (topType, registeredMethod, $"Connector '{connectorName}' in type '{connectorDeclaringType.FullName}' has invalid return type, expected 'System.Delegate', found '{connectorMethod.ReturnType.FullName}' {GetAssemblyPathInfo (connectorDeclaringType)}");
 				return false;
 			}
 
 			var ncbs = new NativeCallbackSignature (registeredMethod, log, tdCache);
 			MethodDefinition nativeCallbackMethod = FindMethod (connectorDeclaringType, nativeCallbackName, ncbs);
 			if (nativeCallbackMethod == null) {
-				log.LogWarning ($"Unable to find native callback method '{nativeCallbackName}' in type '{connectorDeclaringType.FullName}', matching the '{registeredMethod.FullName}' signature (jniName: '{jniName}') {GetAssemblyPathInfo (connectorDeclaringType)}");
+				LogIgnored (topType, registeredMethod, $"Unable to find native callback method '{nativeCallbackName}' in type '{connectorDeclaringType.FullName}', matching the '{registeredMethod.FullName}' signature (jniName: '{jniName}') {GetAssemblyPathInfo (connectorDeclaringType)}");
 				return false;
 			}
 
-			if (!EnsureIsValidUnmanagedCallersOnlyTarget (nativeCallbackMethod, out bool needsBlittableWorkaround)) {
+			if (!EnsureIsValidUnmanagedCallersOnlyTarget (topType, registeredMethod, nativeCallbackMethod, out bool needsBlittableWorkaround)) {
 				return false;
 			}
 
@@ -510,7 +535,7 @@ namespace Xamarin.Android.Tasks
 			FieldDefinition delegateField = FindField (nativeCallbackMethod.DeclaringType, delegateFieldName);
 			if (delegateField != null) {
 				if (String.Compare ("System.Delegate", delegateField.FieldType.FullName, StringComparison.Ordinal) != 0) {
-					log.LogWarning ($"delegate field '{delegateFieldName}' in type '{nativeCallbackMethod.DeclaringType.FullName}' has invalid type, expected 'System.Delegate', found '{delegateField.FieldType.FullName}' {GetAssemblyPathInfo (delegateField)}");
+					LogIgnored (topType, registeredMethod, $"delegate field '{delegateFieldName}' in type '{nativeCallbackMethod.DeclaringType.FullName}' has invalid type, expected 'System.Delegate', found '{delegateField.FieldType.FullName}' {GetAssemblyPathInfo (delegateField)}");
 					return false;
 				}
 			}
@@ -569,23 +594,23 @@ namespace Xamarin.Android.Tasks
 			return true;
 		}
 
-		bool EnsureIsValidUnmanagedCallersOnlyTarget (MethodDefinition method, out bool needsBlittableWorkaround)
+		bool EnsureIsValidUnmanagedCallersOnlyTarget (TypeDefinition topType, MethodDefinition registeredMethod, MethodDefinition nativeCallbackMethod, out bool needsBlittableWorkaround)
 		{
 			needsBlittableWorkaround = false;
 
 			// Requirements: https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.unmanagedcallersonlyattribute?view=net-6.0#remarks
-			if (!method.IsStatic) {
+			if (!nativeCallbackMethod.IsStatic) {
 				return LogReasonWhyAndReturnFailure ($"is not static");
 			}
 
-			if (method.HasGenericParameters) {
+			if (nativeCallbackMethod.HasGenericParameters) {
 				return LogReasonWhyAndReturnFailure ($"has generic parameters");
 			}
 
 			TypeReference type;
 			bool needsWrapper = false;
-			if (String.Compare ("System.Void", method.ReturnType.FullName, StringComparison.Ordinal) != 0) {
-				type = GetRealType (method.ReturnType);
+			if (String.Compare ("System.Void", nativeCallbackMethod.ReturnType.FullName, StringComparison.Ordinal) != 0) {
+				type = GetRealType (nativeCallbackMethod.ReturnType);
 				if (!IsAcceptable (type)) {
 					needsBlittableWorkaround = true;
 					WarnWhy ($"has a non-blittable return type '{type.FullName}'");
@@ -593,15 +618,15 @@ namespace Xamarin.Android.Tasks
 				}
 			}
 
-			if (method.DeclaringType.HasGenericParameters) {
+			if (nativeCallbackMethod.DeclaringType.HasGenericParameters) {
 				return LogReasonWhyAndReturnFailure ($"is declared in a type with generic parameters");
 			}
 
-			if (!method.HasParameters) {
+			if (!nativeCallbackMethod.HasParameters) {
 				return UpdateWrappedCountAndReturn (true);
 			}
 
-			foreach (ParameterDefinition pdef in method.Parameters) {
+			foreach (ParameterDefinition pdef in nativeCallbackMethod.Parameters) {
 				type = GetRealType (pdef.ParameterType);
 
 				if (!IsAcceptable (type)) {
@@ -645,14 +670,14 @@ namespace Xamarin.Android.Tasks
 
 			bool LogReasonWhyAndReturnFailure (string why)
 			{
-				log.LogWarning ($"Method '{method.FullName}' {why}. It cannot be used with the `[UnmanagedCallersOnly]` attribute");
+				LogIgnored (topType, registeredMethod, $"Method '{nativeCallbackMethod.FullName}' {why}. It cannot be used with the `[UnmanagedCallersOnly]` attribute");
 				return false;
 			}
 
 			void WarnWhy (string why)
 			{
 				// TODO: change to LogWarning once the generator can output code which requires no non-blittable wrappers
-				log.LogDebugMessage ($"Method '{method.FullName}' {why}. A workaround is required, this may make the application slower");
+				log.LogDebugMessage ($"Method '{nativeCallbackMethod.FullName}' {why}. A workaround is required, this may make the application slower");
 			}
 		}
 

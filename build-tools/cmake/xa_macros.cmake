@@ -200,7 +200,8 @@ function(xa_common_prepare)
     -fstack-protector-strong
     -fstrict-return
     -fno-strict-aliasing
-    -ffunction-sections
+    -fno-function-sections
+    -fno-data-sections
     -funswitch-loops
     -Wa,-noexecstack
     -fPIC

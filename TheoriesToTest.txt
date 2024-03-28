@@ -1,0 +1,4 @@
+* See if it's a threading issue - add full locking to `get_function_pointer` instead of atomics that we use now
+* See if it's an ALC issue - call `get_function_pointer` every time and check the returned pointer value
+* Implement Jon's idea to always have the "old" dynamic registration stuff in JCW and only use it when some flag
+  is set and marshal methods are active.

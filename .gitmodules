@@ -22,3 +22,6 @@
     path = external/xamarin-android-tools
     url = https://github.com/xamarin/xamarin-android-tools
     branch = main
+[submodule "external/libunwind"]
+	path = external/libunwind
+	url = https://github.com/libunwind/libunwind.git

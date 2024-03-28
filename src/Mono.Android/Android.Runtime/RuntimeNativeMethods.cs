@@ -6,8 +6,23 @@ using System.Text;
 
 namespace Android.Runtime
 {
+	// Values must be identical to those in src/monodroid/jni/monodroid-glue-internal.hh
+	[Flags]
+	enum TraceKind : uint
+	{
+		Java    = 0x01,
+		Managed = 0x02,
+		Native  = 0x04,
+		Signals = 0x08,
+
+		All     = Java | Managed | Native | Signals,
+	}
+
 	internal static class RuntimeNativeMethods
 	{
+		[DllImport (RuntimeConstants.InternalDllName, CallingConvention = CallingConvention.Cdecl)]
+		internal extern static void monodroid_log_traces (TraceKind kind, string first_line);
+
 		[DllImport (RuntimeConstants.InternalDllName, CallingConvention = CallingConvention.Cdecl)]
 		internal extern static void monodroid_log (LogLevel level, LogCategories category, string message);
 

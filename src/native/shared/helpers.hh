@@ -12,7 +12,7 @@ namespace xamarin::android
 #define ADD_WITH_OVERFLOW_CHECK(__ret_type__, __a__, __b__) xamarin::android::Helpers::add_with_overflow_check<__ret_type__>(__FILE__, __LINE__, (__a__), (__b__))
 #define MULTIPLY_WITH_OVERFLOW_CHECK(__ret_type__, __a__, __b__) xamarin::android::Helpers::multiply_with_overflow_check<__ret_type__>(__FILE__, __LINE__, (__a__), (__b__))
 
-	class Helpers
+	class [[gnu::visibility("hidden")]] Helpers
 	{
 	public:
 		template<typename Ret, typename P1, typename P2>

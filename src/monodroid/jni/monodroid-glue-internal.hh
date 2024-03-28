@@ -2,6 +2,7 @@
 #ifndef __MONODROID_GLUE_INTERNAL_H
 #define __MONODROID_GLUE_INTERNAL_H
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -62,6 +63,15 @@ namespace xamarin::android::internal
 		{
 			return xamarin::android::xxhash::hash (s.c_str (), s.length ());
 		}
+	};
+
+	// Values must be identical to those in src/Mono.Android/Android.Runtime/RuntimeNativeMethods.cs
+	enum class TraceKind : uint32_t
+	{
+		Java    = 0x01,
+		Managed = 0x02,
+		Native  = 0x04,
+		Signals = 0x08,
 	};
 
 	class MonodroidRuntime
@@ -146,6 +156,8 @@ namespace xamarin::android::internal
 		static constexpr std::string_view mono_component_diagnostics_tracing_name { "libmono-component-diagnostics_tracing.so" };
 		static constexpr hash_t mono_component_diagnostics_tracing_hash = xxhash::hash (mono_component_diagnostics_tracing_name);
 
+		static constexpr char xamarin_native_tracing_name[]             = "libxamarin-native-tracing.so";
+
 	public:
 		static constexpr int XA_LOG_COUNTERS = MONO_COUNTER_JIT | MONO_COUNTER_METADATA | MONO_COUNTER_GC | MONO_COUNTER_GENERICS | MONO_COUNTER_INTERP;
 
@@ -190,6 +202,7 @@ namespace xamarin::android::internal
 
 		void propagate_uncaught_exception (JNIEnv *env, jobject javaThread, jthrowable javaException);
 		char*	get_java_class_name_for_TypeManager (jclass klass);
+		void log_traces (JNIEnv *env, TraceKind kind, const char *first_line) noexcept;
 
 	private:
 		static void mono_log_handler (const char *log_domain, const char *log_level, const char *message, mono_bool fatal, void *user_data);
@@ -209,6 +222,22 @@ namespace xamarin::android::internal
 		static PinvokeEntry* find_pinvoke_address (hash_t hash, const PinvokeEntry *entries, size_t entry_count) noexcept;
 		static void* handle_other_pinvoke_request (const char *library_name, hash_t library_name_hash, const char *entrypoint_name, hash_t entrypoint_name_hash) noexcept;
 		static void* monodroid_pinvoke_override (const char *library_name, const char *entrypoint_name);
+
+		template<typename TFunc>
+		static void load_symbol (void *handle, const char *name, TFunc*& fnptr) noexcept
+		{
+			char *err = nullptr;
+			void *symptr = monodroid_dlsym (handle, name, &err, nullptr);
+
+			if (symptr == nullptr) {
+				log_warn (LOG_DEFAULT, "Failed to load symbol '%s' library with handle %p. %s", name, handle, err == nullptr ? "Unknown error" : err);
+				fnptr = nullptr;
+				return;
+			}
+
+			fnptr = reinterpret_cast<TFunc*>(symptr);
+		}
+
 		static void* monodroid_dlopen_ignore_component_or_load (hash_t hash, const char *name, int flags, char **err) noexcept;
 		static void* monodroid_dlopen (const char *name, int flags, char **err) noexcept;
 		static void* monodroid_dlopen (const char *name, int flags, char **err, void *user_data) noexcept;
@@ -228,6 +257,7 @@ namespace xamarin::android::internal
 		void set_debug_options ();
 		void parse_gdb_options ();
 		void mono_runtime_init (JNIEnv *env, dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN>& runtime_args);
+
 		void init_android_runtime (JNIEnv *env, jclass runtimeClass, jobject loader);
 		void set_environment_variable_for_directory (const char *name, jstring_wrapper &value, bool createDirectory, mode_t mode);
 
@@ -261,6 +291,7 @@ namespace xamarin::android::internal
 		static void jit_done (MonoProfiler *prof, MonoMethod *method, MonoJitInfo* jinfo);
 		static void thread_start (MonoProfiler *prof, uintptr_t tid);
 		static void thread_end (MonoProfiler *prof, uintptr_t tid);
+
 #if !defined (RELEASE)
 		static MonoReflectionType* typemap_java_to_managed (MonoString *java_type_name) noexcept;
 		static const char* typemap_managed_to_java (MonoReflectionType *type, const uint8_t *mvid) noexcept;
@@ -270,7 +301,6 @@ namespace xamarin::android::internal
 
 #if defined (RELEASE)
 		static const char* get_method_name (uint32_t mono_image_index, uint32_t method_token) noexcept;
-		static const char* get_class_name (uint32_t class_index) noexcept;
 
 		template<bool NeedsLocking>
 		static void get_function_pointer (uint32_t mono_image_index, uint32_t class_index, uint32_t method_token, void*& target_ptr) noexcept;

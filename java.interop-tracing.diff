@@ -1,0 +1,213 @@
+diff --git a/src/Java.Interop.Tools.JavaCallableWrappers/Java.Interop.Tools.JavaCallableWrappers/JavaCallableWrapperGenerator.cs b/src/Java.Interop.Tools.JavaCallableWrappers/Java.Interop.Tools.JavaCallableWrappers/JavaCallableWrapperGenerator.cs
+index 76f2bfc0..7a57f6b2 100644
+--- a/src/Java.Interop.Tools.JavaCallableWrappers/Java.Interop.Tools.JavaCallableWrappers/JavaCallableWrapperGenerator.cs
++++ b/src/Java.Interop.Tools.JavaCallableWrappers/Java.Interop.Tools.JavaCallableWrappers/JavaCallableWrapperGenerator.cs
+@@ -133,6 +133,7 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 
+ 		JavaCallableWrapperGenerator (TypeDefinition type, string? outerType, Action<string, object[]> log, IMetadataResolver resolver, JavaCallableMethodClassifier? methodClassifier = null)
+ 		{
++			Console.WriteLine ($"JCWG: processing {type}");
+ 			this.methodClassifier = methodClassifier;
+ 			this.type = type;
+ 			this.log = log;
+@@ -224,6 +225,8 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 				curCtors      = new List<MethodDefinition> ();
+ 				AddConstructors (ctorTypes [i], outerType, baseCtors, curCtors, false);
+ 			}
++
++			Console.WriteLine ($"JCWG: done processing {type}");
+ 		}
+ 
+ 		static void ExtractJavaNames (string jniName, out string package, out string type)
+@@ -285,8 +288,10 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 
+ 		void AddConstructor (MethodDefinition ctor, TypeDefinition type, string? outerType, List<MethodDefinition>? baseCtors, List<MethodDefinition> curCtors, bool onlyRegisteredOrExportedCtors, bool skipParameterCheck)
+ 		{
++			Console.WriteLine ($"  JCWG: AddConstructor ({ctor}, {type}, ..., onlyRegisteredOrExportedCtors: {onlyRegisteredOrExportedCtors}, skipParameterCheck: {skipParameterCheck});");
+ 				string managedParameters = GetManagedParameters (ctor, outerType);
+ 				if (!skipParameterCheck && (managedParameters == null || ctors.Any (c => c.ManagedParameters == managedParameters))) {
++					Console.WriteLine ("    JCWG: skip #1");
+ 					return;
+ 				}
+ 
+@@ -297,28 +302,38 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 					}
+ 					ctors.Add (new Signature (ctor, eattr, cache));
+ 					curCtors.Add (ctor);
++					Console.WriteLine ("    JCWG: add #1");
+ 					return;
+ 				}
+ 
+ 				RegisterAttribute rattr = GetMethodRegistrationAttributes (ctor).FirstOrDefault ();
+ 				if (rattr != null) {
+-					if (ctors.Any (c => c.JniSignature == rattr.Signature))
++					if (ctors.Any (c => c.JniSignature == rattr.Signature)) {
++						Console.WriteLine ("    JCWG: skip #2");
+ 						return;
++					}
+ 					ctors.Add (new Signature (ctor, rattr, managedParameters, outerType, cache));
+ 					curCtors.Add (ctor);
++					Console.WriteLine ("    JCWG: add #2");
+ 					return;
+ 				}
+ 
+-				if (onlyRegisteredOrExportedCtors)
++			        if (onlyRegisteredOrExportedCtors) {
++				        Console.WriteLine ("    JCWG: skip #1");
+ 					return;
++			        }
+ 
+ 				string? jniSignature = GetJniSignature (ctor, cache);
+ 
+-				if (jniSignature == null)
++			        if (jniSignature == null) {
++				        Console.WriteLine ("    JCWG: skip #3");
+ 					return;
++			        }
+ 
+-				if (ctors.Any (c => c.JniSignature == jniSignature))
++			        if (ctors.Any (c => c.JniSignature == jniSignature)) {
++				        Console.WriteLine ("    JCWG: skip #4");
+ 					return;
++			        }
+ 
+ 				if (baseCtors == null) {
+ 					throw new InvalidOperationException ("`baseCtors` should not be null!");
+@@ -327,11 +342,13 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 				if (baseCtors.Any (m => m.Parameters.AreParametersCompatibleWith (ctor.Parameters, cache))) {
+ 					ctors.Add (new Signature (".ctor", jniSignature, "", managedParameters, outerType, null));
+ 					curCtors.Add (ctor);
++					Console.WriteLine ("    JCWG: add #3");
+ 					return;
+ 				}
+ 				if (baseCtors.Any (m => !m.HasParameters)) {
+ 					ctors.Add (new Signature (".ctor", jniSignature, "", managedParameters, outerType, ""));
+ 					curCtors.Add (ctor);
++					Console.WriteLine ("    JCWG: add #4");
+ 					return;
+ 				}
+ 		}
+@@ -549,17 +566,17 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 			GenerateHeader (writer);
+ 
+ 			bool needCtor = false;
+-			if (HasDynamicallyRegisteredMethods) {
++//			if (HasDynamicallyRegisteredMethods) {
+ 				needCtor = true;
+ 				writer.WriteLine ("/** @hide */");
+ 				writer.WriteLine ("\tpublic static final String __md_methods;");
+-			}
++//			}
+ 
+ 			if (children != null) {
+ 				for (int i = 0; i < children.Count; i++) {
+-					if (!children[i].HasDynamicallyRegisteredMethods) {
+-						continue;
+-					}
++					// if (!children[i].HasDynamicallyRegisteredMethods) {
++					// 	continue;
++					// }
+ 					needCtor = true;
+ 					writer.Write ("\tstatic final String __md_");
+ 					writer.Write (i + 1);
+@@ -570,9 +587,9 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 			if (needCtor) {
+ 				writer.WriteLine ("\tstatic {");
+ 
+-				if (HasDynamicallyRegisteredMethods) {
++//				if (HasDynamicallyRegisteredMethods) {
+ 					GenerateRegisterType (writer, this, "__md_methods");
+-				}
++//				}
+ 
+ 				if (children != null) {
+ 					for (int i = 0; i < children.Count; ++i) {
+@@ -687,9 +704,12 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 
+ 		void GenerateBody (TextWriter sw)
+ 		{
++			Console.WriteLine ($"  JCWG: GenerateBody for {name} (ctors size: {ctors.Count})");
+ 			foreach (Signature ctor in ctors) {
+-				if (string.IsNullOrEmpty (ctor.Params) && JavaNativeTypeManager.IsApplication (type, cache))
++				if (string.IsNullOrEmpty (ctor.Params) && JavaNativeTypeManager.IsApplication (type, cache)) {
++					Console.WriteLine ($"    JCWG: skipping constructor generation; params empty? {string.IsNullOrEmpty (ctor.Params)}; is application? {JavaNativeTypeManager.IsApplication (type, cache)}");
+ 					continue;
++				}
+ 				GenerateConstructor (ctor, sw);
+ 			}
+ 
+@@ -745,9 +765,9 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 
+ 		void GenerateRegisterType (TextWriter sw, JavaCallableWrapperGenerator self, string field)
+ 		{
+-			if (!self.HasDynamicallyRegisteredMethods) {
+-				return;
+-			}
++			// if (!self.HasDynamicallyRegisteredMethods) {
++			// 	return;
++			// }
+ 
+ 			sw.Write ("\t\t");
+ 			sw.Write (field);
+@@ -818,9 +838,13 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 			return jniName.Replace ('/', '.').Replace ('$', '.');
+ 		}
+ 
+-		bool CannotRegisterInStaticConstructor (TypeDefinition type)
++		bool CannotRegisterInStaticConstructor (TypeDefinition type, bool dolog = false)
+ 		{
+-			return JavaNativeTypeManager.IsApplication (type, cache) || JavaNativeTypeManager.IsInstrumentation (type, cache);
++			Console.WriteLine ($"  JCWG: CannotRegisterInStaticConstructor ({type})");
++			bool ret = JavaNativeTypeManager.IsApplication (type, cache) || JavaNativeTypeManager.IsInstrumentation (type, cache);
++			Console.WriteLine ($"    JCWG: CannotRegisterInStaticConstructor for type {type}; ret == {ret}; IsApplication: {JavaNativeTypeManager.IsApplication (type, cache)}; IsInstrumentation: {JavaNativeTypeManager.IsInstrumentation (type, cache)}");
++
++			return ret;
+ 		}
+ 
+ 		class Signature {
+@@ -941,6 +965,8 @@ namespace Java.Interop.Tools.JavaCallableWrappers {
+ 
+ 		void GenerateConstructor (Signature ctor, TextWriter sw)
+ 		{
++			Console.WriteLine ($"   JCWG: GenerateConstructor for {name}");
++
+ 			// TODO:  we only generate constructors so that Android types w/ no
+ 			//        default constructor can be subclasses by our generated code.
+ 			//
+diff --git a/tools/java-source-utils/.classpath b/tools/java-source-utils/.classpath
+index 30230c1c..cbded110 100644
+--- a/tools/java-source-utils/.classpath
++++ b/tools/java-source-utils/.classpath
+@@ -20,6 +20,12 @@
+ 			<attribute name="test" value="true"/>
+ 		</attributes>
+ 	</classpathentry>
++	<classpathentry kind="src" output="bin/main" path="src/main/resources">
++		<attributes>
++			<attribute name="gradle_scope" value="main"/>
++			<attribute name="gradle_used_by_scope" value="main,test"/>
++		</attributes>
++	</classpathentry>
+ 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
+ 	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
+ 	<classpathentry kind="output" path="bin/default"/>
+diff --git a/tools/java-source-utils/.project b/tools/java-source-utils/.project
+index 8337a1c5..613733c8 100644
+--- a/tools/java-source-utils/.project
++++ b/tools/java-source-utils/.project
+@@ -20,4 +20,15 @@
+ 		<nature>org.eclipse.jdt.core.javanature</nature>
+ 		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
+ 	</natures>
++	<filteredResources>
++		<filter>
++			<id>1682588570543</id>
++			<name></name>
++			<type>30</type>
++			<matcher>
++				<id>org.eclipse.core.resources.regexFilterMatcher</id>
++				<arguments>node_modules|.metadata|archetype-resources|META-INF/maven|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
++			</matcher>
++		</filter>
++	</filteredResources>
+ </projectDescription>

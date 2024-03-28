@@ -42,6 +42,8 @@ namespace Xamarin.Android.Prepare
 			properties.Add (KnownProperties.JavaInteropFullPath,                 StripQuotes (@"@JavaInteropFullPath@"));
 			properties.Add (KnownProperties.JavaSdkDirectory,                    StripQuotes (@"@JavaSdkDirectory@"));
 			properties.Add (KnownProperties.JdkIncludePath,                      StripQuotes (@"@JdkIncludePath@"));
+			properties.Add (KnownProperties.LibUnwindGeneratedHeadersFullPath,   StripQuotes (@"@LibUnwindGeneratedHeadersFullPath@"));
+			properties.Add (KnownProperties.LibUnwindSourceFullPath,             StripQuotes (@"@LibUnwindSourceFullPath"));
 			properties.Add (KnownProperties.LibZipSourceFullPath,                StripQuotes (@"@LibZipSourceFullPath@"));
 			properties.Add (KnownProperties.ManagedRuntime,                      StripQuotes (@"@ManagedRuntime@"));
 			properties.Add (KnownProperties.MicrosoftAndroidSdkOutDir,           StripQuotes (@"@MicrosoftAndroidSdkOutDir@"));

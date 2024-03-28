@@ -363,6 +363,15 @@ _monodroid_lookup_replacement_method_info (const char *jniSourceType, const char
 	return JniRemapping::lookup_replacement_method_info (jniSourceType, jniMethodName, jniMethodSignature);
 }
 
+static void
+monodroid_log_traces (uint32_t kind, const char *first_line)
+{
+	JNIEnv *env = osBridge.ensure_jnienv ();
+	auto tk = static_cast<TraceKind>(kind);
+
+	monodroidRuntime.log_traces (env, tk, first_line);
+}
+
 #include "pinvoke-tables.include"
 
 MonodroidRuntime::pinvoke_library_map MonodroidRuntime::other_pinvoke_map (MonodroidRuntime::LIBRARY_MAP_INITIAL_BUCKET_COUNT);

@@ -285,29 +285,29 @@
       BeforeTargets="CopyFilesToOutputDirectory"
       Inputs="$(MSBuildAllProjects);@(IntermediateAssembly);@(InputAssemblies)"
       Outputs="$(IntermediateOutputPath)ILRepacker.stamp" >
-    <ItemGroup>
-      <_InputAssembliesThatExist Include="@(InputAssemblies)" Condition="Exists('%(Identity)')" />
-      <_NetstandardPath Include="@(ReferencePath->'%(RootDir)%(Directory)')" Condition="'%(FileName)%(Extension)' == 'netstandard.dll'" />
-    </ItemGroup>
-    <PropertyGroup>
-      <_NetstandardDir>@(_NetstandardPath)</_NetstandardDir>
-      <_ILRepackArgs>/out:&quot;$(MSBuildThisFileDirectory)$(IntermediateOutputPath)$(AssemblyName).dll&quot; /internalize</_ILRepackArgs>
-      <_ILRepackArgs>$(_ILRepackArgs) /keyfile:&quot;$(XamarinAndroidSourcePath)product.snk&quot;</_ILRepackArgs>
-      <_ILRepackArgs>$(_ILRepackArgs) &quot;$(MSBuildThisFileDirectory)$(IntermediateOutputPath)$(AssemblyName).dll&quot;</_ILRepackArgs>
-      <_ILRepackArgs>$(_ILRepackArgs) @(_InputAssembliesThatExist->'&quot;%(Identity)&quot;', ' ')</_ILRepackArgs>
-      <_ILRepackArgs>$(_ILRepackArgs) /lib:&quot;$(_NetstandardDir.TrimEnd('\'))&quot;</_ILRepackArgs> <!-- Path to netstandard.dll -->
-    </PropertyGroup>
-    <Exec
-      Command="$(ManagedRuntime) $(ManagedRuntimeArgs) &quot;$(ILRepack)&quot; $(_ILRepackArgs)"
-      WorkingDirectory="$(OutputPath)"
-    />
-    <Touch
-      Files="$(IntermediateOutputPath)ILRepacker.stamp"
-      AlwaysCreate="True"
-    />
-    <ItemGroup>
-      <FileWrites Include="$(IntermediateOutputPath)ILRepacker.stamp" />
-    </ItemGroup>
+    <!-- <ItemGroup> -->
+    <!--   <_InputAssembliesThatExist Include="@(InputAssemblies)" Condition="Exists('%(Identity)')" /> -->
+    <!--   <_NetstandardPath Include="@(ReferencePath->'%(RootDir)%(Directory)')" Condition="'%(FileName)%(Extension)' == 'netstandard.dll'" /> -->
+    <!-- </ItemGroup> -->
+    <!-- <PropertyGroup> -->
+    <!--   <_NetstandardDir>@(_NetstandardPath)</_NetstandardDir> -->
+    <!--   <_ILRepackArgs>/out:&quot;$(MSBuildThisFileDirectory)$(IntermediateOutputPath)$(AssemblyName).dll&quot; /internalize</_ILRepackArgs> -->
+    <!--   <_ILRepackArgs>$(_ILRepackArgs) /keyfile:&quot;$(XamarinAndroidSourcePath)product.snk&quot;</_ILRepackArgs> -->
+    <!--   <_ILRepackArgs>$(_ILRepackArgs) &quot;$(MSBuildThisFileDirectory)$(IntermediateOutputPath)$(AssemblyName).dll&quot;</_ILRepackArgs> -->
+    <!--   <_ILRepackArgs>$(_ILRepackArgs) @(_InputAssembliesThatExist->'&quot;%(Identity)&quot;', ' ')</_ILRepackArgs> -->
+    <!--   <_ILRepackArgs>$(_ILRepackArgs) /lib:&quot;$(_NetstandardDir.TrimEnd('\'))&quot;</_ILRepackArgs> <!-\- Path to netstandard.dll -\-> -->
+    <!-- </PropertyGroup> -->
+    <!-- <Exec -->
+    <!--   Command="$(ManagedRuntime) $(ManagedRuntimeArgs) &quot;$(ILRepack)&quot; $(_ILRepackArgs)" -->
+    <!--   WorkingDirectory="$(OutputPath)" -->
+    <!-- /> -->
+    <!-- <Touch -->
+    <!--   Files="$(IntermediateOutputPath)ILRepacker.stamp" -->
+    <!--   AlwaysCreate="True" -->
+    <!-- /> -->
+    <!-- <ItemGroup> -->
+    <!--   <FileWrites Include="$(IntermediateOutputPath)ILRepacker.stamp" /> -->
+    <!-- </ItemGroup> -->
   </Target>
 
   <ItemGroup>

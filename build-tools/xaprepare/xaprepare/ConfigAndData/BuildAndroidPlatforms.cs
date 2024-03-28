@@ -45,6 +45,7 @@ namespace Xamarin.Android.Prepare
 			new AndroidPlatform (apiName: "Sv2",                    apiLevel: 32, platformID: "32",  include: "v12.1"),
 			new AndroidPlatform (apiName: "Tiramisu",               apiLevel: 33, platformID: "33",  include: "v13.0",   framework: "v13.0"),
 			new AndroidPlatform (apiName: "UpsideDownCake",         apiLevel: 34, platformID: "34",  include: "v14.0",   framework: "v14.0"),
+			new AndroidPlatform (apiName: "VanillaIceCream",        apiLevel: 35, platformID: "VanillaIceCream",  include: "v14.0.99",   framework: "v14.0.99", stable: false),
 		};
 
 	}

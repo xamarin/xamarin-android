@@ -71,6 +71,7 @@ namespace Xamarin.Android.Prepare
 				new AndroidPlatformComponent ("platform-32_r01",   apiLevel: "32", pkgRevision: "1"),
 				new AndroidPlatformComponent ("platform-33-ext3_r03",   apiLevel: "33", pkgRevision: "3"),
 				new AndroidPlatformComponent ("platform-34-ext7_r02",   apiLevel: "34", pkgRevision: "2", isLatestStable: true),
+				new AndroidPlatformComponent ("platform-VanillaIceCream_r02",   apiLevel: "VanillaIceCream", pkgRevision: "2", isLatestStable: true),
 
 				new AndroidToolchainComponent ("sources-34_r01",
 					destDir: Path.Combine ("sources", "android-34"),

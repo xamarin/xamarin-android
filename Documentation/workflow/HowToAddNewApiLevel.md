@@ -19,8 +19,7 @@ the new platform will be downloaded to your local Android SDK.
 ### Generate `params.txt` File
 
 - In `/external/Java.Interop/tools/param-name-importer`:
-  - Add new level to `generate.sh` and run
-  - *or* run manually: `param-name-importer.exe -source-stub-zip C:/Users/USERNAME/android-toolchain/sdk/platforms/android-S/android-stubs-src.jar -output-text api-S.params.txt -output-xml api-S.params.xml -verbose -framework-only`
+  - Run: `dotnet run -source-stub-zip C:/Users/USERNAME/android-toolchain/platforms/android-35/android-stubs-src.jar -output-text api-35.params.txt -output-xml api-35.params.xml -verbose -framework-only`
 - Copy the produced `api-X.params.txt` file to `/src/Mono.Android/Profiles/`
 
 ### Generate `api.xml` File

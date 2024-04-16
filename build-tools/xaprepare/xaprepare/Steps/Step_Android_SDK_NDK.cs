@@ -269,7 +269,7 @@ namespace Xamarin.Android.Prepare
 				Component = component,
 				PackageName = packageName,
 				Url = GetPackageUrl (component, packageName),
-				LocalPackagePath = Path.Combine (packageCacheDir, packageName),
+				LocalPackagePath = Path.Combine (packageCacheDir, component.RelativeUrl.ToString () ?? string.Empty, packageName),
 				DestinationDir = GetDestinationDir (component, sdkRoot),
 			};
 

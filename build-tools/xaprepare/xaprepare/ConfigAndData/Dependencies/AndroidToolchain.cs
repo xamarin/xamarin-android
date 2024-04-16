@@ -98,8 +98,8 @@ namespace Xamarin.Android.Prepare
 					dependencyType: AndroidToolchainComponentType.EmulatorDependency
 				),
 				new AndroidToolchainComponent (isArm64Apple ? $"{systemImageArch}-33_r02" : $"{systemImageArch}-33_r02",
-					destDir: Path.Combine ("system-images", "android-33", "default", systemImageArch),
-					relativeUrl: new Uri ("sys-img/android/", UriKind.Relative),
+					destDir: Path.Combine ("system-images", "android-33", "aosp_atd", systemImageArch),
+					relativeUrl: new Uri ("sys-img/aosp_atd/", UriKind.Relative),
 					pkgRevision: "2",
 					dependencyType: AndroidToolchainComponentType.EmulatorDependency
 				),

@@ -56,9 +56,15 @@ namespace Xamarin.Android.Build.Tests
 		[OneTimeSetUp]
 		public void DeviceSetup ()
 		{
+			TestContext.Out.WriteLine ($"LOG DeviceSetup: Enter!!!");
+			Console.WriteLine ($"LOG DeviceSetup: Enter Console!!!");
+			Console.ReadLine ();
+			if (!string.IsNullOrEmpty (DeviceAbi))
+				return;
 			if (IsDeviceAttached ()) {
 				try {
 					DeviceSdkVersion = GetSdkVersion ();
+					TestContext.Out.WriteLine ($"LOG DeviceSetup: {DeviceSdkVersion}");
 					if (DeviceSdkVersion != -1) {
 						if (DeviceSdkVersion >= 21)
 							DeviceAbi = RunAdbCommand ("shell getprop ro.product.cpu.abilist64").Trim ();

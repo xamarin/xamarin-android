@@ -47,6 +47,7 @@ namespace Xamarin.Android.Prepare
 			//
 			//  https://dl-ssl.google.com/android/repository/sys-img/android/sys-img2-1.xml
 			//  https://dl-ssl.google.com/android/repository/sys-img/google_apis/sys-img2-1.xml
+			//  https://dl-ssl.google.com/android/repository/sys-img/aosp_atd/sys-img2-1.xml
 			//    * system images
 			//
 			Components = new List<AndroidToolchainComponent> {

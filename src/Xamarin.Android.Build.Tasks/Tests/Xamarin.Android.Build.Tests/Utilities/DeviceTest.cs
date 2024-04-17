@@ -58,7 +58,6 @@ namespace Xamarin.Android.Build.Tests
 		{
 			TestContext.Out.WriteLine ($"LOG DeviceSetup: Enter!!!");
 			Console.WriteLine ($"LOG DeviceSetup: Enter Console!!!");
-			Console.ReadLine ();
 			if (!string.IsNullOrEmpty (DeviceAbi))
 				return;
 			if (IsDeviceAttached ()) {

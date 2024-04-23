@@ -15,6 +15,9 @@ namespace Xamarin.Android.Tasks
 		[Required]
 		public string ResourceName { get; set; }
 
+		public bool CallTracingEnabled    { get; set; }
+		public bool MarshalMethodsEnabled { get; set; }
+
 		[Required]
 		public string OutputFilePath { get; set; }
 
@@ -31,12 +34,18 @@ namespace Xamarin.Android.Tasks
 			var result = new StringBuilder ();
 			bool ignoring = false;
 			foreach (string line in content.Split ('\n')) {
+				if (SkipNoteLine (line)) {
+					continue;
+				}
+
 				if (!ignoring) {
-					if (ignoring = line.StartsWith ("//#MARSHAL_METHODS:START", StringComparison.Ordinal)) {
+					ignoring = StartIgnoring (line, out bool skipLine);
+					if (ignoring || skipLine) {
 						continue;
 					}
+
 					result.AppendLine (line);
-				} else if (line.StartsWith ("//#MARSHAL_METHODS:END", StringComparison.Ordinal)) {
+				} else if (EndIgnoring (line)) {
 					ignoring = false;
 				}
 			}
@@ -60,6 +69,38 @@ namespace Xamarin.Android.Tasks
 			}
 
 			return !Log.HasLoggedErrors;
+		}
+
+		bool SkipNoteLine (string l) => l.Trim ().StartsWith ("//#NOTE:");
+
+		bool StartIgnoring (string l, out bool skipLine)
+		{
+			string line = l.Trim ();
+			skipLine = true;
+			if (MarshalMethodsEnabled && line.StartsWith ("//#FEATURE=MARSHAL_METHODS:START", StringComparison.Ordinal)) {
+				return true;
+			}
+
+			if (!CallTracingEnabled && line.StartsWith ("//#FEATURE=CALL_TRACING:START", StringComparison.Ordinal)) {
+				return true;
+			}
+
+			skipLine = line.StartsWith ("//#FEATURE", StringComparison.Ordinal);
+			return false;
+		}
+
+		bool EndIgnoring (string l)
+		{
+			string line = l.Trim ();
+			if (MarshalMethodsEnabled && line.StartsWith ("//#FEATURE=MARSHAL_METHODS:END", StringComparison.Ordinal)) {
+				return true;
+			}
+
+			if (!CallTracingEnabled && line.StartsWith ("//#FEATURE=CALL_TRACING:END", StringComparison.Ordinal)) {
+				return true;
+			}
+
+			return false;
 		}
 
 		string? ReadResource (string resourceName)

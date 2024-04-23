@@ -230,7 +230,8 @@ _ResolveAssemblies MSBuild target.
         InputLibraries="@(_ResolvedNativeLibraries)"
         ExcludedLibraries="@(_MonoExcludedLibraries)"
         Components="@(_MonoComponent->Distinct())"
-        IncludeDebugSymbols="$(AndroidIncludeDebugSymbols)">
+        IncludeDebugSymbols="$(AndroidIncludeDebugSymbols)"
+        IncludeNativeTracing="$(_UseNativeStackTraces)">
       <Output TaskParameter="OutputLibraries" ItemName="FrameworkNativeLibrary" />
     </ProcessNativeLibraries>
   </Target>

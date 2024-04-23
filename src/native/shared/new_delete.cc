@@ -22,7 +22,9 @@ operator new (size_t size)
 {
 	void* p = do_alloc (size);
 	if (p == nullptr) {
+#if !defined (XAMARIN_TRACING)
 		log_fatal (LOG_DEFAULT, "Out of memory in the `new` operator");
+#endif
 		xamarin::android::Helpers::abort_application ();
 	}
 

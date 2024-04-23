@@ -5,36 +5,17 @@
 
 #include "monodroid-glue-internal.hh"
 #include "mono-image-loader.hh"
+#include "marshal-methods-utilities.hh"
 
 using namespace xamarin::android::internal;
-
-static constexpr char Unknown[] = "Unknown";
 
 const char*
 MonodroidRuntime::get_method_name (uint32_t mono_image_index, uint32_t method_token) noexcept
 {
-	uint64_t id = (static_cast<uint64_t>(mono_image_index) << 32) | method_token;
+	uint64_t id = MarshalMethodsUtilities::get_method_id (mono_image_index, method_token);
 
 	log_debug (LOG_ASSEMBLY, "MM: looking for name of method with id 0x%llx, in mono image at index %u", id, mono_image_index);
-	size_t i = 0;
-	while (mm_method_names[i].id != 0) {
-		if (mm_method_names[i].id == id) {
-			return mm_method_names[i].name;
-		}
-		i++;
-	}
-
-	return Unknown;
-}
-
-const char*
-MonodroidRuntime::get_class_name (uint32_t class_index) noexcept
-{
-	if (class_index >= marshal_methods_number_of_classes) {
-		return Unknown;
-	}
-
-	return mm_class_names[class_index];
+	return MarshalMethodsUtilities::get_method_name (id);
 }
 
 template<bool NeedsLocking>
@@ -45,7 +26,7 @@ MonodroidRuntime::get_function_pointer (uint32_t mono_image_index, uint32_t clas
 		LOG_ASSEMBLY,
 		"MM: Trying to look up pointer to method '%s' (token 0x%x) in class '%s' (index %u)",
 		get_method_name (mono_image_index, method_token), method_token,
-		get_class_name (class_index), class_index
+		MarshalMethodsUtilities::get_class_name (class_index), class_index
 	);
 
 	if (class_index >= marshal_methods_number_of_classes) [[unlikely]] {
@@ -85,7 +66,7 @@ MonodroidRuntime::get_function_pointer (uint32_t mono_image_index, uint32_t clas
 		LOG_DEFAULT,
 		"Failed to obtain function pointer to method '%s' in class '%s'",
 		get_method_name (mono_image_index, method_token),
-		get_class_name (class_index)
+		MarshalMethodsUtilities::get_class_name (class_index)
 	);
 
 	log_fatal (

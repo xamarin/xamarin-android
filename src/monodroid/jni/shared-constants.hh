@@ -83,6 +83,43 @@ namespace xamarin::android::internal
 
 		// Documented in NDK's <android/log.h> comments
 		static constexpr size_t MAX_LOGCAT_MESSAGE_LENGTH = 1023;
+
+		static constexpr char LOG_CATEGORY_NAME_NONE[] = "*none*";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID[] = "monodroid";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_ASSEMBLY[] ="monodroid-assembly";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_DEBUG[] = "monodroid-debug";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_GC[] = "monodroid-gc";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_GREF[] = "monodroid-gref";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_LREF[] = "monodroid-lref";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_TIMING[] = "monodroid-timing";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_BUNDLE[] = "monodroid-bundle";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_NETWORK[] = "monodroid-network";
+		static constexpr char LOG_CATEGORY_NAME_MONODROID_NETLINK[] = "monodroid-netlink";
+		static constexpr char LOG_CATEGORY_NAME_ERROR[] = "*error*";
+
+#if defined (__aarch64__)
+		static constexpr bool IsARM64 = true;
+#else
+		static constexpr bool IsARM64 = false;
+#endif
+
+#if defined (__arm__)
+		static constexpr bool IsARM32 = true;
+#else
+		static constexpr bool IsARM32 = false;
+#endif
+
+#if defined (__i386__)
+		static constexpr bool IsX86 = true;
+#else
+		static constexpr bool IsX86 = false;
+#endif
+
+#if defined (__x86_64__)
+		static constexpr bool IsX64 = true;
+#else
+		static constexpr bool IsX64 = false;
+#endif
 	};
 }
 #endif // __SHARED_CONSTANTS_HH

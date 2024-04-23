@@ -61,6 +61,7 @@ const std::vector<std::string> internal_pinvoke_names = {
 	"_monodroid_gref_log_delete",
 	"_monodroid_gref_log_new",
 	"monodroid_log",
+	"monodroid_log_traces",
 	"_monodroid_lookup_replacement_type",
 	"_monodroid_lookup_replacement_method_info",
 	"_monodroid_lref_log_delete",
@@ -122,6 +123,8 @@ const std::vector<std::string> dotnet_pinvoke_names = {
 	"CompressionNative_InflateEnd",
 	"CompressionNative_InflateInit2_",
 	"CompressionNative_InflateReset",
+	"_kBrotliContextLookupTable",
+	"_kBrotliPrefixCodeRanges",
 
 	// libSystem.Native.so
 	"SystemNative_Abort",
@@ -249,6 +252,7 @@ const std::vector<std::string> dotnet_pinvoke_names = {
 	"SystemNative_GetSystemTimeAsTicks",
 	"SystemNative_GetTcpGlobalStatistics",
 	"SystemNative_GetTimestamp",
+	"SystemNative_GetTimeZoneData",
 	"SystemNative_GetUdpGlobalStatistics",
 	"SystemNative_GetUnixRelease",
 	"SystemNative_GetUnixVersion",
@@ -517,6 +521,7 @@ const std::vector<std::string> dotnet_pinvoke_names = {
 	"CryptoNative_HmacOneShot",
 	"CryptoNative_HmacReset",
 	"CryptoNative_HmacUpdate",
+	"Java_net_dot_android_crypto_DotnetProxyTrustManager_verifyRemoteCertificate",
 };
 
 template<typename Hash>

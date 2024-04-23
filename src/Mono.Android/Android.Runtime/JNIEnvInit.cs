@@ -76,6 +76,9 @@ namespace Android.Runtime
 		[UnmanagedCallersOnly]
 		internal static unsafe void Initialize (JnienvInitializeArgs* args)
 		{
+#if NETCOREAPP
+			RuntimeNativeMethods.monodroid_log_traces (TraceKind.All, "In JNIEnvInit.Initialize");
+#endif
 			IntPtr total_timing_sequence = IntPtr.Zero;
 			IntPtr partial_timing_sequence = IntPtr.Zero;
 

@@ -53,6 +53,19 @@ class LlvmIrFunctionAttributeSet : IEnumerable<LlvmIrFunctionAttribute>, IEquata
 		}
 	}
 
+	public void Add (AndroidTargetArch targetArch, LlvmIrFunctionAttribute attr)
+	{
+		if (privateTargetSpecificAttributes == null) {
+			privateTargetSpecificAttributes = new ();
+		}
+
+		if (!privateTargetSpecificAttributes.TryGetValue (targetArch, out List<LlvmIrFunctionAttribute> attrList)) {
+			attrList = new ();
+			privateTargetSpecificAttributes.Add (targetArch, attrList);
+		}
+		attrList.Add (attr);
+	}
+
 	public string Render ()
 	{
 		List<LlvmIrFunctionAttribute> list = attributes.ToList ();

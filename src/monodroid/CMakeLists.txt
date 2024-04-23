@@ -1,15 +1,9 @@
-cmake_minimum_required(VERSION 3.18.1)
+cmake_minimum_required(VERSION 3.19)
 
 #
 # MUST be included before project()!
 #
-include("../../build-tools/cmake/xa_common.cmake")
-
-#
-# Read product version
-#
-file(STRINGS "../../Directory.Build.props" XA_PRODUCT_VERSION_XML REGEX "^[ \t]*<ProductVersion>(.*)</ProductVersion>")
-string(REGEX REPLACE "^[ \t]*<ProductVersion>(.*)</ProductVersion>" "\\1" XA_VERSION "${XA_PRODUCT_VERSION_XML}")
+include("../../build-tools/cmake/xa_preamble.cmake")
 
 project(
   monodroid
@@ -17,76 +11,14 @@ project(
   DESCRIPTION "Xamarin.Android native runtime"
   HOMEPAGE_URL "https://github.com/xamarin/xamarin-android"
   LANGUAGES CXX C
-  )
+)
 
-option(COMPILER_DIAG_COLOR "Show compiler diagnostics/errors in color" ON)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
-
-if(CMAKE_BUILD_TYPE STREQUAL Debug)
-  set(DEBUG_BUILD True)
-else()
-  set(DEBUG_BUILD False)
-endif()
-
-set(XA_NO_INLINE "$ENV{XA_NO_INLINE}")
-if(XA_NO_INLINE)
-  set(DONT_INLINE_DEFAULT ON)
-else()
-  set(DONT_INLINE_DEFAULT OFF)
-endif()
-
-set(XA_NO_STRIP "$ENV{XA_NO_STRIP}")
-if(XA_NO_STRIP OR DEBUG_BUILD)
-  set(STRIP_DEBUG_DEFAULT OFF)
-endif()
-
-option(ENABLE_CLANG_ASAN "Enable the clang AddressSanitizer support" OFF)
-option(ENABLE_CLANG_UBSAN "Enable the clang UndefinedBehaviorSanitizer support" OFF)
-
-if(ENABLE_CLANG_ASAN OR ENABLE_CLANG_UBSAN)
-  # ASAN and UBSAN always require the debug symbols to be left in the binary
-  set(STRIP_DEBUG_DEFAULT OFF)
-  set(ANALYZERS_ENABLED ON)
-else()
-  if(NOT XA_NO_STRIP)
-    set(STRIP_DEBUG_DEFAULT ON)
-  endif()
-  set(ANALYZERS_ENABLED OFF)
-endif()
+#
+# MUST be included after project()!
+#
+include("../../build-tools/cmake/xa_common.cmake")
 
 option(ENABLE_TIMING "Build with timing support" OFF)
-option(STRIP_DEBUG "Strip debugging information when linking" ${STRIP_DEBUG_DEFAULT})
-option(DISABLE_DEBUG "Disable the built-in debugging code" OFF)
-option(USE_CCACHE "Use ccache, if found, to speed up recompilation" ON)
-option(DONT_INLINE "Do not inline any functions which are usually inlined, to get better stack traces" ${DONT_INLINE_DEFAULT})
-
-if(USE_CCACHE)
-  if(CMAKE_CXX_COMPILER MATCHES "/ccache/")
-    message(STATUS "ccache: compiler already uses ccache")
-  else()
-    find_program(CCACHE ccache)
-    if(CCACHE)
-      set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE}")
-      set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE}")
-      message(STATUS "ccache: compiler will be lauched with ${CCACHE}")
-    endif()
-  endif()
-endif()
-
-
-
-if(ANDROID_STL STREQUAL none)
-  set(USES_LIBSTDCPP False)
-else()
-  set(USES_LIBSTDCPP True)
-endif()
 
 # Environment checks
 
@@ -112,52 +44,29 @@ if(NOT DEFINED XA_LIB_TOP_DIR)
   message(FATAL_ERROR "Please set the XA_LIB_TOP_DIR variable on command line (-DXA_LIB_TOP_DIR=path)")
 endif()
 
+if(NOT DEFINED LIBUNWIND_SOURCE_DIR)
+  message(FATAL_ERROR "Please set the LIBUNWIND_SOURCE_DIR on command line (-DLIBUNWIND_SOURCE_DIR=path)")
+endif()
+
+if(NOT DEFINED LIBUNWIND_HEADERS_DIR)
+  message(FATAL_ERROR "Please set the LIBUNWIND_HEADERS_DIR on command line (-DLIBUNWIND_HEADERS_DIR=path)")
+endif()
+
 # Needed modules
 
 include(CheckIncludeFile)
 include(CheckCXXSymbolExists)
 
-# General config
-
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL Linux)
-  set(IS_LINUX True)
-else()
-  set(IS_LINUX False)
-endif()
-
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
-  set(IS_MACOS True)
-else()
-  set(IS_MACOS False)
-endif()
-
 # Paths
 
-set(EXTERNAL_DIR "../../external")
-set(JAVA_INTEROP_SRC_PATH "${EXTERNAL_DIR}/Java.Interop/src/java-interop")
 set(SOURCES_DIR ${CMAKE_SOURCE_DIR}/jni)
-set(BIONIC_SOURCES_DIR "../../src-ThirdParty/bionic")
+set(BIONIC_SOURCES_DIR "${REPO_ROOT_DIR}/src-ThirdParty/bionic")
 set(LZ4_SRC_DIR "${EXTERNAL_DIR}/lz4/lib")
 set(LZ4_INCLUDE_DIR ${LZ4_SRC_DIR})
-set(XA_BIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../bin/${XA_BUILD_CONFIGURATION}")
-set(XA_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../bin/Build${XA_BUILD_CONFIGURATION}")
+set(XA_BIN_DIR "${REPO_ROOT_DIR}/bin/${XA_BUILD_CONFIGURATION}")
 set(ROBIN_MAP_DIR "${EXTERNAL_DIR}/robin-map")
 set(XXHASH_DIR "${EXTERNAL_DIR}/xxHash")
 set(CONSTEXPR_XXH3_DIR "${EXTERNAL_DIR}/constexpr-xxh3")
-
-include("${XA_BUILD_DIR}/xa_build_configuration.cmake")
-
-if(ANDROID_ABI MATCHES "^arm64-v8a")
-  set(NET_RUNTIME_DIR "${NETCORE_APP_RUNTIME_DIR_ARM64}")
-elseif(ANDROID_ABI MATCHES "^armeabi-v7a")
-  set(NET_RUNTIME_DIR "${NETCORE_APP_RUNTIME_DIR_ARM}")
-elseif(ANDROID_ABI MATCHES "^x86_64")
-  set(NET_RUNTIME_DIR "${NETCORE_APP_RUNTIME_DIR_X86_64}")
-elseif(ANDROID_ABI MATCHES "^x86")
-  set(NET_RUNTIME_DIR "${NETCORE_APP_RUNTIME_DIR_X86}")
-else()
-  message(FATAL "${ANDROID_ABI} is not supported for .NET 6+ builds")
-endif()
 
 set(LZ4_SOURCES
   "${LZ4_SRC_DIR}/lz4.c"
@@ -171,9 +80,8 @@ include_directories(${EXTERNAL_DIR})
 # much about them, we can just as well avoid cluttered build output.
 include_directories(SYSTEM ${CONSTEXPR_XXH3_DIR})
 include_directories(SYSTEM ${ROBIN_MAP_DIR}/include)
-include_directories(SYSTEM ${CMAKE_SYSROOT}/usr/include/c++/v1/)
 include_directories(SYSTEM ${LZ4_INCLUDE_DIR})
-include_directories(SYSTEM "${NET_RUNTIME_DIR}/native/include/mono-2.0")
+
 include_directories("jni")
 include_directories("${XA_BIN_DIR}/include")
 include_directories("${XA_BIN_DIR}/include/${ANDROID_ABI}/eglib")
@@ -182,7 +90,6 @@ include_directories("${XA_BIN_DIR}/include/${ANDROID_ABI}/eglib")
 include_directories("../../bin/${CONFIGURATION}/include")
 include_directories("../../bin/${CONFIGURATION}/include/${ANDROID_ABI}/eglib")
 include_directories("${MONO_PATH}/mono/eglib")
-include_directories("${JAVA_INTEROP_SRC_PATH}")
 
 # Common preparation code
 include("../../build-tools/cmake/xa_macros.cmake")
@@ -192,10 +99,8 @@ xa_macos_prepare_arm64()
 
 # Compiler defines
 
-add_compile_definitions(XA_VERSION="${XA_VERSION}")
 add_compile_definitions(TSL_NO_EXCEPTIONS)
 add_compile_definitions(HAVE_CONFIG_H)
-add_compile_definitions(_REENTRANT)
 add_compile_definitions(JI_DLL_EXPORT)
 add_compile_definitions(MONO_DLL_EXPORT)
 add_compile_definitions(NET)
@@ -214,15 +119,6 @@ if (ENABLE_TIMING)
 endif()
 
 add_compile_definitions(HAVE_LZ4)
-add_compile_definitions(PLATFORM_ANDROID)
-
-if(ANDROID_ABI MATCHES "^(arm64-v8a|x86_64)")
-  add_compile_definitions(ANDROID64)
-endif()
-
-if (ANDROID_NDK_MAJOR LESS 20)
-  add_compile_definitions(__ANDROID_API_Q__=29)
-endif()
 
 # Compiler and linker flags
 set(LINK_LIBS
@@ -376,6 +272,8 @@ endif()
 set(XAMARIN_INTERNAL_API_LIB xa-internal-api${CHECKED_BUILD_INFIX})
 set(XAMARIN_DEBUG_APP_HELPER_LIB xamarin-debug-app-helper${CHECKED_BUILD_INFIX})
 set(XAMARIN_APP_STUB_LIB xamarin-app)
+set(XAMARIN_NATIVE_TRACING_LIB xamarin-native-tracing)
+set(XAMARIN_MARSHAL_METHODS_TRACING_LIB marshal-methods-tracing)
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} XAMARIN_MONO_ANDROID_SUFFIX)
 set(XAMARIN_MONO_ANDROID_LIB "mono-android${CHECKED_BUILD_INFIX}.${XAMARIN_MONO_ANDROID_SUFFIX}")
@@ -387,6 +285,7 @@ set(XAMARIN_MONODROID_SOURCES
   ${JAVA_INTEROP_SRC_PATH}/java-interop-util.cc
   ${JAVA_INTEROP_SRC_PATH}/java-interop.cc
   ${LZ4_SOURCES}
+  ${XA_SHARED_SOURCES}
   ${SOURCES_DIR}/android-system.cc
   ${SOURCES_DIR}/basic-android-system.cc
   ${SOURCES_DIR}/basic-utilities.cc
@@ -396,14 +295,13 @@ set(XAMARIN_MONODROID_SOURCES
   ${SOURCES_DIR}/embedded-assemblies-zip.cc
   ${SOURCES_DIR}/embedded-assemblies.cc
   ${SOURCES_DIR}/globals.cc
-  ${SOURCES_DIR}/helpers.cc
   ${SOURCES_DIR}/jni-remapping.cc
   ${SOURCES_DIR}/logger.cc
   ${SOURCES_DIR}/mono-log-adapter.cc
   ${SOURCES_DIR}/monodroid-glue.cc
   ${SOURCES_DIR}/monodroid-networkinfo.cc
+  ${SOURCES_DIR}/monodroid-tracing.cc
   ${SOURCES_DIR}/monovm-properties.cc
-  ${SOURCES_DIR}/new_delete.cc
   ${SOURCES_DIR}/osbridge.cc
   ${SOURCES_DIR}/pinvoke-override-api.cc
   ${SOURCES_DIR}/shared-constants.cc
@@ -422,10 +320,24 @@ endif()
 if(NOT USES_LIBSTDCPP)
   list(APPEND XAMARIN_MONODROID_SOURCES
     ${BIONIC_SOURCES_DIR}/cxa_guard.cc
-    ${SOURCES_DIR}/cxx-abi/string.cc
-    ${SOURCES_DIR}/cxx-abi/terminate.cc
+    ${SHARED_SOURCES_DIR}/cxx-abi/string.cc
+    ${SHARED_SOURCES_DIR}/cxx-abi/terminate.cc
   )
 endif()
+
+set(NATIVE_TRACING_SOURCES
+  ${SHARED_SOURCES_DIR}/cxx-abi/string.cc
+# ${SHARED_SOURCES_DIR}/cxx-abi/terminate.cc
+  ${TRACING_SOURCES_DIR}/native-tracing.cc
+  ${XA_SHARED_SOURCES}
+)
+
+set(MARSHAL_METHODS_TRACING_SOURCES
+  ${SHARED_SOURCES_DIR}/cxx-abi/string.cc
+  ${SHARED_SOURCES_DIR}/cxx-abi/terminate.cc
+  ${SOURCES_DIR}/marshal-methods-tracing.cc
+  ${XA_SHARED_SOURCES}
+)
 
 set(XAMARIN_APP_STUB_SOURCES
   ${SOURCES_DIR}/application_dso_stub.cc
@@ -436,9 +348,8 @@ set(XAMARIN_DEBUG_APP_HELPER_SOURCES
   ${SOURCES_DIR}/basic-utilities.cc
   ${SOURCES_DIR}/cpu-arch-detect.cc
   ${SOURCES_DIR}/debug-app-helper.cc
-  ${SOURCES_DIR}/helpers.cc
-  ${SOURCES_DIR}/new_delete.cc
   ${SOURCES_DIR}/shared-constants.cc
+  ${XA_SHARED_SOURCES}
   )
 
 set(XAMARIN_STUB_LIB_SOURCES
@@ -503,6 +414,77 @@ add_library(
   SHARED ${XAMARIN_MONODROID_SOURCES}
 )
 
+if(NOT DEBUG_BUILD)
+  set(CPP_ABI_PATH ${CMAKE_SYSROOT}/usr/lib/${SYSROOT_ABI_LIB_DIR}/${TOOLCHAIN_TRIPLE}/libc++abi.a)
+
+  add_library(
+    ${XAMARIN_NATIVE_TRACING_LIB}
+    SHARED ${NATIVE_TRACING_SOURCES}
+  )
+
+  target_include_directories(
+    ${XAMARIN_NATIVE_TRACING_LIB} BEFORE
+    PRIVATE
+    ${LIBUNWIND_SOURCE_DIR}/include
+    ${LIBUNWIND_HEADERS_DIR}/${CMAKE_ANDROID_ARCH_ABI}
+    ${NDK_CXX_LIBCPPABI_SOURCE_PATH}/include
+  )
+
+  target_compile_options(
+    ${XAMARIN_NATIVE_TRACING_LIB}
+    PRIVATE
+    # Avoid the 'warning: dynamic exception specifications are deprecated' warning from libc++ headers
+    -Wno-deprecated-dynamic-exception-spec
+    ${XA_DEFAULT_SYMBOL_VISIBILITY}
+    # Prevent genration of the .eh_frame section (we don't use exceptions and don't need it)
+    -fno-asynchronous-unwind-tables
+  )
+
+  target_link_options(
+    ${XAMARIN_NATIVE_TRACING_LIB}
+    PRIVATE ${XA_DEFAULT_SYMBOL_VISIBILITY}
+  )
+
+  target_link_libraries(
+    ${XAMARIN_NATIVE_TRACING_LIB}
+    PRIVATE
+    -llog
+    ${CPP_ABI_PATH}
+    ${XA_LIBRARY_OUTPUT_DIRECTORY}/libunwind_xamarin.a
+  )
+
+  target_compile_definitions(
+    ${XAMARIN_NATIVE_TRACING_LIB}
+    PRIVATE
+    XAMARIN_TRACING
+  )
+
+  add_library(
+    ${XAMARIN_MARSHAL_METHODS_TRACING_LIB}
+    STATIC ${MARSHAL_METHODS_TRACING_SOURCES}
+  )
+
+  target_include_directories(
+    ${XAMARIN_MARSHAL_METHODS_TRACING_LIB} BEFORE
+    PRIVATE
+    ${LIBUNWIND_SOURCE_DIR}/include
+    ${LIBUNWIND_HEADERS_DIR}/${CMAKE_ANDROID_ARCH_ABI}
+  )
+
+  target_compile_definitions(
+    ${XAMARIN_MARSHAL_METHODS_TRACING_LIB}
+    PRIVATE
+    XAMARIN_TRACING
+  )
+
+  target_compile_options(
+    ${XAMARIN_MARSHAL_METHODS_TRACING_LIB}
+    PRIVATE
+    # Prevent genration of the .eh_frame section (we don't use exceptions and don't need it)
+    -fno-asynchronous-unwind-tables
+  )
+endif()
+
 # Ugly, but this is the only way to change LZ4 symbols visibility without modifying lz4.h
 set(LZ4_VISIBILITY_OPTS "-DLZ4LIB_VISIBILITY=__attribute__ ((visibility (\"hidden\")))")
 
@@ -510,6 +492,13 @@ target_compile_options(
   ${XAMARIN_MONO_ANDROID_LIB}
   PRIVATE ${XA_DEFAULT_SYMBOL_VISIBILITY} "${LZ4_VISIBILITY_OPTS}"
   )
+
+target_include_directories(
+  ${XAMARIN_MONO_ANDROID_LIB} BEFORE
+  PRIVATE
+  ${LIBUNWIND_SOURCE_DIR}/include
+  ${LIBUNWIND_HEADERS_DIR}/${CMAKE_ANDROID_ARCH_ABI}
+)
 
 set(DEBUG_HELPER_LINK_LIBS "-ldl")
 

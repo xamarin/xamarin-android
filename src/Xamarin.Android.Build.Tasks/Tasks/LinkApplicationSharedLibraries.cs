@@ -44,8 +44,16 @@ namespace Xamarin.Android.Tasks
 		[Required]
 		public string AndroidBinUtilsDirectory { get; set; }
 
+		public string MarshalMethodsTracingMode { get; set; }
+
+		MarshalMethodsTracingMode mmTracingMode;
+		bool mmTracingEnabled;
+
 		public override System.Threading.Tasks.Task RunTaskAsync ()
 		{
+			mmTracingMode = MonoAndroidHelper.ParseMarshalMethodsTracingMode (MarshalMethodsTracingMode);
+			mmTracingEnabled = mmTracingMode != Tasks.MarshalMethodsTracingMode.None;
+
 			return this.WhenAll (GetLinkerConfigs (), RunLinker);
 		}
 
@@ -122,6 +130,7 @@ namespace Xamarin.Android.Tasks
 				abis [abi] = GatherFilesForABI (item.ItemSpec, abi, ObjectFiles, runtimeNativeLibsDir, runtimeNativeLibStubsDir);
 			}
 
+			// 				"--eh-frame-hdr " +
 			const string commonLinkerArgs =
 				"--shared " +
 				"--allow-shlib-undefined " +
@@ -134,7 +143,7 @@ namespace Xamarin.Android.Tasks
 				"--warn-shared-textrel " +
 				"--fatal-warnings";
 
-			string stripSymbolsArg = DebugBuild ? String.Empty : " -s";
+			string stripSymbolsArg = DebugBuild || mmTracingEnabled ? String.Empty : " -s";
 
 			string ld = Path.Combine (AndroidBinUtilsDirectory, MonoAndroidHelper.GetExecutablePath (AndroidBinUtilsDirectory, "ld"));
 			var targetLinkerArgs = new List<string> ();
@@ -207,6 +216,11 @@ namespace Xamarin.Android.Tasks
 				$"-L \"{libStubsPath}\"",
 				"-lc",
 			};
+
+			if (mmTracingEnabled) {
+				extraLibraries.Add (Path.Combine (runtimeLibsDir, "libmarshal-methods-tracing.a"));
+				extraLibraries.Add ("-lxamarin-native-tracing");
+			}
 
 			return new InputFiles {
 				OutputSharedLibrary = runtimeSharedLibrary,

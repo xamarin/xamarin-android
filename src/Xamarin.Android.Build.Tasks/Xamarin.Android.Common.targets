@@ -330,6 +330,8 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
   <AndroidUseAssemblyStore Condition=" '$(AndroidUseAssemblyStore)' == '' and ('$(EmbedAssembliesIntoApk)' != 'true' or '$(AndroidIncludeDebugSymbols)' == 'true') ">false</AndroidUseAssemblyStore>
   <AndroidUseAssemblyStore Condition=" '$(AndroidUseAssemblyStore)' == '' ">true</AndroidUseAssemblyStore>
   <AndroidAotEnableLazyLoad Condition=" '$(AndroidAotEnableLazyLoad)' == '' And '$(AotAssemblies)' == 'true' And '$(AndroidIncludeDebugSymbols)' != 'true' ">True</AndroidAotEnableLazyLoad>
+
+  <!-- TODO: disable for Blazor apps, use https://github.com/dotnet/maui/blob/f939049fa0bf950aeaf9271ca13ee73870c8ce93/src/Workload/Microsoft.Maui.Sdk/Sdk/BundledVersions.in.targets#L51 -->
   <AndroidEnableMarshalMethods Condition=" '$(AndroidEnableMarshalMethods)' == '' ">False</AndroidEnableMarshalMethods>
   <_AndroidUseMarshalMethods Condition=" '$(AndroidIncludeDebugSymbols)' == 'True' ">False</_AndroidUseMarshalMethods>
   <_AndroidUseMarshalMethods Condition=" '$(AndroidIncludeDebugSymbols)' != 'True' ">$(AndroidEnableMarshalMethods)</_AndroidUseMarshalMethods>
@@ -1358,6 +1360,8 @@ because xbuild doesn't support framework reference assemblies.
   />
   <CreateTypeManagerJava
       Condition=" '$(_AndroidUseMarshalMethods)' == 'True' "
+      CallTracingEnabled="$(_UseNativeStackTraces)"
+      MarshalMethodsEnabled="$(_AndroidUseMarshalMethods)"
       ResourceName="JavaInteropTypeManager.java"
       OutputFilePath="$(_AndroidIntermediateJavaSourceDirectory)mono\TypeManager.java"
   />
@@ -1721,6 +1725,7 @@ because xbuild doesn't support framework reference assemblies.
     RuntimeConfigBinFilePath="$(_BinaryRuntimeConfigPath)"
     UseAssemblyStore="$(AndroidUseAssemblyStore)"
     EnableMarshalMethods="$(_AndroidUseMarshalMethods)"
+    MarshalMethodsTracingMode="$(_AndroidMarshalMethodsTracingMode)"
   >
     <Output TaskParameter="BuildId" PropertyName="_XamarinBuildId" />
   </GeneratePackageManagerJava>
@@ -2007,6 +2012,7 @@ because xbuild doesn't support framework reference assemblies.
       ApplicationSharedLibraries="@(_ApplicationSharedLibrary)"
       DebugBuild="$(AndroidIncludeDebugSymbols)"
       AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
+      MarshalMethodsTracingMode="$(_AndroidMarshalMethodsTracingMode)"
   />
   <ItemGroup>
     <FileWrites Include="@(_ApplicationSharedLibrary)" />

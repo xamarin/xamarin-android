@@ -1,0 +1,21 @@
+#if !defined (__LIBUNWIND_CONFIG_H)
+#define __LIBUNWIND_CONFIG_H
+
+#cmakedefine01 HAVE_ELF_H
+#cmakedefine01 HAVE_ENDIAN_H
+#cmakedefine01 HAVE_ASM_VSYSCALL_H
+#cmakedefine01 HAVE_BYTESWAP_H
+#cmakedefine01 HAVE_ELF_H
+#cmakedefine01 HAVE_ENDIAN_H
+#cmakedefine01 HAVE_LINK_H
+#cmakedefine01 HAVE_SYS_ENDIAN_H
+#cmakedefine01 HAVE_SYS_LINK_H
+#cmakedefine01 HAVE_SYS_PARAM_H
+#cmakedefine01 HAVE_SYS_SYSCALL_H
+#cmakedefine01 HAVE_MINCORE
+#cmakedefine01 HAVE_PIPE2
+
+#define PACKAGE_STRING "@PACKAGE_STRING@"
+#define PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
+
+#endif // ndef __LIBUNWIND_CONFIG_H

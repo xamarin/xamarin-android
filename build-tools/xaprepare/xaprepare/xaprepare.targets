@@ -75,6 +75,7 @@
       <Replacement Include="@JavaInteropFullPath@=$(JavaInteropFullPath)" />
       <Replacement Include="@JavaSdkDirectory@=$(JavaSdkDirectory)" />
       <Replacement Include="@JdkIncludePath@=$(JavaIncludePath)" />
+      <Replacement Include="@LibUnwindSourceFullPath@=$(LibUnwindSourceFullPath)" />
       <Replacement Include="@LibZipSourceFullPath@=$(LibZipSourceFullPath)" />
       <Replacement Include="@ManagedRuntime@=$(ManagedRuntime)" />
       <Replacement Include="@MicrosoftAndroidSdkOutDir@=$(MicrosoftAndroidSdkOutDir)" />

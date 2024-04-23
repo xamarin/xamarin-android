@@ -38,6 +38,8 @@ namespace Xamarin.Android.Prepare
 		public const string JavaInteropFullPath                 = "JavaInteropFullPath";
 		public const string JavaSdkDirectory                    = "JavaSdkDirectory";
 		public const string JdkIncludePath                      = "JdkIncludePath";
+		public const string LibUnwindGeneratedHeadersFullPath   = nameof (LibUnwindGeneratedHeadersFullPath);
+		public const string LibUnwindSourceFullPath             = nameof (LibUnwindSourceFullPath);
 		public const string LibZipSourceFullPath                = "LibZipSourceFullPath";
 		public const string ManagedRuntime                      = "ManagedRuntime";
 		public const string MicrosoftAndroidSdkOutDir           = "MicrosoftAndroidSdkOutDir";

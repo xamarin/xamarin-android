@@ -94,6 +94,27 @@ namespace xamarin::android::internal
 			return starts_with (s, strlen (s));
 		}
 
+		force_inline bool equal (size_t start_index, std::string_view const& s) const noexcept
+		{
+			if (s.empty ()) {
+				return false;
+			}
+
+			if (!can_access (s.length () + start_index)) {
+				return false;
+			}
+
+			if (s.length () != length () - start_index) {
+				return false;
+			}
+
+			if (length () == 0) {
+				return true;
+			}
+
+			return memcmp (_start + start_index, s.data (), length () - start_index) == 0;
+		}
+
 		force_inline bool starts_with (const char *s, size_t s_length) const noexcept
 		{
 			if (s == nullptr || !can_access (s_length)) {

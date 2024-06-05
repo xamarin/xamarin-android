@@ -1513,8 +1513,8 @@ because xbuild doesn't support framework reference assemblies.
     <FileWrites Include="$(_ManifestOutput)" />
   </ItemGroup>
 
-  <Touch Files="$(_AndroidStampDirectory)_GenerateJavaStubs.stamp" AlwaysCreate="True" />
   <Touch Files="@(_TypeMapAssemblySource)" />
+  <Touch Files="$(_AndroidStampDirectory)_GenerateJavaStubs.stamp" AlwaysCreate="True" />
 </Target>
 
 <Target Name="_ManifestMerger"

@@ -212,7 +212,17 @@ _ResolveAssemblies MSBuild target.
     </ItemGroup>
   </Target>
 
-  <Target Name="_IncludeNativeSystemLibraries">
+  <Target Name="_PrepareMonoComponentItems">
+    <ItemGroup>
+      <_MonoComponent Condition=" '$(AndroidEnableProfiler)' == 'true' " Include="diagnostics_tracing" />
+      <_MonoComponent Condition=" '$(AndroidUseInterpreter)' == 'true' " Include="hot_reload" />
+      <_MonoComponent Condition=" '$(AndroidIncludeDebugSymbols)' == 'true' " Include="debugger" />
+      <_MonoComponent Condition=" '$(_AndroidExcludeMarshalIlgenComponent)' != 'true' " Include="marshal-ilgen" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_IncludeNativeSystemLibraries"
+          DependsOnTargets="_PrepareMonoComponentItems">
     <PropertyGroup>
       <_AndroidIncludeSystemGlobalizationNative Condition=" '$(_AndroidIncludeSystemGlobalizationNative)' == '' ">true</_AndroidIncludeSystemGlobalizationNative>
       <_AndroidEnableNativeStackTracing Condition=" '$(_AndroidEnableNativeStackTracing)' == ''">false</_AndroidEnableNativeStackTracing>
@@ -221,10 +231,6 @@ _ResolveAssemblies MSBuild target.
       <_ResolvedNativeLibraries Include="@(ResolvedFileToPublish)" Condition=" '%(ResolvedFileToPublish.Extension)' == '.so' " />
     </ItemGroup>
     <ItemGroup>
-      <_MonoComponent Condition=" '$(AndroidEnableProfiler)' == 'true' " Include="diagnostics_tracing" />
-      <_MonoComponent Condition=" '$(AndroidUseInterpreter)' == 'true' " Include="hot_reload" />
-      <_MonoComponent Condition=" '$(AndroidIncludeDebugSymbols)' == 'true' " Include="debugger" />
-      <_MonoComponent Condition=" '$(_AndroidExcludeMarshalIlgenComponent)' != 'true' " Include="marshal-ilgen" />
       <!-- Filename without extension -->
       <_ExcludedNativeLibraries Condition=" '$(_AndroidIncludeSystemGlobalizationNative)' != 'true' " Include="libSystem.Globalization.Native" />
       <_ExcludedNativeLibraries Condition=" '$(_AndroidEnableNativeStackTracing)' != 'true' " Include="libxamarin-native-tracing" />

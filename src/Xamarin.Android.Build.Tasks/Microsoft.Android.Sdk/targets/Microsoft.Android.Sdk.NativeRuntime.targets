@@ -1,0 +1,24 @@
+<!--
+***********************************************************************************************
+Microsoft.Android.Sdk.NativeRuntime.targets
+
+Contains code to build and link the native runtime at application build time.
+
+***********************************************************************************************
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Xamarin.Android.Tasks.LinkNativeRuntime" AssemblyFile="$(_XamarinAndroidBuildTasksAssembly)" />
+
+  <PropertyGroup>
+    <_EnableNativeRuntimeLinking
+  </PropertyGroup>
+
+  <Target Name="_LinkNativeRuntime"
+          DependsOnTargets="_PrepareMonoComponentItems"
+          Condition=" '$(_AndroidEnableNativeRuntimeLinking)' == 'true' ">
+    <LinkNativeRuntime
+        MonoComponents="@(_MonoComponent)"
+        AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
+    />
+  </Target>
+</Project>

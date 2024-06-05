@@ -54,6 +54,9 @@
         When changing this default, change the value of `DefaultZipAlignment` in `src/Xamarin.Android.Build.Tasks/Tasks/AndroidZipAlign.cs` as well
     -->
     <_AndroidZipAlignment Condition=" '$(_AndroidZipAlignment)' == '' ">4</_AndroidZipAlignment>
+
+    <!-- Native runtime -->
+    <_AndroidEnableNativeRuntimeLinking Condition=" '$(_AndroidEnableNativeRuntimeLinking)' == '' and '$(AndroidIncludeDebugSymbols)' != 'true' ">true</_AndroidEnableNativeRuntimeLinking>
   </PropertyGroup>
 
   <!--  User-facing configuration-specific defaults -->

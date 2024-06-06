@@ -16,33 +16,6 @@ namespace Xamarin.Android.Tasks;
 
 public class LinkNativeRuntime : AndroidAsyncTask
 {
-	class Archive
-	{
-		public readonly string Name;
-		public readonly Func<Archive, bool> Include = (Archive) => true;
-
-		public Archive (string name, Func<Archive, bool>? include = null)
-		{
-			Name = name;
-			if (include != null) {
-				Include = include;
-			}
-		}
-	}
-
-	class MonoComponentArchive : Archive
-	{
-		public readonly string ComponentName;
-
-		public MonoComponentArchive (string name, string componentName, Func<Archive, bool> include)
-			: base (name, include)
-		{
-			ComponentName = componentName;
-		}
-	}
-
-	readonly List<Archive> KnownArchives;
-
 	public override string TaskPrefix => "LNR";
 
 	public ITaskItem[] MonoComponents { get; set; }
@@ -50,54 +23,61 @@ public class LinkNativeRuntime : AndroidAsyncTask
 	[Required]
 	public string AndroidBinUtilsDirectory { get; set; }
 
-	public LinkNativeRuntime ()
-	{
-		KnownArchives = new () {
-			new MonoComponentArchive ("libmono-component-diagnostics_tracing-static.a", "diagnostics_tracing", MonoComponentPresent),
-			new MonoComponentArchive ("libmono-component-diagnostics_tracing-stub-static.a", "diagnostics_tracing", MonoComponentAbsent),
-			new MonoComponentArchive ("libmono-component-marshal-ilgen-static.a", "marshal-ilgen", MonoComponentPresent),
-			new MonoComponentArchive ("libmono-component-marshal-ilgen-stub-static.a", "marshal-ilgen", MonoComponentAbsent),
+	[Required]
+	public ITaskItem[] NativeArchives { get; set; }
 
-			new Archive ("libmonosgen-2.0.a"),
-			new Archive ("libSystem.Globalization.Native.a"),
-			new Archive ("libSystem.IO.Compression.Native.a"),
-			new Archive ("libSystem.Native.a"),
-			new Archive ("libSystem.Security.Cryptography.Native.Android.a"),
-		};
-	}
+	[Required]
+	public ITaskItem[] NativeObjectFiles { get; set; }
+
+	[Required]
+	public ITaskItem[] OutputRuntimes { get; set; }
+
+	[Required]
+	public ITaskItem[] SupportedAbis { get; set; }
 
 	public override System.Threading.Tasks.Task RunTaskAsync ()
 	{
-		throw new NotImplementedException ();
+		return this.WhenAll (SupportedAbis, LinkRuntime);
 	}
 
-	bool MonoComponentExists (Archive archive)
+	void LinkRuntime (ITaskItem abiItem)
 	{
-		if (MonoComponents == null || MonoComponents.Length == 0) {
-			return false;
-		}
+		string abi = abiItem.ItemSpec;
+		Log.LogDebugMessage ($"LinkRuntime ({abi})");
+		var linker = new NativeLinker (Log, abi);
+		linker.Link (
+			GetFirstAbiItem (OutputRuntimes, "_UnifiedNativeRuntime", abi),
+			GetAbiItems (NativeObjectFiles, "_NativeAssemblyTarget", abi),
+			GetAbiItems (NativeArchives, "_SelectedNativeArchive", abi)
+		);
+	}
 
-		var mcArchive = archive as MonoComponentArchive;
-		if (mcArchive == null) {
-			throw new ArgumentException (nameof (archive), "Must be an instance of MonoComponentArchive");
-		}
+	List<ITaskItem> GetAbiItems (ITaskItem[] source, string itemName, string abi)
+	{
+		var ret = new List<ITaskItem> ();
 
-		foreach (ITaskItem item in MonoComponents) {
-			if (String.Compare (item.ItemSpec, mcArchive.ComponentName, StringComparison.OrdinalIgnoreCase) == 0) {
-				return true;
+		foreach (ITaskItem item in source) {
+			if (AbiMatches (abi, item, itemName)) {
+				ret.Add (item);
 			}
 		}
 
-		return false;
+		return ret;
 	}
 
-	bool MonoComponentAbsent (Archive archive)
+	ITaskItem GetFirstAbiItem (ITaskItem[] source, string itemName, string abi)
 	{
-		return !MonoComponentExists (archive);
+		foreach (ITaskItem item in source) {
+			if (AbiMatches (abi, item, itemName)) {
+				return item;
+			}
+		}
+
+		throw new InvalidOperationException ($"Internal error: item '{itemName}' for ABI '{abi}' not found");
 	}
 
-	bool MonoComponentPresent (Archive archive)
+	bool AbiMatches (string abi, ITaskItem item, string itemName)
 	{
-		return MonoComponentExists (archive);
+		return String.Compare (abi, item.GetRequiredMetadata (itemName, "Abi", Log), StringComparison.OrdinalIgnoreCase) == 0;
 	}
 }

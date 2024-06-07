@@ -25,6 +25,7 @@ Contains code to build and link the native runtime at application build time.
         MonoComponents="@(_MonoComponent)"
         ResolvedNativeArchives="@(_ResolvedNativeArchive)">
       <Output TaskParameter="NativeArchives" ItemName="_SelectedNativeArchive" />
+      <Output TaskParameter="RequiredLibraries" ItemName="_RequiredLinkLibraries" />
     </GetNativeRuntimeComponents>
   </Target>
 
@@ -36,8 +37,10 @@ Contains code to build and link the native runtime at application build time.
     <LinkNativeRuntime
         MonoComponents="@(_MonoComponent)"
         AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
+        IntermediateOutputPath="$(IntermediateOutputPath)"
         NativeArchives="@(_SelectedNativeArchive)"
         NativeObjectFiles="@(_NativeAssemblyTarget)"
+        LinkLibraries="@(_RequiredLinkLibraries)"
         OutputRuntimes="@(_UnifiedNativeRuntime)"
         SupportedAbis="@(_BuildTargetAbis)"
     />

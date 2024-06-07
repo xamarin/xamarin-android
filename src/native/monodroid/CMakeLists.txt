@@ -9,6 +9,7 @@ include(CheckCXXSymbolExists)
 
 set(BIONIC_SOURCES_DIR "${REPO_ROOT_DIR}/src-ThirdParty/bionic")
 set(ROBIN_MAP_DIR "${EXTERNAL_DIR}/robin-map")
+set(BUILD_STATIC_LIBRARY OFF)
 
 if(DEBUG_BUILD)
   # Convince NDK to really optimize our Debug builds. Without this, NDK's cmake toolchain definition
@@ -17,6 +18,8 @@ if(DEBUG_BUILD)
   set(XA_COMPILER_FLAGS_DEBUG "-fno-limit-debug-info -O2")
   set(CMAKE_C_FLAGS_DEBUG ${XA_COMPILER_FLAGS_DEBUG})
   set(CMAKE_CXX_FLAGS_DEBUG ${XA_COMPILER_FLAGS_DEBUG})
+elseif(NOT ANALYZERS_ENABLED)
+  set(BUILD_STATIC_LIBRARY ON)
 endif()
 
 # Library directories
@@ -42,6 +45,7 @@ endif()
 # Sources
 string(TOLOWER ${CMAKE_BUILD_TYPE} XAMARIN_MONO_ANDROID_SUFFIX)
 set(XAMARIN_MONO_ANDROID_LIB "mono-android${CHECKED_BUILD_INFIX}.${XAMARIN_MONO_ANDROID_SUFFIX}")
+set(XAMARIN_MONO_ANDROID_STATIC_LIB "${XAMARIN_MONO_ANDROID_LIB}-static")
 
 set(XAMARIN_MONODROID_SOURCES
   debug-constants.cc
@@ -93,89 +97,105 @@ add_library(
   SHARED ${XAMARIN_MONODROID_SOURCES}
 )
 
-target_compile_definitions(
-  ${XAMARIN_MONO_ANDROID_LIB}
-  PRIVATE
-  HAVE_CONFIG_H
-  HAVE_LZ4
-  JI_DLL_EXPORT
-  JI_NO_VISIBILITY
-  MONO_DLL_EXPORT
-  NET
-  TSL_NO_EXCEPTIONS
-)
-
-if(DONT_INLINE)
-  target_compile_definitions(
-    ${XAMARIN_MONO_ANDROID_LIB}
-    PRIVATE
-    NO_INLINE
+if(BUILD_STATIC_LIBRARY)
+  add_library(
+    ${XAMARIN_MONO_ANDROID_STATIC_LIB}
+    STATIC
+    ${XAMARIN_MONODROID_SOURCES}
   )
 endif()
 
-if(DEBUG_BUILD AND NOT DISABLE_DEBUG)
+macro(lib_target_options TARGET_NAME)
   target_compile_definitions(
-    ${XAMARIN_MONO_ANDROID_LIB}
+    ${TARGET_NAME}
     PRIVATE
-    DEBUG
+    HAVE_CONFIG_H
+    HAVE_LZ4
+    JI_DLL_EXPORT
+    JI_NO_VISIBILITY
+    MONO_DLL_EXPORT
+    NET
+    TSL_NO_EXCEPTIONS
   )
-endif()
 
-if (ENABLE_TIMING)
-  target_compile_definitions(
-    ${XAMARIN_MONO_ANDROID_LIB}
+  if(DONT_INLINE)
+    target_compile_definitions(
+      ${TARGET_NAME}
+      PRIVATE
+      NO_INLINE
+    )
+  endif()
+
+  if(DEBUG_BUILD AND NOT DISABLE_DEBUG)
+    target_compile_definitions(
+      ${TARGET_NAME}
+      PRIVATE
+      DEBUG
+    )
+  endif()
+
+  if (ENABLE_TIMING)
+    target_compile_definitions(
+      ${TARGET_NAME}
+      PRIVATE
+      MONODROID_TIMING
+    )
+  endif()
+
+  target_compile_options(
+    ${TARGET_NAME}
     PRIVATE
-    MONODROID_TIMING
+    ${XA_DEFAULT_SYMBOL_VISIBILITY}
   )
-endif()
 
-target_compile_options(
-  ${XAMARIN_MONO_ANDROID_LIB}
-  PRIVATE
-  ${XA_DEFAULT_SYMBOL_VISIBILITY}
-)
+  target_include_directories(
+    ${TARGET_NAME} BEFORE
+    PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/include
+    ${EXTERNAL_DIR}
+    ${ROBIN_MAP_DIR}/include
+  )
 
-target_include_directories(
-  ${XAMARIN_MONO_ANDROID_LIB} BEFORE
-  PRIVATE
-  ${CMAKE_CURRENT_BINARY_DIR}/include
-  ${EXTERNAL_DIR}
-  ${ROBIN_MAP_DIR}/include
-)
+  target_include_directories(
+    ${TARGET_NAME}
+    SYSTEM PRIVATE
+    ${SYSROOT_CXX_INCLUDE_DIR}
+    ${MONO_RUNTIME_INCLUDE_DIR}
+    ${NATIVE_TRACING_INCLUDE_DIRS}
+    ${LIBUNWIND_INCLUDE_DIRS}
+  )
 
-target_include_directories(
-  ${XAMARIN_MONO_ANDROID_LIB}
-  SYSTEM PRIVATE
-  ${SYSROOT_CXX_INCLUDE_DIR}
-  ${MONO_RUNTIME_INCLUDE_DIR}
-  ${NATIVE_TRACING_INCLUDE_DIRS}
-  ${LIBUNWIND_INCLUDE_DIRS}
-)
+  target_link_directories(
+    ${TARGET_NAME}
+    PRIVATE
+    ${NET_RUNTIME_DIR}/native
+  )
 
-target_link_directories(
-  ${XAMARIN_MONO_ANDROID_LIB}
-  PRIVATE
-  ${NET_RUNTIME_DIR}/native
-)
+  target_link_options(
+    ${TARGET_NAME}
+    PRIVATE
+    ${XA_DEFAULT_SYMBOL_VISIBILITY}
+    ${XA_COMMON_CXX_LINKER_ARGS}
+    ${XA_CXX_DSO_LINKER_ARGS}
+  )
 
-target_link_options(
-  ${XAMARIN_MONO_ANDROID_LIB}
-  PRIVATE
-  ${XA_DEFAULT_SYMBOL_VISIBILITY}
-  ${XA_COMMON_CXX_LINKER_ARGS}
-  ${XA_CXX_DSO_LINKER_ARGS}
-)
+  target_link_libraries(
+    ${TARGET_NAME}
+    ${LINK_LIBS}
+    xa::xamarin-app
+    ${SHARED_LIB_NAME}
+    xa::runtime-base
+    xa::java-interop
+    xa::lz4
+    -lmonosgen-2.0
+    -llog
+  )
+endmacro ()
 
-target_link_libraries(
-  ${XAMARIN_MONO_ANDROID_LIB}
-  ${LINK_LIBS}
-  xa::xamarin-app
-  ${SHARED_LIB_NAME}
-  xa::runtime-base
-  xa::java-interop
-  xa::lz4
-  -lmonosgen-2.0
-  -llog
-)
-
+lib_target_options(${XAMARIN_MONO_ANDROID_LIB})
 xa_add_compile_definitions(${XAMARIN_MONO_ANDROID_LIB})
+
+if(BUILD_STATIC_LIBRARY)
+  lib_target_options(${XAMARIN_MONO_ANDROID_STATIC_LIB})
+  xa_add_compile_definitions(${XAMARIN_MONO_ANDROID_STATIC_LIB})
+endif()

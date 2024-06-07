@@ -1,15 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
-using System.Threading;
 
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-using Xamarin.Android.Tools;
-using Xamarin.Build;
 using Microsoft.Android.Build.Tasks;
 
 namespace Xamarin.Android.Tasks;
@@ -22,6 +17,12 @@ public class LinkNativeRuntime : AndroidAsyncTask
 
 	[Required]
 	public string AndroidBinUtilsDirectory { get; set; }
+
+	[Required]
+	public string IntermediateOutputPath { get; set; }
+
+	[Required]
+	public ITaskItem[] LinkLibraries { get; set; }
 
 	[Required]
 	public ITaskItem[] NativeArchives { get; set; }
@@ -44,11 +45,18 @@ public class LinkNativeRuntime : AndroidAsyncTask
 	{
 		string abi = abiItem.ItemSpec;
 		Log.LogDebugMessage ($"LinkRuntime ({abi})");
-		var linker = new NativeLinker (Log, abi);
+		ITaskItem outputRuntime = GetFirstAbiItem (OutputRuntimes, "_UnifiedNativeRuntime", abi);
+		string soname = Path.GetFileNameWithoutExtension (outputRuntime.ItemSpec);
+		if (soname.StartsWith ("lib", StringComparison.OrdinalIgnoreCase)) {
+			soname = soname.Substring (3);
+		}
+
+		var linker = new NativeLinker (Log, abi, soname, AndroidBinUtilsDirectory, IntermediateOutputPath);
 		linker.Link (
-			GetFirstAbiItem (OutputRuntimes, "_UnifiedNativeRuntime", abi),
+			outputRuntime,
 			GetAbiItems (NativeObjectFiles, "_NativeAssemblyTarget", abi),
-			GetAbiItems (NativeArchives, "_SelectedNativeArchive", abi)
+			GetAbiItems (NativeArchives, "_SelectedNativeArchive", abi),
+			GetAbiItems (LinkLibraries, "_RequiredLinkLibraries", abi)
 		);
 	}
 

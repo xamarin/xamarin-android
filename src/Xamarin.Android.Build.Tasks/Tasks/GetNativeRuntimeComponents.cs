@@ -20,22 +20,41 @@ public class GetNativeRuntimeComponents : AndroidTask
 	[Output]
 	public ITaskItem[] NativeArchives { get; set; }
 
+	[Output]
+	public ITaskItem[] RequiredLibraries { get; set; }
+
 	public override bool RunTask ()
 	{
 		var components = new NativeRuntimeComponents (MonoComponents);
+		var uniqueAbis = new HashSet<string> (StringComparer.OrdinalIgnoreCase);
 		var archives = new List<ITaskItem> ();
 		foreach (NativeRuntimeComponents.Archive archiveItem in components.KnownArchives) {
 			if (!archiveItem.Include) {
 				continue;
 			}
-			MakeItems (archiveItem, archives);
+			MakeItems (archiveItem, archives, uniqueAbis);
 		}
-
 		NativeArchives = archives.ToArray ();
+
+		var libraries = new List<ITaskItem> ();
+		foreach (string lib in components.NativeLibraries) {
+			MakeLibraryItems (lib, libraries, uniqueAbis);
+		}
+		RequiredLibraries = libraries.ToArray ();
+
 		return !Log.HasLoggedErrors;
 	}
 
-	void MakeItems (NativeRuntimeComponents.Archive archive, List<ITaskItem> archives)
+	void MakeLibraryItems (string libName, List<ITaskItem> libraries, HashSet<string> uniqueAbis)
+	{
+		foreach (string abi in uniqueAbis) {
+			var item = new TaskItem (libName);
+			item.SetMetadata ("Abi", abi);
+			libraries.Add (item);
+		}
+	}
+
+	void MakeItems (NativeRuntimeComponents.Archive archive, List<ITaskItem> archives, HashSet<string> uniqueAbis)
 	{
 		foreach (ITaskItem resolvedArchive in ResolvedNativeArchives) {
 			string fileName = Path.GetFileName (resolvedArchive.ItemSpec);
@@ -48,6 +67,7 @@ public class GetNativeRuntimeComponents : AndroidTask
 		{
 			var ret = new TaskItem (resolved.ItemSpec);
 			string abi = MonoAndroidHelper.RidToAbi (resolved.GetRequiredMetadata ("_ResolvedNativeArchive", "RuntimeIdentifier", Log));
+			uniqueAbis.Add (abi);
 			ret.SetMetadata ("Abi", abi);
 
 			return ret;

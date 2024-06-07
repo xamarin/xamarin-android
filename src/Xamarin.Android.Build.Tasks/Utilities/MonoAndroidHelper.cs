@@ -729,5 +729,12 @@ namespace Xamarin.Android.Tasks
 				_  => throw new InvalidOperationException ($"Internal error: unsupported zip page alignment value {alignment}")
 			};
 		}
+
+		public static string QuoteFileNameArgument (string fileName)
+		{
+			var builder = new CommandLineBuilder ();
+			builder.AppendFileNameIfNotNull (fileName);
+			return builder.ToString ();
+		}
 	}
 }

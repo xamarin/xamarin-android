@@ -172,12 +172,16 @@
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)ManifestOverlays\Timing.xml" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-arm64\libc.so" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-arm64\libm.so" />
+    <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-arm64\libz.so" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-arm\libc.so" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-arm\libm.so" />
+    <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-arm\libz.so" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-x64\libc.so" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-x64\libm.so" />
+    <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-x64\libz.so" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-x86\libc.so" />
     <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-x86\libm.so" />
+    <_MSBuildFiles Include="$(MicrosoftAndroidSdkOutDir)libstubs\android-x86\libz.so" />
   </ItemGroup>
   <ItemGroup>
     <_MSBuildTargetsSrcFiles Include="$(MSBuildTargetsSrcDir)\Xamarin.Android.AvailableItems.targets" />

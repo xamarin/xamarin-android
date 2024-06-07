@@ -175,11 +175,11 @@ namespace Xamarin.Android.Tasks
 				targetLinkerArgs.Add (elf_arch);
 
 				foreach (string file in inputs.ObjectFiles) {
-					targetLinkerArgs.Add (QuoteFileName (file));
+					targetLinkerArgs.Add (MonoAndroidHelper.QuoteFileNameArgument (file));
 				}
 
 				targetLinkerArgs.Add ("-o");
-				targetLinkerArgs.Add (QuoteFileName (inputs.OutputSharedLibrary));
+				targetLinkerArgs.Add (MonoAndroidHelper.QuoteFileNameArgument (inputs.OutputSharedLibrary));
 
 				if (inputs.ExtraLibraries != null) {
 					foreach (string lib in inputs.ExtraLibraries) {
@@ -243,13 +243,6 @@ namespace Xamarin.Android.Tasks
 		{
 			if (e.Data != null)
 				LogMessage ($"[{linkerName} stderr] {e.Data}");
-		}
-
-		static string QuoteFileName (string fileName)
-		{
-			var builder = new CommandLineBuilder ();
-			builder.AppendFileNameIfNotNull (fileName);
-			return builder.ToString ();
 		}
 	}
 }

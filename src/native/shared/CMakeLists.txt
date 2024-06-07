@@ -64,11 +64,13 @@ macro(lib_target_options TARGET_NAME)
     ${XA_COMMON_CXX_ARGS}
   )
 
-  set_target_properties(
-    ${TARGET_NAME}
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-  )
+  if(DEBUG_BUILD)
+    set_target_properties(
+      ${TARGET_NAME}
+      PROPERTIES
+      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+  endif()
 
   xa_add_compile_definitions(${TARGET_NAME})
 endmacro()

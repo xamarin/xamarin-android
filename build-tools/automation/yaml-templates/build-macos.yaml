@@ -77,6 +77,8 @@ stages:
         testAssembliesArtifactName: ${{ parameters.testAssembliesArtifactName }}
         windowsToolchainPdbArtifactName: ${{ parameters.windowsToolchainPdbArtifactName }}
         use1ESTemplate: ${{ parameters.use1ESTemplate }}
+        ${{ if and(ne(variables['Build.DefinitionName'], 'Xamarin.Android-PR'), ne(variables['Build.DefinitionName'], 'Xamarin.Android Nightly')) }}:
+          makeMSBuildArgs: /p:IncludeAndroidJavadoc=true
 
     - template: /build-tools/automation/yaml-templates/upload-results.yaml
       parameters:

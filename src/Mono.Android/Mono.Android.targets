@@ -67,6 +67,10 @@
       <_AndroidSources Include="$(_AndroidSrcDir)\javax\**\*.java" />
       <_AndroidSources Include="$(_AndroidSrcDir)\org\**\*.java" />
       <_AndroidSources Remove="$(_AndroidSrcDir)\**\*.annotated.java" />
+      <!-- Stackoverflow when parsing this line:
+            private final class Service extends IFastPairDataProvider.Stub
+      -->
+      <_AndroidSources Remove="$(_AndroidSrcDir)\**\FastPairDataProviderService.java" />
     </ItemGroup>
     <PropertyGroup>
       <_Filenames>$(IntermediateOutputPath)\java-sources.txt</_Filenames>

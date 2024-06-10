@@ -51,7 +51,7 @@ public class LinkNativeRuntime : AndroidAsyncTask
 			soname = soname.Substring (3);
 		}
 
-		var linker = new NativeLinker (Log, abi, soname, AndroidBinUtilsDirectory, IntermediateOutputPath);
+		var linker = new NativeLinker (Log, abi, soname, AndroidBinUtilsDirectory, IntermediateOutputPath, CancellationToken, Cancel);
 		linker.Link (
 			outputRuntime,
 			GetAbiItems (NativeObjectFiles, "_NativeAssemblyTarget", abi),

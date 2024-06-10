@@ -49,7 +49,7 @@ public class GetNativeRuntimeComponents : AndroidTask
 	{
 		foreach (string abi in uniqueAbis) {
 			var item = new TaskItem (libName);
-			item.SetMetadata ("Abi", abi);
+			item.SetMetadata (KnownMetadata.Abi, abi);
 			libraries.Add (item);
 		}
 	}
@@ -68,7 +68,8 @@ public class GetNativeRuntimeComponents : AndroidTask
 			var ret = new TaskItem (resolved.ItemSpec);
 			string abi = MonoAndroidHelper.RidToAbi (resolved.GetRequiredMetadata ("_ResolvedNativeArchive", "RuntimeIdentifier", Log));
 			uniqueAbis.Add (abi);
-			ret.SetMetadata ("Abi", abi);
+			ret.SetMetadata (KnownMetadata.Abi, abi);
+			ret.SetMetadata (KnownMetadata.LinkWholeArchive, archive.WholeArchive.ToString ());
 
 			return ret;
 		}

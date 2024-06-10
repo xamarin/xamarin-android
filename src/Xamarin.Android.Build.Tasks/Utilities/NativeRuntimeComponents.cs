@@ -11,13 +11,15 @@ class NativeRuntimeComponents
 	{
 		public readonly string Name;
 		public bool Include => shouldInclude (this);
+		public readonly bool WholeArchive;
 
 		Func<Archive, bool> shouldInclude;
 
-		public Archive (string name, Func<Archive, bool>? include = null)
+		public Archive (string name, Func<Archive, bool>? include = null, bool wholeArchive = false)
 		{
 			Name = name;
 			shouldInclude = include == null ? ((Archive arch) => true) : include;
+			WholeArchive = wholeArchive;
 		}
 	}
 
@@ -30,6 +32,20 @@ class NativeRuntimeComponents
 		{
 			ComponentName = componentName;
 		}
+	}
+
+	class AndroidArchive : Archive
+	{
+		public AndroidArchive (string name)
+			: base (name, wholeArchive: true)
+		{}
+	}
+
+	class BclArchive : Archive
+	{
+		public BclArchive (string name, bool wholeArchive = true)
+			: base (name, wholeArchive: wholeArchive)
+		{}
 	}
 
 	readonly ITaskItem[] monoComponents;
@@ -49,17 +65,19 @@ class NativeRuntimeComponents
 
 			// MonoVM runtime + BCL
 			new Archive ("libmonosgen-2.0.a"),
-			new Archive ("libSystem.Globalization.Native.a"),
-			new Archive ("libSystem.IO.Compression.Native.a"),
-			new Archive ("libSystem.Native.a"),
-			new Archive ("libSystem.Security.Cryptography.Native.Android.a"),
+			new BclArchive ("libSystem.Globalization.Native.a"),
+			new BclArchive ("libSystem.IO.Compression.Native.a"),
+			new BclArchive ("libSystem.Native.a"),
+
+			// Can't link whole archive for this one because it contains conflicting JNI_OnLoad
+			new BclArchive ("libSystem.Security.Cryptography.Native.Android.a", wholeArchive: false),
 
 			// .NET for Android
-			new Archive ("libruntime-base.a"),
-			new Archive ("libxa-java-interop.a"),
-			new Archive ("libxa-lz4.a"),
-			new Archive ("libxa-shared-bits.a"),
-			new Archive ("libmono-android.release-static.a"),
+			new AndroidArchive ("libruntime-base.a"),
+			new AndroidArchive ("libxa-java-interop.a"),
+			new AndroidArchive ("libxa-lz4.a"),
+			new AndroidArchive ("libxa-shared-bits.a"),
+			new AndroidArchive ("libmono-android.release-static.a"),
 		};
 
 		// Just the base names of libraries to link into the unified runtime.  Must have all the dependencies of all the static archives we

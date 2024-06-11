@@ -94,6 +94,7 @@ namespace Xamarin.Android.Tasks {
 		public bool ForceExtractNativeLibs { get; set; }
 		public bool ForceDebuggable { get; set; }
 		public string VersionName { get; set; }
+		public IVersionResolver VersionResolver { get; set; } = new MonoAndroidHelperVersionResolver ();
 
 		string versionCode;
 
@@ -159,12 +160,12 @@ namespace Xamarin.Android.Tasks {
 			}
 		}
 
-		string TargetSdkVersionName => MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (TargetSdkVersion);
+		string TargetSdkVersionName => VersionResolver.GetIdFromApiLevel (TargetSdkVersion);
 
 		string MinSdkVersionName =>
 			string.IsNullOrEmpty (MinSdkVersion) ?
 				TargetSdkVersionName :
-				MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (MinSdkVersion);
+				VersionResolver.GetIdFromApiLevel (MinSdkVersion);
 
 		string ToFullyQualifiedName (string typeName)
 		{
@@ -325,7 +326,7 @@ namespace Xamarin.Android.Tasks {
 				uses.AddBeforeSelf (new XComment ("suppress UsesMinSdkAttributes"));
 			}
 
-			int? tryTargetSdkVersion  = MonoAndroidHelper.SupportedVersions.GetApiLevelFromId (targetSdkVersion);
+			int? tryTargetSdkVersion  = VersionResolver.GetApiLevelFromId (targetSdkVersion);
 			if (!tryTargetSdkVersion.HasValue)
 				throw new InvalidOperationException (string.Format ("The targetSdkVersion ({0}) is not a valid API level", targetSdkVersion));
 			int targetSdkVersionValue = tryTargetSdkVersion.Value;
@@ -579,6 +580,10 @@ namespace Xamarin.Android.Tasks {
 				Assemblies.SelectMany (path => MetaDataAttribute.FromCustomAttributeProvider (Resolver.GetAssembly (path), cache))
 					.Where (attr => attr != null)
 					.ToList ();
+			var properties =
+				Assemblies.SelectMany (path => PropertyAttribute.FromCustomAttributeProvider (Resolver.GetAssembly (path), cache))
+					.Where (attr => attr != null)
+					.ToList ();
 			var usesLibraryAttr =
 				Assemblies.SelectMany (path => UsesLibraryAttribute.FromCustomAttributeProvider (Resolver.GetAssembly (path), cache))
 				.Where (attr => attr != null);
@@ -601,6 +606,7 @@ namespace Xamarin.Android.Tasks {
 
 				typeAttr.Add (aa);
 				metadata.AddRange (MetaDataAttribute.FromCustomAttributeProvider (t, cache));
+				properties.AddRange (PropertyAttribute.FromCustomAttributeProvider (t, cache));
 
 				typeUsesLibraryAttr.AddRange (UsesLibraryAttribute.FromCustomAttributeProvider (t, cache));
 			}
@@ -638,6 +644,7 @@ namespace Xamarin.Android.Tasks {
 			else
 				needManifestAdd = false;
 			application.Add (metadata.Select (md => md.ToElement (PackageName, cache)));
+			application.Add (properties.Select (md => md.ToElement (PackageName, cache)));
 
 			if (needManifestAdd)
 				manifest.Add (application);
@@ -775,12 +782,14 @@ namespace Xamarin.Android.Tasks {
 
 			IEnumerable<MetaDataAttribute> metadata = MetaDataAttribute.FromCustomAttributeProvider (type, cache);
 			IEnumerable<IntentFilterAttribute> intents = IntentFilterAttribute.FromTypeDefinition (type, cache);
+			var properties = PropertyAttribute.FromCustomAttributeProvider (type, cache);
 
 			XElement element = toElement (attr);
 			if (element.Attribute (attName) == null)
 				element.Add (new XAttribute (attName, name));
 			element.Add (metadata.Select (md => md.ToElement (PackageName, cache)));
 			element.Add (intents.Select (intent => intent.ToElement (PackageName)));
+			element.Add (properties.Select (md => md.ToElement (PackageName, cache)));
 			if (update != null)
 				update (attr, element);
 			return element;
@@ -795,6 +804,7 @@ namespace Xamarin.Android.Tasks {
 			IEnumerable<MetaDataAttribute> metadata = MetaDataAttribute.FromCustomAttributeProvider (type, cache);
 			IEnumerable<GrantUriPermissionAttribute> grants = GrantUriPermissionAttribute.FromTypeDefinition (type, cache);
 			IEnumerable<IntentFilterAttribute> intents = IntentFilterAttribute.FromTypeDefinition (type, cache);
+			var properties = PropertyAttribute.FromCustomAttributeProvider (type, cache);
 
 			XElement element = attr.ToElement (PackageName, cache);
 			if (element.Attribute (attName) == null)
@@ -802,6 +812,7 @@ namespace Xamarin.Android.Tasks {
 			element.Add (metadata.Select (md => md.ToElement (PackageName, cache)));
 			element.Add (grants.Select (intent => intent.ToElement (PackageName, cache)));
 			element.Add (intents.Select (intent => intent.ToElement (PackageName)));
+			element.Add (properties.Select (md => md.ToElement (PackageName, cache)));
 
 			return element;
 		}
@@ -1105,5 +1116,21 @@ namespace Xamarin.Android.Tasks {
 			}
 			VersionCode = versionCode.TrimStart ('0');
 		}
+	}
+
+	// Allow these methods to be mocked for testing instead of always calling a static class
+	public interface IVersionResolver
+	{
+		string? GetIdFromApiLevel (string apiLevel);
+		int? GetApiLevelFromId (string id);
+	}
+
+	class MonoAndroidHelperVersionResolver : IVersionResolver
+	{
+		public string? GetIdFromApiLevel (string apiLevel)
+			=> MonoAndroidHelper.SupportedVersions.GetIdFromApiLevel (apiLevel);
+
+		public int? GetApiLevelFromId (string id)
+			=> MonoAndroidHelper.SupportedVersions.GetApiLevelFromId (id);
 	}
 }

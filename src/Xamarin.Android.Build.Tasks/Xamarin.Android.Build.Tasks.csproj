@@ -92,6 +92,12 @@
     <Compile Include="..\Mono.Android\\Android.App\MetaDataAttribute.Partial.cs">
       <Link>Mono.Android\MetaDataAttribute.Partial.cs</Link>
     </Compile>
+    <Compile Include="..\Mono.Android\\Android.App\PropertyAttribute.cs">
+      <Link>Mono.Android\PropertyAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Mono.Android\\Android.App\PropertyAttribute.Partial.cs">
+      <Link>Mono.Android\PropertyAttribute.Partial.cs</Link>
+    </Compile>
     <Compile Include="..\Mono.Android\\Android.Content\GrantUriPermissionAttribute.cs">
       <Link>Mono.Android\GrantUriPermissionAttribute.cs</Link>
     </Compile>

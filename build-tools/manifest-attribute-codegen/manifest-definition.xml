@@ -95,6 +95,7 @@
         <a name='resetEnabledSettingsOnAppDataCleared' format='boolean' api-level='33' />
         <a name='knownActivityEmbeddingCerts' api-level='33' />
         <a name='enableOnBackInvokedCallback' format='boolean' api-level='33' />
+        <a name='allowCrossUidActivitySwitchFromBelow' format='boolean' api-level='VanillaIceCream' />
     </e>
     <e name='permission' api-level='10'>
         <parent>manifest</parent>
@@ -219,6 +220,7 @@
         <a name='splitName' api-level='26' />
         <a name='forceUriPermissions' api-level='29' />
         <a name='attributionTags' api-level='31' />
+        <a name='systemUserOnly' format='boolean' api-level='VanillaIceCream' />
     </e>
     <e name='grant-uri-permission' api-level='10'>
         <parent>provider</parent>
@@ -263,6 +265,7 @@
         <a name='foregroundServiceType' api-level='29' />
         <a name='attributionTags' api-level='31' />
         <a name='allowSharedIsolatedProcess' format='boolean' api-level='34' />
+        <a name='systemUserOnly' format='boolean' api-level='VanillaIceCream' />
     </e>
     <e name='receiver' api-level='10'>
         <parent>application</parent>
@@ -350,6 +353,7 @@
         <a name='knownActivityEmbeddingCerts' api-level='33' />
         <a name='requiredDisplayCategory' format='string' api-level='34' />
         <a name='enableOnBackInvokedCallback' format='boolean' api-level='34' />
+        <a name='requireContentUriPermissionFromCaller' format='string' api-level='VanillaIceCream' />
     </e>
     <e name='activity-alias' api-level='10'>
         <parent>application</parent>
@@ -416,6 +420,16 @@
         <a name='sspAdvancedPattern' format='string' api-level='31' />
         <a name='sspSuffix' format='string' api-level='31' />
         <a name='pathSuffix' api-level='31' />
+        <a name='query' format='string' api-level='VanillaIceCream' />
+        <a name='queryPrefix' format='string' api-level='VanillaIceCream' />
+        <a name='queryPattern' format='string' api-level='VanillaIceCream' />
+        <a name='queryAdvancedPattern' format='string' api-level='VanillaIceCream' />
+        <a name='querySuffix' format='string' api-level='VanillaIceCream' />
+        <a name='fragment' format='string' api-level='VanillaIceCream' />
+        <a name='fragmentPrefix' format='string' api-level='VanillaIceCream' />
+        <a name='fragmentPattern' format='string' api-level='VanillaIceCream' />
+        <a name='fragmentAdvancedPattern' format='string' api-level='VanillaIceCream' />
+        <a name='fragmentSuffix' format='string' api-level='VanillaIceCream' />
     </e>
     <e name='category' api-level='10'>
         <parent>intent-filter</parent>
@@ -580,6 +594,7 @@
         <a name='memtagMode' api-level='31' />
         <a name='nativeHeapZeroInitialized' api-level='31' />
         <a name='name' api-level='33' />
+        <a name='useEmbeddedDex' api-level='VanillaIceCream' />
     </e>
     <e name='deny-permission' api-level='30'>
         <parent>processes</parent>
@@ -620,6 +635,7 @@
         <a name='name' api-level='33' />
         <a name='versionMajor' format='integer' api-level='33' />
         <a name='certDigest' format='string' api-level='33' />
+        <a name='optional' format='boolean' api-level='VanillaIceCream' />
     </e>
     <e name='apex-system-service' api-level='33'>
         <parent>application</parent>
@@ -635,5 +651,9 @@
     <e name='install-constraints-fingerprint-prefix' api-level='34'>
         <parent>install-constraints</parent>
         <a name='value' api-level='34' />
+    </e>
+    <e name='uri-relative-filter-group' api-level='VanillaIceCream'>
+        <parent>intent-filter</parent>
+        <a name='allow' format='boolean' api-level='VanillaIceCream' />
     </e>
 </m>

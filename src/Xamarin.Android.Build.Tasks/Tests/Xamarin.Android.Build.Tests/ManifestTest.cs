@@ -1,19 +1,20 @@
 using System;
-using System.Linq;
-using NUnit.Framework;
-using Xamarin.ProjectTools;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using Xamarin.Tools.Zip;
-using System.Collections.Generic;
+using Android.App;
+using Android.Content;
+using Java.Interop.Tools.Cecil;
+using Mono.Cecil;
+using NUnit.Framework;
 using Xamarin.Android.Tasks;
 using Xamarin.Android.Tools;
-using Android.App;
-using Mono.Cecil;
-using System.Reflection;
-using Java.Interop.Tools.Cecil;
+using Xamarin.ProjectTools;
+using Xamarin.Tools.Zip;
+using PropertyAttribute = Android.App.PropertyAttribute;
 
 namespace Xamarin.Android.Build.Tests
 {
@@ -1211,5 +1212,122 @@ class TestActivity : Activity { }"
 
 			StringAssertEx.AreMultiLineEqual (expected, xml);
 		}
+
+		static readonly string expected_activity = """
+			<activity android:name="TestActivity">
+				<property android:name="test-activity-property" android:value="test-activity-property-value" />
+			</activity>
+		""";
+
+		static readonly string expected_application = """
+			<application android:name="TestApplication" android:allowBackup="true" android:extractNativeLibs="true">
+				<property android:name="test-application-property" android:value="test-application-property-value" />
+				<provider android:name="mono.MonoRuntimeProvider" android:exported="false" android:initOrder="1999999999" android:authorities="dummy.packageid.mono.MonoRuntimeProvider.__mono_init__" />
+			</application>
+		""";
+
+		static readonly string expected_receiver = """
+			<receiver android:name="TestBroadcastReceiver">
+				<property android:name="test-broadcast-property" android:value="test-broadcast-property-value" />
+			</receiver>
+		""";
+
+		static readonly string expected_provider = """
+			<provider android:authorities="foo" android:name="TestContentProvider">
+				<property android:name="test-provider-property" android:value="test-provider-property-value" />
+			</provider>
+		""";
+
+		static readonly string expected_service = """
+			<service android:name="TestService">
+				<property android:name="test-service-property" android:value="test-service-property-value" />
+			</service>
+		""";
+
+		static readonly object [] PropertyElementTestSource = [
+			new object [] {typeof (TestActivity), expected_activity },
+			new object [] {typeof (TestApplication), expected_application },
+			new object [] {typeof (TestBroadcastReceiver), expected_receiver },
+			new object [] {typeof (TestContentProvider), expected_provider },
+			new object [] {typeof (TestService), expected_service },
+		];
+
+		[Test]
+		[TestCaseSource (nameof (PropertyElementTestSource))]
+		public void PropertyTest (Type type, string expected)
+		{
+			var cache = new TypeDefinitionCache ();
+			var asm = AssemblyDefinition.ReadAssembly (type.Assembly.Location);
+			var td = asm.MainModule.GetType ($"Xamarin.Android.Build.Tests.ManifestTest/{type.Name}");
+
+			var manifest = new ManifestDocument (null) {
+				PackageName = "dummy.packageid",
+				VersionResolver = new MockVersionResolver (),
+			};
+
+			manifest.Merge (null, cache, [td], null, false, null, null);
+
+			var sb = new StringWriter ();
+			manifest.Save (null, sb);
+
+			var xml = sb.ToString ();
+			StringAssertEx.AreMultiLineContains (expected, xml);
+		}
+
+		[Activity (Name = "TestActivity")]
+		[Property ("test-activity-property", Value = "test-activity-property-value")]
+		public class TestActivity : global::Android.App.Activity
+		{
+		}
+
+		[Application (Name = "TestApplication")]
+		[Property ("test-application-property", Value = "test-application-property-value")]
+		public class TestApplication : global::Android.App.Application
+		{
+		}
+
+		[BroadcastReceiver (Name = "TestBroadcastReceiver")]
+		[Property ("test-broadcast-property", Value = "test-broadcast-property-value")]
+		public class TestBroadcastReceiver : global::Android.Content.BroadcastReceiver
+		{
+		}
+
+		[ContentProvider (["foo"], Name = "TestContentProvider")]
+		[Property ("test-provider-property", Value = "test-provider-property-value")]
+		public class TestContentProvider : global::Android.Content.ContentProvider
+		{
+		}
+
+		[Service (Name = "TestService")]
+		[Property ("test-service-property", Value = "test-service-property-value")]
+		public class TestService : global::Android.App.Service
+		{
+		}
+
+		class MockVersionResolver : IVersionResolver
+		{
+			public int? GetApiLevelFromId (string id) => 99;
+
+			public string GetIdFromApiLevel (string apiLevel) => "API-99";
+		}
 	}
+}
+
+// Dummy types because we don't want to take a dependency on Mono.Android or Java.Interop
+namespace Android.App
+{
+	public class Activity : Java.Interop.IJavaPeerable { }
+	public class Application : Java.Interop.IJavaPeerable { }
+	public class Service : Java.Interop.IJavaPeerable { }
+}
+
+namespace Android.Content
+{
+	public class ContentProvider : Java.Interop.IJavaPeerable { }
+	public class BroadcastReceiver : Java.Interop.IJavaPeerable { }
+}
+
+namespace Java.Interop
+{
+	public interface IJavaPeerable { }
 }

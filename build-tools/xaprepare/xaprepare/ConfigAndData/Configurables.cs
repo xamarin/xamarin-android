@@ -15,7 +15,7 @@ namespace Xamarin.Android.Prepare
 	//
 	partial class Configurables
 	{
-		const string BinutilsVersion                = "L_18.1.6-8.0.0";
+		const string BinutilsVersion                = "L_18.1.7-8.0.0";
 
 		const string MicrosoftOpenJDK17Version      = "17.0.11";
 		const string MicrosoftOpenJDK17Release      = "17.0.11.9";
@@ -174,6 +174,7 @@ namespace Xamarin.Android.Prepare
 				new NDKTool (name: "ld"),
 				new NDKTool (name: "llc"),
 				new NDKTool (name: "llvm-mc"),
+				new NDKTool (name: "llvm-objcopy"),
 				new NDKTool (name: "llvm-strip"),
 			};
 		}

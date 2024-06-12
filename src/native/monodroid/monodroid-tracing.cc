@@ -15,7 +15,7 @@ namespace {
 	decltype(xa_get_java_backtrace)* _xa_get_java_backtrace;
 	decltype(xa_get_interesting_signal_handlers)* _xa_get_interesting_signal_handlers;
 	bool tracing_init_done;
-	std::mutex tracing_init_lock {};
+	xamarin::android::mutex tracing_init_lock {};
 }
 
 void

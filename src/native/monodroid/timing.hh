@@ -106,7 +106,7 @@ namespace xamarin::android
 
 		managed_timing_sequence* get_available_sequence () noexcept
 		{
-			std::lock_guard<std::mutex> lock (sequence_lock);
+			lock_guard<xamarin::android::mutex> lock (sequence_lock);
 
 			managed_timing_sequence *ret;
 			for (size_t i = 0; i < sequence_pool_size; i++) {
@@ -132,7 +132,7 @@ namespace xamarin::android
 			if (sequence == nullptr)
 				return;
 
-			std::lock_guard<std::mutex> lock (sequence_lock);
+			lock_guard<xamarin::android::mutex> lock (sequence_lock);
 			if (sequence->dynamic) {
 				sequence->period.reset ();
 				delete sequence;
@@ -145,7 +145,7 @@ namespace xamarin::android
 	private:
 		managed_timing_sequence  *sequence_pool;
 		size_t                    sequence_pool_size;
-		std::mutex                sequence_lock;
+		xamarin::android::mutex   sequence_lock;
 	};
 
 	// This is a hack to avoid having to allocate memory when rendering messages that use additional

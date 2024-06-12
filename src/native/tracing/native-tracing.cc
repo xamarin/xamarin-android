@@ -26,7 +26,7 @@ static jmethodID java_lang_Thread_getStackTrace;
 static jclass java_lang_StackTraceElement;
 static jmethodID java_lang_StackTraceElement_toString;
 
-static std::mutex java_init_lock;
+static xamarin::android::mutex java_init_lock;
 
 const char* xa_get_managed_backtrace () noexcept
 {
@@ -291,7 +291,7 @@ void init_jni (JNIEnv *env) noexcept
 		return;
 	}
 
-	std::lock_guard lock (java_init_lock);
+	xamarin::android::lock_guard lock (java_init_lock);
 
 	java_lang_Thread = to_gref (env, env->FindClass ("java/lang/Thread"));
 	java_lang_Thread_currentThread = env->GetStaticMethodID (java_lang_Thread, "currentThread", "()Ljava/lang/Thread;");

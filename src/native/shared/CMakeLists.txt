@@ -7,6 +7,7 @@ set(LIB_ALIAS_NO_ABI ${LIB_ALIAS}-no-abi)
 set(XA_SHARED_CXX_ABI_SOURCES
   cxx-abi/string.cc
   cxx-abi/terminate.cc
+  ${REPO_ROOT_DIR}/src-ThirdParty/llvm/verbose_abort.cpp
 )
 
 set(XA_SHARED_SOURCES

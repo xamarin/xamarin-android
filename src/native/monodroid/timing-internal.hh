@@ -440,7 +440,7 @@ namespace xamarin::android::internal
 
 	private:
 		std::atomic_size_t next_event_index = 0;
-		std::mutex event_vector_realloc_mutex;
+		xamarin::android::mutex event_vector_realloc_mutex;
 		std::vector<TimingEvent> events;
 
 		static TimingEvent init_time;

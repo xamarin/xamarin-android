@@ -852,11 +852,6 @@
   <remove-node path="/api/package[@name='junit.framework']/class[@name='TestSuite']/method[parameter[@type='java.lang.Class']]" api-since="16" />
      -->
 
-  <!-- Preserve Mono.Android.App.IntentService::.ctor if the
-       type is used anywhere. -->
-
-  <attr path="/api/package[@name='mono.android.app']/class[@name='IntentService']/constructor[count(parameter) = 0]" name="customAttributes">[Preserve(Conditional = true)]</attr>
-
   <!--    Asyncification    -->
 
   <!-- Interfaces -->

@@ -106,6 +106,21 @@ namespace Xamarin.Android.Build.Tests
 		}
 
 		[Test]
+		public void BuildWithMSBuildExe ([Values (true, false)] bool isRelease)
+		{
+			if (!IsWindows)
+				Assert.Ignore ("Test is only valid on Windows");
+
+			var proj = new XamarinAndroidApplicationProject {
+				IsRelease = isRelease,
+			};
+
+			using var b = CreateApkBuilder ();
+			b.UseMSBuildExe = true;
+			Assert.IsTrue (b.Build (proj), "Build should have succeeded.");
+		}
+
+		[Test]
 		public void BuildBasicApplicationThenMoveIt ([Values (true, false)] bool isRelease)
 		{
 			string path = Path.Combine (Root, "temp", TestName, "App1");

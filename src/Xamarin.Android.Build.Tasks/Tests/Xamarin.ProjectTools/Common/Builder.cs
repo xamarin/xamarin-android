@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.XPath;
 using System.Xml.Linq;
+using Xamarin.Android.Tools.VSWhere;
 
 using Xamarin.Android.Tasks;
 
@@ -153,6 +154,22 @@ namespace Xamarin.ProjectTools
 			BuildLogFile = "build.log";
 		}
 
+		/// <summary>
+		/// Build with MSBuild.exe from Visual Studio, only works on Windows
+		/// </summary>
+		public bool UseMSBuildExe { get; set; }
+
+		/// <summary>
+		/// Value for %MSBuildSdksPath%, points to bin\Release\dotnet\sdk\*\Sdks
+		/// </summary>
+		public string MSBuildSdksPath {
+			get {
+				var sdk = Path.Combine (TestEnvironment.DotNetPreviewDirectory, "sdk");
+				var sdk_version = Directory.EnumerateDirectories (sdk).OrderByDescending (x => x).First ();
+				return Path.Combine (sdk_version, "Sdks");
+			}
+		}
+
 		public void Dispose ()
 		{
 			Dispose (true);
@@ -185,9 +202,20 @@ namespace Xamarin.ProjectTools
 
 			var start = DateTime.UtcNow;
 			var args  = new StringBuilder ();
-			var psi   = new ProcessStartInfo (Path.Combine (TestEnvironment.DotNetPreviewDirectory, "dotnet"));
+			var psi   = new ProcessStartInfo ();
 			var responseFile = Path.Combine (XABuildPaths.TestOutputDirectory, Path.GetDirectoryName (projectOrSolution), "project.rsp");
-			args.Append ("build ");
+			if (UseMSBuildExe) {
+				psi.FileName = MSBuildLocator.QueryLatest ().MSBuildPath;
+				args.Append ("/restore ");
+				psi.SetEnvironmentVariable ("DOTNETSDK_WORKLOAD_PACK_ROOTS", Path.Combine (TestEnvironment.DotNetPreviewDirectory, "packs"));
+				psi.SetEnvironmentVariable ("DOTNETSDK_WORKLOAD_MANIFEST_ROOTS", Path.Combine (TestEnvironment.DotNetPreviewDirectory, "sdk-manifests"));
+				psi.SetEnvironmentVariable ("MSBUILDLOGALLENVIRONMENTVARIABLES", "1");
+				psi.SetEnvironmentVariable ("MSBuildSDKsPath", MSBuildSdksPath);
+				psi.SetEnvironmentVariable ("PATH", TestEnvironment.DotNetPreviewDirectory + Path.PathSeparator + Environment.GetEnvironmentVariable ("PATH"));
+			} else {
+				psi.FileName = Path.Combine (TestEnvironment.DotNetPreviewDirectory, "dotnet");
+				args.Append ("build ");
+			}
 
 			if (TestEnvironment.UseLocalBuildOutput) {
 				psi.SetEnvironmentVariable ("DOTNETSDK_WORKLOAD_MANIFEST_ROOTS", TestEnvironment.WorkloadManifestOverridePath);

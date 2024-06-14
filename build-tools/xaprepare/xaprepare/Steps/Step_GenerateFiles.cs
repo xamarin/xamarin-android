@@ -174,6 +174,12 @@ namespace Xamarin.Android.Prepare
 		{
 			const string OutputFileName = "XABuildConfig.cs";
 
+			string xaVersion = context.Properties.GetRequiredValue (KnownProperties.AndroidPackVersion);
+			string? xaVersionSuffix = context.Properties.GetRequiredValue (KnownProperties.AndroidPackVersionSuffix);
+			if (!String.IsNullOrEmpty(xaVersionSuffix)) {
+				xaVersion = $"{xaVersion}-{xaVersionSuffix}";
+			}
+
 			var replacements = new Dictionary<string, string> (StringComparer.Ordinal) {
 				{ "@NDK_REVISION@",              context.BuildInfo.NDKRevision },
 				{ "@NDK_RELEASE@",               BuildAndroidPlatforms.AndroidNdkVersion },
@@ -189,7 +195,7 @@ namespace Xamarin.Android.Prepare
 				{ "@ANDROID_DEFAULT_TARGET_DOTNET_API_LEVEL@", context.Properties.GetRequiredValue (KnownProperties.AndroidDefaultTargetDotnetApiLevel) },
 				{ "@ANDROID_LATEST_STABLE_API_LEVEL@", context.Properties.GetRequiredValue (KnownProperties.AndroidLatestStableApiLevel) },
 				{ "@ANDROID_LATEST_UNSTABLE_API_LEVEL@", context.Properties.GetRequiredValue (KnownProperties.AndroidLatestUnstableApiLevel) },
-				{ "@XAMARIN_ANDROID_VERSION@",   context.Properties.GetRequiredValue (KnownProperties.ProductVersion) },
+				{ "@XAMARIN_ANDROID_VERSION@",   xaVersion },
 				{ "@XAMARIN_ANDROID_COMMIT_HASH@", context.BuildInfo.XACommitHash },
 				{ "@XAMARIN_ANDROID_BRANCH@", context.BuildInfo.XABranch },
 			};

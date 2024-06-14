@@ -49,6 +49,8 @@
       <Replacement Include="@AndroidLatestUnstableApiLevel@=$(AndroidLatestUnstableApiLevel)" />
       <Replacement Include="@AndroidNdkDirectory@=$(AndroidNdkDirectory)" />
       <Replacement Include="@AndroidNdkVersion@=$(AndroidNdkVersion)" />
+      <Replacement Include="@AndroidPackVersion@=$(AndroidPackVersion)" />
+      <Replacement Include="@AndroidPackVersionSuffix@=$(AndroidPackVersionSuffix)" />
       <Replacement Include="@AndroidSdkDirectory@=$(AndroidSdkDirectory)" />
       <Replacement Include="@AndroidSupportedTargetAotAbis@=$(AndroidSupportedTargetAotAbis)" />
       <Replacement Include="@AndroidSupportedTargetJitAbis@=$(AndroidSupportedTargetJitAbis)" />

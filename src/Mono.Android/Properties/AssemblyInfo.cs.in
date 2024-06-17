@@ -22,6 +22,7 @@ using System.Runtime.Versioning;
 #if ANDROID_UNSTABLE
 [assembly: RequiresPreviewFeatures("This is an unstable Android API level. Opt into preview features by adding <EnablePreviewFeatures>True</EnablePreviewFeatures> to your project file.")]
 #endif
+[assembly: AssemblyVersion ("@API_LEVEL@.0.0.0")]
 [assembly: TargetPlatform("Android@API_LEVEL@.0")]
 [assembly: SupportedOSPlatform("Android@MIN_API_LEVEL@.0")]
 

@@ -135,7 +135,7 @@
       <_Enums1>--preserve-enums --enumflags=enumflags --enumfields=map.csv --enummethods=methodmap.csv</_Enums1>
       <_Enums2>--enummetadata=$(IntermediateOutputPath)mcw\enummetadata</_Enums2>
       <_Annotations Condition=" '$(_AnnotationsZip)' != '' ">"--annotations=$(_AnnotationsZip)"</_Annotations>
-      <_Assembly>--assembly="Mono.Android, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"</_Assembly>
+      <_Assembly>--assembly="Mono.Android"</_Assembly>
       <_TypeMap>--type-map-report=$(IntermediateOutputPath)mcw\type-mapping.txt</_TypeMap>
       <_Api>$(IntermediateOutputPath)mcw\api-$(AndroidPlatformId).xml</_Api>
       <_Dirs>--enumdir=$(IntermediateOutputPath)mcw</_Dirs>

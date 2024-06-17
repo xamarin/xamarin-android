@@ -3,8 +3,8 @@ plugins {
 }
 
 java {
-    ext.javaSourceVer = project.hasProperty('javaSourceVer') ? JavaVersion.toVersion(project.getProperty('javaSourceVer')) : JavaVersion.VERSION_1_8
-    ext.javaTargetVer = project.hasProperty('javaTargetVer') ? JavaVersion.toVersion(project.getProperty('javaTargetVer')) : JavaVersion.VERSION_1_8
+    ext.javaSourceVer = project.hasProperty('javaSourceVer') ? JavaVersion.toVersion(project.getProperty('javaSourceVer')) : JavaVersion.VERSION_11
+    ext.javaTargetVer = project.hasProperty('javaTargetVer') ? JavaVersion.toVersion(project.getProperty('javaTargetVer')) : JavaVersion.VERSION_11
 
     sourceCompatibility = ext.javaSourceVer
     targetCompatibility = ext.javaTargetVer
@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/com.android.tools.build/manifest-merger
-    implementation 'com.android.tools.build:manifest-merger:30.3.1'
+    implementation 'com.android.tools.build:manifest-merger:31.1.2'
 }
 
 sourceSets {

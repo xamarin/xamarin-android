@@ -264,7 +264,7 @@ public class JavaSourceTest {
 		}
 
 		[Test]
-		public void XamarinLegacySdk ([Values ("net8.0-android34.0", "net9.0-android34.0")] string dotnetTargetFramework)
+		public void XamarinLegacySdk ([Values ("net8.0-android34.0", "net9.0-android35.0")] string dotnetTargetFramework)
 		{
 			var proj = new XamarinAndroidLibraryProject {
 				Sdk = "Xamarin.Legacy.Sdk/0.2.0-alpha4",

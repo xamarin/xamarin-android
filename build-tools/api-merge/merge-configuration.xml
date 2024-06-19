@@ -23,9 +23,9 @@
     <File Path="api-32.xml.in" Level="32" />
     <File Path="api-33.xml.in" Level="33" />
     <File Path="api-34.xml.in" Level="34" />
-    <File Path="api-VanillaIceCream.xml.in" Level="35" />
+    <File Path="api-35.xml.in" Level="35" />
   </Inputs>
   <Outputs>
-    <File Path="api-VanillaIceCream.xml" LastLevel="35" />
+    <File Path="api-35.xml" LastLevel="35" />
   </Outputs>
 </Configuration>

@@ -63,6 +63,9 @@ stages:
         displayName: Build Solution
         continueOnError: false
 
+    - script: tree bin\Release\dotnet\packs\Microsoft.Android.Sdk.Windows /F /A
+      displayName: output build tree
+
     - template: /build-tools/automation/yaml-templates/install-dotnet-tool.yaml
       parameters:
         toolName: apkdiff

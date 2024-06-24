@@ -43,6 +43,7 @@ Contains code to build and link the native runtime at application build time.
         LinkLibraries="@(_RequiredLinkLibraries)"
         OutputRuntimes="@(_UnifiedNativeRuntime)"
         SupportedAbis="@(_BuildTargetAbis)"
+        SaveDebugSymbols="true"
     />
   </Target>
 </Project>

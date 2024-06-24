@@ -35,6 +35,7 @@ class NativeLinker
 	readonly TaskLoggingHelper log;
 	readonly string abi;
 	readonly string ld;
+	readonly string objcopy;
 	readonly string intermediateDir;
 	readonly CancellationToken? cancellationToken;
 	readonly Action? cancelTask;
@@ -52,6 +53,7 @@ class NativeLinker
 		this.cancelTask = cancelTask;
 
 		ld = Path.Combine (binutilsDir, MonoAndroidHelper.GetExecutablePath (binutilsDir, "ld"));
+		objcopy = Path.Combine (binutilsDir, MonoAndroidHelper.GetExecutablePath (binutilsDir, "llvm-objcopy"));
 
 		extraArgs.Add ($"-soname {soname}");
 
@@ -142,6 +144,11 @@ class NativeLinker
 		watch.Stop ();
 		log.LogDebugMessage ($"[{Path.GetFileName (outputLibraryPath.ItemSpec)} link time] {watch.Elapsed}");
 
+		if (!ret || !SaveDebugSymbols) {
+			return ret;
+		}
+
+		ret = ExtractDebugSymbols (outputLibraryPath);
 		return ret;
 
 		void WriteFilesToResponseFile (StreamWriter sw, List<ITaskItem> files)
@@ -190,12 +197,81 @@ class NativeLinker
 		}
 	}
 
+	bool ExtractDebugSymbols (ITaskItem outputSharedLibrary)
+	{
+		var stdoutLines = new List<string> ();
+		var stderrLines = new List<string> ();
+
+		string sourceLib = outputSharedLibrary.ItemSpec;
+		string sourceLibQuoted = MonoAndroidHelper.QuoteFileNameArgument (sourceLib);
+		string destLib = Path.Combine (Path.GetDirectoryName (sourceLib), $"{Path.GetFileNameWithoutExtension (sourceLib)}.dbg.so");
+		string destLibQuoted = MonoAndroidHelper.QuoteFileNameArgument (destLib);
+
+		var args = new List<string> {
+			"--only-keep-debug",
+			sourceLibQuoted,
+			destLibQuoted,
+		};
+
+		if (!RunCommand ("Extract Debug Info", objcopy, args, stdoutLines, stderrLines)) {
+			LogFailure ();
+			return false;
+		}
+
+		stdoutLines.Clear ();
+		stderrLines.Clear ();
+		args.Clear ();
+		args.Add ("--strip-debug");
+		args.Add ("--strip-unneeded");
+		args.Add (sourceLibQuoted);
+
+		if (!RunCommand ("Strip Debug Info", objcopy, args, stdoutLines, stderrLines)) {
+			LogFailure ();
+			return false;
+		}
+
+		stdoutLines.Clear ();
+		stderrLines.Clear ();
+		args.Clear ();
+		args.Add ($"--add-gnu-debuglink={destLibQuoted}");
+		args.Add (sourceLibQuoted);
+
+		if (!RunCommand ("Add Debug Info Link", objcopy, args, stdoutLines, stderrLines)) {
+			LogFailure ();
+			return false;
+		}
+
+		return true;
+
+		void LogFailure ()
+		{
+			var sb = MonoAndroidHelper.MergeStdoutAndStderrMessages (stdoutLines, stderrLines);
+			// TODO: consider making it a warning
+			// TODO: make it a coded message
+			log.LogError ("Failed to extract debug info", Path.GetFileName (sourceLib), sb.ToString ());
+		}
+	}
+
 	bool RunLinker (List<string> args, ITaskItem outputSharedLibrary)
+	{
+		var stdoutLines = new List<string> ();
+		var stderrLines = new List<string> ();
+
+		if (!RunCommand ("Native Linker", ld, args, stdoutLines, stderrLines)) {
+			var sb = MonoAndroidHelper.MergeStdoutAndStderrMessages (stdoutLines, stderrLines);
+			log.LogCodedError ("XA3007", Properties.Resources.XA3007, Path.GetFileName (outputSharedLibrary.ItemSpec), sb.ToString ());
+			return false;
+		}
+
+		return true;
+	}
+
+	bool RunCommand (string label, string binaryPath, List<string> args, List<string> stdoutLines, List<string> stderrLines)
 	{
 		using var stdout_completed = new ManualResetEvent (false);
 		using var stderr_completed = new ManualResetEvent (false);
 		var psi = new ProcessStartInfo () {
-			FileName = ld,
+			FileName = binaryPath,
 			Arguments = String.Join (" ", args),
 			UseShellExecute = false,
 			RedirectStandardOutput = true,
@@ -204,16 +280,13 @@ class NativeLinker
 			WindowStyle = ProcessWindowStyle.Hidden,
 		};
 
-		string linkerName = Path.GetFileName (ld);
-		log.LogDebugMessage ($"[Native Linker] {psi.FileName} {psi.Arguments}");
-
-		var stdoutLines = new List<string> ();
-		var stderrLines = new List<string> ();
+		string binaryName = Path.GetFileName (ld);
+		log.LogDebugMessage ($"[{label}] {psi.FileName} {psi.Arguments}");
 
 		using var proc = new Process ();
 		proc.OutputDataReceived += (s, e) => {
 			if (e.Data != null) {
-				OnOutputData (linkerName, s, e);
+				OnOutputData (binaryName, s, e);
 				stdoutLines.Add (e.Data);
 			} else {
 				stdout_completed.Set ();
@@ -222,7 +295,7 @@ class NativeLinker
 
 		proc.ErrorDataReceived += (s, e) => {
 			if (e.Data != null) {
-				OnErrorData (linkerName, s, e);
+				OnErrorData (binaryName, s, e);
 				stderrLines.Add (e.Data);
 			} else {
 				stderr_completed.Set ();
@@ -245,8 +318,6 @@ class NativeLinker
 		}
 
 		if (proc.ExitCode != 0) {
-			var sb = MonoAndroidHelper.MergeStdoutAndStderrMessages (stdoutLines, stderrLines);
-			log.LogCodedError ("XA3007", Properties.Resources.XA3007, Path.GetFileName (outputSharedLibrary.ItemSpec), sb.ToString ());
 			cancelTask?.Invoke ();
 			return false;
 		}

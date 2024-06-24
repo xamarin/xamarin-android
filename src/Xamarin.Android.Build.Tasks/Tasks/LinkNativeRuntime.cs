@@ -36,6 +36,8 @@ public class LinkNativeRuntime : AndroidAsyncTask
 	[Required]
 	public ITaskItem[] SupportedAbis { get; set; }
 
+	public bool SaveDebugSymbols { get; set; }
+
 	public override System.Threading.Tasks.Task RunTaskAsync ()
 	{
 		return this.WhenAll (SupportedAbis, LinkRuntime);
@@ -51,7 +53,9 @@ public class LinkNativeRuntime : AndroidAsyncTask
 			soname = soname.Substring (3);
 		}
 
-		var linker = new NativeLinker (Log, abi, soname, AndroidBinUtilsDirectory, IntermediateOutputPath, CancellationToken, Cancel);
+		var linker = new NativeLinker (Log, abi, soname, AndroidBinUtilsDirectory, IntermediateOutputPath, CancellationToken, Cancel) {
+			SaveDebugSymbols = SaveDebugSymbols,
+		};
 		linker.Link (
 			outputRuntime,
 			GetAbiItems (NativeObjectFiles, "_NativeAssemblyTarget", abi),

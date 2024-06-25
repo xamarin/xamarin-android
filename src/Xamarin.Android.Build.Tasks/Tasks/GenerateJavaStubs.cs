@@ -89,6 +89,8 @@ namespace Xamarin.Android.Tasks
 
 		public ITaskItem[] Environments { get; set; }
 
+		public bool EnableNativeRuntimeLinking { get; set; }
+
 		[Output]
 		public ITaskItem[] GeneratedBinaryTypeMaps { get; set; }
 
@@ -186,12 +188,18 @@ namespace Xamarin.Android.Tasks
 			var nativeCodeGenStates = new Dictionary<AndroidTargetArch, NativeCodeGenState> ();
 			bool generateJavaCode = true;
 			NativeCodeGenState? templateCodeGenState = null;
+			var scanner = new PinvokeScanner (Log);
 
 			foreach (var kvp in allAssembliesPerArch) {
 				AndroidTargetArch arch = kvp.Key;
 				Dictionary<string, ITaskItem> archAssemblies = kvp.Value;
 				(bool success, NativeCodeGenState? state) = GenerateJavaSourcesAndMaybeClassifyMarshalMethods (arch, archAssemblies, MaybeGetArchAssemblies (userAssembliesPerArch, arch), useMarshalMethods, generateJavaCode);
 
+				if (!success) {
+					return;
+				}
+
+				(success, List<PinvokeScanner.PinvokeEntryInfo> pinfos) = ScanForUsedPinvokes (scanner, arch, state.Resolver);
 				if (!success) {
 					return;
 				}
@@ -347,6 +355,31 @@ namespace Xamarin.Android.Tasks
 			}
 
 			return additionalProviders;
+		}
+
+		(bool success, List<PinvokeScanner.PinvokeEntryInfo> pinfos) ScanForUsedPinvokes (PinvokeScanner scanner, AndroidTargetArch arch, XAAssemblyResolver resolver)
+		{
+			if (!EnableNativeRuntimeLinking) {
+				return;
+			}
+
+			var frameworkAssemblies = new List<ITaskItem> ();
+
+			foreach (ITaskItem asm in ResolvedAssemblies) {
+				string? metadata = asm.GetMetadata ("FrameworkAssembly");
+				if (String.IsNullOrEmpty (metadata)) {
+					continue;
+				}
+
+				if (!Boolean.TryParse (metadata, out bool isFrameworkAssembly) || !isFrameworkAssembly) {
+					continue;
+				}
+
+				frameworkAssemblies.Add (asm);
+			}
+
+			var pinfos = scanner.Scan (arch, resolver, frameworkAssemblies);
+			return (true, pinfos);
 		}
 
 		(bool success, NativeCodeGenState? stubsState) GenerateJavaSourcesAndMaybeClassifyMarshalMethods (AndroidTargetArch arch, Dictionary<string, ITaskItem> assemblies, Dictionary<string, ITaskItem> userAssemblies, bool useMarshalMethods, bool generateJavaCode)

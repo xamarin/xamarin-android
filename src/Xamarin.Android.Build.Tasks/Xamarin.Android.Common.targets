@@ -1494,7 +1494,8 @@ because xbuild doesn't support framework reference assemblies.
       LinkingEnabled="$(_LinkingEnabled)"
       HaveMultipleRIDs="$(_HaveMultipleRIDs)"
       IntermediateOutputDirectory="$(IntermediateOutputPath)"
-      Environments="@(AndroidEnvironment);@(LibraryEnvironments)">
+      Environments="@(AndroidEnvironment);@(LibraryEnvironments)"
+      EnableNativeRuntimeLinking="$(_AndroidEnableNativeRuntimeLinking)">
     <Output TaskParameter="GeneratedBinaryTypeMaps" ItemName="_AndroidTypeMapping" Condition=" '$(_InstantRunEnabled)' == 'True' " />
   </GenerateJavaStubs>
 
@@ -1725,6 +1726,7 @@ because xbuild doesn't support framework reference assemblies.
     EnableMarshalMethods="$(_AndroidUseMarshalMethods)"
     CustomBundleConfigFile="$(AndroidBundleConfigurationFile)"
     ZipAlignmentPages="$(_AndroidZipAlignment)"
+    EnableNativeRuntimeLinking="$(_AndroidEnableNativeRuntimeLinking)"
   >
     <Output TaskParameter="BuildId" PropertyName="_XamarinBuildId" />
   </GeneratePackageManagerJava>

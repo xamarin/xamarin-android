@@ -81,6 +81,7 @@ namespace Xamarin.Android.Tasks
 		public bool EnableSGenConcurrent { get; set; }
 		public string? CustomBundleConfigFile { get; set; }
 		public int ZipAlignmentPages { get; set; } = AndroidZipAlign.DefaultZipAlignment;
+		public bool EnableNativeRuntimeLinking { get; set; }
 
 		[Output]
 		public string BuildId { get; set; }
@@ -398,6 +399,13 @@ namespace Xamarin.Android.Tasks
 						assemblyCount,
 						uniqueAssemblyNames
 					);
+				}
+
+				if (EnableNativeRuntimeLinking) {
+					// var pinfoGen = new PreservePinvokesNativeAssemblyGenerator (
+					// 	Log,
+					// 	targetArch,
+
 				}
 
 				LLVMIR.LlvmIrModule marshalMethodsModule = marshalMethodsAsmGen.Construct ();

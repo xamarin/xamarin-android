@@ -128,14 +128,18 @@ extends:
             sudo apt install --reinstall linux-image-$(uname -r) -y
             sudo apt install --reinstall linux-modules-$(uname -r) -y
             sudo apt install --reinstall linux-modules-extra-$(uname -r) -y
+            sudo apt install -y dbus-x11
           displayName: Install Kernel Stuff
         - script: |
+            export $(dbus-launch)
             sudo waydroid init -f
           displayName: waydroid init -f
         - script: |
+            export $(dbus-launch)
             sudo waydroid init
           displayName: waydroid init
         - script: |
+            export $(dbus-launch)
             waydroid session start
           displayName: Start WayDroid
         - script: |

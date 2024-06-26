@@ -50,7 +50,7 @@ Copyright (C) 2016 Xamarin. All rights reserved.
     <_GenerateResourceDesignerClassFile Condition=" '$(Language)' == 'F#' ">$(_DesignerIntermediateOutputPath)_$(_DesignerAssemblyName).fs</_GenerateResourceDesignerClassFile>
     <_GenerateResourceDesignerClassFile Condition=" '$(_GenerateResourceDesignerClassFile)' == '' ">$(_DesignerIntermediateOutputPath)_$(_DesignerAssemblyName).cs</_GenerateResourceDesignerClassFile>
     <_GenerateResourceCaseMapFile>$(_DesignerIntermediateOutputPath)case_map.txt</_GenerateResourceCaseMapFile>
-    <AndroidResourceDesignerClassModifier Condition="'$(AndroidResourceDesignerClassModifier)' == ''">internal</AndroidResourceDesignerClassModifier>
+    <AndroidResourceDesignerClassModifier Condition="'$(AndroidResourceDesignerClassModifier)' == ''">public</AndroidResourceDesignerClassModifier>
   </PropertyGroup>
   <Message Text="_OuterIntermediateOutputPath: $(_OuterIntermediateOutputPath)" />
   <Message Text="IntermediateOutputPath: $(IntermediateOutputPath)" />

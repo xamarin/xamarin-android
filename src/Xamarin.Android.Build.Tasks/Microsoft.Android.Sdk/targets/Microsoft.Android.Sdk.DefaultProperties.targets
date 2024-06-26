@@ -90,8 +90,6 @@
     <!-- Prefer $(RuntimeIdentifiers) plural -->
     <RuntimeIdentifiers Condition=" '$(RuntimeIdentifier)' == '' And '$(RuntimeIdentifiers)' == '' ">android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
     <RuntimeIdentifier  Condition=" '$(RuntimeIdentifiers)' != '' And '$(RuntimeIdentifier)' != '' " />
-    <AndroidManifest Condition=" '$(AndroidManifest)' == '' and Exists ('Properties\AndroidManifest.xml') and !Exists ('AndroidManifest.xml') ">Properties\AndroidManifest.xml</AndroidManifest>
-    <AndroidManifest Condition=" '$(AndroidManifest)' == '' ">AndroidManifest.xml</AndroidManifest>
     <GenerateApplicationManifest Condition=" '$(GenerateApplicationManifest)' == '' ">true</GenerateApplicationManifest>
     <!-- Default to AOT in Release mode -->
     <RunAOTCompilation Condition=" '$(RunAOTCompilation)' == '' and '$(AotAssemblies)' == '' and '$(Configuration)' == 'Release' ">true</RunAOTCompilation>
@@ -140,6 +138,10 @@
     <ApplicationVersion Condition=" '$(ApplicationVersion)' == '' ">1</ApplicationVersion>
     <Version Condition=" $([System.Version]::TryParse ('$(ApplicationDisplayVersion)', $([System.Version]::Parse('1.0')))) ">$(ApplicationDisplayVersion)</Version>
     <ApplicationDisplayVersion Condition=" '$(ApplicationDisplayVersion)' == '' ">$(Version)</ApplicationDisplayVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AndroidManifest Condition=" '$(AndroidManifest)' == '' and Exists ('Properties\AndroidManifest.xml') and !Exists ('AndroidManifest.xml') ">Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition=" '$(AndroidManifest)' == '' And Exists ('AndroidManifest.xml') ">AndroidManifest.xml</AndroidManifest>
   </PropertyGroup>
 
 </Project>

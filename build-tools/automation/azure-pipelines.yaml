@@ -144,7 +144,6 @@ extends:
             mkdir "${XDG_RUNTIME_DIR}"
             chmod 0700 "${XDG_RUNTIME_DIR}"
             waydroid session start
-            waydroid log
           displayName: Start WayDroid
         - script: |
             adb devices

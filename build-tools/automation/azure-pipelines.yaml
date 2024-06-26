@@ -108,7 +108,9 @@ extends:
       jobs:
       - job: Test
         pool:
-          vmImage: 'ubuntu-latest'
+          name: MAUI-1ESPT
+          image: $(LinuxPoolImage1ESPT)
+          os: linux
         steps:
         - script: |
             printenv

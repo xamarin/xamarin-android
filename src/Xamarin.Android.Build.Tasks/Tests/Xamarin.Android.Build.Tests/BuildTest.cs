@@ -80,7 +80,7 @@ namespace Xamarin.Android.Build.Tests
 						},
 			});
 			proj.OtherBuildItems.Add (new BuildItem ("Compile", default (Func<string>)) {
-						TextContent = () => InlineData.DesignerWithContents (proj.ProjectName, "Resource", "public", new string[] {"CancelButton"}),
+						TextContent = () => InlineData.DesignerWithContents (proj.ProjectName, "Resource", "public partial", new string[] {"CancelButton"}),
 						Update = () =>  "Resource.designer.cs",
 						Metadata = {
 							{ "DependentUpon", "Resource.resx" },

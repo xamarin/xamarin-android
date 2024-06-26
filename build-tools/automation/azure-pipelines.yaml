@@ -140,7 +140,11 @@ extends:
           displayName: waydroid init
         - script: |
             export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            mkdir "${XDG_RUNTIME_DIR}"
+            chmod 0700 "${XDG_RUNTIME_DIR}"
             waydroid session start
+            waydroid log
           displayName: Start WayDroid
         - script: |
             adb devices

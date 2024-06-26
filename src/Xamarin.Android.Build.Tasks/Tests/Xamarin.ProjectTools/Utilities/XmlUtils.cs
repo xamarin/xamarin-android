@@ -41,7 +41,8 @@ namespace Xamarin.ProjectTools
 				if (project.OtherBuildItems.Count > 0) {
 					sb.AppendLine ("\t<ItemGroup>");
 					foreach (var bi in project.OtherBuildItems) {
-						if (bi.BuildAction != BuildActions.EmbeddedResource) {
+						// If its an EmbeddedResource ignore it, unless it has an Update method set.
+						if (bi.BuildAction != BuildActions.EmbeddedResource || bi.Update != null) {
 							AppendBuildItem (sb, bi);
 						}
 					}

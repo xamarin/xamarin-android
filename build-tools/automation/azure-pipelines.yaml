@@ -145,7 +145,7 @@ extends:
             export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
             mkdir "${XDG_RUNTIME_DIR}"
             chmod 0700 "${XDG_RUNTIME_DIR}"
-            xvfb-run weston -B headless-backend.so --width=1024 --height=768 --xwayland
+            xvfb-run weston -B headless-backend.so --width=1024 --height=768 --xwayland &
             sleep 3
             waydroid session start
             sleep 3

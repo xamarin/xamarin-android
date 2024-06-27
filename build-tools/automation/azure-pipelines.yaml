@@ -163,7 +163,7 @@ extends:
             sleep 10
           displayName: Start waydroid
         - bash: |
-            export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
+            export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
             ipAddress=$(sudo waydroid shell ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1)
             done=0
             while [ -z "$ipAddress" ]; do

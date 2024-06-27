@@ -130,6 +130,7 @@ extends:
             sudo apt install --reinstall linux-modules-extra-$(uname -r) -y
             sudo apt install -y dbus-x11
             sudo apt install weston
+            sudo apt install xvfb
           displayName: Install Kernel Stuff
         - script: |
             export $(dbus-launch)
@@ -144,7 +145,7 @@ extends:
             export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
             mkdir "${XDG_RUNTIME_DIR}"
             chmod 0700 "${XDG_RUNTIME_DIR}"
-            weston-launch --tty 1 2>&1 | tee /tmp/weston.log
+            xvfb-run weston -B headless-backend.so -width=1024 -height=768
             sleep 3
             waydroid session start
             sleep 3

@@ -120,6 +120,9 @@ extends:
             find $ANDROID_SDK_ROOT
           displayName: Display Environment
         - script: |
+            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"
+          displayName: Install platfom-tools
+        - script: |
             sudo apt-get install curl ca-certificates -y
             curl https://repo.waydro.id | sudo bash
             sudo apt-get install waydroid -y

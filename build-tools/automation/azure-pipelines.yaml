@@ -144,8 +144,10 @@ extends:
             export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
             mkdir "${XDG_RUNTIME_DIR}"
             chmod 0700 "${XDG_RUNTIME_DIR}"
-            weston --tty 1 2>&1 | tee /var/log/weston.log & sleep 3
+            weston --tty 1 2>&1 | tee /tmp/weston.log
+            sleep 3
             waydroid session start
+            sleep 3
           displayName: Start WayDroid
         - bash: |
             ipAddress=\$(waydroid shell ip addr show eth0 | grep "inet " | awk '{print \$2}' | cut -d/ -f1)

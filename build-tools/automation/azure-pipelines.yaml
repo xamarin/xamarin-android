@@ -163,7 +163,6 @@ extends:
             sleep 10
           displayName: Start waydroid
         - bash: |
-            export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools"
             ipAddress=$(sudo waydroid shell ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1)
             done=0
             while [ -z "$ipAddress" ]; do
@@ -178,11 +177,10 @@ extends:
             echo "Waydroid started with ip address: $ipAddress"
             echo $ANDROID_SDK_ROOT
             echo $PATH
-            adb connect $ipAddress:5555
+            $ANDROID_HOME/platform-tools/adb connect $ipAddress:5555
           displayName: Wait for waydroid
         - script: |
-            export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
-            adb devices
+            $ANDROID_HOME/platform-tools/adb devices
           displayName: Logging
         - script: |
             waydroid session stop

@@ -147,6 +147,8 @@ extends:
             chmod 0700 "${XDG_RUNTIME_DIR}"
             xvfb-run weston -B headless-backend.so --width=1024 --height=768 --xwayland &
             sleep 3
+            sudo waydroid container start
+            sleep 3
             waydroid session start &
             sleep 3
           displayName: Start WayDroid

@@ -102,6 +102,15 @@ namespace Xamarin.Android.Build.Tests
 
 			Assert.AreEqual (expected, actual);
 		}
+
+		// Checks if actual contains expected after normalizing string line endings and removing whitespace
+		public static void AreMultiLineContains (string expected, string actual)
+		{
+			expected = expected.ReplaceLineEndings ().Replace (" ", "").Replace ("\t", "");
+			actual = actual.ReplaceLineEndings ().Replace (" ", "").Replace ("\t", "");
+
+			Assert.IsTrue (actual.Contains (expected));
+		}
 	}
 }
 

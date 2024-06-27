@@ -16,6 +16,7 @@
   <type name="permission" namespace="Android.App" outputFile="src\Mono.Android\Android.App\PermissionAttribute.cs" usage="AttributeTargets.Assembly" allowMultiple="true" />
   <type name="permission-group" namespace="Android.App" outputFile="src\Mono.Android\Android.App\PermissionGroupAttribute.cs" usage="AttributeTargets.Assembly" allowMultiple="true" />
   <type name="permission-tree" namespace="Android.App" outputFile="src\Mono.Android\Android.App\PermissionTreeAttribute.cs" usage="AttributeTargets.Assembly" />
+  <type name="property" namespace="Android.App" outputFile="src\Mono.Android\Android.App\PropertyAttribute.cs" usage="AttributeTargets.Assembly | AttributeTargets.Class" allowMultiple="true" defaultConstructor="false" />
   <type name="uses-configuration" namespace="Android.App" outputFile="src\Mono.Android\Android.App\UsesConfigurationAttribute.cs" usage="AttributeTargets.Assembly" allowMultiple="true" />
   <type name="uses-feature" namespace="Android.App" outputFile="src\Mono.Android\Android.App\UsesFeatureAttribute.cs" usage="AttributeTargets.Assembly" allowMultiple="true" />
   <type name="uses-library" namespace="Android.App" outputFile="src\Mono.Android\Android.App\UsesLibraryAttribute.cs" usage="AttributeTargets.Assembly | AttributeTargets.Class" allowMultiple="true" />
@@ -49,7 +50,6 @@
   <type name="process" ignore="true" />
   <type name="processes" ignore="true" />
   <type name="profileable" ignore="true" />
-  <type name="property" ignore="true" />
   <type name="protected-broadcast" ignore="true" />
   <type name="public-key" ignore="true" />
   <type name="queries" ignore="true" />
@@ -65,6 +65,7 @@
   <type name="supports-input-input-type" ignore="true" />
   <type name="supports-screens" ignore="true" />
   <type name="upgrade-key-set" ignore="true" />
+  <type name="uri-relative-filter-group" ignore="true" />
   <type name="uses-native-library" ignore="true" />
   <type name="uses-package" ignore="true" />
   <type name="uses-sdk" ignore="true" />
@@ -121,6 +122,7 @@
   <element path="activity.requiredDisplayCategory" visible="false" />
   <element path="activity.recreateOnConfigChanges" type="Android.Content.PM.ConfigChanges" />
   <element path="activity.relinquishTaskIdentity" type="bool" />
+  <element path="activity.requireContentUriPermissionFromCaller" visible="false" />
   <element path="activity.resizeableActivity" type="bool" />
   <element path="activity.resumeWhilePausing" type="bool" />
   <element path="activity.rotationAnimation" type="Android.Views.WindowRotationAnimation" />
@@ -147,6 +149,7 @@
   <element path="application.allowBackup" type="bool" />
   <element path="application.allowClearUserData" type="bool" />
   <element path="application.allowClearUserDataOnFailedRestore" visible="false" />
+  <element path="application.allowCrossUidActivitySwitchFromBelow" visible="false" />
   <element path="application.allowNativeHeapPointerTagging" visible="false" />
   <element path="application.allowTaskReparenting" type="bool" />
   <element path="application.appCategory" visible="false" />
@@ -303,6 +306,11 @@
   <element path="permission-tree.name" visible="true" />
   <element path="permission-tree.roundIcon" visible="true" />
 
+  <!-- <property> -->
+  <element path="property.name" type="string" readonly="true" />
+  <element path="property.resource" visible="true" />
+  <element path="property.value" visible="true" />
+
   <!-- <provider> -->
   <element path="provider.attributionTags" visible="false" />
   <element path="provider.authorities" type="string[]" readonly="true" manualMap="true" />
@@ -326,6 +334,7 @@
   <element path="provider.singleUser" visible="false" />
   <element path="provider.splitName" visible="false" />
   <element path="provider.syncable" type="bool" />
+  <element path="provider.systemUserOnly" visible="false" />
   <element path="provider.visibleToInstantApps" visible="false" />
   <element path="provider.writePermission" visible="true" />
 
@@ -366,6 +375,7 @@
   <element path="service.singleUser" visible="false" />
   <element path="service.splitName" visible="false" />
   <element path="service.stopWithTask" visible="false" />
+  <element path="service.systemUserOnly" visible="false" />
   <element path="service.useAppZygote" visible="false" />
   <element path="service.visibleToInstantApps" visible="false" />
 

@@ -134,25 +134,36 @@ extends:
           displayName: Install Kernel Stuff
         - script: |
             export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            mkdir "${XDG_RUNTIME_DIR}"
+            chmod 0700 "${XDG_RUNTIME_DIR}"
             sudo waydroid init -f
           displayName: waydroid init -f
         - script: |
             export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
             sudo waydroid init
           displayName: waydroid init
         - script: |
             export $(dbus-launch)
             export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
-            mkdir "${XDG_RUNTIME_DIR}"
-            chmod 0700 "${XDG_RUNTIME_DIR}"
             xvfb-run weston -B headless-backend.so --width=1024 --height=768 --xwayland &
-            sleep 3
-            sudo waydroid container start
-            sleep 3
+            sleep 10
+          displayName: Start Weston
+        - script: |
+            export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            sudo waydroid container start &
+            sleep 10
+          displayName: Start Container
+        - script: |
+            export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
             waydroid session start &
-            sleep 3
-          displayName: Start WayDroid
+            sleep 10
+          displayName: Start waydroid
         - bash: |
+            export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
             ipAddress=$(sudo waydroid shell ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1)
             done=0
             while [ -z "$ipAddress" ]; do
@@ -168,6 +179,7 @@ extends:
             adb connect $ipAddress:5555
           displayName: Wait for waydroid
         - script: |
+            export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
             adb devices
           displayName: Logging
         - script: |

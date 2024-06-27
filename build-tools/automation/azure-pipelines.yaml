@@ -117,6 +117,7 @@ extends:
             whoami
             curl -h
             sudo -h
+            find $ANDROID_SDK_ROOT
           displayName: Display Environment
         - script: |
             sudo apt-get install curl ca-certificates -y

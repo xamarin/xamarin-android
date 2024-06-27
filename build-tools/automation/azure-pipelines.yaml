@@ -152,10 +152,15 @@ extends:
           displayName: Start WayDroid
         - bash: |
             ipAddress=$(sudo waydroid shell ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+            done=0
             while [ -z "$ipAddress" ]; do
+                if [ $done == '180' ]; then
+                  break
+                fi
                 echo "Waiting for waydroid to start"
                 sleep 1
                 ipAddress=$(sudo waydroid shell ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+                ((done++))
             done
             echo "Waydroid started with ip address: $ipAddress"
             adb connect $ipAddress:5555

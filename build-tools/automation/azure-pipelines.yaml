@@ -196,7 +196,6 @@ extends:
             $ANDROID_HOME/platform-tools/adb exec-out uiautomator dump /dev/tty > $(Build.StagingDirectory)/ui.xml
           displayName: Logging
         - script: |
-            $ANDROID_HOME/platform-tools/adb root
             $ANDROID_HOME/platform-tools/adb shell settings put global development_settings_enabled 1
           displayName: adb developer mode
         - template: /build-tools/automation/yaml-templates/run-dotnet-preview.yaml@self

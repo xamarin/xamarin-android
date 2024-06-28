@@ -216,6 +216,7 @@ _ResolveAssemblies MSBuild target.
     <PropertyGroup>
       <_AndroidIncludeSystemGlobalizationNative Condition=" '$(_AndroidIncludeSystemGlobalizationNative)' == '' ">true</_AndroidIncludeSystemGlobalizationNative>
       <_AndroidEnableNativeStackTracing Condition=" '$(_AndroidEnableNativeStackTracing)' == ''">false</_AndroidEnableNativeStackTracing>
+      <_AndroidEnablePerfetto Condition=" '$(_AndroidEnablePerfetto)' == ''">false</_AndroidEnablePerfetto>
     </PropertyGroup>
     <ItemGroup>
       <_ResolvedNativeLibraries Include="@(ResolvedFileToPublish)" Condition=" '%(ResolvedFileToPublish.Extension)' == '.so' " />
@@ -228,6 +229,10 @@ _ResolveAssemblies MSBuild target.
       <!-- Filename without extension -->
       <_ExcludedNativeLibraries Condition=" '$(_AndroidIncludeSystemGlobalizationNative)' != 'true' " Include="libSystem.Globalization.Native" />
       <_ExcludedNativeLibraries Condition=" '$(_AndroidEnableNativeStackTracing)' != 'true' " Include="libxamarin-native-tracing" />
+      <_ExcludedNativeLibraries Condition=" '$(_AndroidEnablePerfetto)' != 'true' " Include="libmono-android-perfetto.debug" />
+      <_ExcludedNativeLibraries Condition=" '$(_AndroidEnablePerfetto)' != 'true' " Include="libmono-android-perfetto.release" />
+      <_ExcludedNativeLibraries Condition=" '$(_AndroidEnablePerfetto)' == 'true' " Include="libmono-android.debug" />
+      <_ExcludedNativeLibraries Condition=" '$(_AndroidEnablePerfetto)' == 'true' " Include="libmono-android.release" />
     </ItemGroup>
     <ProcessNativeLibraries
         InputLibraries="@(_ResolvedNativeLibraries)"

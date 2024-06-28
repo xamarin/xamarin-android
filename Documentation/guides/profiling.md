@@ -429,6 +429,43 @@ See further details on `simpleperf`'s [README][simpleperf-readme].
 [simpleperf]: https://developer.android.com/ndk/guides/simpleperf
 [simpleperf-readme]: https://android.googlesource.com/platform/system/extras/+/master/simpleperf/doc/README.md
 
+## Profiling with Perfetto
+
+[Perfetto](https://perfetto.dev/) is a tracing/profiling system integrated into Android, that allows
+application performance tracing within the context of entire operating system.  This allows one to
+see the full picture of how application performs within the larger environment, taking into account
+contexts like GPU rendering time, windowing system compositing time, time spent sleeping in a thread etc.
+
+.NET for Android includes support for recording several kinds of performace measurements using Perfetto:
+
+  * Managed method invocation time
+  * Class instantiation time
+  * Assembly load time
+
+These events are recorded together with other measurements supported by Perfetto itself and can be visualized
+using the [Perfetto UI](https://ui.perfetto.dev/) (an offline in-browser JavaScript application).  The UI also
+supports converting the collected traces into other formats, including `nettrace`.
+
+Perfetto support is **not** included in the `.NET for Android` runtime by default, since its inclusion increases
+the runtime and APK size.  In order to enable Perfetto support, it is necessary to set the "private" `_AndroidEnablePerfetto`
+MSBuild property to `true`.
+
+With that property set, the application can be used as usual, with Perfetto trace recording enabled at any
+chosen point in time, using mechanisms external to `.NET for Android` and the application.  The mechanisms are
+described in detail on the following web pages:
+
+  1. [Quickstart: Record traces on Android](https://perfetto.dev/docs/quickstart/android-tracing)
+  2. [Capture a system trace on a device](https://developer.android.com/topic/performance/tracing/on-device)
+
+After recording the trace using whichever method, location of the trace file to download from device (e.g.
+using [`adb pull`](https://developer.android.com/topic/performance/tracing/on-device#download_report_using_adb))
+can be determined by looking at the logcat output captured from the device.  The location is logged by Android
+component called `Traceur`, and looks similar to the entry below:
+
+```
+05-13 17:25:17.186  3705  9320 V Traceur : Saving perfetto trace to /data/local/traces/trace-raven-AP1A.240405.002-2024-05-13-17-25-16.perfetto-trace
+```
+
 # Profiling MSBuild
 
 At a high level, you can get a performance summary from MSBuild via:
@@ -441,7 +478,7 @@ target:
     Project Evaluation Performance Summary:
            12 ms  samples\HelloWorld\HelloLibrary\HelloLibrary.csproj   1 calls
            98 ms  samples\HelloWorld\HelloWorld.csproj   1 calls
-    
+
     Target Performance Summary:
           275 ms  _UpdateAndroidResgen                       2 calls
           354 ms  _GenerateJavaStubs                         1 calls
@@ -450,7 +487,7 @@ target:
           865 ms  _ResolveSdks                               2 calls
           953 ms  ResolveProjectReferences                   2 calls
          1219 ms  _CompileToDalvikWithD8                     1 calls
-    
+
     Task Performance Summary:
           681 ms  Csc                                        2 calls
           809 ms  ValidateJavaVersion                        2 calls

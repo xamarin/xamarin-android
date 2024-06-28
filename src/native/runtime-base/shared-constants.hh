@@ -18,6 +18,12 @@ namespace xamarin::android::internal
 	class SharedConstants
 	{
 	public:
+#if defined(PERFETTO_ENABLED)
+		static constexpr bool PerfettoEnabled = true;
+#else
+		static constexpr bool PerfettoEnabled = false;
+#endif
+
 		// These three MUST be the same as like-named constants in src/Xamarin.Android.Build.Tasks/Utilities/MonoAndroidHelper.Basic.cs
 		static constexpr std::string_view MANGLED_ASSEMBLY_NAME_EXT { ".so" };
 		static constexpr std::string_view MANGLED_ASSEMBLY_REGULAR_ASSEMBLY_MARKER { "lib_" };
@@ -55,9 +61,13 @@ namespace xamarin::android::internal
 		static inline constexpr std::string_view DEBUG_MONO_GDB_PROPERTY          { "debug.mono.gdb" };
 		static inline constexpr std::string_view DEBUG_MONO_LOG_PROPERTY          { "debug.mono.log" };
 		static inline constexpr std::string_view DEBUG_MONO_MAX_GREFC             { "debug.mono.max_grefc" };
+
+		// An alias to `debug.mono.timing`
+		static inline constexpr std::string_view DEBUG_MONO_PERFETTO              { "debug.mono.perfetto" };
 		static inline constexpr std::string_view DEBUG_MONO_PROFILE_PROPERTY      { "debug.mono.profile" };
 		static inline constexpr std::string_view DEBUG_MONO_RUNTIME_ARGS_PROPERTY { "debug.mono.runtime_args" };
 		static inline constexpr std::string_view DEBUG_MONO_SOFT_BREAKPOINTS      { "debug.mono.soft_breakpoints" };
+		static inline constexpr std::string_view DEBUG_MONO_TIMING                { "debug.mono.timing" };
 		static inline constexpr std::string_view DEBUG_MONO_TRACE_PROPERTY        { "debug.mono.trace" };
 		static inline constexpr std::string_view DEBUG_MONO_WREF_PROPERTY         { "debug.mono.wref" };
 

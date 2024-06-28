@@ -13,11 +13,63 @@ bool FastTiming::immediate_logging = false;
 TimingEvent FastTiming::init_time {};
 
 void
+FastTiming::parse_options (dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN> const& value) noexcept
+{
+	if (value.empty ()) {
+		return;
+	}
+
+	string_segment param;
+	while (value.next_token (',', param)) {
+		if (param.starts_with (OPT_MODE)) {
+			if (param.equal (OPT_MODE.length (), OPT_MODE_BARE)) {
+				profiling_mode = ProfilingMode::Bare;
+				continue;
+			}
+
+			if (param.equal (OPT_MODE.length (), OPT_MODE_EXTENDED)) {
+				profiling_mode = ProfilingMode::Extended;
+				continue;
+			}
+
+			if (param.equal (OPT_MODE.length (), OPT_MODE_VERBOSE)) {
+				profiling_mode = ProfilingMode::Verbose;
+				continue;
+			}
+
+			if (param.equal (OPT_MODE.length (), OPT_MODE_EXTREME)) {
+				profiling_mode = ProfilingMode::Extreme;
+				continue;
+			}
+		}
+	}
+
+#if defined(PERFETTO_ENABLED)
+	// Clamp the profiling mode to extended, otherwise using Perfetto makes no sense
+	if (profiling_mode < ProfilingMode::Extended) {
+		profiling_mode = ProfilingMode::Extended;
+	}
+#endif
+}
+
+void
 FastTiming::really_initialize (bool log_immediately) noexcept
 {
 	internal_timing = new FastTiming ();
 	is_enabled = true;
 	immediate_logging = log_immediately;
+
+	dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN> value;
+	int prop_len = 0;
+
+	if constexpr (SharedConstants::PerfettoEnabled) {
+		prop_len = AndroidSystem::monodroid_get_system_property (SharedConstants::DEBUG_MONO_PERFETTO, value);
+	}
+
+	if (prop_len <= 0) {
+		AndroidSystem::monodroid_get_system_property (SharedConstants::DEBUG_MONO_TIMING, value);
+	}
+	parse_options (value);
 
 	if (immediate_logging) {
 		return;

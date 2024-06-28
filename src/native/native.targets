@@ -38,12 +38,16 @@
       <_ConfigureRuntimesInputs  Include="..\..\build-tools\scripts\Ndk.targets" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Debug\CMakeCache.txt')" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Release\CMakeCache.txt')" />
+      <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-perfetto-Debug\CMakeCache.txt')" />
+      <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-perfetto-Release\CMakeCache.txt')" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-asan-Debug\CMakeCache.txt')"    Condition="'$(EnableNativeAnalyzers)' == 'true'" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-asan-Release\CMakeCache.txt')"  Condition="'$(EnableNativeAnalyzers)' == 'true'" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-ubsan-Debug\CMakeCache.txt')"   Condition="'$(EnableNativeAnalyzers)' == 'true'" />
       <_ConfigureRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-ubsan-Release\CMakeCache.txt')" Condition="'$(EnableNativeAnalyzers)' == 'true'" />
       <_OutputDirsToCreate       Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Debug" />
       <_OutputDirsToCreate       Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Release" />
+      <_OutputDirsToCreate       Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-perfetto-Debug" />
+      <_OutputDirsToCreate       Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-perfetto-Release" />
       <_OutputDirsToCreate       Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-asan-Debug"     Condition="'$(EnableNativeAnalyzers)' == 'true'" />
       <_OutputDirsToCreate       Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-ubsan-Debug"    Condition="'$(EnableNativeAnalyzers)' == 'true'" />
       <_OutputDirsToCreate       Include="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-asan-Release"   Condition="'$(EnableNativeAnalyzers)' == 'true'" />
@@ -73,6 +77,18 @@
         <Command>$(CmakePath)</Command>
         <Arguments>--preset default-release-%(AndroidSupportedTargetJitAbi.Identity) $(_CmakeAndroidFlags)</Arguments>
         <WorkingDirectory>$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Release</WorkingDirectory>
+      </_ConfigureRuntimeCommands>
+
+      <_ConfigureRuntimeCommands Include="@(AndroidSupportedTargetJitAbi)">
+        <Command>$(CmakePath)</Command>
+        <Arguments>--preset perfetto-debug-%(AndroidSupportedTargetJitAbi.Identity) $(_CmakeAndroidFlags)</Arguments>
+        <WorkingDirectory>$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-perfetto-Debug</WorkingDirectory>
+      </_ConfigureRuntimeCommands>
+
+      <_ConfigureRuntimeCommands Include="@(AndroidSupportedTargetJitAbi)">
+        <Command>$(CmakePath)</Command>
+        <Arguments>--preset perfetto-release-%(AndroidSupportedTargetJitAbi.Identity) $(_CmakeAndroidFlags)</Arguments>
+        <WorkingDirectory>$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-perfetto-Release</WorkingDirectory>
       </_ConfigureRuntimeCommands>
     </ItemGroup>
 
@@ -127,10 +143,14 @@
     <ItemGroup>
       <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Debug\CMakeCache.txt')" />
       <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-Release\CMakeCache.txt')" />
+      <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-perfetto-Debug\CMakeCache.txt')" />
+      <_BuildAndroidRuntimesInputs  Include="@(AndroidSupportedTargetJitAbi->'$(IntermediateOutputPath)\%(AndroidRID)-perfetto-Release\CMakeCache.txt')" />
       <_BuildAndroidRuntimesInputs  Include="@(_MonoDroidSources)" />
       <_BuildAndroidRuntimesInputs  Include="..\..\build-tools\scripts\Ndk.targets" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.debug.so')" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android.release.so')" />
+      <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android-perfetto.debug.so')" />
+      <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\libmono-android-perfetto.release.so')" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\Debug\libxamarin-app.so')" />
       <_BuildAndroidRuntimesOutputs Include="@(AndroidSupportedTargetJitAbi->'$(OutputPath)\%(AndroidRID)\Release\libxamarin-app.so')" />
     </ItemGroup>
@@ -153,6 +173,14 @@
     <Exec
         Command="$(NinjaPath) -v"
         WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Release" />
+
+    <Exec
+        Command="$(NinjaPath) -v"
+        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-perfetto-Debug" />
+
+    <Exec
+        Command="$(NinjaPath) -v"
+        WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-perfetto-Release" />
 
     <Touch Files="@(_BuildAndroidRuntimesOutputs)" />
   </Target>
@@ -182,7 +210,7 @@
   </Target>
 
   <Target Name="_CleanRuntimes"
-      AfterTargets="Clean">
+          AfterTargets="Clean">
     <Exec
         Command="$(NinjaPath) -v clean"
         WorkingDirectory="$(IntermediateOutputPath)%(AndroidSupportedTargetJitAbi.AndroidRID)-Debug"/>

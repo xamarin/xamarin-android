@@ -2,6 +2,9 @@
 #ifndef __CPP_COMPAT_H
 #define __CPP_COMPAT_H
 
+#if defined(USES_LIBSTDCPP)
+#include <mutex>
+#else // def USES_LIBSTDCPP
 #include <pthread.h>
 
 // We can't use <mutex> on Android because it requires linking libc++ into the rutime, see below.
@@ -63,5 +66,6 @@ namespace std
 		pthread_mutex_t _pmutex = PTHREAD_MUTEX_INITIALIZER;
 	};
 }
+#endif // ndef USES_LIBSTDCPP
 
 #endif

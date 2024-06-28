@@ -63,7 +63,10 @@ namespace Xamarin.Android.Tasks
 				// Use IncludeDebugSymbols to determine which one to include.
 				// We may eventually have files such as `libmono-android-checked+asan.release.so` as well.
 				var fileName = Path.GetFileNameWithoutExtension (library.ItemSpec);
-				if (fileName.StartsWith ("libmono-android", StringComparison.Ordinal)) {
+				if (ExcludedLibraries != null && ExcludedLibraries.Contains (fileName, StringComparer.OrdinalIgnoreCase)) {
+					Log.LogDebugMessage ($"Excluding '{library.ItemSpec}'");
+					continue;
+				} else if (fileName.StartsWith ("libmono-android", StringComparison.Ordinal)) {
 					if (fileName.EndsWith (".debug", StringComparison.Ordinal)) {
 						if (!IncludeDebugSymbols)
 							continue;
@@ -82,9 +85,6 @@ namespace Xamarin.Android.Tasks
 					if (!wantedComponents.Contains (fileName)) {
 						continue;
 					}
-				} else if (ExcludedLibraries != null && ExcludedLibraries.Contains (fileName, StringComparer.OrdinalIgnoreCase)) {
-					Log.LogDebugMessage ($"Excluding '{library.ItemSpec}'");
-					continue;
 				}
 
 				output.Add (library);

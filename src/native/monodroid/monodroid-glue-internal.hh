@@ -12,8 +12,13 @@
 #include "cpp-util.hh"
 #include "xxhash.hh"
 
+#include <mono/metadata/class.h>
 #include <mono/utils/mono-counters.h>
 #include <mono/metadata/profiler.h>
+
+#if defined(PERFETTO_ENABLED)
+#include "perfetto_support.hh"
+#endif
 
 // NDEBUG causes robin_map.h not to include <iostream> which, in turn, prevents indirect inclusion of <mutex>. <mutex>
 // conflicts with our std::mutex definition in cppcompat.hh
@@ -204,6 +209,12 @@ namespace xamarin::android::internal
 		char*	get_java_class_name_for_TypeManager (jclass klass);
 		void log_traces (JNIEnv *env, TraceKind kind, const char *first_line) noexcept;
 
+#if defined(PERFETTO_ENABLED)
+		static void perfetto_init () noexcept;
+
+	private:
+		void perfetto_hook_mono_events () noexcept;
+#endif
 	private:
 		static void mono_log_handler (const char *log_domain, const char *log_level, const char *message, mono_bool fatal, void *user_data);
 		static void mono_log_standard_streams_handler (const char *str, mono_bool is_stdout);
@@ -257,6 +268,10 @@ namespace xamarin::android::internal
 		void set_debug_options ();
 		void parse_gdb_options ();
 		void mono_runtime_init (JNIEnv *env, dynamic_local_string<PROPERTY_VALUE_BUFFER_LEN>& runtime_args);
+		void timing_init () noexcept;
+		void timing_init_extended () noexcept;
+		void timing_init_verbose () noexcept;
+		void timing_init_extreme () noexcept;
 		void init_android_runtime (JNIEnv *env, jclass runtimeClass, jobject loader);
 		void set_environment_variable_for_directory (const char *name, jstring_wrapper &value, bool createDirectory, mode_t mode);
 
@@ -290,6 +305,21 @@ namespace xamarin::android::internal
 		static void jit_done (MonoProfiler *prof, MonoMethod *method, MonoJitInfo* jinfo);
 		static void thread_start (MonoProfiler *prof, uintptr_t tid);
 		static void thread_end (MonoProfiler *prof, uintptr_t tid);
+		static void prof_assembly_loading (MonoProfiler *prof, MonoAssembly *assembly) noexcept;
+		static void prof_assembly_loaded (MonoProfiler *prof, MonoAssembly *assembly) noexcept;
+		static void prof_image_loading (MonoProfiler *prof, MonoImage *assembly) noexcept;
+		static void prof_image_loaded (MonoProfiler *prof, MonoImage *assembly) noexcept;
+		static void prof_class_loading (MonoProfiler *prof, MonoClass *klass) noexcept;
+		static void prof_class_loaded (MonoProfiler *prof, MonoClass *klass) noexcept;
+		static void prof_vtable_loading (MonoProfiler *prof, MonoVTable *vtable) noexcept;
+		static void prof_vtable_loaded (MonoProfiler *prof, MonoVTable *vtable) noexcept;
+		static void prof_method_enter (MonoProfiler *prof, MonoMethod *method, MonoProfilerCallContext *context) noexcept;
+		static void prof_method_leave (MonoProfiler *prof, MonoMethod *method, MonoProfilerCallContext *context) noexcept;
+		static void prof_method_begin_invoke (MonoProfiler *prof, MonoMethod *method) noexcept;
+		static void prof_method_end_invoke (MonoProfiler *prof, MonoMethod *method) noexcept;
+		static void prof_monitor_contention (MonoProfiler *prof, MonoObject *object) noexcept;
+		static void prof_monitor_acquired (MonoProfiler *prof, MonoObject *object) noexcept;
+
 #if !defined (RELEASE)
 		static MonoReflectionType* typemap_java_to_managed (MonoString *java_type_name) noexcept;
 		static const char* typemap_managed_to_java (MonoReflectionType *type, const uint8_t *mvid) noexcept;

@@ -136,9 +136,6 @@ extends:
             sudo apt install weston
             sudo apt install xvfb
           displayName: Install Kernel Stuff
-        - template: /build-tools/automation/yaml-templates/use-dot-net.yaml
-          parameters:
-            remove_dotnet: true
         - script: |
             export $(dbus-launch)
             export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir

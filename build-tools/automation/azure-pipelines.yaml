@@ -111,6 +111,9 @@ extends:
           name: MAUI-1ESPT
           image: $(LinuxPoolImage1ESPT)
           os: linux
+        timeoutInMinutes: 180
+        workspace:
+          clean: all
         steps:
         - script: |
             printenv
@@ -122,6 +125,8 @@ extends:
         - script: |
             $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"
           displayName: Install platfom-tools
+        - template: /build-tools/automation/yaml-templates/setup-test-environment.yaml
+
         - script: |
             sudo apt-get install curl ca-certificates -y
             curl https://repo.waydro.id | sudo bash

@@ -185,9 +185,9 @@ extends:
           displayName: Wait for waydroid
         - script: |
             $ANDROID_HOME/platform-tools/adb devices
-            $ANDROID_HOME/platform-tools/adb getprop
+            $ANDROID_HOME/platform-tools/adb shell getprop
             $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot.png
-            $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png screenshot.png
+            $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot.png
             $ANDROID_HOME/platform-tools/adb exec-out uiautomator dump /dev/tty
           displayName: Logging
         - script: |

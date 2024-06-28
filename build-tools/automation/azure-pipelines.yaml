@@ -195,19 +195,14 @@ extends:
             $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot.png
             $ANDROID_HOME/platform-tools/adb exec-out uiautomator dump /dev/tty > $(Build.StagingDirectory)/ui.xml
           displayName: Logging
-        - task: DotNetCoreCLI@2
-          displayName: Create New Test Project
-          inputs:
-            command: "custom"
-            custom: "new"
-            arguments: 'android'
-            workingDirectory: $(Build.StagingDirectory)/foo
-        - task: DotNetCoreCLI@2
-          displayName: CreateBuild
-          inputs:
-            command: "build"
-            arguments: '-t:Install -bl'
-            workingDirectory: $(Build.StagingDirectory)/foo
+        - template: /build-tools/automation/yaml-templates/run-dotnet-preview.yaml@self
+          parameters:
+            project: samples/HelloWorld/HelloWorld/HelloWorld.DotNet.csproj
+            arguments: >-
+              -t:Install -c Debug -tl:off -v:diag
+              -p:DotNetPreviewTool=$(System.DefaultWorkingDirectory)/bin/$(XA.Build.Configuration)/dotnet/dotnet
+            displayName: Test Install
+            continueOnError: false
         - script: |
             waydroid session stop
             sudo waydroid container stop

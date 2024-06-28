@@ -103,24 +103,6 @@ extends:
 
     - template: /build-tools/automation/yaml-templates/build-linux.yaml@self
 
-    - stage: TestDocker
-      displayName: Test Container
-      jobs:
-      - job: Test
-        pool:
-          name: MAUI-1ESPT
-          image: $(WindowsPoolImage1ESPT)
-          os: windows
-        timeoutInMinutes: 180
-        workspace:
-          clean: all
-        steps:
-        - task: Docker@2
-          displayName: Build image
-          inputs:
-            command: build
-            dockerfile: DockerFile
-
     - stage: TestContainer
       displayName: Test Container
       jobs:
@@ -213,6 +195,10 @@ extends:
             $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot.png
             $ANDROID_HOME/platform-tools/adb exec-out uiautomator dump /dev/tty > $(Build.StagingDirectory)/ui.xml
           displayName: Logging
+        - script: |
+            $ANDROID_HOME/platform-tools/adb root
+            $ANDROID_HOME/platform-tools/adb shell settings put global development_settings_enabled 1
+          displayName: adb developer mode
         - template: /build-tools/automation/yaml-templates/run-dotnet-preview.yaml@self
           parameters:
             project: samples/HelloWorld/HelloWorld/HelloWorld.DotNet.csproj

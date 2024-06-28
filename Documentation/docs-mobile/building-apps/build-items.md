@@ -180,8 +180,8 @@ Any project can specify:
 
 ```xml
 <ItemGroup>
-  <AndroidLibrary Include="foo.jar" />
-  <AndroidLibrary Include="bar.aar" />
+  <AndroidLibrary Update="foo.jar" />
+  <AndroidLibrary Update="bar.aar" />
 </ItemGroup>
 ```
 
@@ -194,7 +194,7 @@ The result of the above code snippet has a different effect for each
 * Java binding projects:
   * `foo.jar` maps to [**EmbeddedJar**](#embeddedjar).
   * `foo.jar` maps to [**EmbeddedReferenceJar**](#embeddedreferencejar)
-    if `Bind="false"` metadata is added.
+    if `Bind="false"` metadata (attribute) is added.
   * `bar.aar` maps to [**LibraryProjectZip**](#libraryprojectzip).
 
 This simplification means you can use **AndroidLibrary** everywhere.

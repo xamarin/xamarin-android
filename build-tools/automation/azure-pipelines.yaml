@@ -205,7 +205,14 @@ extends:
               -t:Install -c Debug -tl:off -v:diag
               -p:DotNetPreviewTool=$(System.DefaultWorkingDirectory)/bin/$(XA.Build.Configuration)/dotnet/dotnet
             displayName: Test Install
-            continueOnError: false
+            continueOnError: true
+        - script: |
+            waydroid --version
+            uname --kernel-release
+            cp /var/lib/waydroid/waydroid* $(Build.StagingDirectory)/
+            sudo waydroid shell -- logcat -d | tee $(Build.StagingDirectory)/logcat.txt
+            sudo dmesg | tee $(Build.StagingDirectory)/dmesg.txt
+          displayName: Diagnostics
         - script: |
             waydroid session stop
             sudo waydroid container stop

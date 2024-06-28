@@ -125,7 +125,7 @@ extends:
         - script: |
             $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"
           displayName: Install platfom-tools
-        - template: /build-tools/automation/yaml-templates/setup-test-environment.yaml
+        - template: /build-tools/automation/yaml-templates/setup-test-environment.yaml@self
 
         - script: |
             sudo apt-get install curl ca-certificates -y

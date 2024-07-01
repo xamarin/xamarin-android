@@ -184,8 +184,6 @@ extends:
                 ((done++))
             done
             echo "Waydroid started with ip address: $ipAddress"
-            echo $ANDROID_SDK_ROOT
-            echo $PATH
             $ANDROID_HOME/platform-tools/adb connect $ipAddress:5555
           displayName: Wait for waydroid
         - script: |
@@ -202,9 +200,17 @@ extends:
           parameters:
             project: samples/HelloWorld/HelloWorld/HelloWorld.DotNet.csproj
             arguments: >-
-              -t:Install -c Debug -tl:off -v:diag
+              -t:Install -c Release -tl:off -v:diag
               -p:DotNetPreviewTool=$(System.DefaultWorkingDirectory)/bin/$(XA.Build.Configuration)/dotnet/dotnet
             displayName: Test Install
+            continueOnError: true
+        - template: /build-tools/automation/yaml-templates/run-dotnet-preview.yaml@self
+          parameters:
+            project: samples/HelloWorld/HelloWorld/HelloWorld.DotNet.csproj
+            arguments: >-
+              -t:Run -c Release -tl:off -v:diag
+              -p:DotNetPreviewTool=$(System.DefaultWorkingDirectory)/bin/$(XA.Build.Configuration)/dotnet/dotnet
+            displayName: Test Run
             continueOnError: true
         - script: |
             waydroid --version
@@ -212,6 +218,8 @@ extends:
             cp /var/lib/waydroid/waydroid* $(Build.StagingDirectory)/
             sudo waydroid shell -- logcat -d | tee $(Build.StagingDirectory)/logcat.txt
             sudo dmesg | tee $(Build.StagingDirectory)/dmesg.txt
+            $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot1.png
+            $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot1.png $(Build.StagingDirectory)/screenshot1.png
           displayName: Diagnostics
         - script: |
             waydroid session stop

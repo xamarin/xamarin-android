@@ -213,11 +213,6 @@ extends:
             displayName: Test Run
             continueOnError: true
         - script: |
-            waydroid --version
-            uname --kernel-release
-            cp /var/lib/waydroid/waydroid* $(Build.StagingDirectory)/
-            sudo waydroid shell -- logcat -d | tee $(Build.StagingDirectory)/logcat.txt
-            sudo dmesg | tee $(Build.StagingDirectory)/dmesg.txt
             $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot1.png
             $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot1.png $(Build.StagingDirectory)/screenshot1.png
           displayName: Diagnostics

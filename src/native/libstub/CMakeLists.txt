@@ -38,6 +38,7 @@ endmacro()
 
 xa_add_stub_library(c)
 xa_add_stub_library(m)
+xa_add_stub_library(z)
 
 # These two are used by the marshal methods tracing library when linking libxamarin-app.so
 xa_add_stub_library(log)

@@ -23,6 +23,9 @@ This file is imported *after* the Microsoft.NET.Sdk/Sdk.targets.
   <Import Project="Microsoft.Android.Sdk.Aot.targets"         Condition=" '$(AndroidApplication)' == 'true' " />
   <Import Project="Microsoft.Android.Sdk.Application.targets" Condition=" '$(AndroidApplication)' == 'true' " />
   <Import Project="Microsoft.Android.Sdk.AssemblyResolution.targets" />
+
+  <!-- This one must be imported after `Microsoft.Android.Sdk.AssemblyResolution.targets` -->
+  <Import Project="Microsoft.Android.Sdk.NativeRuntime.targets" Condition=" '$(AndroidApplication)' == 'true' " />
   <Import Project="Microsoft.Android.Sdk.ILLink.targets" />
   <Import Project="Microsoft.Android.Sdk.ProjectCapabilities.targets" />
   <Import Project="Microsoft.Android.Sdk.Publish.targets" />

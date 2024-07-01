@@ -1494,7 +1494,8 @@ because xbuild doesn't support framework reference assemblies.
       LinkingEnabled="$(_LinkingEnabled)"
       HaveMultipleRIDs="$(_HaveMultipleRIDs)"
       IntermediateOutputDirectory="$(IntermediateOutputPath)"
-      Environments="@(AndroidEnvironment);@(LibraryEnvironments)">
+      Environments="@(AndroidEnvironment);@(LibraryEnvironments)"
+      EnableNativeRuntimeLinking="$(_AndroidEnableNativeRuntimeLinking)">
     <Output TaskParameter="GeneratedBinaryTypeMaps" ItemName="_AndroidTypeMapping" Condition=" '$(_InstantRunEnabled)' == 'True' " />
   </GenerateJavaStubs>
 
@@ -1596,6 +1597,15 @@ because xbuild doesn't support framework reference assemblies.
     Debug="$(AndroidIncludeDebugSymbols)"
     Mode="marshal_methods">
       <Output TaskParameter="AssemblySources" ItemName="_MarshalMethodsAssemblySource" />
+  </PrepareAbiItems>
+  <PrepareAbiItems
+    Condition=" '$(_AndroidEnableNativeRuntimeLinking)' == 'true' "
+    BuildTargetAbis="@(_BuildTargetAbis)"
+    NativeSourcesDir="$(_NativeAssemblySourceDir)"
+    InstantRunEnabled="$(_InstantRunEnabled)"
+    Debug="$(AndroidIncludeDebugSymbols)"
+    Mode="runtime_linking">
+      <Output TaskParameter="AssemblySources" ItemName="_RuntimeLinkingAssemblySource" />
   </PrepareAbiItems>
 </Target>
 
@@ -1725,6 +1735,7 @@ because xbuild doesn't support framework reference assemblies.
     EnableMarshalMethods="$(_AndroidUseMarshalMethods)"
     CustomBundleConfigFile="$(AndroidBundleConfigurationFile)"
     ZipAlignmentPages="$(_AndroidZipAlignment)"
+    EnableNativeRuntimeLinking="$(_AndroidEnableNativeRuntimeLinking)"
   >
     <Output TaskParameter="BuildId" PropertyName="_XamarinBuildId" />
   </GeneratePackageManagerJava>
@@ -1738,6 +1749,8 @@ because xbuild doesn't support framework reference assemblies.
   <ItemGroup>
     <FileWrites Include="$(_AndroidBuildIdFile)" />
     <FileWrites Include="@(_EnvironmentAssemblySource)" />
+    <FileWrites Include="@(_MarshalMethodsAssemblySource)" />
+    <FileWrites Condition=" '$(_AndroidEnableNativeRuntimeLinking)' == 'true' " Include="@(_RuntimeLinkingAssemblySource)" />
   </ItemGroup>
 </Target>
 
@@ -1962,6 +1975,9 @@ because xbuild doesn't support framework reference assemblies.
     <_NativeAssemblyTarget Include="@(_AndroidRemapAssemblySource->'$([System.IO.Path]::ChangeExtension('%(Identity)', '.o'))')">
       <abi>%(_AndroidRemapAssemblySource.abi)</abi>
     </_NativeAssemblyTarget>
+    <_NativeAssemblyTarget Include="@(_RuntimeLinkingAssemblySource->'$([System.IO.Path]::ChangeExtension('%(Identity)', '.o'))')">
+      <abi>%(_RuntimeLinkingAssemblySource.abi)</abi>
+    </_NativeAssemblyTarget>
   </ItemGroup>
 </Target>
 
@@ -1981,10 +1997,10 @@ because xbuild doesn't support framework reference assemblies.
 
 <Target Name="_CompileNativeAssemblySources"
     DependsOnTargets="_PrepareNativeAssemblyItems;_GenerateCompressedAssembliesNativeSourceFiles"
-    Inputs="@(_TypeMapAssemblySource);@(_TypeMapAssemblyInclude);@(_EnvironmentAssemblySource);@(_CompressedAssembliesAssemblySource);@(_MarshalMethodsAssemblySource);@(_AndroidRemapAssemblySource)"
+    Inputs="@(_TypeMapAssemblySource);@(_TypeMapAssemblyInclude);@(_EnvironmentAssemblySource);@(_CompressedAssembliesAssemblySource);@(_MarshalMethodsAssemblySource);@(_AndroidRemapAssemblySource);@(_RuntimeLinkingAssemblySource)"
     Outputs="@(_NativeAssemblyTarget)">
   <CompileNativeAssembly
-      Sources="@(_TypeMapAssemblySource);@(_EnvironmentAssemblySource);@(_CompressedAssembliesAssemblySource);@(_MarshalMethodsAssemblySource);@(_AndroidRemapAssemblySource)"
+      Sources="@(_TypeMapAssemblySource);@(_EnvironmentAssemblySource);@(_CompressedAssembliesAssemblySource);@(_MarshalMethodsAssemblySource);@(_AndroidRemapAssemblySource);@(_RuntimeLinkingAssemblySource)"
       DebugBuild="$(AndroidIncludeDebugSymbols)"
       WorkingDirectory="$(_NativeAssemblySourceDir)"
       AndroidBinUtilsDirectory="$(AndroidBinUtilsDirectory)"
@@ -2005,7 +2021,8 @@ because xbuild doesn't support framework reference assemblies.
 <Target Name="_CreateApplicationSharedLibraries"
     DependsOnTargets="_CompileNativeAssemblySources;_PrepareApplicationSharedLibraryItems"
     Inputs="@(_NativeAssemblyTarget)"
-    Outputs="@(_ApplicationSharedLibrary)">
+    Outputs="@(_ApplicationSharedLibrary)"
+    Condition=" '$(_AndroidEnableNativeRuntimeLinking)' != 'true' ">
   <LinkApplicationSharedLibraries
       ObjectFiles="@(_NativeAssemblyTarget)"
       ApplicationSharedLibraries="@(_ApplicationSharedLibrary)"

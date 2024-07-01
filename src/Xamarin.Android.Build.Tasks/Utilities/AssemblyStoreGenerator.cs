@@ -100,8 +100,11 @@ partial class AssemblyStoreGenerator
 		};
 
 		string androidAbi = MonoAndroidHelper.ArchToAbi (arch);
+		string outputDir = Path.Combine (baseOutputDirectory, androidAbi);
+		Directory.CreateDirectory (outputDir);
+
 		uint infoCount = (uint)infos.Count;
-		string storePath = Path.Combine (baseOutputDirectory, androidAbi, $"assemblies.{androidAbi}.blob.so");
+		string storePath = Path.Combine (outputDir, $"assemblies.{androidAbi}.blob.so");
 		var index = new List<AssemblyStoreIndexEntry> ();
 		var descriptors = new List<AssemblyStoreEntryDescriptor> ();
 		ulong namesSize = 0;

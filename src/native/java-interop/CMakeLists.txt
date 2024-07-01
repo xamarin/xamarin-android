@@ -37,10 +37,12 @@ target_compile_options(
   ${XA_COMMON_CXX_ARGS}
 )
 
-set_target_properties(
-  ${LIB_NAME}
-  PROPERTIES
-  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-)
+if(DEBUG_BUILD)
+  set_target_properties(
+    ${LIB_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+  )
+endif()
 
 xa_add_compile_definitions(${LIB_NAME})

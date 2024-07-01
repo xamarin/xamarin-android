@@ -14,6 +14,7 @@
     <ThirdParty Include="SgmlReaderDll.dll" />
     <ThirdParty Include="aapt2.exe" />
     <ThirdParty Include="llvm-mc.exe" />
+    <ThirdParty Include="llvm-objcopy.exe" />
     <ThirdParty Include="llvm-strip.exe" />
     <ThirdParty Include="aarch64-linux-android-ld.exe" />
     <ThirdParty Include="arm-linux-androideabi-ld.exe" />

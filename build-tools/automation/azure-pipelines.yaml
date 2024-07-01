@@ -215,7 +215,7 @@ extends:
         - script: |
             $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot1.png
             $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot1.png $(Build.StagingDirectory)/screenshot1.png
-          displayName: Diagnostics
+          displayName: Capture Output
         - script: |
             waydroid session stop
             sudo waydroid container stop

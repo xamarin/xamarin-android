@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -248,6 +249,36 @@ namespace Xamarin.Android.NetTests
 			Assert.AreEqual ("https://www.microsoft.com/", result.RequestMessage.RequestUri.ToString ());
 		}
 
+		[Test]
+		public async Task AndroidMessageHandlerSendsClientCertificate ([Values(true, false)] bool setClientCertificateOptionsExplicitly)
+		{
+			using X509Certificate2 certificate = BuildClientCertificate ();
+
+			using var handler = new AndroidMessageHandler ();
+			if (setClientCertificateOptionsExplicitly) {
+				handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+			}
+			handler.ClientCertificates.Add (certificate);
+
+			using var client = new HttpClient (handler);
+			var response = await client.GetAsync ("https://corefx-net-tls.azurewebsites.net/EchoClientCertificate.ashx");
+			var content = await response.EnsureSuccessStatusCode ().Content.ReadAsStringAsync ();
+
+			X509Certificate2 certificate2 = new X509Certificate2 (global::System.Convert.FromBase64String (content));
+			Assert.AreEqual (certificate.Thumbprint, certificate2.Thumbprint);
+		}
+
+		[Test]
+		public async Task AndroidMessageHandlerRejectsClientCertificateOptionsAutomatic ()
+		{
+			var handler = new AndroidMessageHandler
+			{
+				ClientCertificateOptions = ClientCertificateOption.Automatic,
+			};
+
+			Assert.Throws<InvalidOperationException>(() => handler.ClientCertificates.Add (BuildClientCertificate ()));
+		}
+
 		private async Task AssertRejectsRemoteCertificate (Func<Task> makeRequest)
 		{
 			// there is a difference between the exception that's thrown in the .NET build and the legacy Xamarin
@@ -261,6 +292,38 @@ namespace Xamarin.Android.NetTests
 			// of these and we need to catch both here
 			catch (System.Net.WebException) {}
 			catch (System.Net.Http.HttpRequestException) {}
+		}
+
+		// Adapted from https://github.com/dotnet/runtime/blob/e8b89a3fde2911c6cbac0488bf82c74329a7224a/src/libraries/Common/tests/System/Security/Cryptography/X509Certificates/CertificateAuthority.cs#L797
+		private static X509Certificate2 BuildClientCertificate ()
+		{
+			DateTimeOffset start = DateTimeOffset.UtcNow;
+			DateTimeOffset end = start.AddMonths (3);
+
+			using RSA rootKey = RSA.Create (keySizeInBits: 2048);
+			using RSA clientKey = RSA.Create (keySizeInBits: 2048);
+
+			var rootReq = new CertificateRequest ("CN=Test Root, O=Test Root Organization", rootKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+			rootReq.CertificateExtensions.Add (new X509BasicConstraintsExtension (certificateAuthority: true, hasPathLengthConstraint: false, pathLengthConstraint: 0, critical: true));
+			rootReq.CertificateExtensions.Add (new X509SubjectKeyIdentifierExtension (rootReq.PublicKey, critical: false));
+			X509Certificate2 rootCert = rootReq.CreateSelfSigned (start.AddDays (-2), end.AddDays (2));
+
+			var clientReq = new CertificateRequest ("CN=Test End Entity, O=Test End Entity Organization", clientKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+			clientReq.CertificateExtensions.Add (new X509BasicConstraintsExtension (certificateAuthority: false, hasPathLengthConstraint: false, pathLengthConstraint: 0, critical: false));
+			clientReq.CertificateExtensions.Add (new X509KeyUsageExtension (X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment | X509KeyUsageFlags.DataEncipherment, critical: false));
+			clientReq.CertificateExtensions.Add (new X509EnhancedKeyUsageExtension (enhancedKeyUsages: new OidCollection { new Oid ("1.3.6.1.5.5.7.3.2", null) }, critical: false)); // TLS client EKU
+			clientReq.CertificateExtensions.Add (new X509SubjectKeyIdentifierExtension (clientReq.PublicKey, critical: false));
+
+			var serial = new byte [sizeof (long)];
+			RandomNumberGenerator.Fill (serial);
+
+			X509Certificate2 clientCert = clientReq.Create (rootCert, start, end, serial);
+
+			var tmp = clientCert;
+			clientCert = clientCert.CopyWithPrivateKey (clientKey);
+			tmp.Dispose ();
+
+			return clientCert;
 		}
 	}
 }

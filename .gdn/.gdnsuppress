@@ -57,6 +57,69 @@
       ],
       "justification": "Dummy test.keystore file used for testing.",
       "createdDate": "2024-02-21 20:58:02Z"
+    },
+    "ad733d624486984da63461d2a23f266714f76e1788c271d90d45687579f51099": {
+      "signature": "ad733d624486984da63461d2a23f266714f76e1788c271d90d45687579f51099",
+      "alternativeSignatures": [],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "release.keystore file created during test run.",
+      "createdDate": "2024-06-14 18:52:00Z"
+    },
+    "e10f89d02383ffef3bdbf9c048a9e0f3bdab956a8e6e49817780b0c837a5bd6d": {
+      "signature": "e10f89d02383ffef3bdbf9c048a9e0f3bdab956a8e6e49817780b0c837a5bd6d",
+      "alternativeSignatures": [],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "False positive in linker-dependencies.xml file.",
+      "createdDate": "2024-06-14 18:52:00Z"
+    },
+    "e73b15633b7cb1e9e735ce0fe78a6ce3c95c11a8888181eb3b0cb50c191da19e": {
+      "signature": "e73b15633b7cb1e9e735ce0fe78a6ce3c95c11a8888181eb3b0cb50c191da19e",
+      "alternativeSignatures": [],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "False positive in linker-dependencies.xml file.",
+      "createdDate": "2024-06-14 18:52:00Z"
+    },
+    "e622e6a9a73c1856d399e753105be517d62ec1e62d13a15ab9ecef43e15590a9": {
+      "signature": "e622e6a9a73c1856d399e753105be517d62ec1e62d13a15ab9ecef43e15590a9",
+      "alternativeSignatures": [],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "False positive in linker-dependencies.xml file.",
+      "createdDate": "2024-06-14 18:52:00Z"
+    },
+    "df428be5ce5ef90685e15981cf49e2af10de6d87544f437aa1722f84516d6fef": {
+      "signature": "df428be5ce5ef90685e15981cf49e2af10de6d87544f437aa1722f84516d6fef",
+      "alternativeSignatures": [],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "False positive in linker-dependencies.xml file.",
+      "createdDate": "2024-06-14 18:52:00Z"
+    },
+    "247325bc1f0ff6899ae09b13e006ac35c7cae4ffee0749f139fd5100f85a162f": {
+      "signature": "247325bc1f0ff6899ae09b13e006ac35c7cae4ffee0749f139fd5100f85a162f",
+      "alternativeSignatures": [],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "False positive in linker-dependencies.xml file.",
+      "createdDate": "2024-06-14 18:52:00Z"
+    },
+    "6d53f09942503c3f7eeccf23af43ae976431e8dbf2ad3d32be8af5bd37068d4d": {
+      "signature": "6d53f09942503c3f7eeccf23af43ae976431e8dbf2ad3d32be8af5bd37068d4d",
+      "alternativeSignatures": [],
+      "memberOf": [
+        "default"
+      ],
+      "justification": "False positive in linker-dependencies.xml file.",
+      "createdDate": "2024-06-14 18:52:00Z"
     }
   }
 }

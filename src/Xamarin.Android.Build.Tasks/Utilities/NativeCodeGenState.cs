@@ -30,6 +30,13 @@ class NativeCodeGenState
 	/// </summary>
 	public List<TypeDefinition> AllJavaTypes                   { get; }
 
+	/// <summary>
+	/// Contains information about p/invokes used by the managed assemblies included in the
+	/// application.  Will be **null** unless native runtime linking at application build time
+	/// is enabled.
+	/// </summary>
+	public List<PinvokeScanner.PinvokeEntryInfo>? PinvokeInfos { get; set; }
+
 	public List<TypeDefinition> JavaTypesForJCW                { get; }
 	public XAAssemblyResolver Resolver                         { get; }
 	public TypeDefinitionCache TypeCache                       { get; }

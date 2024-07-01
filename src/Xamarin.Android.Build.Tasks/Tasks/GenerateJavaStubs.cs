@@ -188,23 +188,23 @@ namespace Xamarin.Android.Tasks
 			var nativeCodeGenStates = new Dictionary<AndroidTargetArch, NativeCodeGenState> ();
 			bool generateJavaCode = true;
 			NativeCodeGenState? templateCodeGenState = null;
-			var scanner = new PinvokeScanner (Log);
+			PinvokeScanner? pinvokeScanner = EnableNativeRuntimeLinking ? new PinvokeScanner (Log) : null;
 
 			foreach (var kvp in allAssembliesPerArch) {
 				AndroidTargetArch arch = kvp.Key;
 				Dictionary<string, ITaskItem> archAssemblies = kvp.Value;
 				(bool success, NativeCodeGenState? state) = GenerateJavaSourcesAndMaybeClassifyMarshalMethods (arch, archAssemblies, MaybeGetArchAssemblies (userAssembliesPerArch, arch), useMarshalMethods, generateJavaCode);
 
-				if (!success) {
+				if (!success || state == null) {
 					return;
 				}
 
-				if (EnableNativeRuntimeLinking) {
-					(success, List<PinvokeScanner.PinvokeEntryInfo> pinfos) = ScanForUsedPinvokes (scanner, arch, state.Resolver);
+				if (pinvokeScanner != null) {
+					(success, List<PinvokeScanner.PinvokeEntryInfo> pinfos) = ScanForUsedPinvokes (pinvokeScanner, arch, state.Resolver);
 					if (!success) {
 						return;
 					}
-					BuildEngine4.RegisterTaskObjectAssemblyLocal (ProjectSpecificTaskObjectKey (PinvokeScanner.PinvokesInfoRegisterTaskKey), pinfos, RegisteredTaskObjectLifetime.Build);
+					state.PinvokeInfos = pinfos;
 				}
 
 				if (generateJavaCode) {

@@ -14,8 +14,6 @@ namespace Xamarin.Android.Tasks;
 
 class PinvokeScanner
 {
-	public const string PinvokesInfoRegisterTaskKey = ".:!PreservePinvokesTaskKey!:.";
-
 	public sealed class PinvokeEntryInfo
 	{
 		public readonly string LibraryName;

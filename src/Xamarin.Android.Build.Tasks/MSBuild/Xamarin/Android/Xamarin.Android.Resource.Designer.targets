@@ -101,6 +101,11 @@ Copyright (C) 2016 Xamarin. All rights reserved.
   <!-- Creates a Resource.designer.cs file in the Intermediate output path which derives from the
        Designer Assembly, for backward compatability.
    -->
+  <AndroidError Code="XA1038"
+      ResourceName="XA1038"
+      FormatArguments="AndroidResourceDesignerClassModifier;$(AndroidResourceDesignerClassModifier);public/private/internal"
+      Condition=" '$(AndroidResourceDesignerClassModifier)' != 'public' And '$(AndroidResourceDesignerClassModifier)' != 'private' And '$(AndroidResourceDesignerClassModifier)' != 'internal' "
+  />
   <GenerateResourceDesignerIntermediateClass
       IsApplication="$(AndroidApplication)"
       Namespace="$(AndroidResgenNamespace)"

@@ -1009,6 +1009,13 @@ To use a custom JDK path for a command line build, set the 'JavaSdkDirectory' MS
 {0} - The deprecated MSBuild property name
 {1} - The numeric version of .NET</comment>
   </data>
+  <data name="XA1038" xml:space="preserve">
+    <value>The '{0}' MSBuild property has an invalid value of '{1}''. Value values are '{2}'.</value>
+    <comment>The following are literal names and should not be translated: MSBuild.
+{0} - The MSBuild property name which has invalid values.
+{1} - The current value of the property
+{2} - The list of valid values.</comment>
+  </data>
   <data name="XA1039" xml:space="preserve">
     <value>The Android Support libraries are not supported in .NET 9 and later, please migrate to AndroidX. See https://aka.ms/net-android/androidx for more details.</value>
     <comment>The following are literal names and should not be translated: Android Support, AndroidX, .NET.</comment>

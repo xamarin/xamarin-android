@@ -120,7 +120,8 @@ extends:
             whoami
             curl -h
             sudo -h
-            find $ANDROID_SDK_ROOT
+            grep -c -w "vmx\|svm" /proc/cpuinfo
+            find /dev -name kvm
           displayName: Display Environment
         - script: |
             $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"

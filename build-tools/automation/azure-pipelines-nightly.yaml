@@ -335,7 +335,7 @@ stages:
       displayName: Run APIScan
       inputs:
         softwareFolder: $(Agent.TempDirectory)\T
-        symbolsFolder: 'SRV*http://symweb;$(Agent.TempDirectory)\T'
+        symbolsFolder: 'SRV*https://symweb.azurefd.net;$(Agent.TempDirectory)\T'
         softwareName: $(ApiScanSoftwareName)
         softwareVersionNum: $(ApiScanSoftwareVersion)
         isLargeApp: true

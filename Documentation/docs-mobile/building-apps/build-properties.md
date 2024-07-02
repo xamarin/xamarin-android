@@ -1079,6 +1079,15 @@ Specifies the name of the Resource
 file to generate. The default template sets this to
 `Resource.designer.cs`.
 
+## AndroidResourceDesignerClassModifier
+
+Specifies the class modifier for the intermediate `Resource` class which is
+generated. Valid values are `public`, `internal` and `private`.
+
+By default this will be `public`.
+
+Added in .NET 9.
+
 ## AndroidSdkBuildToolsVersion
 
 The Android SDK

@@ -44,10 +44,10 @@ namespace Xamarin.Android.Build.Tests
 					new Package { Id = "System.Text.Json", Version = "8.0.*" },
 				},
 				Sources = {
-					new BuildItem ("EmbeddedResource", "Foo.resx") {
-						TextContent = () => InlineData.ResxWithContents ("<data name=\"CancelButton\"><value>Cancel</value></data>")
+					new BuildItem ("EmbeddedResource", "Resource.resx") {
+						TextContent = () => InlineData.ResxWithContents ("<data name=\"CancelButton\"><value>Cancel</value></data>"),
 					},
-					new BuildItem ("EmbeddedResource", "Foo.es.resx") {
+					new BuildItem ("EmbeddedResource", "Resource.es.resx") {
 						TextContent = () => InlineData.ResxWithContents ("<data name=\"CancelButton\"><value>Cancelar</value></data>")
 					},
 					new AndroidItem.TransformFile ("Transforms.xml") {
@@ -61,7 +61,8 @@ namespace Xamarin.Android.Build.Tests
 					},
 				}
 			};
-			proj.MainActivity = proj.DefaultMainActivity.Replace (": Activity", ": AndroidX.AppCompat.App.AppCompatActivity");
+			proj.MainActivity = proj.DefaultMainActivity.Replace (": Activity", ": AndroidX.AppCompat.App.AppCompatActivity")
+				.Replace ("//${AFTER_ONCREATE}", @"button.Text = Resource.CancelButton;");
 			proj.SetProperty ("AndroidUseAssemblyStore", usesAssemblyStore.ToString ());
 			proj.SetProperty ("RunAOTCompilation", aot.ToString ());
 			proj.OtherBuildItems.Add (new AndroidItem.InputJar ("javaclasses.jar") {
@@ -70,6 +71,21 @@ namespace Xamarin.Android.Build.Tests
 			proj.OtherBuildItems.Add (new BuildItem ("JavaSourceJar", "javaclasses-sources.jar") {
 				BinaryContent = () => ResourceData.JavaSourceJarTestSourcesJar,
 			});
+			proj.OtherBuildItems.Add (new BuildItem ("EmbeddedResource", default (Func<string>)) {
+						Update = () =>  "Resource.resx",
+						TextContent = () => InlineData.ResxWithContents ("<data name=\"CancelButton\"><value>Cancel</value></data>"),
+						Metadata = {
+							{ "Generator", "ResXFileCodeGenerator" },
+							{ "LastGenOutput", "Resource.designer.cs" }
+						},
+			});
+			proj.OtherBuildItems.Add (new BuildItem ("Compile", default (Func<string>)) {
+						TextContent = () => InlineData.DesignerWithContents (proj.ProjectName, "Resource", "public partial", new string[] {"CancelButton"}),
+						Update = () =>  "Resource.designer.cs",
+						Metadata = {
+							{ "DependentUpon", "Resource.resx" },
+						},
+					});
 			proj.AndroidJavaSources.Add (new AndroidItem.AndroidJavaSource ("JavaSourceTestExtension.java") {
 				Encoding = Encoding.ASCII,
 				TextContent = () => ResourceData.JavaSourceTestExtension,

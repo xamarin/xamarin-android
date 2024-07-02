@@ -37,7 +37,7 @@ namespace @projectName@
 	[System.CodeDom.Compiler.GeneratedCodeAttribute(""System.Resources.Tools.StronglyTypedResourceBuilder"", ""4.0.0.0"")]
 	[System.Diagnostics.DebuggerNonUserCodeAttribute()]
 	[System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-	internal class @className@ {
+	@modifier@ class @className@ {
 
 		private static System.Resources.ResourceManager resourceMan;
 
@@ -87,7 +87,7 @@ namespace @projectName@
 			}
 		}
 
-		public static string DesignerWithContents (string projectName, string className, string[] dataNames)
+		public static string DesignerWithContents (string projectName, string className, string modifier, string[] dataNames)
 		{
 			var content = new StringBuilder ();
 			foreach (string data in dataNames) {
@@ -97,7 +97,8 @@ namespace @projectName@
 			}}
 		}}" + Environment.NewLine, data);
 			}
-			return Designer.Replace ("@className@", className)
+			return Designer.Replace ("@modifier@", modifier)
+				.Replace ("@className@", className)
 				.Replace ("@projectName@", projectName)
 				.Replace ("@content@", content.ToString ());
 		}
@@ -105,7 +106,7 @@ namespace @projectName@
 		public static void AddCultureResourceDesignerToProject (IShortFormProject proj, string projectName, string className, params string[] dataNames)
 		{
 			proj.OtherBuildItems.Add (new BuildItem.Source ($"{className}.Designer.cs") {
-				TextContent = () => InlineData.DesignerWithContents (projectName, className, dataNames)
+				TextContent = () => InlineData.DesignerWithContents (projectName, className, "internal", dataNames)
 			});
 		}
 	}

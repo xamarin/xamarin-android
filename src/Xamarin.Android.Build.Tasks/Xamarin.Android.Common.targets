@@ -558,7 +558,7 @@ Copyright (C) 2011-2012 Xamarin. All rights reserved.
 	<ItemGroup>
 		<CorrectCasedItem Include="%(Compile.Identity)" Condition=" '$(AndroidUseIntermediateDesignerFile)' == 'true' And '$(AndroidResgenFile)' != '' And '%(Compile.Identity)' == '$(AndroidResgenFile)'"/>
 		<!-- Forcably Remove the old Resource.designer.cs even if the AndroidResgenFile is not set.-->
-		<CorrectCasedItem Include="%(Compile.Identity)" Condition=" '$(AndroidUseDesignerAssembly)' == 'True' And '%(Compile.Filename)%(Compile.Extension)' == '$(_AndroidResourceDesigner)' "/>
+		<CorrectCasedItem Include="%(Compile.Identity)" Condition=" '$(AndroidUseDesignerAssembly)' == 'True' And '%(Compile.Filename)%(Compile.Extension)' == '$(_AndroidResourceDesigner)' And '%(Compile.DependentUpon)' == '' "/>
 		<Compile Remove="@(CorrectCasedItem)" />
 		<Compile Include="$(_AndroidResourceDesignerFile)" Condition=" '$(AndroidUseIntermediateDesignerFile)' == 'true' And '$(AndroidUseDesignerAssembly)' != 'true' " />
 	</ItemGroup>

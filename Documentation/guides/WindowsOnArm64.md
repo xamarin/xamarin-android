@@ -39,8 +39,7 @@ This downloads the latest files in `C:\Program Files\dotnet\sdk-manifests`.
 
 The Mono workloads from dotnet/runtime need a small fix.
 
-Open `C:\Program Files\dotnet\sdk-manifests\7.0.100\microsoft.net.workload.mono.toolchain\WorkloadManifest.json`
-in your favorite text editor.
+Open each `WorkloadManifest.json` under the folder tree `C:\Program Files\dotnet\sdk-manifests` in your favorite text editor and make the following changes:
 
 Do a `Find/Replace` for:
 

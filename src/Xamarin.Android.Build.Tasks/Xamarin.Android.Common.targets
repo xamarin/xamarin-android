@@ -1445,7 +1445,7 @@ because xbuild doesn't support framework reference assemblies.
 <Target Name="_GenerateJavaStubs"
     DependsOnTargets="$(_GenerateJavaStubsDependsOnTargets);$(BeforeGenerateAndroidManifest)"
     Inputs="@(_AndroidMSBuildAllProjects);@(_ResolvedUserMonoAndroidAssemblies);$(_AndroidManifestAbs);$(_AndroidBuildPropertiesCache);@(AndroidEnvironment);@(LibraryEnvironments)"
-    Outputs="$(_AndroidStampDirectory)_GenerateJavaStubs.stamp">
+    Outputs="$(_AndroidStampDirectory)_GenerateJavaStubs.stamp;@(_TypeMapAssemblySource)">
 
   <PropertyGroup>
     <_ManifestOutput Condition=" '$(AndroidManifestMerger)' == 'legacy' ">$(IntermediateOutputPath)android\AndroidManifest.xml</_ManifestOutput>
@@ -1509,6 +1509,7 @@ because xbuild doesn't support framework reference assemblies.
     <FileWrites Include="$(_ManifestOutput)" />
   </ItemGroup>
 
+  <Touch Files="@(_TypeMapAssemblySource)" />
   <Touch Files="$(_AndroidStampDirectory)_GenerateJavaStubs.stamp" AlwaysCreate="True" />
 </Target>
 

@@ -215,9 +215,13 @@ extends:
             continueOnError: true
         - script: |
             $ANDROID_HOME/platform-tools/adb devices
-        #    $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot.png
-        #    $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot1.png
           displayName: Capture Output
+        - script: |
+            $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot.png
+          displayName: Capture Screenshot
+        - script: |
+            $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot1.png
+          displayName: copy screen shot
         - script: |
             waydroid session stop
             sudo waydroid container stop
@@ -227,7 +231,7 @@ extends:
             displayName: upload container tests
             artifactName: Test Results - Container
             targetPath: $(Build.StagingDirectory)
-            condition: or(ne(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['XA.PublishAllLogs'], 'true'))
+            #condition: or(ne(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['XA.PublishAllLogs'], 'true'))
 
     - stage: smoke_tests
       displayName: Package Tests

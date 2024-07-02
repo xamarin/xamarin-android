@@ -56,6 +56,14 @@ namespace Java.InteropTests {
 			}
 		}
 
+		[Test]
+		public void JavaAs ()
+		{
+			using var v     = new Java.InteropTests.MyJavaInterfaceImpl ();
+			using var c     = v.JavaAs<Java.Lang.ICloneable>();
+			Assert.IsNotNull (c);
+		}
+
 		static Java.Lang.Object CreateObject ()
 		{
 			var ctor    = JNIEnv.GetMethodID (Java.Lang.Class.Object, "<init>", "()V");

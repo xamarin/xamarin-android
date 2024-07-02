@@ -13,7 +13,7 @@
 [submodule "external/Java.Interop"]
     path = external/Java.Interop
     url = https://github.com/dotnet/java-interop
-    branch = main
+    branch = dev/jonp/jonp-add-JavaAs
 [submodule "external/libunwind"]
     path = external/libunwind
     url = https://github.com/libunwind/libunwind.git

@@ -47,6 +47,7 @@ namespace Xamarin.Android.Prepare
 			//
 			//  https://dl-ssl.google.com/android/repository/sys-img/android/sys-img2-1.xml
 			//  https://dl-ssl.google.com/android/repository/sys-img/google_apis/sys-img2-1.xml
+			//  https://dl-ssl.google.com/android/repository/sys-img/aosp_atd/sys-img2-1.xml
 			//    * system images
 			//
 			Components = new List<AndroidToolchainComponent> {
@@ -95,6 +96,12 @@ namespace Xamarin.Android.Prepare
 					destDir: Path.Combine ("system-images", "android-29", "default", systemImageArch),
 					relativeUrl: new Uri ("sys-img/android/", UriKind.Relative),
 					pkgRevision: "8",
+					dependencyType: AndroidToolchainComponentType.EmulatorDependency
+				),
+				new AndroidToolchainComponent (isArm64Apple ? $"{systemImageArch}-33_r02" : $"{systemImageArch}-33_r02",
+					destDir: Path.Combine ("system-images", "android-33", "aosp_atd", systemImageArch),
+					relativeUrl: new Uri ("sys-img/aosp_atd/", UriKind.Relative),
+					pkgRevision: "2",
 					dependencyType: AndroidToolchainComponentType.EmulatorDependency
 				),
 				new AndroidToolchainComponent ($"android-ndk-r{AndroidNdkVersion}-{osTag}",

@@ -103,6 +103,136 @@ extends:
 
     - template: /build-tools/automation/yaml-templates/build-linux.yaml@self
 
+    - stage: TestContainer
+      displayName: Test Container
+      jobs:
+      - job: Test
+        pool:
+          name: MAUI-1ESPT
+          image: $(LinuxPoolImage1ESPT)
+          os: linux
+        timeoutInMinutes: 180
+        workspace:
+          clean: all
+        steps:
+        - script: |
+            printenv
+            whoami
+            curl -h
+            sudo -h
+            grep -c -w "vmx\|svm" /proc/cpuinfo
+            find /dev -name kvm
+          displayName: Display Environment
+        - script: |
+            $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "platform-tools"
+          displayName: Install platfom-tools
+        - template: /build-tools/automation/yaml-templates/setup-test-environment.yaml@self
+
+        - script: |
+            sudo apt-get install curl ca-certificates -y
+            curl https://repo.waydro.id | sudo bash
+            sudo apt-get install waydroid -y
+          displayName: Install WayDroid
+        - script: |
+            sudo apt install linux-generic -y 
+            sudo apt install --reinstall linux-image-$(uname -r) -y
+            sudo apt install --reinstall linux-modules-$(uname -r) -y
+            sudo apt install --reinstall linux-modules-extra-$(uname -r) -y
+            sudo apt install -y dbus-x11
+            sudo apt install weston
+            sudo apt install xvfb
+          displayName: Install Kernel Stuff
+        - script: |
+            export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            mkdir "${XDG_RUNTIME_DIR}"
+            chmod 0700 "${XDG_RUNTIME_DIR}"
+            sudo waydroid init -f
+          displayName: waydroid init -f
+        - script: |
+            export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            sudo waydroid init
+          displayName: waydroid init
+        - script: |
+            export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            xvfb-run weston -B headless-backend.so --width=1024 --height=768 --xwayland &
+            sleep 10
+          displayName: Start Weston
+        - script: |
+            export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            sudo waydroid container start &
+            sleep 10
+          displayName: Start Container
+        - script: |
+            export $(dbus-launch)
+            export XDG_RUNTIME_DIR=/tmp/${UID}-runtime-dir
+            waydroid session start &
+            sleep 10
+          displayName: Start waydroid
+        - bash: |
+            ipAddress=$(sudo waydroid shell ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+            done=0
+            while [ -z "$ipAddress" ]; do
+                if [ $done == '180' ]; then
+                  break
+                fi
+                echo "Waiting for waydroid to start"
+                sleep 1
+                ipAddress=$(sudo waydroid shell ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1)
+                ((done++))
+            done
+            echo "Waydroid started with ip address: $ipAddress"
+            $ANDROID_HOME/platform-tools/adb connect $ipAddress:5555
+          displayName: Wait for waydroid
+        - script: |
+            $ANDROID_HOME/platform-tools/adb devices
+        #    $ANDROID_HOME/platform-tools/adb shell getprop
+        #    $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot.png
+        #    $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot.png
+        #    $ANDROID_HOME/platform-tools/adb exec-out uiautomator dump /dev/tty > $(Build.StagingDirectory)/ui.xml
+          displayName: Logging
+        #- script: |
+        #    $ANDROID_HOME/platform-tools/adb shell settings put global development_settings_enabled 1
+        #  displayName: adb developer mode
+        - template: /build-tools/automation/yaml-templates/run-dotnet-preview.yaml@self
+          parameters:
+            project: samples/HelloWorld/HelloWorld/HelloWorld.DotNet.csproj
+            arguments: >-
+              -t:Install -c Release -tl:off -v:diag
+              -p:DotNetPreviewTool=$(System.DefaultWorkingDirectory)/bin/$(XA.Build.Configuration)/dotnet/dotnet
+            displayName: Test Install
+            continueOnError: true
+        - template: /build-tools/automation/yaml-templates/run-dotnet-preview.yaml@self
+          parameters:
+            project: samples/HelloWorld/HelloWorld/HelloWorld.DotNet.csproj
+            arguments: >-
+              -t:Run -c Release -tl:off -v:diag
+              -p:DotNetPreviewTool=$(System.DefaultWorkingDirectory)/bin/$(XA.Build.Configuration)/dotnet/dotnet
+            displayName: Test Run
+            continueOnError: true
+        - script: |
+            $ANDROID_HOME/platform-tools/adb devices
+          displayName: Capture Output
+        - script: |
+            $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot.png
+          displayName: Capture Screenshot
+        - script: |
+            $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot1.png
+          displayName: copy screen shot
+        - script: |
+            waydroid session stop
+            sudo waydroid container stop
+          displayName: Stop WayDroid
+        - template: /build-tools/automation/yaml-templates/publish-artifact.yaml@self
+          parameters:
+            displayName: upload container tests
+            artifactName: Test Results - Container
+            targetPath: $(Build.StagingDirectory)
+            #condition: or(ne(variables['Agent.JobStatus'], 'Succeeded'), eq(variables['XA.PublishAllLogs'], 'true'))
+
     - stage: smoke_tests
       displayName: Package Tests
       dependsOn: mac_build

@@ -104,15 +104,15 @@ stages:
         Android30-x86_64:
           avdApiLevel: 30
           avdAbi: x86_64
-          avdType: default
+          avdType: aosp_atd
         Android31-x86_64:
           avdApiLevel: 31
           avdAbi: x86_64
-          avdType: default
+          avdType: aosp_atd
         Android33-x86_64:
           avdApiLevel: 33
           avdAbi: x86_64
-          avdType: google_apis
+          avdType: aosp_atd
     pool:
       vmImage: $(HostedMacImage)
     workspace:

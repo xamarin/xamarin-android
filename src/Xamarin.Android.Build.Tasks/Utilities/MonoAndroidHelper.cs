@@ -713,7 +713,6 @@ namespace Xamarin.Android.Tasks
 			}
 		}
 
-		public static uint ZipAlignmentToMask (int alignment) => ZipAlignmentToMaskOrPageSize (alignment, needMask: true);
 		public static uint ZipAlignmentToPageSize (int alignment) => ZipAlignmentToMaskOrPageSize (alignment, needMask: false);
 
 		static uint ZipAlignmentToMaskOrPageSize (int alignment, bool needMask)

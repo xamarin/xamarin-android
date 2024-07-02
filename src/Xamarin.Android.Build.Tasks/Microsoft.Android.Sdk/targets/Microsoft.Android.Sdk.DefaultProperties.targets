@@ -48,12 +48,11 @@
 
     <!--
         Android package (apt/aab) alignment, expressed as the page size in kilobytes.  Two values are supported: 4 and 16.
-        Sometime next year the default value should be changed to 16 since it's going to be a Google Play store requirement for
-        application submissions.
+        Sometime next year 16 is going to be a Google Play store requirement for application submissions.
 
         When changing this default, change the value of `DefaultZipAlignment` in `src/Xamarin.Android.Build.Tasks/Tasks/AndroidZipAlign.cs` as well
     -->
-    <_AndroidZipAlignment Condition=" '$(_AndroidZipAlignment)' == '' ">4</_AndroidZipAlignment>
+    <AndroidZipAlignment Condition=" '$(AndroidZipAlignment)' == '' ">16</AndroidZipAlignment>
   </PropertyGroup>
 
   <!--  User-facing configuration-specific defaults -->

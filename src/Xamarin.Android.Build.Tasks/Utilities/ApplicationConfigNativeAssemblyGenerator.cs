@@ -183,7 +183,6 @@ namespace Xamarin.Android.Tasks
 		public int JNIEnvRegisterJniNativesToken { get; set; }
 		public int JniRemappingReplacementTypeCount { get; set; }
 		public int JniRemappingReplacementMethodIndexEntryCount { get; set; }
-		public uint ZipAlignmentMask { get; set; }
 		public MonoComponent MonoComponents { get; set; }
 		public PackageNamingPolicy PackageNamingPolicy { get; set; }
 		public List<ITaskItem> NativeLibraries { get; set; }
@@ -245,7 +244,6 @@ namespace Xamarin.Android.Tasks
 				jnienv_registerjninatives_method_token = (uint)JNIEnvRegisterJniNativesToken,
 				jni_remapping_replacement_type_count = (uint)JniRemappingReplacementTypeCount,
 				jni_remapping_replacement_method_index_entry_count = (uint)JniRemappingReplacementMethodIndexEntryCount,
-				zip_alignment_mask = ZipAlignmentMask,
 				mono_components_mask = (uint)MonoComponents,
 				android_package_name = AndroidPackageName,
 			};

@@ -253,7 +253,6 @@ struct ApplicationConfig
 	uint32_t jnienv_registerjninatives_method_token;
 	uint32_t jni_remapping_replacement_type_count;
 	uint32_t jni_remapping_replacement_method_index_entry_count;
-	uint32_t zip_alignment_mask; // 3, for 4-byte alignment (4k memory pages); 15, for 16-byte alignment (16k memory pages)
 	MonoComponent mono_components_mask;
 	const char *android_package_name;
 };

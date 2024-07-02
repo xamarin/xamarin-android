@@ -59,10 +59,10 @@ EmbeddedAssemblies::zip_load_entry_common (size_t entry_index, std::vector<uint8
 		}
 	}
 
-	// assemblies must be 4-byte aligned, or Bad Things happen
-	if ((state.data_offset & application_config.zip_alignment_mask) != 0) {
+	// assemblies must be 16-byte or 4-byte aligned, or Bad Things happen
+	if (((state.data_offset & 0xf) != 0) || ((state.data_offset & 0x3) != 0)) {
 		log_fatal (LOG_ASSEMBLY, "Assembly '%s' is located at bad offset %lu within the .apk", entry_name.get (), state.data_offset);
-		log_fatal (LOG_ASSEMBLY, "You MUST run `zipalign` on %s to align it on %u bytes ", strrchr (state.file_name, '/') + 1, application_config.zip_alignment_mask + 1);
+		log_fatal (LOG_ASSEMBLY, "You MUST run `zipalign` on %s to align it on 4 or 16 bytes ", strrchr (state.file_name, '/') + 1);
 		Helpers::abort_application ();
 	}
 

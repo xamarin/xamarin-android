@@ -55,9 +55,6 @@ namespace Xamarin.Android.Tasks
 		public uint   jni_remapping_replacement_type_count;
 		public uint   jni_remapping_replacement_method_index_entry_count;
 
-		// 3, for 4-byte alignment (4k memory pages); 15, for 16-byte alignment (16k memory pages)
-		public uint   zip_alignment_mask;
-
 		[NativeAssembler (NumberFormat = LLVMIR.LlvmIrVariableNumberFormat.Hexadecimal)]
 		public uint   mono_components_mask;
 		public string android_package_name = String.Empty;

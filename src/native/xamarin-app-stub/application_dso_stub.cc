@@ -66,7 +66,6 @@ const ApplicationConfig application_config = {
 	.jnienv_registerjninatives_method_token = 3,
 	.jni_remapping_replacement_type_count = 2,
 	.jni_remapping_replacement_method_index_entry_count = 2,
-	.zip_alignment_mask = 3,
 	.mono_components_mask = MonoComponent::None,
 	.android_package_name = android_package_name,
 };

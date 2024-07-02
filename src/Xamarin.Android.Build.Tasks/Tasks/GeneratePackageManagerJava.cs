@@ -80,7 +80,6 @@ namespace Xamarin.Android.Tasks
 		public string AndroidSequencePointsMode { get; set; }
 		public bool EnableSGenConcurrent { get; set; }
 		public string? CustomBundleConfigFile { get; set; }
-		public int ZipAlignmentPages { get; set; } = AndroidZipAlign.DefaultZipAlignment;
 
 		[Output]
 		public string BuildId { get; set; }
@@ -335,7 +334,6 @@ namespace Xamarin.Android.Tasks
 
 			bool haveRuntimeConfigBlob = !String.IsNullOrEmpty (RuntimeConfigBinFilePath) && File.Exists (RuntimeConfigBinFilePath);
 			var jniRemappingNativeCodeInfo = BuildEngine4.GetRegisteredTaskObjectAssemblyLocal<GenerateJniRemappingNativeCode.JniRemappingNativeCodeInfo> (ProjectSpecificTaskObjectKey (GenerateJniRemappingNativeCode.JniRemappingNativeCodeInfoKey), RegisteredTaskObjectLifetime.Build);
-			uint zipAlignmentMask = MonoAndroidHelper.ZipAlignmentToMask (ZipAlignmentPages);
 			var appConfigAsmGen = new ApplicationConfigNativeAssemblyGenerator (environmentVariables, systemProperties, Log) {
 				UsesMonoAOT = usesMonoAOT,
 				UsesMonoLLVM = EnableLLVM,
@@ -359,7 +357,6 @@ namespace Xamarin.Android.Tasks
 				JNIEnvRegisterJniNativesToken = jnienv_registerjninatives_method_token,
 				JniRemappingReplacementTypeCount = jniRemappingNativeCodeInfo == null ? 0 : jniRemappingNativeCodeInfo.ReplacementTypeCount,
 				JniRemappingReplacementMethodIndexEntryCount = jniRemappingNativeCodeInfo == null ? 0 : jniRemappingNativeCodeInfo.ReplacementMethodIndexEntryCount,
-				ZipAlignmentMask = zipAlignmentMask,
 				MarshalMethodsEnabled = EnableMarshalMethods,
 				IgnoreSplitConfigs = ShouldIgnoreSplitConfigs (),
 			};

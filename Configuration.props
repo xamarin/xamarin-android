@@ -125,7 +125,7 @@
     <XABuildToolsFolder Condition="'$(XABuildToolsFolder)' == ''">34.0.0</XABuildToolsFolder>
     <XAPlatformToolsPackagePrefix Condition=" '$(HostOS)' == 'Darwin' "></XAPlatformToolsPackagePrefix>
     <XAPlatformToolsVersion>34.0.5</XAPlatformToolsVersion>
-    <XABundleToolVersion Condition="'$(XABundleToolVersion)' == ''">1.15.1</XABundleToolVersion>
+    <XABundleToolVersion Condition="'$(XABundleToolVersion)' == ''">1.17.0</XABundleToolVersion>
     <XAPackagesDir Condition=" '$(XAPackagesDir)' == '' And '$(NUGET_PACKAGES)' != ''">$(NUGET_PACKAGES)</XAPackagesDir>
     <XAPackagesDir Condition=" '$(XAPackagesDir)' == '' And '$(HostOS)' == 'Windows'">$(userprofile)\.nuget\packages</XAPackagesDir>
     <XAPackagesDir Condition=" '$(XAPackagesDir)' == '' And '$(HostOS)' != 'Windows'">$(HOME)/.nuget/packages</XAPackagesDir>

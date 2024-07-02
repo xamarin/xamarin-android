@@ -194,9 +194,9 @@ extends:
             $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot.png $(Build.StagingDirectory)/screenshot.png
             $ANDROID_HOME/platform-tools/adb exec-out uiautomator dump /dev/tty > $(Build.StagingDirectory)/ui.xml
           displayName: Logging
-        - script: |
-            $ANDROID_HOME/platform-tools/adb shell settings put global development_settings_enabled 1
-          displayName: adb developer mode
+        #- script: |
+        #    $ANDROID_HOME/platform-tools/adb shell settings put global development_settings_enabled 1
+        #  displayName: adb developer mode
         - template: /build-tools/automation/yaml-templates/run-dotnet-preview.yaml@self
           parameters:
             project: samples/HelloWorld/HelloWorld/HelloWorld.DotNet.csproj
@@ -214,6 +214,7 @@ extends:
             displayName: Test Run
             continueOnError: true
         - script: |
+            $ANDROID_HOME/platform-tools/adb devices
             $ANDROID_HOME/platform-tools/adb shell screencap /data/local/tmp/screenshot1.png
             $ANDROID_HOME/platform-tools/adb pull /data/local/tmp/screenshot1.png $(Build.StagingDirectory)/screenshot1.png
           displayName: Capture Output

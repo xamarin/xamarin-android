@@ -77,7 +77,7 @@ using namespace microsoft::java_interop;
 using namespace xamarin::android;
 using namespace xamarin::android::internal;
 
-std::mutex MonodroidRuntime::pinvoke_map_write_lock;
+xamarin::android::mutex MonodroidRuntime::pinvoke_map_write_lock;
 
 MonoCoreRuntimeProperties MonodroidRuntime::monovm_core_properties = {
 	.trusted_platform_assemblies = nullptr,
@@ -86,7 +86,7 @@ MonoCoreRuntimeProperties MonodroidRuntime::monovm_core_properties = {
 	.pinvoke_override = &MonodroidRuntime::monodroid_pinvoke_override
 };
 
-std::mutex MonodroidRuntime::dso_handle_write_lock;
+xamarin::android::mutex MonodroidRuntime::dso_handle_write_lock;
 bool MonodroidRuntime::startup_in_progress = true;
 
 void

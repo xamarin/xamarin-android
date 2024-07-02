@@ -18,6 +18,7 @@
             "cacheVariables": {
                 "ANDROID_NDK": "@AndroidNdkDirectory@",
                 "ANDROID_TOOLCHAIN": "clang",
+                "ANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES": "ON",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "CMAKE_MAKE_PROGRAM": "@NinjaPath@",
                 "OUTPUT_PATH": "@OutputPath@",

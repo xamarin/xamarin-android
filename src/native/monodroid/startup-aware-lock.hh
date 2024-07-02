@@ -8,7 +8,7 @@ namespace xamarin::android::internal
 	class StartupAwareLock final
 	{
 	public:
-		explicit StartupAwareLock (std::mutex &m)
+		explicit StartupAwareLock (xamarin::android::mutex &m)
 			: lock (m)
 		{
 			if (MonodroidRuntime::is_startup_in_progress ()) {
@@ -34,7 +34,7 @@ namespace xamarin::android::internal
 		StartupAwareLock& operator= (StartupAwareLock const&) = delete;
 
 	private:
-		std::mutex& lock;
+		xamarin::android::mutex& lock;
 	};
 }
 #endif

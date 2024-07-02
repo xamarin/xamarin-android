@@ -91,10 +91,10 @@ namespace Xamarin.Android.Prepare
 					dependencyType: AndroidToolchainComponentType.BuildDependency,
 					buildToolVersion: "47.0.0"
 				),
-				new AndroidToolchainComponent (isArm64Apple ? $"{systemImageArch}-29_r08" : $"{systemImageArch}-29_r08-{osTag}",
-					destDir: Path.Combine ("system-images", "android-29", "default", systemImageArch),
+				new AndroidToolchainComponent ($"{systemImageArch}-34_r04",
+					destDir: Path.Combine ("system-images", "android-34", "default", systemImageArch),
 					relativeUrl: new Uri ("sys-img/android/", UriKind.Relative),
-					pkgRevision: "8",
+					pkgRevision: "4",
 					dependencyType: AndroidToolchainComponentType.EmulatorDependency
 				),
 				new AndroidToolchainComponent ($"android-ndk-r{AndroidNdkVersion}-{osTag}",

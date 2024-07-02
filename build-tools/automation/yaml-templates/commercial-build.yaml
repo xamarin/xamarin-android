@@ -49,6 +49,10 @@ steps:
     workingDirectory: ${{ parameters.xaSourcePath }}
     displayName: delete legacy xamarin-android submodule
 
+  - script: rm -rf /Users/builder/android-toolchain/sdk/platforms/android-35
+    workingDirectory: ${{ parameters.xaSourcePath }}
+    displayName: delete API-35 DP1
+
   - script: make prepare-external-git-dependencies PREPARE_CI=1 CONFIGURATION=$(XA.Build.Configuration)
     workingDirectory: ${{ parameters.xaSourcePath }}
     displayName: make prepare-external-git-dependencies

@@ -32,7 +32,7 @@ namespace Xamarin.Android.Tools.BootstrapTasks
 			{ "v12.1", "v12.0" },
 			{ "v13.0", "v12.1" },
 			{ "v14.0", "v13.0" },
-			{ "v14.0.99", "v14.0" },
+			{ "v15.0", "v14.0" },
 		};
 
 		static readonly string assemblyToValidate = "Mono.Android.dll";
@@ -70,7 +70,6 @@ namespace Xamarin.Android.Tools.BootstrapTasks
 		public override bool Execute ()
 		{
 			Log.LogMessage (MessageImportance.High, $"CheckApiCompatibility for ApiLevel: {ApiLevel}");
-			Log.LogWarning ($"# jonp: TargetFramework={TargetFramework}");
 
 			// Check to see if Api has a previous Api defined.
 			if (!api_versions.TryGetValue (ApiLevel, out string previousApiLevel)) {

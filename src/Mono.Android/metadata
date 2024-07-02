@@ -1893,6 +1893,7 @@
   <attr api-since="35" path="/api/package[@name='android.adservices.ondevicepersonalization']" name="managedName">Android.AdServices.OnDevicePersonalization</attr>
   <attr api-since="35" path="/api/package[@name='android.adservices.signals']" name="managedName">Android.AdServices.Signals</attr>
   <attr api-since="35" path="/api/package[@name='java.util.random']" name="managedName">Java.Util.RandomGenerators</attr>
+  <attr api-since="35" path="/api/package[@name='android.service.persistentdata']" name="managedName">Android.Service.PersistentData</attr>
 
   <!-- API-35 adds new java.util.Sequenced[Collection|Map] interfaces that existing interfaces/classes now implement. -->
   <!-- Fix covariant return types for new 'reversed ()' method. -->	
@@ -1952,6 +1953,11 @@
   <attr api-since="35" path="/api/package[@name='android.util']/class[@name='Config']/field[@name='DEBUG']" name="value"></attr>
   <attr api-since="35" path="/api/package[@name='android.util']/class[@name='Config']/field[@name='RELEASE']" name="value"></attr>
 	
+  <!-- Enumify the new constructor, but we cannot change the existing constructor, normal enum method can't disambiguate. -->	
+  <attr api-since="35" path="/api/package[@name='android.hardware.camera2.params']/class[@name='SessionConfiguration']/constructor[@name='SessionConfiguration' and count(parameter)=2 and parameter[1][@type='int'] and parameter[2][@type='java.util.List&lt;android.hardware.camera2.params.OutputConfiguration&gt;']]/parameter[0]" name="enumType">Android.Hardware.Camera2.Params.SessionType</attr>
+  <attr api-since="35" path="/api/package[@name='android.service.notification']/class[@name='Condition']/constructor[@name='Condition' and count(parameter)=4 and parameter[1][@type='android.net.Uri'] and parameter[2][@type='java.lang.String'] and parameter[3][@type='int'] and parameter[4][@type='int']]/parameter[4]" name="enumType">Android.Service.Notification.ConditionSource</attr>
+  <attr api-since="35" path="/api/package[@name='android.service.notification']/class[@name='Condition']/constructor[@name='Condition' and count(parameter)=8 and parameter[1][@type='android.net.Uri'] and parameter[2][@type='java.lang.String'] and parameter[3][@type='java.lang.String'] and parameter[4][@type='java.lang.String'] and parameter[5][@type='int'] and parameter[6][@type='int'] and parameter[7][@type='int'] and parameter[8][@type='int']]/parameter[7]" name="enumType">Android.Service.Notification.ConditionSource</attr>
+
   <!--
     ***********************************************************************
     THE FOLLOWING LINES MUST BE CREATED FOR ANY NEW PLATFORM THAT IS ADDED.

@@ -35,7 +35,7 @@
          * Major/Minor match Android stable API level, such as 30.0 for API 30.
          * Bump first digit of the patch version for feature releases (and reset the first two digits to 0)
     -->
-    <AndroidPackVersion>34.99.0</AndroidPackVersion>
+    <AndroidPackVersion>35.0.0</AndroidPackVersion>
     <AndroidPackVersionSuffix>preview.7</AndroidPackVersionSuffix>
   </PropertyGroup>
 

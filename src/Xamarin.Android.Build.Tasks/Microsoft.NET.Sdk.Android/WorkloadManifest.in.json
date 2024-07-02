@@ -6,11 +6,11 @@
       "packs": [
         "Microsoft.Android.Sdk.net9",
         "Microsoft.Android.Sdk.net8",
-        "Microsoft.Android.Ref.34",
-        "Microsoft.Android.Runtime.34.android-arm",
-        "Microsoft.Android.Runtime.34.android-arm64",
-        "Microsoft.Android.Runtime.34.android-x86",
-        "Microsoft.Android.Runtime.34.android-x64",
+        "Microsoft.Android.Ref.35",
+        "Microsoft.Android.Runtime.35.android-arm",
+        "Microsoft.Android.Runtime.35.android-arm64",
+        "Microsoft.Android.Runtime.35.android-x86",
+        "Microsoft.Android.Runtime.35.android-x64",
         "Microsoft.Android.Templates"
       ],
       "platforms": [ "win-x64", "win-arm64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64" ],
@@ -20,18 +20,6 @@
         "microsoft-net-runtime-android",
         "microsoft-net-runtime-android-aot"
       ]
-    },
-    "android-35": {
-      "description": "Preview support for Android API-35.",
-      "packs": [
-        "Microsoft.Android.Ref.35",
-        "Microsoft.Android.Runtime.35.android-arm",
-        "Microsoft.Android.Runtime.35.android-arm64",
-        "Microsoft.Android.Runtime.35.android-x86",
-        "Microsoft.Android.Runtime.35.android-x64"
-      ],
-      "platforms": [ "win-x64", "win-arm64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64" ],
-      "extends" : [ "android" ]
     }
   },
   "packs": {
@@ -60,26 +48,6 @@
         "linux-x64": "Microsoft.Android.Sdk.Linux",
         "linux-arm64": "Microsoft.Android.Sdk.Linux"
       }
-    },
-    "Microsoft.Android.Ref.34": {
-      "kind": "framework",
-      "version": "@WORKLOAD_VERSION@"
-    },
-    "Microsoft.Android.Runtime.34.android-arm": {
-      "kind": "framework",
-      "version": "@WORKLOAD_VERSION@"
-    },
-    "Microsoft.Android.Runtime.34.android-arm64": {
-      "kind": "framework",
-      "version": "@WORKLOAD_VERSION@"
-    },
-    "Microsoft.Android.Runtime.34.android-x86": {
-      "kind": "framework",
-      "version": "@WORKLOAD_VERSION@"
-    },
-    "Microsoft.Android.Runtime.34.android-x64": {
-      "kind": "framework",
-      "version": "@WORKLOAD_VERSION@"
     },
     "Microsoft.Android.Ref.35": {
       "kind": "framework",

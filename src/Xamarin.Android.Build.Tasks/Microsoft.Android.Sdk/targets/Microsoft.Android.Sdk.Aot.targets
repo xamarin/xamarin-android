@@ -90,7 +90,8 @@ They run in a context of an inner build with a single $(RuntimeIdentifier).
         RuntimeIdentifier="$(RuntimeIdentifier)"
         EnableLLVM="$(EnableLLVM)"
         Profiles="@(AndroidAotProfile)"
-        StripLibraries="$(_AndroidAotStripLibraries)">
+        StripLibraries="$(_AndroidAotStripLibraries)"
+        ZipAlignmentPages="$(AndroidZipAlignment)">
       <Output PropertyName="_Triple"     TaskParameter="Triple" />
       <Output PropertyName="_ToolPrefix" TaskParameter="ToolPrefix" />
       <Output PropertyName="_MsymPath"   TaskParameter="MsymPath" />

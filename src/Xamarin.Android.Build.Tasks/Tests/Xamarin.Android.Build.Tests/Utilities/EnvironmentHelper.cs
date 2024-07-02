@@ -63,12 +63,11 @@ namespace Xamarin.Android.Build.Tests
 			public uint   jnienv_registerjninatives_method_token;
 			public uint   jni_remapping_replacement_type_count;
 			public uint   jni_remapping_replacement_method_index_entry_count;
-			public uint   zip_alignment_mask;
 			public uint   mono_components_mask;
 			public string android_package_name = String.Empty;
 		}
 
-		const uint ApplicationConfigFieldCount = 27;
+		const uint ApplicationConfigFieldCount = 26;
 
 		const string ApplicationConfigSymbolName = "application_config";
 		const string AppEnvironmentVariablesSymbolName = "app_environment_variables";
@@ -327,17 +326,12 @@ namespace Xamarin.Android.Build.Tests
 						ret.jni_remapping_replacement_method_index_entry_count = ConvertFieldToUInt32 ("jni_remapping_replacement_method_index_entry_count", envFile.Path, parser.SourceFilePath, item.LineNumber, field [1]);
 						break;
 
-					case 24: // zip_alignment_mask: uint32_t / .word | .long
-						Assert.IsTrue (expectedUInt32Types.Contains (field [0]), $"Unexpected uint32_t field type in '{envFile.Path}:{item.LineNumber}': {field [0]}");
-						ret.zip_alignment_mask = ConvertFieldToUInt32 ("zip_alignment_mask", envFile.Path, parser.SourceFilePath, item.LineNumber, field [1]);
-						break;
-
-					case 25: // mono_components_mask: uint32_t / .word | .long
+					case 24: // mono_components_mask: uint32_t / .word | .long
 						Assert.IsTrue (expectedUInt32Types.Contains (field [0]), $"Unexpected uint32_t field type in '{envFile.Path}:{item.LineNumber}': {field [0]}");
 						ret.mono_components_mask = ConvertFieldToUInt32 ("mono_components_mask", envFile.Path, parser.SourceFilePath, item.LineNumber, field [1]);
 						break;
 
-					case 26: // android_package_name: string / [pointer type]
+					case 25: // android_package_name: string / [pointer type]
 						Assert.IsTrue (expectedPointerTypes.Contains (field [0]), $"Unexpected pointer field type in '{envFile.Path}:{item.LineNumber}': {field [0]}");
 						pointers.Add (field [1].Trim ());
 						break;

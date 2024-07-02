@@ -3546,3 +3546,8 @@ virtual Java.Util.Zip.Inflater.SetDictionary(Java.Nio.ByteBuffer? dictionary) ->
 virtual Java.Util.Zip.Inflater.SetInput(Java.Nio.ByteBuffer? input) -> void
 virtual Java.Util.Zip.ZipEntry.TimeLocal.get -> Java.Time.LocalDateTime?
 virtual Java.Util.Zip.ZipEntry.TimeLocal.set -> void
+static Android.Security.KeyChain.GetX509Certificate2WithPrivateKey(Android.Content.Context! context, string! alias) -> System.Security.Cryptography.X509Certificates.X509Certificate2?
+static Android.Security.KeyChain.ChooseX509Certificate2WithPrivateKeyAsync(Android.App.Activity! activity, string![]? keyTypes, Java.Security.IPrincipal![]? issuers, Android.Net.Uri? uri, string? alias) -> System.Threading.Tasks.Task<System.Security.Cryptography.X509Certificates.X509Certificate2?>!
+static Android.Security.KeyChain.ChooseX509Certificate2WithPrivateKeyAsync(Android.App.Activity! activity, string![]? keyTypes, Java.Security.IPrincipal![]? issuers, string? host, int port, string? alias) -> System.Threading.Tasks.Task<System.Security.Cryptography.X509Certificates.X509Certificate2?>!
+static Android.Security.KeyChain.ChoosePrivateKeyAliasAsync(Android.App.Activity! activity, string![]? keyTypes, Java.Security.IPrincipal![]? issuers, Android.Net.Uri? uri, string? alias) -> System.Threading.Tasks.Task<string?>!
+static Android.Security.KeyChain.ChoosePrivateKeyAliasAsync(Android.App.Activity! activity, string![]? keyTypes, Java.Security.IPrincipal![]? issuers, string? host, int port, string? alias) -> System.Threading.Tasks.Task<string?>!

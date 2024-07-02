@@ -47,7 +47,7 @@
     <AdditionalFiles Include="PublicAPI\API-$(AndroidApiLevel)\PublicAPI.Shipped.txt" />
     <AdditionalFiles Include="PublicAPI\API-$(AndroidApiLevel)\PublicAPI.Unshipped.txt" />
   </ItemGroup>
-  
+
   <PropertyGroup>
     <JavaCallableWrapperAbsAssembly>$([System.IO.Path]::GetFullPath ('$(OutputPath)$(AssemblyName).dll'))</JavaCallableWrapperAbsAssembly>
   </PropertyGroup>
@@ -260,6 +260,7 @@
     <Compile Include="Android.Runtime\XAPeerMembers.cs" />
     <Compile Include="Android.Runtime\XmlPullParserReader.cs" />
     <Compile Include="Android.Runtime\XmlReaderPullParser.cs" />
+    <Compile Include="Android.Security\KeyChain.cs" />
     <Compile Include="Android.Telephony\CellInfo.cs" />
     <Compile Include="Android.Telephony\PhoneNumberUtils.cs" />
     <Compile Include="Android.Telephony\TelephonyManager.cs" />
@@ -392,7 +393,7 @@
   <PropertyGroup Condition=" '$(AndroidApiLevel)' &lt; '$(AndroidDefaultTargetDotnetApiLevel)' ">
     <BuildDependsOn></BuildDependsOn>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(AndroidApiLevel)' &gt;= '$(AndroidDefaultTargetDotnetApiLevel)' ">
     <BuildDependsOn>
       $(BuildDependsOn);

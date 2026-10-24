@@ -2,10 +2,10 @@
   "author": "Microsoft",
   "name": "Android 웨어 애플리케이션",
   "description": "A project for creating a Wear OS app using .NET for Android",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "프로젝트에 대한 대상 프레임워크입니다.",
+  "symbols/Framework/choices/net11.0-android/description": "net11.0-android 대상",
+  "symbols/Framework/choices/net10.0-android/description": "net10.0-android 대상",
   "symbols/packageName/description": "AndroidManifest.xml의 패키지 이름을 재정의합니다.",
   "symbols/supportedOSVersion/description": "프로젝트에서 $(SupportedOSPlatformVersion) 재정의",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "지정된 경우, 프로젝트 생성 시 자동 복원을 건너뜁니다."
 }

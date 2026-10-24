@@ -175,4 +175,8 @@
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>嘗試接受 Android SDK 授權時發生錯誤。{0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>無法驗證 '{0}' 的 Microsoft OpenJDK 封存簽章。將不會安裝此封存。{1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

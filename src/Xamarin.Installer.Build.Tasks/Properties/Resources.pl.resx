@@ -175,4 +175,8 @@ Zaktualizuj zestaw Java SDK do wersji `{2}` lub ustaw `$(JavaSdkDirectory)` na p
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>wystąpił błąd podczas próby zaakceptowania licencji zestawu Android SDK. {0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>Nie można zweryfikować podpisu archiwum Microsoft OpenJDK dla '{0}'. Archiwum nie zostanie zainstalowane. {1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

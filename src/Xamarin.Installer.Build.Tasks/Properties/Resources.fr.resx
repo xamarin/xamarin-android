@@ -175,4 +175,8 @@ Mettez à jour votre Kit de développement logiciel (SDK) Java vers la version `
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>Désolé, une erreur s’est produite lors de la tentative d’acceptation des licences Android SDK. {0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>Impossible de vérifier la signature de l’archive Microsoft OpenJDK pour '{0}'. L’archive ne sera pas installée. {1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

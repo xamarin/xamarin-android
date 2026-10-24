@@ -175,4 +175,8 @@
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>尝试接受 Android SDK 许可证时出错。{0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>无法验证 '{0}' 的 Microsoft OpenJDK 存档签名。将不安装存档。{1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

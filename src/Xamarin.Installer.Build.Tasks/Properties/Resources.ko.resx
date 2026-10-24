@@ -175,4 +175,8 @@ Java SDK를 `{2}` 버전으로 업데이트하거나 `$(JavaSdkDirectory)`를 �
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>Android SDK 라이선스를 수락하는 동안 오류가 발생했습니다. {0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>'{0}'에 대한 Microsoft OpenJDK 보관 서명을 확인할 수 없습니다. 보관 파일이 설치되지 않습니다. {1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

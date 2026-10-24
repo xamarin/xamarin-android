@@ -175,4 +175,8 @@ Aktualisieren Sie Ihr Java SDK auf Version `{2}`, oder legen Sie `$(JavaSdkDire
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>Fehler beim Akzeptieren der Android SDK-Lizenzen. {0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>Die Microsoft OpenJDK-Archivsignatur für '{0}' konnte nicht überprüft werden. Das Archiv wird nicht installiert. {1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

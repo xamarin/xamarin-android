@@ -145,28 +145,9 @@ Cette erreur est probablement due à un problème avec le fichier AndroidManifes
   <data name="IL6001" xml:space="preserve">
     <value>L’assembly « {0} » contient une référence à l’attribut obsolète « Android.Runtime.PreserveAttribute ». Les membres ayant cet attribut peuvent être tronqués. Veuillez utiliser System.Diagnostics.CodeAnalysis.DynamicDependencyAttribute à la place</value>
   </data>
-  <data name="XA0000_API_for_TargetFrameworkVersion" xml:space="preserve">
-    <value>Impossible de déterminer le niveau d'API pour $(TargetFrameworkVersion) '{0}'.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The current value of $(TargetFrameworkVersion)</comment>
-  </data>
-  <data name="XA0000_API_or_TargetFrameworkVersion_Fail" xml:space="preserve">
-    <value>Impossible de déterminer $(AndroidApiLevel) ou $(TargetFrameworkVersion) ; erreur inattendue.</value>
-    <comment>The following are literal names and should not be translated: $(AndroidApiLevel), $(TargetFrameworkVersion)
-In this message, the phrase "should not be reached" means that this error message is not expected to appear in normal usage.</comment>
-  </data>
   <data name="XA0000_Exception" xml:space="preserve">
     <value>Exception non prise en charge : {0}</value>
     <comment>{0} - The exception message of the associated exception</comment>
-  </data>
-  <data name="XA0000_TargetFrameworkVersion_for_API" xml:space="preserve">
-    <value>Impossible de déterminer $(TargetFrameworkVersion) pour le niveau d'API '{0}'.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The API level number</comment>
-  </data>
-  <data name="XA0001" xml:space="preserve">
-    <value>Valeur '{0}' non prise en charge ou non valide pour $(TargetFrameworkVersion). Mettez à jour les options du projet.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)</comment>
   </data>
   <data name="XA0003" xml:space="preserve">
     <value>Valeur '{0}' de 'android:versionCode' non valide dans 'AndroidManifest.xml'. Il doit s'agir d'une valeur entière.</value>
@@ -182,24 +163,10 @@ In this message, the phrase "should not be reached" means that this error messag
     <value>La génération avec la version '{0}' du kit JDK n'est pas prise en charge. Installez le kit JDK version '{1}'. Consultez https://aka.ms/xamarin/jdk9-errors</value>
     <comment>The abbreviation "JDK" should not be translated.</comment>
   </data>
-  <data name="XA0031" xml:space="preserve">
-    <value>Le Kit de développement logiciel (SDK) Java {0} ou une version ultérieure est requis lors de l’utilisation de {1}.
-Téléchargez le dernier JDK à l’adresse : https://aka.ms/msopenjdk
-Remarque : le Android Designer est incompatible avec le Kit de développement logiciel (SDK) Java 11.0 : https://aka.ms/vs2019-and-jdk-11</value>
-    <comment>
-{0} - The Java SDK version number
-{1} - The feature being used: `$(TargetFrameworkVersion) v10.0`</comment>
-  </data>
   <data name="XA0031_NET" xml:space="preserve">
     <value>Le Kit de développement logiciel (SDK) Java {0} ou une version ultérieure est requis lors de l’utilisation de .NET 6 ou d’une version ultérieure. Téléchargez le dernier JDK à l’adresse : https://aka.ms/msopenjdk.</value>
     <comment>
 {0} - The Java SDK version number</comment>
-  </data>
-  <data name="XA0032" xml:space="preserve">
-    <value>Le kit Java SDK {0} ou une version ultérieure est obligatoire pour l'utilisation de Android SDK Build-Tools {1}.</value>
-    <comment>The following are literal names and should not be translated: Android SDK Build-Tools
-{0} - The Java SDK version number
-{1} - The Android SDK Build-Tools version number</comment>
   </data>
   <data name="XA0033" xml:space="preserve">
     <value>Échec de l'obtention de la version du Kit Java SDK, car la valeur retournée ne semble pas contenir de numéro de version valide. `{0} -version` a retourné : ```{1}```</value>
@@ -251,23 +218,10 @@ Remarque : le Android Designer est incompatible avec le Kit de développement l
     <value>AAPT2 introuvable sur le chemin '{0}'. Ouvrez le fichier projet dans un éditeur de texte et supprimez la propriété MSBuild 'Aapt2ToolPath', ou vérifiez qu'elle est définie sur un emplacement valide.</value>
     <comment>The following are literal names and should not be translated: AAPT2, Aapt2ToolPath, MSBuild</comment>
   </data>
-  <data name="XA0113" xml:space="preserve">
-    <value>Google Play impose aux nouvelles applications et aux mises à jour d'utiliser le TargetFrameworkVersion version {0} (niveau d'API {1}) ou une version ultérieure. Vous ciblez {2} (niveau d'API {3}).</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion
-{0} - The required minimum TargetFrameworkVersion, such as 'v10.0'
-{1} - The required minimum API level number, such as '29'
-{2} - The specified TargetFrameworkVersion
-{3} - The specified API level number</comment>
-  </data>
   <data name="XA0116" xml:space="preserve">
     <value>'EmbeddedResource' nommé '{0}' introuvable.</value>
     <comment>The following are literal names and should not be translated: EmbeddedResource
 {0} - The name of the missing resource</comment>
-  </data>
-  <data name="XA0117" xml:space="preserve">
-    <value>Le TargetFrameworkVersion {0} est déprécié. Mettez-le à jour vers la version 5.0 ou une version ultérieure.</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion, v5.0
-{0} - The current value of TargetFrameworkVersion</comment>
   </data>
   <data name="XA0118_Parse" xml:space="preserve">
     <value>Impossible d'analyser '{0}'</value>
@@ -810,7 +764,7 @@ Supprimez la référence de '{0}' de votre projet et ajoutez plutôt le '{1}'.pa
 {1} - The path to the source file which could not be deleted.</comment>
   </data>
   <data name="XA4325" xml:space="preserve">
-    <value>Failed to generate the JNI remapping data. {0}</value>
+    <value>Échec de la génération des données de remappage JNI. {0}</value>
     <comment>The following is a literal name and should not be translated: JNI.
 {0} - A sentence describing the specific failure.</comment>
   </data>
@@ -931,13 +885,13 @@ Supprimez la référence de '{0}' de votre projet et ajoutez plutôt le '{1}'.pa
 {0} - The runtime name.</comment>
   </data>
   <data name="XA4330" xml:space="preserve">
-    <value>Native library '{0}' uses the reserved name 'libbinary_blobs.so' (archive path '{1}' or ELF SONAME). This name is reserved for .NET for Android binary data.</value>
+    <value>La bibliothèque native '{0}' utilise le nom réservé « libbinary_blobs.so » (chemin d’accès d’archive '{1}' ou ELF SONAME). Ce nom est réservé aux données binaires .NET pour Android.</value>
     <comment>The following is a literal name and should not be translated: libbinary_blobs.so.
 {0} - The source native library path.
 {1} - The conflicting archive path.</comment>
   </data>
   <data name="XA4331" xml:space="preserve">
-    <value>Failed to process bundle config file '{0}', split config files will be ignored at run time.</value>
+    <value>Échec du traitement du fichier de configuration du bundle « {0} »; les fichiers de configuration scindés seront ignorés lors de l’exécution.</value>
     <comment>{0} - The bundle config file path.</comment>
   </data>
   <data name="XA5101" xml:space="preserve">
@@ -945,7 +899,7 @@ Supprimez la référence de '{0}' de votre projet et ajoutez plutôt le '{1}'.pa
     <comment>{0} - The path of the missing directory</comment>
   </data>
   <data name="XA5101_ClangRuntime" xml:space="preserve">
-    <value>Could not locate Android NDK Clang runtime libraries. Searched under: {0}. Please install a complete Android NDK.</value>
+    <value>Nous n’avons pas pu trouver les bibliothèques d’exécution Clang de l’Android NDK. Recherche effectuée dans les répertoires suivants : {0}. Installez un Android NDK complet.</value>
     <comment>{0} - Semicolon-separated Clang runtime search directories</comment>
   </data>
   <data name="XA5104" xml:space="preserve">
@@ -1375,6 +1329,11 @@ Pour utiliser un chemin JDK personnalisé pour une build de ligne de commande, d
     <comment>The following are literal names and should not be translated: Xamarin.Android, .NET for Android.
 {0} - The name of the embedded environment resource (such as __AndroidEnvironment__abc123).
 {1} - The full path to the assembly that contains the environment resource.</comment>
+  </data>
+  <data name="XAGCA7009_UnsupportedRuntime" xml:space="preserve">
+    <value>GenerateNativeApplicationConfigSources prend uniquement en charge la configuration de démarrage CoreCLR. La valeur AndroidRuntime fournie était « {0} ».</value>
+    <comment>The following are literal names and should not be translated: GenerateNativeApplicationConfigSources, CoreCLR, AndroidRuntime.
+{0} - The unsupported AndroidRuntime task parameter value.</comment>
   </data>
   <data name="XAGRDL1000" xml:space="preserve">
     <value>L’exécutable « gradlew » est introuvable dans le répertoire du projet « {0} ». Veuillez vérifier que le chemin d’accès au dossier de votre projet Gradle est correct et qu’il contient des scripts Wrapper Gradle.</value>

@@ -2,10 +2,10 @@
   "author": "Microsoft",
   "name": "Android Wear 应用程序",
   "description": "A project for creating a Wear OS app using .NET for Android",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "项目的目标框架。",
+  "symbols/Framework/choices/net11.0-android/description": "目标 net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "目标 net10.0-android",
   "symbols/packageName/description": "重写 AndroidManifest.xml 中的包名称",
   "symbols/supportedOSVersion/description": "替代项目中的 $(SupportedOSPlatformVersion)",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "如果已指定，则在创建时跳过项目的自动还原。"
 }

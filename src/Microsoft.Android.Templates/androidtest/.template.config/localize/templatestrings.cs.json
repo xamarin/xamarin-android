@@ -1,11 +1,11 @@
 ﻿{
   "author": "Microsoft",
-  "name": "Android Test Project",
-  "description": "A project for creating a .NET for Android test project using MSTest",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
-  "symbols/packageName/description": "Overrides the package name in the AndroidManifest.xml",
-  "symbols/supportedOSVersion/description": "Overrides $(SupportedOSPlatformVersion) in the project",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "name": "Testovací projekt pro Android",
+  "description": "Projekt pro vytvoření testovacího projektu .NET pro Android pomocí MSTest",
+  "symbols/Framework/description": "Cílová architektura pro projekt.",
+  "symbols/Framework/choices/net11.0-android/description": "Cílit na net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "Cílit na net10.0-android",
+  "symbols/packageName/description": "Přepíše název balíčku v souboru AndroidManifest.xml.",
+  "symbols/supportedOSVersion/description": "Přepíše $(SupportedOSPlatformVersion) v projektu.",
+  "symbols/skipRestore/description": "Je-li zadáno, při vytvoření přeskočí automatické obnovení projektu."
 }

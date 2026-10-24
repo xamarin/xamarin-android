@@ -2,9 +2,9 @@
   "author": "Microsoft",
   "name": "Android Java ライブラリ バインド",
   "description": "ネイティブ Java ライブラリにバインドする .NET for Android クラス ライブラリを作成するためのプロジェクト",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "プロジェクトのターゲット フレームワーク。",
+  "symbols/Framework/choices/net11.0-android/description": "ターゲット net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "ターゲット net10.0-android",
   "symbols/supportedOSVersion/description": "プロジェクト ファイルの $(SupportedOSPlatformVersion) をオーバーライドします",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "指定した場合、作成時にプロジェクトの自動復元がスキップされます。"
 }

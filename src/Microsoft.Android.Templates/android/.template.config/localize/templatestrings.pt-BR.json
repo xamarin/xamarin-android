@@ -2,10 +2,10 @@
   "author": "Microsoft",
   "name": "Aplicativo Android",
   "description": "Um projeto para a criação de um aplicativo .NET para Android",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "A estrutura de destino para o projeto.",
+  "symbols/Framework/choices/net11.0-android/description": "Net11.0-android de destino",
+  "symbols/Framework/choices/net10.0-android/description": "Net10.0-android de destino",
   "symbols/packageName/description": "Substitui o nome do pacote no AndroidManifest.xml",
   "symbols/supportedOSVersion/description": "Substitui a $(SupportedOSPlatformVersion) no projeto",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "Se especificado, ignora a restauração automática do projeto que está sendo criado."
 }

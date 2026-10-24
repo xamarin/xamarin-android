@@ -175,4 +175,8 @@ Actualice el SDK de Java a la versión `{2}` o establezca `$(JavaSdkDirectory)` 
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>Se ha producido un error al intentar aceptar licencias de Android SDK. {0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>No se pudo comprobar la firma de archivo de Microsoft OpenJDK para '{0}'. El archivo no se instalará. {1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

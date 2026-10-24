@@ -145,28 +145,9 @@ Tato chyba je pravděpodobně způsobená problémem se souborem AndroidManifest
   <data name="IL6001" xml:space="preserve">
     <value>Sestavení {0} obsahuje odkaz na zastaralý atribut Android.Runtime.PreserveAttribute. Členy s tímto atributem mohou být oříznuty. Místo toho prosím použijte atribut System.Diagnostics.CodeAnalysis.DynamicDependencyAttribute.</value>
   </data>
-  <data name="XA0000_API_for_TargetFrameworkVersion" xml:space="preserve">
-    <value>Nepovedlo se určit úroveň rozhraní API pro $(TargetFrameworkVersion) {0}.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The current value of $(TargetFrameworkVersion)</comment>
-  </data>
-  <data name="XA0000_API_or_TargetFrameworkVersion_Fail" xml:space="preserve">
-    <value>Nepovedlo se určit $(AndroidApiLevel) nebo $(TargetFrameworkVersion); tato zpráva by se neměla zobrazit.</value>
-    <comment>The following are literal names and should not be translated: $(AndroidApiLevel), $(TargetFrameworkVersion)
-In this message, the phrase "should not be reached" means that this error message is not expected to appear in normal usage.</comment>
-  </data>
   <data name="XA0000_Exception" xml:space="preserve">
     <value>Neošetřená výjimka: {0}</value>
     <comment>{0} - The exception message of the associated exception</comment>
-  </data>
-  <data name="XA0000_TargetFrameworkVersion_for_API" xml:space="preserve">
-    <value>Nepovedlo se určit $(TargetFrameworkVersion) pro úroveň rozhraní API {0}.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The API level number</comment>
-  </data>
-  <data name="XA0001" xml:space="preserve">
-    <value>Nepodporovaná nebo neplatná hodnota $(TargetFrameworkVersion) {0}. Aktualizujte prosím možnosti projektu.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)</comment>
   </data>
   <data name="XA0003" xml:space="preserve">
     <value>Neplatná hodnota android:versionCode {0} v AndroidManifest.xml. Musí být celočíselná.</value>
@@ -182,24 +163,10 @@ In this message, the phrase "should not be reached" means that this error messag
     <value>Sestavování s verzí sady JDK {0} se nepodporuje. Nainstalujte prosím verzi sady JDK {1}. Další informace: https://aka.ms/xamarin/jdk9-errors</value>
     <comment>The abbreviation "JDK" should not be translated.</comment>
   </data>
-  <data name="XA0031" xml:space="preserve">
-    <value>Sada Java SDK {0}nebo vyšší se vyžaduje při použití {1}.
-Stáhněte si nejnovější sadu JDK na adrese: https://aka.ms/msopenjdk
-Poznámka: Android Designer není kompatibilní se sadou Java SDK 11.0: https://aka.ms/vs2019-and-jdk-11</value>
-    <comment>
-{0} - The Java SDK version number
-{1} - The feature being used: `$(TargetFrameworkVersion) v10.0`</comment>
-  </data>
   <data name="XA0031_NET" xml:space="preserve">
     <value>Při použití rozhraní .NET 6 nebo vyšší se vyžaduje sada Java SDK {0} nebo vyšší. Stáhněte si nejnovější sadu JDK na adrese: https://aka.ms/msopenjdk</value>
     <comment>
 {0} - The Java SDK version number</comment>
-  </data>
-  <data name="XA0032" xml:space="preserve">
-    <value>Když se používají nástroje Build-Tools {1} v sadě Android SDK, vyžaduje se sada Java SDK {0} nebo novější.</value>
-    <comment>The following are literal names and should not be translated: Android SDK Build-Tools
-{0} - The Java SDK version number
-{1} - The Android SDK Build-Tools version number</comment>
   </data>
   <data name="XA0033" xml:space="preserve">
     <value>Nepovedlo se získat verzi sady Java SDK, protože vrácená hodnota podle všeho neobsahuje platné číslo verze. {0} -version vrátilo: {1}</value>
@@ -251,23 +218,10 @@ Poznámka: Android Designer není kompatibilní se sadou Java SDK 11.0: https://
     <value>Na cestě {0} se nenašlo AAPT2. Otevřete soubor projektu v textovém editoru a odeberte vlastnost MSBuildu Aapt2ToolPath, nebo se ujistěte, že je nastavená na platné umístění.</value>
     <comment>The following are literal names and should not be translated: AAPT2, Aapt2ToolPath, MSBuild</comment>
   </data>
-  <data name="XA0113" xml:space="preserve">
-    <value>Google Play vyžaduje, aby nové aplikace a aktualizace používaly TargetFrameworkVersion verze {0} (rozhraní API úrovně {1}) nebo vyšší. Aktuálně cílíte na verzi {2} (rozhraní API úrovně {3}).</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion
-{0} - The required minimum TargetFrameworkVersion, such as 'v10.0'
-{1} - The required minimum API level number, such as '29'
-{2} - The specified TargetFrameworkVersion
-{3} - The specified API level number</comment>
-  </data>
   <data name="XA0116" xml:space="preserve">
     <value>Nepovedlo se najít EmbeddedResource s názvem {0}.</value>
     <comment>The following are literal names and should not be translated: EmbeddedResource
 {0} - The name of the missing resource</comment>
-  </data>
-  <data name="XA0117" xml:space="preserve">
-    <value>Hodnota {0} pro TargetFrameworkVersion je zastaralá. Aktualizujte prosím tuto hodnotu na v5.0 nebo vyšší.</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion, v5.0
-{0} - The current value of TargetFrameworkVersion</comment>
   </data>
   <data name="XA0118_Parse" xml:space="preserve">
     <value>Nepodařilo se analyzovat {0}.</value>
@@ -810,7 +764,7 @@ Odeberte z projektu odkaz na {0} a místo toho přidejte balíček NuGet{1}.
 {1} - The path to the source file which could not be deleted.</comment>
   </data>
   <data name="XA4325" xml:space="preserve">
-    <value>Failed to generate the JNI remapping data. {0}</value>
+    <value>Nepovedlo se vygenerovat data mapování JNI. {0}</value>
     <comment>The following is a literal name and should not be translated: JNI.
 {0} - A sentence describing the specific failure.</comment>
   </data>
@@ -931,13 +885,13 @@ Odeberte z projektu odkaz na {0} a místo toho přidejte balíček NuGet{1}.
 {0} - The runtime name.</comment>
   </data>
   <data name="XA4330" xml:space="preserve">
-    <value>Native library '{0}' uses the reserved name 'libbinary_blobs.so' (archive path '{1}' or ELF SONAME). This name is reserved for .NET for Android binary data.</value>
+    <value>Nativní knihovna {0} používá vyhrazený název libbinary_blobs.so (cesta archivu {1} nebo ELF SONAME). Tento název je vyhrazený pro binární data platformy .NET pro Android.</value>
     <comment>The following is a literal name and should not be translated: libbinary_blobs.so.
 {0} - The source native library path.
 {1} - The conflicting archive path.</comment>
   </data>
   <data name="XA4331" xml:space="preserve">
-    <value>Failed to process bundle config file '{0}', split config files will be ignored at run time.</value>
+    <value>Nepovedlo se zpracovat konfigurační soubor sady prostředků '{0}'. Rozdělené konfigurační soubory se budou za běhu ignorovat.</value>
     <comment>{0} - The bundle config file path.</comment>
   </data>
   <data name="XA5101" xml:space="preserve">
@@ -945,7 +899,7 @@ Odeberte z projektu odkaz na {0} a místo toho přidejte balíček NuGet{1}.
     <comment>{0} - The path of the missing directory</comment>
   </data>
   <data name="XA5101_ClangRuntime" xml:space="preserve">
-    <value>Could not locate Android NDK Clang runtime libraries. Searched under: {0}. Please install a complete Android NDK.</value>
+    <value>Nepovedlo se najít knihovny modulu runtime Android NDK Clang. Prohledává se pod: {0}. Nainstalujte prosím kompletní sadu Android NDK.</value>
     <comment>{0} - Semicolon-separated Clang runtime search directories</comment>
   </data>
   <data name="XA5104" xml:space="preserve">
@@ -1375,6 +1329,11 @@ Pokud chcete pro sestavení z příkazového řádku použít vlastní cestu JDK
     <comment>The following are literal names and should not be translated: Xamarin.Android, .NET for Android.
 {0} - The name of the embedded environment resource (such as __AndroidEnvironment__abc123).
 {1} - The full path to the assembly that contains the environment resource.</comment>
+  </data>
+  <data name="XAGCA7009_UnsupportedRuntime" xml:space="preserve">
+    <value>GenerateNativeApplicationConfigSources podporuje pouze konfiguraci bootstrap CoreCLR. Zadaná hodnota AndroidRuntime byla {0}.</value>
+    <comment>The following are literal names and should not be translated: GenerateNativeApplicationConfigSources, CoreCLR, AndroidRuntime.
+{0} - The unsupported AndroidRuntime task parameter value.</comment>
   </data>
   <data name="XAGRDL1000" xml:space="preserve">
     <value>Spustitelný soubor gradlew nebyl v adresáři projektu {0} nalezen. Ujistěte se prosím, že cesta ke složce projektu Gradle je správná a že obsahuje skripty Gradle Wrapper.</value>

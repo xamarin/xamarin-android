@@ -2,10 +2,10 @@
   "author": "Microsoft",
   "name": "Applicazione Android Wear",
   "description": "A project for creating a Wear OS app using .NET for Android",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "Framework di destinazione per il progetto.",
+  "symbols/Framework/choices/net11.0-android/description": "Destinazione net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "Destinazione net10.0-android",
   "symbols/packageName/description": "Esegue l'override del nome del pacchetto nel file AndroidManifest.xml",
   "symbols/supportedOSVersion/description": "Esegue l'override di $(SupportedOSPlatformVersion) nel progetto",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "Se specificato, ignora il ripristino automatico del progetto durante la creazione."
 }

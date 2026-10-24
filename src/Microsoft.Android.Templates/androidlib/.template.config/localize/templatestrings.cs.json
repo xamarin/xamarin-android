@@ -2,9 +2,9 @@
   "author": "Microsoft",
   "name": "Knihovna tříd Androidu",
   "description": "Projekt pro vytvoření knihovny tříd .NET pro Android",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "Cílová architektura pro projekt.",
+  "symbols/Framework/choices/net11.0-android/description": "Cílit na net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "Cílit na net10.0-android",
   "symbols/supportedOSVersion/description": "Přepíše $(SupportedOSPlatformVersion) v projektu.",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "Je-li zadáno, při vytvoření přeskočí automatické obnovení projektu."
 }

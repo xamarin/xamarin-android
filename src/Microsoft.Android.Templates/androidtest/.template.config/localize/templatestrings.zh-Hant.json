@@ -1,11 +1,11 @@
 ﻿{
   "author": "Microsoft",
-  "name": "Android Test Project",
-  "description": "A project for creating a .NET for Android test project using MSTest",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
-  "symbols/packageName/description": "Overrides the package name in the AndroidManifest.xml",
-  "symbols/supportedOSVersion/description": "Overrides $(SupportedOSPlatformVersion) in the project",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "name": "Android 測試專案",
+  "description": "使用 MSTest 建立 Android 版 .NET 測試專案的專案",
+  "symbols/Framework/description": "專案的目標架構。",
+  "symbols/Framework/choices/net11.0-android/description": "目標為 net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "目標為 net10.0-android",
+  "symbols/packageName/description": "覆寫 AndroidManifest.xml 中的套件名稱",
+  "symbols/supportedOSVersion/description": "覆寫專案中的 $(SupportedOSPlatformVersion)",
+  "symbols/skipRestore/description": "如果指定，則會在建立時跳過專案的自動還原。"
 }

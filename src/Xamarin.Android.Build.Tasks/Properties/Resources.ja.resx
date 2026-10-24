@@ -145,28 +145,9 @@
   <data name="IL6001" xml:space="preserve">
     <value>アセンブリ '{0}' には、非推奨の属性 'Android.Runtime.PreserveAttribute' への参照が含まれています。この属性を持つメンバーはトリミングされる可能性があります。代わりに System.Diagnostics.CodeAnalysis.DynamicDependencyAttribute をお使いください</value>
   </data>
-  <data name="XA0000_API_for_TargetFrameworkVersion" xml:space="preserve">
-    <value>'{0}' の $(TargetFrameworkVersion) の API レベルを特定できませんでした。</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The current value of $(TargetFrameworkVersion)</comment>
-  </data>
-  <data name="XA0000_API_or_TargetFrameworkVersion_Fail" xml:space="preserve">
-    <value>$(AndroidApiLevel) も $(TargetFrameworkVersion) も特定できませんでした。これは、通常は表示されないメッセージです。</value>
-    <comment>The following are literal names and should not be translated: $(AndroidApiLevel), $(TargetFrameworkVersion)
-In this message, the phrase "should not be reached" means that this error message is not expected to appear in normal usage.</comment>
-  </data>
   <data name="XA0000_Exception" xml:space="preserve">
     <value>ハンドルされない例外: {0}</value>
     <comment>{0} - The exception message of the associated exception</comment>
-  </data>
-  <data name="XA0000_TargetFrameworkVersion_for_API" xml:space="preserve">
-    <value>API レベル '{0}' の $(TargetFrameworkVersion) を特定できませんでした。</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The API level number</comment>
-  </data>
-  <data name="XA0001" xml:space="preserve">
-    <value>'{0}' の $(TargetFrameworkVersion) 値がサポートされていないか、無効です。プロジェクトのオプションを更新してください。</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)</comment>
   </data>
   <data name="XA0003" xml:space="preserve">
     <value>`AndroidManifest.xml` の `android:versionCode` の値 `{0}` が無効です。整数値である必要があります。</value>
@@ -182,24 +163,10 @@ In this message, the phrase "should not be reached" means that this error messag
     <value>JDK バージョン '{0}' でのビルドはサポートされていません。JDK バージョン '{1}' をインストールしてください。https://aka.ms/xamarin/jdk9-errors を参照してください</value>
     <comment>The abbreviation "JDK" should not be translated.</comment>
   </data>
-  <data name="XA0031" xml:space="preserve">
-    <value>{1} を使用する場合は、ava SDK {0} 以上が必要です。
-最新の JDK のダウンロード場所: https://aka.ms/msopenjdk
-注意: Android Designerは Java SDK 11.0 と互換性がありません: https://aka.ms/vs2019-and-jdk-11</value>
-    <comment>
-{0} - The Java SDK version number
-{1} - The feature being used: `$(TargetFrameworkVersion) v10.0`</comment>
-  </data>
   <data name="XA0031_NET" xml:space="preserve">
     <value>.NET 6 以降を使用する場合は、Java SDK {0}以上が必要です。最新の JDK のダウンロード場所: https://aka.ms/msopenjdk</value>
     <comment>
 {0} - The Java SDK version number</comment>
-  </data>
-  <data name="XA0032" xml:space="preserve">
-    <value>Android SDK ビルドツール {1} を使用するときには、Java SDK {0} 以上が必要です。</value>
-    <comment>The following are literal names and should not be translated: Android SDK Build-Tools
-{0} - The Java SDK version number
-{1} - The Android SDK Build-Tools version number</comment>
   </data>
   <data name="XA0033" xml:space="preserve">
     <value>返された値に有効なバージョン番号が含まれていない可能性があるため、Java SDK バージョンを取得できませんでした。`{0} -version` が返されました。```{1}```</value>
@@ -251,23 +218,10 @@ In this message, the phrase "should not be reached" means that this error messag
     <value>パス '{0}' に AAPT2 が見つかりませんでした。テキスト エディターでプロジェクト ファイルを開き、'Aapt2ToolPath' MSBuild プロパティを削除するか、これを有効な場所に設定してください。</value>
     <comment>The following are literal names and should not be translated: AAPT2, Aapt2ToolPath, MSBuild</comment>
   </data>
-  <data name="XA0113" xml:space="preserve">
-    <value>Google Play では、新しいアプリケーションと更新プログラムで {0} (API レベル {1}) 以上の TargetFrameworkVersion を使用する必要があります。現在は、{2} (API レベル {3}) をターゲットにしています。</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion
-{0} - The required minimum TargetFrameworkVersion, such as 'v10.0'
-{1} - The required minimum API level number, such as '29'
-{2} - The specified TargetFrameworkVersion
-{3} - The specified API level number</comment>
-  </data>
   <data name="XA0116" xml:space="preserve">
     <value>`{0}` という名前の `EmbeddedResource` が見つかりません。</value>
     <comment>The following are literal names and should not be translated: EmbeddedResource
 {0} - The name of the missing resource</comment>
-  </data>
-  <data name="XA0117" xml:space="preserve">
-    <value>TargetFrameworkVersion {0} は非推奨です。v5.0 以上に更新してください。</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion, v5.0
-{0} - The current value of TargetFrameworkVersion</comment>
   </data>
   <data name="XA0118_Parse" xml:space="preserve">
     <value>'{0}' を解析できませんでした</value>
@@ -810,7 +764,7 @@ The following are literal names and should not be translated: ABI, 'libs/armeabi
 {1} - The path to the source file which could not be deleted.</comment>
   </data>
   <data name="XA4325" xml:space="preserve">
-    <value>Failed to generate the JNI remapping data. {0}</value>
+    <value>JNI 再マップ データを生成できませんでした。{0}</value>
     <comment>The following is a literal name and should not be translated: JNI.
 {0} - A sentence describing the specific failure.</comment>
   </data>
@@ -931,13 +885,13 @@ The following are literal names and should not be translated: ABI, 'libs/armeabi
 {0} - The runtime name.</comment>
   </data>
   <data name="XA4330" xml:space="preserve">
-    <value>Native library '{0}' uses the reserved name 'libbinary_blobs.so' (archive path '{1}' or ELF SONAME). This name is reserved for .NET for Android binary data.</value>
+    <value>ネイティブ ライブラリ '{0}' は、予約名 'libbinary_blobs.so' (アーカイブ パス '{1}' または ELF SONAME) を使用しています。この名前は、.NET for Android のバイナリ データ用に予約されています。</value>
     <comment>The following is a literal name and should not be translated: libbinary_blobs.so.
 {0} - The source native library path.
 {1} - The conflicting archive path.</comment>
   </data>
   <data name="XA4331" xml:space="preserve">
-    <value>Failed to process bundle config file '{0}', split config files will be ignored at run time.</value>
+    <value>バンドル構成ファイル '{0}' の処理に失敗しました。分割構成ファイルは実行時に無視されます。</value>
     <comment>{0} - The bundle config file path.</comment>
   </data>
   <data name="XA5101" xml:space="preserve">
@@ -945,7 +899,7 @@ The following are literal names and should not be translated: ABI, 'libs/armeabi
     <comment>{0} - The path of the missing directory</comment>
   </data>
   <data name="XA5101_ClangRuntime" xml:space="preserve">
-    <value>Could not locate Android NDK Clang runtime libraries. Searched under: {0}. Please install a complete Android NDK.</value>
+    <value>Android NDK Clang ランタイム ライブラリが見つかりませんでした。次の場所を検索しました: {0}。完全な Android NDK をインストールしてください。</value>
     <comment>{0} - Semicolon-separated Clang runtime search directories</comment>
   </data>
   <data name="XA5104" xml:space="preserve">
@@ -1375,6 +1329,11 @@ In this message, the term "handheld app" means "app for handheld devices."
     <comment>The following are literal names and should not be translated: Xamarin.Android, .NET for Android.
 {0} - The name of the embedded environment resource (such as __AndroidEnvironment__abc123).
 {1} - The full path to the assembly that contains the environment resource.</comment>
+  </data>
+  <data name="XAGCA7009_UnsupportedRuntime" xml:space="preserve">
+    <value>GenerateNativeApplicationConfigSources では、CoreCLR ブートストラップ構成のみがサポートされます。指定された AndroidRuntime 値が '{0}' でした。</value>
+    <comment>The following are literal names and should not be translated: GenerateNativeApplicationConfigSources, CoreCLR, AndroidRuntime.
+{0} - The unsupported AndroidRuntime task parameter value.</comment>
   </data>
   <data name="XAGRDL1000" xml:space="preserve">
     <value>プロジェクト ディレクトリ '{0}' に実行可能ファイル 'gradlew' が見つかりません。Gradle プロジェクト フォルダーへのパスが正しいこと、Gradle ラッパー スクリプトが含まれていることを確認してください。</value>

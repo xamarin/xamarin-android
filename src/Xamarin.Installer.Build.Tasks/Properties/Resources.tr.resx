@@ -175,4 +175,8 @@ Lütfen Java SDK'nızı `{2}` sürümüne güncelleştirin veya önerilen Java S
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>Android SDK lisansları kabul edilmeye çalışılırken bir hata oluştu. {0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>'{0}' için Microsoft OpenJDK arşiv imzası doğrulanamadı. Arşiv yüklenmeyecek. {1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

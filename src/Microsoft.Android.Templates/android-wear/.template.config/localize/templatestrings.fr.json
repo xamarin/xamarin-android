@@ -2,10 +2,10 @@
   "author": "Microsoft",
   "name": "Android Wear Application",
   "description": "A project for creating a Wear OS app using .NET for Android",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "Infrastructure cible du projet.",
+  "symbols/Framework/choices/net11.0-android/description": "Cible net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "Cible net10.0-android",
   "symbols/packageName/description": "Remplace le nom du package dans le AndroidManifest.xml",
   "symbols/supportedOSVersion/description": "Remplace $(SupportedOSPlatformVersion) dans le projet",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "Si spécifié, ignore la restauration automatique du projet lors de la création."
 }

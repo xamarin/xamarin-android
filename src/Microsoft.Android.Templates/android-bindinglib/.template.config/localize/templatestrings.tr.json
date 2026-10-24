@@ -2,9 +2,9 @@
   "author": "Microsoft",
   "name": "Android Java Kitaplığı Bağlaması",
   "description": "Yerel bir Java kitaplık dosyasını bağlayan bir Android için .NET sınıf kitaplığı oluşturmak için proje.",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "Projenin hedef çerçevesi.",
+  "symbols/Framework/choices/net11.0-android/description": "Hedef net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "Hedef net10.0-android",
   "symbols/supportedOSVersion/description": "Projedeki $(SupportedOSPlatformVersion) öğesini geçersiz kılar",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "Belirtilmişse oluştururken projenin otomatik geri yüklenmesini atlar."
 }

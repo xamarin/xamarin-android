@@ -145,28 +145,9 @@
   <data name="IL6001" xml:space="preserve">
     <value>組件 '{0}' 包含過時屬性 'Android.Runtime.PreserveAttribute' 的參考。可以修剪具有此屬性的成員。請改用 System.Diagnostics.CodeAnalysis.DynamicDependencyAttribute</value>
   </data>
-  <data name="XA0000_API_for_TargetFrameworkVersion" xml:space="preserve">
-    <value>無法判斷 '{0}' 的 $(TargetFrameworkVersion) API 層級。</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The current value of $(TargetFrameworkVersion)</comment>
-  </data>
-  <data name="XA0000_API_or_TargetFrameworkVersion_Fail" xml:space="preserve">
-    <value>無法判斷 $(AndroidApiLevel) 或 $(TargetFrameworkVersion); 不應送達。</value>
-    <comment>The following are literal names and should not be translated: $(AndroidApiLevel), $(TargetFrameworkVersion)
-In this message, the phrase "should not be reached" means that this error message is not expected to appear in normal usage.</comment>
-  </data>
   <data name="XA0000_Exception" xml:space="preserve">
     <value>未處理的例外狀況: {0}</value>
     <comment>{0} - The exception message of the associated exception</comment>
-  </data>
-  <data name="XA0000_TargetFrameworkVersion_for_API" xml:space="preserve">
-    <value>無法判斷 API 層級 '{0}' 的 $(TargetFrameworkVersion)。</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The API level number</comment>
-  </data>
-  <data name="XA0001" xml:space="preserve">
-    <value>$(TargetFrameworkVersion) 值 '{0}' 不受支援或無效。請更新您的專案選項。</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)</comment>
   </data>
   <data name="XA0003" xml:space="preserve">
     <value>`AndroidManifest.xml` 中的 `android:versionCode` 值 `{0}` 無效。其必須為整數值。</value>
@@ -182,24 +163,10 @@ In this message, the phrase "should not be reached" means that this error messag
     <value>不支援使用 JDK 版本 `{0}` 建置。請安裝 JDK 版本 `{1}`。請參閱 https://aka.ms/xamarin/jdk9-errors</value>
     <comment>The abbreviation "JDK" should not be translated.</comment>
   </data>
-  <data name="XA0031" xml:space="preserve">
-    <value>使用 {1} 時需要 JAVA SDK {0} 或更新版本。
-於下列位置下載最新的 JDK: https://aka.ms/msopenjdk
-注意: Android Designer 與 JAVA SDK 11.0 不相容: https://aka.ms/vs2019-and-jdk-11</value>
-    <comment>
-{0} - The Java SDK version number
-{1} - The feature being used: `$(TargetFrameworkVersion) v10.0`</comment>
-  </data>
   <data name="XA0031_NET" xml:space="preserve">
     <value>使用 .NET 6 或更新版本時，需要 JAVA SDK {0} 或更新版本。於下列位置下載最新版 JDK: https://aka.ms/msopenjdk</value>
     <comment>
 {0} - The Java SDK version number</comment>
-  </data>
-  <data name="XA0032" xml:space="preserve">
-    <value>使用 Android SDK Build-Tools {1} 時，需要 Java SDK {0} 或更高版本。</value>
-    <comment>The following are literal names and should not be translated: Android SDK Build-Tools
-{0} - The Java SDK version number
-{1} - The Android SDK Build-Tools version number</comment>
   </data>
   <data name="XA0033" xml:space="preserve">
     <value>因為傳回的值似乎未包含有效的版本號碼，所以無法取得 Java SDK 版本。`{0} -version` 傳回了: ```{1}```</value>
@@ -251,23 +218,10 @@ In this message, the phrase "should not be reached" means that this error messag
     <value>在路徑 '{0}' 找不到 AAPT2。請在文字編輯器中開啟專案檔，並移除 'Aapt2ToolPath' MSBuild 屬性，或確定其已設定為有效的位置。</value>
     <comment>The following are literal names and should not be translated: AAPT2, Aapt2ToolPath, MSBuild</comment>
   </data>
-  <data name="XA0113" xml:space="preserve">
-    <value>Google Play 要求新的應用程式與更新，必須使用版本為 {0} 或更新版的 TargetFrameworkVersion (API 層級 {1})。但您目前的目標為 {2} (API 層級 {3})。</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion
-{0} - The required minimum TargetFrameworkVersion, such as 'v10.0'
-{1} - The required minimum API level number, such as '29'
-{2} - The specified TargetFrameworkVersion
-{3} - The specified API level number</comment>
-  </data>
   <data name="XA0116" xml:space="preserve">
     <value>找不到名為 `{0}` 的 `EmbeddedResource`。</value>
     <comment>The following are literal names and should not be translated: EmbeddedResource
 {0} - The name of the missing resource</comment>
-  </data>
-  <data name="XA0117" xml:space="preserve">
-    <value>TargetFrameworkVersion {0} 已淘汰。請將其更新為 v5.0 或更高版本。</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion, v5.0
-{0} - The current value of TargetFrameworkVersion</comment>
   </data>
   <data name="XA0118_Parse" xml:space="preserve">
     <value>無法剖析 '{0}'</value>
@@ -810,7 +764,7 @@ The following are literal names and should not be translated: ABI, 'libs/armeabi
 {1} - The path to the source file which could not be deleted.</comment>
   </data>
   <data name="XA4325" xml:space="preserve">
-    <value>Failed to generate the JNI remapping data. {0}</value>
+    <value>無法產生 JNI 重新對應資料。{0}</value>
     <comment>The following is a literal name and should not be translated: JNI.
 {0} - A sentence describing the specific failure.</comment>
   </data>
@@ -931,13 +885,13 @@ The following are literal names and should not be translated: ABI, 'libs/armeabi
 {0} - The runtime name.</comment>
   </data>
   <data name="XA4330" xml:space="preserve">
-    <value>Native library '{0}' uses the reserved name 'libbinary_blobs.so' (archive path '{1}' or ELF SONAME). This name is reserved for .NET for Android binary data.</value>
+    <value>原生程式庫 '{0}' 使用保留名稱 'libbinary_blobs.so' (封存路徑 '{1}' 或 ELF SONAME)。此名稱保留供 .NET for Android 二進位資料使用。</value>
     <comment>The following is a literal name and should not be translated: libbinary_blobs.so.
 {0} - The source native library path.
 {1} - The conflicting archive path.</comment>
   </data>
   <data name="XA4331" xml:space="preserve">
-    <value>Failed to process bundle config file '{0}', split config files will be ignored at run time.</value>
+    <value>處理套件組態檔 '{0}' 失敗，執行階段會忽略分割組態檔。</value>
     <comment>{0} - The bundle config file path.</comment>
   </data>
   <data name="XA5101" xml:space="preserve">
@@ -945,7 +899,7 @@ The following are literal names and should not be translated: ABI, 'libs/armeabi
     <comment>{0} - The path of the missing directory</comment>
   </data>
   <data name="XA5101_ClangRuntime" xml:space="preserve">
-    <value>Could not locate Android NDK Clang runtime libraries. Searched under: {0}. Please install a complete Android NDK.</value>
+    <value>找不到 Android NDK Clang 執行階段程式庫。搜尋的位置如下: {0}。請安裝完整的 Android NDK。</value>
     <comment>{0} - Semicolon-separated Clang runtime search directories</comment>
   </data>
   <data name="XA5104" xml:space="preserve">
@@ -1375,6 +1329,11 @@ In this message, the term "handheld app" means "app for handheld devices."
     <comment>The following are literal names and should not be translated: Xamarin.Android, .NET for Android.
 {0} - The name of the embedded environment resource (such as __AndroidEnvironment__abc123).
 {1} - The full path to the assembly that contains the environment resource.</comment>
+  </data>
+  <data name="XAGCA7009_UnsupportedRuntime" xml:space="preserve">
+    <value>GenerateNativeApplicationConfigSources 僅支援 CoreCLR 引導設定。提供的 AndroidRuntime 值為 '{0}'。</value>
+    <comment>The following are literal names and should not be translated: GenerateNativeApplicationConfigSources, CoreCLR, AndroidRuntime.
+{0} - The unsupported AndroidRuntime task parameter value.</comment>
   </data>
   <data name="XAGRDL1000" xml:space="preserve">
     <value>在專案目錄 '{0}' 中找不到可執行檔 'gradlew'。請確定 Gradle 專案資料夾的路徑正確，且其中包含 Gradle 包裝函式指令碼。</value>

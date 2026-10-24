@@ -2,9 +2,9 @@
   "author": "Microsoft",
   "name": "Android-Java-Bibliotheksbindung",
   "description": "Ein Projekt zum Erstellen einer .NET für Android-Klassenbibliothek, die an eine native Java-Bibliothek gebunden wird",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
+  "symbols/Framework/description": "Das Zielframework für das Projekt.",
+  "symbols/Framework/choices/net11.0-android/description": "Ziel: net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "Ziel: net10.0-android",
   "symbols/supportedOSVersion/description": "Überschreibt $(SupportedOSPlatformVersion) im Projekt",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "symbols/skipRestore/description": "Wenn angegeben, wird die automatische Wiederherstellung des Projekts beim Erstellen übersprungen."
 }

@@ -175,4 +175,8 @@ Java SDK をバージョン `{2}` に更新するか、`$(JavaSdkDirectory)` を
   <data name="Licenses_Acceptance_Failed" xml:space="preserve">
     <value>Android SDK ライセンスを承諾しようとしてエラーが発生しました。{0}</value>
   </data>
+  <data name="XA5305" xml:space="preserve">
+    <value>'{0}' の Microsoft OpenJDK アーカイブ署名を確認できませんでした。アーカイブはインストールされません。{1}</value>
+    <comment>{0} - Archive URL. {1} - Signature verification error.</comment>
+  </data>
 </root>

@@ -1,11 +1,11 @@
 ﻿{
   "author": "Microsoft",
-  "name": "Android Test Project",
-  "description": "A project for creating a .NET for Android test project using MSTest",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
-  "symbols/packageName/description": "Overrides the package name in the AndroidManifest.xml",
-  "symbols/supportedOSVersion/description": "Overrides $(SupportedOSPlatformVersion) in the project",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "name": "Android テスト プロジェクト",
+  "description": "MSTest を使用して Android 用 .NET テスト プロジェクトを作成するためのプロジェクト",
+  "symbols/Framework/description": "プロジェクトのターゲット フレームワーク。",
+  "symbols/Framework/choices/net11.0-android/description": "ターゲット net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "ターゲット net10.0-android",
+  "symbols/packageName/description": "AndroidManifest.xml のパッケージ名をオーバーライドします",
+  "symbols/supportedOSVersion/description": "プロジェクト ファイルの $(SupportedOSPlatformVersion) をオーバーライドします",
+  "symbols/skipRestore/description": "指定した場合、作成時にプロジェクトの自動復元がスキップされます。"
 }

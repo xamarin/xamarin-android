@@ -145,28 +145,9 @@ Ten błąd jest prawdopodobnie spowodowany problemem dotyczącym pliku AndroidMa
   <data name="IL6001" xml:space="preserve">
     <value>Zestaw „{0}” zawiera odwołanie do przestarzałego atrybutu „Android.Runtime.PreserveAttribute”. Elementy członkowskie z tym atrybutem mogą zostać przycięte. Zamiast tego użyj elementu System.Diagnostics.CodeAnalysis.DynamicDependencyAttribute</value>
   </data>
-  <data name="XA0000_API_for_TargetFrameworkVersion" xml:space="preserve">
-    <value>Nie można określić poziomu interfejsu API dla parametru $(TargetFrameworkVersion) elementu „{0}”.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The current value of $(TargetFrameworkVersion)</comment>
-  </data>
-  <data name="XA0000_API_or_TargetFrameworkVersion_Fail" xml:space="preserve">
-    <value>Nie można określić parametru $(AndroidApiLevel) lub $(TargetFrameworkVersion); ten komunikat nie powinien być wyświetlany.</value>
-    <comment>The following are literal names and should not be translated: $(AndroidApiLevel), $(TargetFrameworkVersion)
-In this message, the phrase "should not be reached" means that this error message is not expected to appear in normal usage.</comment>
-  </data>
   <data name="XA0000_Exception" xml:space="preserve">
     <value>Nieobsłużony wyjątek: {0}</value>
     <comment>{0} - The exception message of the associated exception</comment>
-  </data>
-  <data name="XA0000_TargetFrameworkVersion_for_API" xml:space="preserve">
-    <value>Nie można określić parametru $(TargetFrameworkVersion) dla poziomu „{0}” interfejsu API.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)
-{0} - The API level number</comment>
-  </data>
-  <data name="XA0001" xml:space="preserve">
-    <value>Nieobsługiwana lub nieprawidłowa wartość parametru $(TargetFrameworkVersion) dla elementu „{0}”. Zaktualizuj opcje projektu.</value>
-    <comment>The following are literal names and should not be translated: $(TargetFrameworkVersion)</comment>
   </data>
   <data name="XA0003" xml:space="preserve">
     <value>Nieprawidłowa wartość „android:versionCode” „{0}” w pliku „AndroidManifest.xml”. Musi to być wartość całkowita.</value>
@@ -182,24 +163,10 @@ In this message, the phrase "should not be reached" means that this error messag
     <value>Kompilowanie przy użyciu wersji zestawu JDK „{0}” nie jest obsługiwane. Zainstaluj zestaw JDK w wersji „{1}”. Zobacz https://aka.ms/xamarin/jdk9-errors</value>
     <comment>The abbreviation "JDK" should not be translated.</comment>
   </data>
-  <data name="XA0031" xml:space="preserve">
-    <value>W przypadku korzystania z {1} wymagany jest zestaw Java SDK {0} lub nowszy.
-Pobierz najnowszy zestaw JDK w witrynie: https://aka.ms/msopenjdk
-Uwaga: Android Designer jest niezgodny z zestawem Java SDK 11.0: https://aka.ms/vs2019-and-jdk-11</value>
-    <comment>
-{0} - The Java SDK version number
-{1} - The feature being used: `$(TargetFrameworkVersion) v10.0`</comment>
-  </data>
   <data name="XA0031_NET" xml:space="preserve">
     <value>W przypadku korzystania z platformy .NET 6 lub nowszej wymagany jest zestaw Java SDK {0} lub nowszy. Pobierz najnowszy zestaw JDK w witrynie: https://aka.ms/msopenjdk</value>
     <comment>
 {0} - The Java SDK version number</comment>
-  </data>
-  <data name="XA0032" xml:space="preserve">
-    <value>W przypadku używania narzędzi Android SDK Build-Tools {1} jest wymagany zestaw Java SDK {0} lub nowszy.</value>
-    <comment>The following are literal names and should not be translated: Android SDK Build-Tools
-{0} - The Java SDK version number
-{1} - The Android SDK Build-Tools version number</comment>
   </data>
   <data name="XA0033" xml:space="preserve">
     <value>Nie udało się pobrać wersji zestawu Java SDK, ponieważ wygląda na to, że zwrócona wartość nie zawiera prawidłowego numeru wersji. Dane wyjściowe polecenia „{0} -version”: „{1}”</value>
@@ -251,23 +218,10 @@ Uwaga: Android Designer jest niezgodny z zestawem Java SDK 11.0: https://aka.ms/
     <value>Nie znaleziono narzędzia AAPT2 w ścieżce „{0}”. Otwórz plik projektu w edytorze tekstu i usuń właściwość programu MSBuild o nazwie „Aapt2ToolPath” lub upewnij się, że jest ona ustawiona na prawidłową lokalizację.</value>
     <comment>The following are literal names and should not be translated: AAPT2, Aapt2ToolPath, MSBuild</comment>
   </data>
-  <data name="XA0113" xml:space="preserve">
-    <value>Sklep Google Play wymaga, aby nowe aplikacje i aktualizacje używały elementu TargetFrameworkVersion o wartości {0} (poziom interfejsu API: {1}) lub wyższej. Obecna wersja docelowa to {2} (poziom interfejsu API: {3}).</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion
-{0} - The required minimum TargetFrameworkVersion, such as 'v10.0'
-{1} - The required minimum API level number, such as '29'
-{2} - The specified TargetFrameworkVersion
-{3} - The specified API level number</comment>
-  </data>
   <data name="XA0116" xml:space="preserve">
     <value>Nie można odnaleźć elementu „EmbeddedResource” o nazwie „{0}”.</value>
     <comment>The following are literal names and should not be translated: EmbeddedResource
 {0} - The name of the missing resource</comment>
-  </data>
-  <data name="XA0117" xml:space="preserve">
-    <value>Wartość {0} dla elementu TargetFrameworkVersion jest przestarzała. Zaktualizuj ją na wartość v5.0 lub wyższą.</value>
-    <comment>The following are literal names and should not be translated: TargetFrameworkVersion, v5.0
-{0} - The current value of TargetFrameworkVersion</comment>
   </data>
   <data name="XA0118_Parse" xml:space="preserve">
     <value>Nie można przeanalizować elementu „{0}”</value>
@@ -810,7 +764,7 @@ Usuń odwołanie „{0}” z projektu i zamiast niego dodaj pakiet NuGet „{1}�
 {1} - The path to the source file which could not be deleted.</comment>
   </data>
   <data name="XA4325" xml:space="preserve">
-    <value>Failed to generate the JNI remapping data. {0}</value>
+    <value>Nie można wygenerować danych ponownego mapowania JNI. {0}</value>
     <comment>The following is a literal name and should not be translated: JNI.
 {0} - A sentence describing the specific failure.</comment>
   </data>
@@ -931,13 +885,13 @@ Usuń odwołanie „{0}” z projektu i zamiast niego dodaj pakiet NuGet „{1}�
 {0} - The runtime name.</comment>
   </data>
   <data name="XA4330" xml:space="preserve">
-    <value>Native library '{0}' uses the reserved name 'libbinary_blobs.so' (archive path '{1}' or ELF SONAME). This name is reserved for .NET for Android binary data.</value>
+    <value>Biblioteka natywna "{0}" używa zastrzeżonej nazwy "libbinary_blobs.so" (ścieżka archiwum "{1}" lub ELF SONAME). Ta nazwa jest zarezerwowana dla platformy .NET dla danych binarnych systemu Android.</value>
     <comment>The following is a literal name and should not be translated: libbinary_blobs.so.
 {0} - The source native library path.
 {1} - The conflicting archive path.</comment>
   </data>
   <data name="XA4331" xml:space="preserve">
-    <value>Failed to process bundle config file '{0}', split config files will be ignored at run time.</value>
+    <value>Nie można przetworzyć pliku konfiguracji pakietu „{0}”. Podzielone pliki konfiguracji zostaną zignorowane w czasie wykonywania.</value>
     <comment>{0} - The bundle config file path.</comment>
   </data>
   <data name="XA5101" xml:space="preserve">
@@ -945,7 +899,7 @@ Usuń odwołanie „{0}” z projektu i zamiast niego dodaj pakiet NuGet „{1}�
     <comment>{0} - The path of the missing directory</comment>
   </data>
   <data name="XA5101_ClangRuntime" xml:space="preserve">
-    <value>Could not locate Android NDK Clang runtime libraries. Searched under: {0}. Please install a complete Android NDK.</value>
+    <value>Nie można zlokalizować bibliotek środowiska uruchomieniowego Clang zestawu NDK systemu Android. Przeszukano w obszarze: {0}. Zainstaluj kompletny zestaw Android NDK.</value>
     <comment>{0} - Semicolon-separated Clang runtime search directories</comment>
   </data>
   <data name="XA5104" xml:space="preserve">
@@ -1375,6 +1329,11 @@ Aby użyć niestandardowej ścieżki zestawu JDK dla kompilacji wiersza poleceni
     <comment>The following are literal names and should not be translated: Xamarin.Android, .NET for Android.
 {0} - The name of the embedded environment resource (such as __AndroidEnvironment__abc123).
 {1} - The full path to the assembly that contains the environment resource.</comment>
+  </data>
+  <data name="XAGCA7009_UnsupportedRuntime" xml:space="preserve">
+    <value>Element GenerateNativeApplicationConfigSources obsługuje tylko konfigurację ładowania początkowego CoreCLR. Podana wartość AndroidRuntime była '{0}'.</value>
+    <comment>The following are literal names and should not be translated: GenerateNativeApplicationConfigSources, CoreCLR, AndroidRuntime.
+{0} - The unsupported AndroidRuntime task parameter value.</comment>
   </data>
   <data name="XAGRDL1000" xml:space="preserve">
     <value>Nie znaleziono pliku wykonywalnego „gradlew” w katalogu projektu „{0}”. Upewnij się, że ścieżka do folderu projektu Gradle jest poprawna i że zawiera skrypty Gradle Wrapper.</value>

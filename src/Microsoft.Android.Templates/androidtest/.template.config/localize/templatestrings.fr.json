@@ -1,11 +1,11 @@
 ﻿{
   "author": "Microsoft",
-  "name": "Android Test Project",
-  "description": "A project for creating a .NET for Android test project using MSTest",
-  "symbols/Framework/description": "The target framework for the project.",
-  "symbols/Framework/choices/net11.0-android/description": "Target net11.0-android",
-  "symbols/Framework/choices/net10.0-android/description": "Target net10.0-android",
-  "symbols/packageName/description": "Overrides the package name in the AndroidManifest.xml",
-  "symbols/supportedOSVersion/description": "Overrides $(SupportedOSPlatformVersion) in the project",
-  "symbols/skipRestore/description": "If specified, skips the automatic restore of the project on create."
+  "name": "Projet de test Android",
+  "description": "Un projet visant à créer un projet de test .NET pour Android à l’aide de MSTest",
+  "symbols/Framework/description": "Infrastructure cible du projet.",
+  "symbols/Framework/choices/net11.0-android/description": "Cible net11.0-android",
+  "symbols/Framework/choices/net10.0-android/description": "Cible net10.0-android",
+  "symbols/packageName/description": "Remplace le nom du package dans le AndroidManifest.xml",
+  "symbols/supportedOSVersion/description": "Remplace $(SupportedOSPlatformVersion) dans le projet",
+  "symbols/skipRestore/description": "Si spécifié, ignore la restauration automatique du projet lors de la création."
 }
